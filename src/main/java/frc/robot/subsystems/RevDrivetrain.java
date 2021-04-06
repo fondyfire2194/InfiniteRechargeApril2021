@@ -27,7 +27,7 @@ import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private static final DrivetrainConstants DRIVETRAIN_CONSTANTS = new NeoDrivetrainConstants();
     private static final double ENCODER_CONSTANT = (1.0 / DriveConstants.DRIVE_GEAR_RATIO
-            * DRIVETRAIN_CONSTANTS.getkWheelDiameterMeters() * Math.PI;
+            * DRIVETRAIN_CONSTANTS.getkWheelDiameterMeters() * Math.PI);
 
     private final SimableCANSparkMax mLeadLeft; // NOPMD
     private final SimableCANSparkMax mFollowerLeft; // NOPMD
