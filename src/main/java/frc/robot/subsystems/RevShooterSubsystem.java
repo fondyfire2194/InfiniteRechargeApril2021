@@ -18,7 +18,7 @@ import org.snobotv2.sim_wrappers.FlywheelSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
 public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsystem {
-    private final SimableCANSparkMax mLeftMotor; // NOPMD
+    public final SimableCANSparkMax mLeftMotor; // NOPMD
     private final SimableCANSparkMax mRightMotor; // NOPMD
     private final CANEncoder mEncoder;
     private final CANPIDController mPidController;

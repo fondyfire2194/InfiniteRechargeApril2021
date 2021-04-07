@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.Map;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.InstantCommand;
@@ -62,7 +63,7 @@ public class SetupShuffleboard {
         private final ClimberSubsystem m_climber;
         private boolean m_showTurret = false;
         private boolean m_showTilt = false;
-        private boolean m_showShooter = false;
+        private boolean m_showShooter = true;
         private boolean m_showRobot = false;
         private boolean m_showClimber = true;
         private boolean m_showControlPanel = false;
@@ -71,6 +72,7 @@ public class SetupShuffleboard {
         private boolean m_showVision = false;
         private boolean m_showTrajectory = false;
         private XboxController m_setupController = new XboxController(2);
+        
 
         public SetupShuffleboard(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevDrivetrain drive,
                         RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor,
@@ -233,8 +235,8 @@ public class SetupShuffleboard {
                         robotCommands.add("Reset Enc", new ResetEncoders(m_robotDrive));
                         robotCommands.add("Reset Gyro", new ResetGyro(m_robotDrive));
                         robotCommands.add("Reset Pose", new ResetPose(m_robotDrive));
-                        robotCommands.add("Pos to 3M", new PositionRobot(m_robotDrive,3.));
-                        robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive,0));
+                        robotCommands.add("Pos to 3M", new PositionRobot(m_robotDrive, 3.));
+                        robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0));
                         robotCommands.add("Rot to 90", new TurnToAngleProfiled(90, m_robotDrive));
                         robotCommands.add("Rot to 0", new TurnToAngleProfiled(0, m_robotDrive));
                         robotCommands.add("Rot to -90", new TurnToAngleProfiled(-90, m_robotDrive));
@@ -388,15 +390,19 @@ public class SetupShuffleboard {
                 {
                         ShuffleboardLayout climberCommands = Shuffleboard.getTab("SetupClimber_CP")
                                         .getLayout("Climber", BuiltInLayouts.kList).withPosition(0, 0).withSize(1, 3)
-                                        .withProperties(Map.of("Label position", "TOP")); // hide
-                                                                                          // labels
+                                        .withProperties(Map.of("Label position", "TOP"));
 
-                        climberCommands.add(new TurnClimberMotor(m_climber, .25));
+                        NetworkTableEntry runMotor = Shuffleboard.getTab("SetupClimber_CP")
+                                        .add("Run Climber Motor", false).withPosition(5, 5).withWidget("Toggle Button")
+                                        .getEntry();
+
+                        if (runMotor.getBoolean(false))
+                                new TurnClimberMotor(m_climber, .25);
                         climberCommands.add("ClimberLower", new StartEndCommand(() -> m_climber.turnClimberMotor(-.25),
                                         () -> m_climber.turnClimberMotor(0)));
 
-                        climberCommands.add("ArmRaise", new RunCommand(() -> m_climber.raiseArm()));
-                        climberCommands.add("ArmLower", new RunCommand(() -> m_climber.lowerArm()));
+                        climberCommands.add("ArmRaise", new InstantCommand(() -> m_climber.raiseArm()));
+                        climberCommands.add("ArmLower", new InstantCommand(() -> m_climber.lowerArm()));
 
                         ShuffleboardLayout climberValues = Shuffleboard.getTab("SetupClimber_CP")
                                         .getLayout("ClimberValues", BuiltInLayouts.kList).withPosition(2, 0)
@@ -404,8 +410,9 @@ public class SetupShuffleboard {
                                                                                                          // labels
 
                         climberValues.addNumber("Motor Amps", () -> m_climber.getMotorAmps());
+                        climberValues.addNumber("Motor Out", () -> m_climber.getMotorOut());
                         climberValues.add("Climber", m_climber);
-                        climberValues.add("Cmd", m_climber);
+
                 }
                 /**
                  * 
@@ -435,6 +442,5 @@ public class SetupShuffleboard {
                         intakeValues.add("ITK", m_intake);
 
                 }
-
         }
 }

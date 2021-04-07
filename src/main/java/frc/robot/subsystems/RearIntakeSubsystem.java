@@ -31,17 +31,20 @@ public class RearIntakeSubsystem extends SubsystemBase {
   public List<BaseTalon> intakeTalons;
 
   public RearIntakeSubsystem() {
-    if (Robot.isReal()) {
-      m_intakeMotor.configFactoryDefault();
-      m_intakeMotor.setNeutralMode(NeutralMode.Brake);
-    }
+
+    m_intakeMotor.configFactoryDefault();
+    m_intakeMotor.setNeutralMode(NeutralMode.Brake);
+    raiseIntakeArm();
   }
+
   public void simulationInit() {
-		PhysicsSim.getInstance().addTalonSRX(m_intakeMotor, 1.5, 7200, true);
-	}
-	public void simulationPeriodic() {
-		PhysicsSim.getInstance().run();
-	}
+    PhysicsSim.getInstance().addTalonSRX(m_intakeMotor, 1.5, 7200, true);
+  }
+
+  public void simulationPeriodic() {
+    PhysicsSim.getInstance().run();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

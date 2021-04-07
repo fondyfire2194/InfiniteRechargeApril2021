@@ -84,10 +84,10 @@ public class ControlPanelSubsystem extends SubsystemBase {
    private final DoubleSolenoid m_colorWheelArm = new DoubleSolenoid(0, 1);
 
    public ControlPanelSubsystem() {
-      if (Robot.isReal()) {
-         m_controlPanelMotor.configFactoryDefault();
-         m_controlPanelMotor.setNeutralMode(NeutralMode.Brake);
-      }
+
+      m_controlPanelMotor.configFactoryDefault();
+      m_controlPanelMotor.setNeutralMode(NeutralMode.Brake);
+      raiseArm();
       m_colorMatcher.addColorMatch(kBlueTarget);
       m_colorMatcher.addColorMatch(kGreenTarget);
       m_colorMatcher.addColorMatch(kRedTarget);
@@ -102,13 +102,13 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
    public double getMotorSet() {
       return m_controlPanelMotor.get();
-   }  
+   }
 
    public double getMotorAmps() {
       if (Robot.isReal()) {
          return m_controlPanelMotor.getStatorCurrent();
       } else
-         return 0 ;
+         return 0;
    }
 
    public void setBrakeOn(boolean on) {
@@ -138,12 +138,15 @@ public class ControlPanelSubsystem extends SubsystemBase {
    public void setLookForColor(boolean on) {
       lookForColor = on;
    }
+
    public void simulationInit() {
-		PhysicsSim.getInstance().addTalonSRX(m_controlPanelMotor, 1.5, 7200, true);
-	}
-	public void simulationPeriodic() {
-		PhysicsSim.getInstance().run();
-	}
+      PhysicsSim.getInstance().addTalonSRX(m_controlPanelMotor, 1.5, 7200, true);
+   }
+
+   public void simulationPeriodic() {
+      PhysicsSim.getInstance().run();
+   }
+
    @Override
    public void periodic() {
       loopCount++;

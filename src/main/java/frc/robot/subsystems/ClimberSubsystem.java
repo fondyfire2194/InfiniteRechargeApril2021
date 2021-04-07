@@ -10,7 +10,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.Constants.CANConstants;
 import frc.robot.sim.PhysicsSim;
 import frc.robot.simulation.TalonSRXWrapper;
@@ -22,11 +21,12 @@ public class ClimberSubsystem extends SubsystemBase {
   final DoubleSolenoid m_climberArm = new DoubleSolenoid(4, 5);
 
   public ClimberSubsystem() {
-    if (Robot.isReal()) {
-      m_climberMotor.configFactoryDefault();
-    }
+
+    m_climberMotor.configFactoryDefault();
+
     m_climberMotor.setNeutralMode(NeutralMode.Brake);
-    m_climberArm.set(DoubleSolenoid.Value.kReverse);
+    // raiseArm();
+    lowerArm();
 
   }
 
@@ -35,11 +35,13 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public double getMotorAmps() {
-    if (Robot.isReal()) {
-      return m_climberMotor.getStatorCurrent();
-    } else
-      return 0;
+    return m_climberMotor.getStatorCurrent();
   }
+
+  public double getMotorOut() {
+    return m_climberMotor.getMotorOutputPercent();
+  }
+
 
   public void setBrakeOn(boolean on) {
     if (on) {
@@ -61,10 +63,12 @@ public class ClimberSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
+
   public void simulationInit() {
-		PhysicsSim.getInstance().addTalonSRX(m_climberMotor, 1.5, 7200, true);
-	}
-	public void simulationPeriodic() {
-		PhysicsSim.getInstance().run();
-	}
+    PhysicsSim.getInstance().addTalonSRX(m_climberMotor, 1.5, 7200, true);
+  }
+
+  public void simulationPeriodic() {
+    PhysicsSim.getInstance().run();
+  }
 }

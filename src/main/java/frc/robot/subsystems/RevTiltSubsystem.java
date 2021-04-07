@@ -2,25 +2,26 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import com.revrobotics.SimableCANSparkMax;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
-import frc.robot.sim.ElevatorSubsystem;
+import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
+import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
+import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
+import org.snobotv2.sim_wrappers.ISimWrapper;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.HoodedShooterConstants;
-
-import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
-import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
-import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
-import org.snobotv2.sim_wrappers.ISimWrapper;
+import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem {
     private static final double GRAVITY_COMPENSATION_VOLTS = 0.;
@@ -37,7 +38,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private int p;
     public double visionCorrection;
     public boolean positionResetDone;
-    
 
     public RevTiltSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TILT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -48,6 +48,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         mPidController.setP(0.16);
         m_motor.restoreFactoryDefaults();
+
         gainSettings();
 
         if (RobotBase.isSimulation()) {
@@ -65,26 +66,26 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        p++;
-        SmartDashboard.putNumber("TiltPos", getHeightInches());
-        // SmartDashboard.putNumber("P", p);
+
+        SmartDashboard.putNumber("TiltPos", getAngle();
+    
 
         // display PID coefficients on SmartDashboard
-        SmartDashboard.putNumber("P Gain", kP);
-        SmartDashboard.putNumber("I Gain", kI);
-        SmartDashboard.putNumber("D Gain", kD);
-        SmartDashboard.putNumber("I Zone", kIz);
-        SmartDashboard.putNumber("Feed Forward", kFF);
-        SmartDashboard.putNumber("Max Output", kMaxOutput);
-        SmartDashboard.putNumber("Min Output", kMinOutput);
+        // SmartDashboard.getNumber("P Gain", kP);
+        // SmartDashboard.getNumber("I Gain", kI);
+        // SmartDashboard.getNumber("D Gain", kD);
+        // SmartDashboard.getNumber("I Zone", kIz);
+        // SmartDashboard.getNumber("Feed Forward", kFF);
+        // SmartDashboard.getNumber("Max Output", kMaxOutput);
+        // SmartDashboard.getNumber("Min Output", kMinOutput);
 
-        // display Smart Motion coefficients
-        SmartDashboard.putNumber("Max Velocity", maxVel);
-        SmartDashboard.putNumber("Min Velocity", minVel);
-        SmartDashboard.putNumber("Max Acceleration", maxAcc);
-        SmartDashboard.putNumber("Allowed Closed Loop Error", allowedErr);
-        SmartDashboard.putNumber("Set Position", 0);
-        SmartDashboard.putNumber("Set Velocity", 0);
+        // // display Smart Motion coefficients
+        // SmartDashboard.putNumber("Max Velocity", maxVel);
+        // SmartDashboard.putNumber("Min Velocity", minVel);
+        // SmartDashboard.putNumber("Max Acceleration", maxAcc);
+        // SmartDashboard.putNumber("Allowed Closed Loop Error", allowedErr);
+        // SmartDashboard.putNumber("Set Position", 0);
+        // SmartDashboard.putNumber("Set Velocity", 0);
 
     }
 
@@ -132,21 +133,22 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         return Units.metersToInches(mEncoder.getPosition());
     }
 
-    public double getOut(){
+    public double getOut() {
         return m_motor.get();
     }
 
-    public double getSpeed(){
+    public double getSpeed() {
         return mEncoder.getVelocity();
     }
 
-    public boolean onPlusSoftwareLimit(){
+    public boolean onPlusSoftwareLimit() {
         return m_motor.isSoftLimitEnabled(SoftLimitDirection.kForward);
-     }
-  
-     public boolean onMinusSoftwareLimit(){
+    }
+
+    public boolean onMinusSoftwareLimit() {
         return m_motor.isSoftLimitEnabled(SoftLimitDirection.kReverse);
-     }
+    }
+
     @Override
     public void simulationPeriodic() {
         mElevatorSim.update();
