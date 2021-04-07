@@ -400,7 +400,7 @@ public class SetupShuffleboard {
 
                         ShuffleboardLayout climberValues = Shuffleboard.getTab("SetupClimber_CP")
                                         .getLayout("ClimberValues", BuiltInLayouts.kList).withPosition(2, 0)
-                                        .withSize(2, 2).withProperties(Map.of("Label position", "TOP")); // hide
+                                        .withSize(2, 3).withProperties(Map.of("Label position", "TOP")); // hide
                                                                                                          // labels
 
                         climberValues.addNumber("Motor Amps", () -> m_climber.getMotorAmps());

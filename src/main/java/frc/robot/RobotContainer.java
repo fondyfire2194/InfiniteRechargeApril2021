@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -16,15 +17,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.Tilt.JogTilt;
 import frc.robot.commands.Tilt.PositionTilt;
+import frc.robot.commands.Tilt.JogTilt;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ControlPanelSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
+import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
+import frc.robot.trajectories.FondyFireTrajectory;
+import frc.robot.SetupShuffleboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -42,7 +46,7 @@ public class RobotContainer {
       public final XboxController setupGamepad = new XboxController(OIConstants.kSetupControllerPort);
       public final XboxController shootBox = new XboxController(OIConstants.kShootBoxControllerPort);
 
-      public final RevDrivetrain m_driveTrain;
+      public final RevDrivetrain m_robotDrive;
 
       public final ClimberSubsystem m_climber;
 
@@ -54,11 +58,21 @@ public class RobotContainer {
 
       public final RevTurretSubsystem m_turret;
 
-      public final RevTiltSubsystem m_revTilt;
+      public final RevTiltSubsystem m_tilt;
+
+      public final RevShooterSubsystem m_shooter;
       //
       public static Preferences prefs;
 
       public static boolean autoSelected;
+
+      private SetupShuffleboard m_setup;
+
+      private LimeLight m_limelight;
+
+      private Compressor m_compressor;
+
+      private FondyFireTrajectory m_traj;
 
       // AutoCommands ac;// = new AutoCommands(m_robotDrive);
       public int shootPosition;
@@ -71,19 +85,25 @@ public class RobotContainer {
             // Pref.deleteAllPrefs();
             // Pref.deleteUnused();
             // Pref.addMissing();
-            m_driveTrain = new RevDrivetrain();
+            m_robotDrive = new RevDrivetrain();
             m_climber = new ClimberSubsystem();
             m_transport = new CellTransportSubsystem();
             m_controlPanel = new ControlPanelSubsystem();
             m_intake = new RearIntakeSubsystem();
-
+            m_shooter = new RevShooterSubsystem();
             m_turret = new RevTurretSubsystem();
 
-            m_revTilt = new RevTiltSubsystem();
-            SmartDashboard.putData(m_revTilt);
+            m_tilt = new RevTiltSubsystem();
+            SmartDashboard.putData(m_tilt);
 
-            m_revTilt.setDefaultCommand(new PositionTilt(m_revTilt).withName("Def"));
+            m_limelight = new LimeLight();
+            m_compressor = new Compressor();
+            m_traj = new FondyFireTrajectory(m_robotDrive);
 
+            m_tilt.setDefaultCommand(new PositionTilt(m_tilt).withName("Def"));
+
+            m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
+                        m_limelight, m_controlPanel, m_intake, m_traj, m_climber);
             configureButtonBindings();
       }
 
@@ -109,9 +129,9 @@ public class RobotContainer {
                         .whenPressed(() -> m_climber.turnClimberMotor(.5))
                         .whenPressed(() -> m_controlPanel.turnWheelMotor(.5))
 
-                        .whileHeld(new JogTilt(m_revTilt, .4).withName("Jogging"))
+                        .whileHeld(new JogTilt(m_tilt, .4).withName("Jogging"))
                         .whenReleased(() -> m_climber.turnClimberMotor(0))
-                        .whenReleased(() -> m_controlPanel.turnWheelMotor(0)).whenReleased(() -> m_revTilt.stop());
+                        .whenReleased(() -> m_controlPanel.turnWheelMotor(0)).whenReleased(() -> m_tilt.stop());
 
             new JoystickButton(m_driverController, 2)
 
@@ -132,11 +152,11 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 8)
 
-                        .whileHeld(() -> m_revTilt.moveManually(.4), m_revTilt);
+                        .whileHeld(() -> m_tilt.moveManually(.4), m_tilt);
 
             new JoystickButton(m_driverController, 7)
 
-                        .whenPressed(new PositionTilt(m_revTilt, .1).withName("SM"));
+                        .whenPressed(new PositionTilt(m_tilt, .1).withName("SM"));
 
             // CommandScheduler.getInstance()
             // .onCommandInitialize(command -> System.out.println(command.getName() + " is
