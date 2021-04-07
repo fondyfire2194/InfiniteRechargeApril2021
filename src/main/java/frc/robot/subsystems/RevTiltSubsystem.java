@@ -5,7 +5,10 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import com.revrobotics.SimableCANSparkMax;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
+
 import frc.robot.sim.ElevatorSubsystem;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
@@ -29,8 +32,12 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private final SimableCANSparkMax m_motor; // NOPMD
     private final CANEncoder mEncoder;
     private final CANPIDController mPidController;
+    public DigitalInput m_reverseLimit = new DigitalInput(9);
     private ISimWrapper mElevatorSim;
     private int p;
+    public double visionCorrection;
+    public boolean positionResetDone;
+    
 
     public RevTiltSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TILT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -107,6 +114,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         mPidController.setReference(meters, ControlType.kSmartMotion, SMART_MOTION_SLOT);
     }
 
+    public void resetAngle(double position) {
+        mEncoder.setPosition(position);
+    }
+
     @Override
     public boolean isAtHeight(double inches, double allowableError) {
         return Math.abs(inches - getHeightInches()) < allowableError;
@@ -117,6 +128,25 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         return Units.metersToInches(mEncoder.getPosition());
     }
 
+    public double getAngle() {
+        return Units.metersToInches(mEncoder.getPosition());
+    }
+
+    public double getOut(){
+        return m_motor.get();
+    }
+
+    public double getSpeed(){
+        return mEncoder.getVelocity();
+    }
+
+    public boolean onPlusSoftwareLimit(){
+        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kForward);
+     }
+  
+     public boolean onMinusSoftwareLimit(){
+        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kReverse);
+     }
     @Override
     public void simulationPeriodic() {
         mElevatorSim.update();

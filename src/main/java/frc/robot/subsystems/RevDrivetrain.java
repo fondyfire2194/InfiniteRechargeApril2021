@@ -151,6 +151,11 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         return mGyro.getYaw();
     }
 
+    
+    public double getYaw() {
+        return mGyro.getYaw();
+    }
+
     @Override
     public DrivetrainConstants getConstants() {
         return DRIVETRAIN_CONSTANTS;
@@ -208,4 +213,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public void simulationPeriodic() {
         mSimulator.update();
     }
+
+	public void resetGyro() {
+	}
+
+	public void resetPose(Pose2d pose) {
+	}
 }

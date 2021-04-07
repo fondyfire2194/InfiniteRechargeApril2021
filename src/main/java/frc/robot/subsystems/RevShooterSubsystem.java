@@ -23,6 +23,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private final CANEncoder mEncoder;
     private final CANPIDController mPidController;
     private ISimWrapper mSimulator;
+	public double requiredSpeedLast;
+	public double requiredSpeed;
+	public double shootTime;
     public static DCMotor kGearbox = DCMotor.getNeo550(2);
     public static double kGearing = 1;
     public static double kInertia = 0.008;
@@ -60,6 +63,15 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double getRPM() {
         return mEncoder.getVelocity();
     }
+
+    public double getLeftAmps(){
+        return mLeftMotor.getOutputCurrent();
+    }
+
+    public double getRightAmps(){
+        return mRightMotor.getOutputCurrent();
+    }
+
 
     @Override
     public void simulationPeriodic() {

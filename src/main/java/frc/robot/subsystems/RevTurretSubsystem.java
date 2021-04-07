@@ -2,10 +2,14 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import com.revrobotics.SimableCANSparkMax;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
+
 import frc.robot.sim.ElevatorSubsystem;
+import edu.wpi.first.hal.SimDevice.Direction;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
@@ -31,6 +35,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private final CANPIDController mPidController;
     private ISimWrapper mElevatorSim;
     private int p;
+    public double visionCorrection;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -107,13 +112,32 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mPidController.setReference(meters, ControlType.kSmartMotion, SMART_MOTION_SLOT);
     }
 
+    public void resetAngle(double angle) {
+        mEncoder.setPosition(angle);
+    }
+
+    public double getOut(){
+        return m_motor.get();
+    }
+
+    public double getSpeed(){
+        return mEncoder.getVelocity();
+    }
+
+    public boolean onPlusSoftwareLimit(){
+        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kForward);
+     }
+  
+     public boolean onMinusSoftwareLimit(){
+        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kReverse);
+     }
+
     @Override
     public boolean isAtHeight(double inches, double allowableError) {
         return Math.abs(inches - getHeightInches()) < allowableError;
     }
 
-    @Override
-    public double getHeightInches() {
+    public double getAngle() {
         return Units.metersToInches(mEncoder.getPosition());
     }
 
@@ -151,6 +175,12 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mPidController.setOutputRange(kMinOutput, kMaxOutput);
         mPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
         mPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
+    }
+
+    @Override
+    public double getHeightInches() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
 }

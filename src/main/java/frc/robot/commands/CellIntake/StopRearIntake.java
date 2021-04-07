@@ -5,26 +5,30 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.CellIntake;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.RevShooterSubsystem;
+import frc.robot.subsystems.RearIntakeSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class DecreaseShooterSpeed extends InstantCommand {
-  private RevShooterSubsystem m_shooter;
+public class StopRearIntake extends InstantCommand {
+  private final RearIntakeSubsystem rearIntake;
 
-  public DecreaseShooterSpeed(RevShooterSubsystem shooter) {
+  public StopRearIntake(RearIntakeSubsystem rearIntake) {
+    this.rearIntake = rearIntake;
+
     // Use addRequirements() here to declare subsystem dependencies.
-    m_shooter = shooter;
+    addRequirements(rearIntake);
+
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    double currentSpeed = m_shooter.getRPM();
-    m_shooter.spinAtRpm(currentSpeed *.9);
+    rearIntake.runIntakeMotor(0.);
+
   }
 }
