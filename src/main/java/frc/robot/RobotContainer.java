@@ -18,19 +18,24 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.Tilt.PositionTilt;
-import frc.robot.commands.Tilt.TiltTune;
 import frc.robot.commands.Tilt.JogTilt;
+import frc.robot.commands.Tilt.PositionHoldTilt;
+import frc.robot.commands.Tilt.PositionTilt;
+import frc.robot.commands.Turret.ElevJog;
+import frc.robot.commands.Turret.PositionHoldElev;
+import frc.robot.commands.Turret.PositionHoldTurret;
+import frc.robot.commands.Turret.PositionTurret;
+import frc.robot.commands.Turret.TurretJog;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ControlPanelSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
+import frc.robot.subsystems.RevElevatorSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 import frc.robot.trajectories.FondyFireTrajectory;
-import frc.robot.SetupShuffleboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -76,6 +81,8 @@ public class RobotContainer {
 
       private FondyFireTrajectory m_traj;
 
+      private RevElevatorSubsystem m_elev = new RevElevatorSubsystem();
+
       // AutoCommands ac;// = new AutoCommands(m_robotDrive);
       public int shootPosition;
 
@@ -94,25 +101,31 @@ public class RobotContainer {
             m_intake = new RearIntakeSubsystem();
             m_shooter = new RevShooterSubsystem();
             m_turret = new RevTurretSubsystem();
-
             m_tilt = new RevTiltSubsystem();
             SmartDashboard.putData(m_tilt);
-
+            SmartDashboard.putData(m_elev);
+            SmartDashboard.putData(m_turret);
             m_limelight = new LimeLight();
             m_compressor = new Compressor();
             m_traj = new FondyFireTrajectory(m_robotDrive);
 
-            m_tilt.setDefaultCommand(new PositionTilt(m_tilt).withName("Def"));
+            m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt).withName("TiltHold"));
+            m_turret.setDefaultCommand(new PositionHoldTurret(m_turret).withName("TurretHold"));
+            m_elev.setDefaultCommand(new PositionHoldElev(m_elev).withName("ElevHold"));
 
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
                         m_limelight, m_controlPanel, m_intake, m_traj, m_climber);
 
-            
+            // m_robotDrive.setDefaultCommand(
+            // // A joystick arcade command, with forward/backward controlled by the left
+            // // hand, and turning controlled by the twist.
+            // new RunCommand(() -> m_robotDrive.arcadeDrive(-m_driverController.getY(),
+            // m_driverController.getTwist() / 3), m_robotDrive));
             configureButtonBindings();
 
             LiveWindow.disableAllTelemetry();
 
-            SmartDashboard.putData("TuneTilt",new TiltTune(m_tilt));
+            // SmartDashboard.putData("TuneTilt", new TiltTune(m_tilt));
       }
 
       /**
@@ -136,16 +149,14 @@ public class RobotContainer {
 
                         .whenPressed(() -> m_climber.turnClimberMotor(.5))
                         .whenPressed(() -> m_controlPanel.turnWheelMotor(.5))
-
-                        .whileHeld(new JogTilt(m_tilt, .4).withName("Jogging"))
                         .whenReleased(() -> m_climber.turnClimberMotor(0))
-                        .whenReleased(() -> m_controlPanel.turnWheelMotor(0)).whenReleased(() -> m_tilt.stop());
+                        .whenReleased(() -> m_controlPanel.turnWheelMotor(0));
 
-            new JoystickButton(m_driverController, 2)
-
-                        .whenPressed(() -> m_intake.runIntakeMotor(.5)).whenReleased(() -> m_intake.runIntakeMotor(0));
-
-            new JoystickButton(m_driverController, 3)
+                        new JoystickButton(m_driverController, 2).whileHeld(new TurretJog(m_turret, .84).withName("TurretJog"));
+  
+                        new JoystickButton(m_driverController, 3).whileHeld(new JogTilt(m_tilt, .84).withName("TiltJog"));
+           
+            new JoystickButton(m_driverController, 5)
 
                         .whenPressed(() -> m_transport.runFrontRollerMotor(.5))
                         .whenPressed(() -> m_transport.runRearRollerMotor(.5))
@@ -157,14 +168,14 @@ public class RobotContainer {
                         .whenReleased(() -> m_transport.runLeftBeltMotor(0))
                         .whenPressed(() -> m_intake.runIntakeMotor(0))
                         .whenReleased(() -> m_transport.runRightBeltMotor(0));
+                        
 
-            new JoystickButton(m_driverController, 8)
+            new JoystickButton(m_driverController,9 )
+                        .whileHeld(() -> m_tilt.moveManually(.4), m_tilt).whenReleased(() -> m_tilt.stop(), m_tilt);
 
-                        .whileHeld(() -> m_tilt.moveManually(.4), m_tilt);
+            // new JoystickButton(m_driverController, 7)
 
-            new JoystickButton(m_driverController, 7)
-
-                        .whenPressed(new PositionTilt(m_tilt, .1).withName("SM"));
+            // .whenPressed(new PositionTilt(m_tilt, .1).withName("SM"));
 
             // CommandScheduler.getInstance()
             // .onCommandInitialize(command -> System.out.println(command.getName() + " is

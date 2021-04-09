@@ -96,7 +96,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         for (CANPIDController pidController : new CANPIDController[] { mLeftPidController, mRightPidController }) {
             setupPidController(pidController, .02, 0, 0, .00544, 144, 144);
         }
-
+        mDrive.setSafetyEnabled(false);
         if (RobotBase.isSimulation()) {
             mSimulator = new DifferentialDrivetrainSimWrapper(DRIVETRAIN_CONSTANTS.createSim(),
                     new RevMotorControllerSimWrapper(mLeadLeft), new RevMotorControllerSimWrapper(mLeadRight),
@@ -151,7 +151,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         return mGyro.getYaw();
     }
 
-    
     public double getYaw() {
         return mGyro.getYaw();
     }
@@ -214,9 +213,9 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mSimulator.update();
     }
 
-	public void resetGyro() {
-	}
+    public void resetGyro() {
+    }
 
-	public void resetPose(Pose2d pose) {
-	}
+    public void resetPose(Pose2d pose) {
+    }
 }

@@ -6,36 +6,36 @@ package frc.robot.commands.Turret;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.RevTurretSubsystem;
+import frc.robot.subsystems.RevElevatorSubsystem;
 
-public class PositionTurret extends CommandBase {
+public class PositionHoldElev extends CommandBase {
   /** Creates a new PositionTilt. */
 
-  private final RevTurretSubsystem m_turret;
+  private final RevElevatorSubsystem m_elev;;
 
   private double m_position;
 
-
-
-  public PositionTurret(RevTurretSubsystem turret, double position) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    m_turret = turret;
-    m_position = position;
   
-    addRequirements(m_turret);
+  public PositionHoldElev(RevElevatorSubsystem elev) {
+    // Use addRequirements() here to declare subsystem dependencies.
+    m_elev = elev;
+    
+
+    addRequirements(m_elev);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    SmartDashboard.putNumber("SMPOS", m_position);
-    m_turret.visionCorrection = 0;
+    m_position = m_elev.getHeightInches();
+    SmartDashboard.putNumber("ElPOS", m_position);
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_turret.goToPositionMotionMagic(m_position);
+    m_elev.goToPosition(m_position);
   }
 
   // Called once the command ends or is interrupted.

@@ -2,40 +2,36 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Turret;
+package frc.robot.commands.Tilt;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.RevTurretSubsystem;
+import frc.robot.subsystems.RevTiltSubsystem;
 
-public class PositionTurret extends CommandBase {
+public class PositionHoldTilt extends CommandBase {
   /** Creates a new PositionTilt. */
 
-  private final RevTurretSubsystem m_turret;
+  private final RevTiltSubsystem m_tilt;
 
   private double m_position;
 
-
-
-  public PositionTurret(RevTurretSubsystem turret, double position) {
+  public PositionHoldTilt(RevTiltSubsystem tilt) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_turret = turret;
-    m_position = position;
-  
-    addRequirements(m_turret);
+    m_tilt = tilt;
+    addRequirements(m_tilt);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    SmartDashboard.putNumber("SMPOS", m_position);
-    m_turret.visionCorrection = 0;
+    m_position = m_tilt.getAngle();
+    SmartDashboard.putNumber("SMTURPOS", m_position);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_turret.goToPositionMotionMagic(m_position);
+    m_tilt.goToPosition(m_position);
   }
 
   // Called once the command ends or is interrupted.

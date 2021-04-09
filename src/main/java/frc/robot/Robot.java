@@ -68,7 +68,7 @@ public class Robot extends TimedRobot {
 
     // SmartDashboard.putNumber("MatchTime",
 
-    SmartDashboard.putNumber("RevTiltPos", m_robotContainer.m_tilt.getHeightInches());
+    
     SmartDashboard.putData("CS", CommandScheduler.getInstance());
 
   }

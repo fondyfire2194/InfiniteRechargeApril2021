@@ -1,8 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
@@ -18,15 +15,13 @@ import org.snobotv2.sim_wrappers.ISimWrapper;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
-import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsystem {
-    private static final double GRAVITY_COMPENSATION_VOLTS = 0.;
-    private static final double TICKS_PER_DEGREE = 4096;
+    private static final double GRAVITY_COMPENSATION_VOLTS = .5;
+    private static final double ENC_REVS_PER_DEGREE = 4096;
     private static final int POSITION_SLOT = 0;
     private static final int SMART_MOTION_SLOT = 1;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
@@ -42,17 +37,17 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mEncoder = m_motor.getEncoder();
         mPidController = m_motor.getPIDController();
 
-        mEncoder.setPositionConversionFactor(1 / HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
+        mEncoder.setPositionConversionFactor(3.39);// 1 / HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
 
-        mPidController.setP(0.16);
+        mPidController.setP(.16);
 
         gainSettings();
 
         if (RobotBase.isSimulation()) {
-            ElevatorSimConstants.kCarriageMass = 0;
+            ElevatorSimConstants.kCarriageMass = 2;
             ElevatorSimConstants.kElevatorGearing = 18;
-            ElevatorSimConstants.kMaxElevatorHeight = 10;
-            ElevatorSimConstants.kMinElevatorHeight = -1;
+            ElevatorSimConstants.kMaxElevatorHeight = 100;
+            ElevatorSimConstants.kMinElevatorHeight = -110;
             ElevatorSimConstants.kElevatorGearbox = DCMotor.getNEO(1);
 
             mElevatorSim = new ElevatorSimWrapper(ElevatorSimConstants.createSim(),
@@ -64,25 +59,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public void periodic() {
         // This method will be called once per scheduler run
         
-        SmartDashboard.putNumber("TiltPos", getAngle());
-
-
-        // display PID coefficients on SmartDashboard
-        // SmartDashboard.putNumber("P Gain", kP);
-        // SmartDashboard.putNumber("I Gain", kI);
-        // SmartDashboard.putNumber("D Gain", kD);
-        // SmartDashboard.putNumber("I Zone", kIz);
-        // SmartDashboard.putNumber("Feed Forward", kFF);
-        // SmartDashboard.putNumber("Max Output", kMaxOutput);
-        // SmartDashboard.putNumber("Min Output", kMinOutput);
-
-        // // display Smart Motion coefficients
-        // SmartDashboard.putNumber("Max Velocity", maxVel);
-        // SmartDashboard.putNumber("Min Velocity", minVel);
-        // SmartDashboard.putNumber("Max Acceleration", maxAcc);
-        // SmartDashboard.putNumber("Allowed Closed Loop Error", allowedErr);
-        // SmartDashboard.putNumber("Set Position", 0);
-        // SmartDashboard.putNumber("Set Velocity", 0);
 
     }
 
@@ -94,51 +70,52 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void moveManually(double speed) {
         m_motor.set(speed);
-        
+
     }
 
     @Override
-    public void goToPosition(double degrees) {
-        double motorRevs = degrees * HoodedShooterConstants.TILT_DEG_PER_ENCODER_REV;
-
-        mPidController.setReference(motorRevs, ControlType.kPosition, POSITION_SLOT, GRAVITY_COMPENSATION_VOLTS,
+    public void goToPosition(double angle) {
+        SmartDashboard.putNumber("MMAP", angle);
+        SmartDashboard.putNumber("MMPP", mPidController.getP(POSITION_SLOT));
+        mPidController.setReference(angle, ControlType.kPosition, POSITION_SLOT, GRAVITY_COMPENSATION_VOLTS,
                 CANPIDController.ArbFFUnits.kVoltage);
     }
 
     @Override
-    public void goToPositionMotionMagic(double inches) {
-        double meters = Units.inchesToMeters(inches);
-
-        mPidController.setReference(meters, ControlType.kSmartMotion, SMART_MOTION_SLOT);
+    public void goToPositionMotionMagic(double angle) {
+        SmartDashboard.putNumber("MMTURA", angle);
+        SmartDashboard.putNumber("MMTURP", mPidController.getP(SMART_MOTION_SLOT));
+        mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
     }
 
     public void resetAngle(double angle) {
+        SmartDashboard.putNumber("RPOS", angle);
         mEncoder.setPosition(angle);
     }
 
-    public double getOut(){
+    public double getOut() {
         return m_motor.get();
     }
 
-    public double getSpeed(){
+    public double getSpeed() {
         return mEncoder.getVelocity();
     }
 
-    public boolean onPlusSoftwareLimit(){
+    public boolean onPlusSoftwareLimit() {
         return m_motor.isSoftLimitEnabled(SoftLimitDirection.kForward);
-     }
-  
-     public boolean onMinusSoftwareLimit(){
+    }
+
+    public boolean onMinusSoftwareLimit() {
         return m_motor.isSoftLimitEnabled(SoftLimitDirection.kReverse);
-     }
+    }
 
     @Override
-    public boolean isAtHeight(double inches, double allowableError) {
-        return Math.abs(inches - getHeightInches()) < allowableError;
+    public boolean isAtHeight(double angle, double allowableError) {
+        return Math.abs(angle - getAngle()) < allowableError;
     }
 
     public double getAngle() {
-        return Units.metersToInches(mEncoder.getPosition());
+        return mEncoder.getPosition();
     }
 
     @Override
@@ -163,11 +140,12 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         maxRPM = 5700;
 
         // Smart Motion Coefficients
-        maxVel = 2000; // rpm
-        maxAcc = 1500;
+        maxVel = 3000; // rpm
+        maxAcc = 2500;
 
         // set PID coefficients
         mPidController.setP(kP);
+        mPidController.setP(kP,SMART_MOTION_SLOT);
         mPidController.setI(kI);
         mPidController.setD(kD);
         mPidController.setIZone(kIz);

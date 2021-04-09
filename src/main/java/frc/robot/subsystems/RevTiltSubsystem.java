@@ -14,18 +14,16 @@ import org.snobotv2.sim_wrappers.ISimWrapper;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
-import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem {
     private static final double GRAVITY_COMPENSATION_VOLTS = 0.;
-    private static final double TICKS_PER_DEGREE = 4096;
+    private static final double TICKS_PER_DEGREE = 3448;
     private static final int POSITION_SLOT = 0;
     private static final int SMART_MOTION_SLOT = 1;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
@@ -44,17 +42,17 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         mEncoder = m_motor.getEncoder();
         mPidController = m_motor.getPIDController();
 
-        mEncoder.setPositionConversionFactor(1 / HoodedShooterConstants.TILT_DEG_PER_ENCODER_REV);
-
+        mEncoder.setPositionConversionFactor(TICKS_PER_DEGREE); // HoodedShooterConstants.TILT_DEG_PER_ENCODER_REV);
+        mEncoder.setPosition(0);
         mPidController.setP(0.16);
         m_motor.restoreFactoryDefaults();
 
         gainSettings();
 
         if (RobotBase.isSimulation()) {
-            ElevatorSimConstants.kCarriageMass = 0;
+            ElevatorSimConstants.kCarriageMass = 10;
             ElevatorSimConstants.kElevatorGearing = 18;
-            ElevatorSimConstants.kMaxElevatorHeight = 10;
+             ElevatorSimConstants.kMaxElevatorHeight = 10;
             ElevatorSimConstants.kMinElevatorHeight = -1;
             ElevatorSimConstants.kElevatorGearbox = DCMotor.getNEO(1);
 
@@ -66,26 +64,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-
-        SmartDashboard.putNumber("TiltPos", getAngle();
-    
-
-        // display PID coefficients on SmartDashboard
-        // SmartDashboard.getNumber("P Gain", kP);
-        // SmartDashboard.getNumber("I Gain", kI);
-        // SmartDashboard.getNumber("D Gain", kD);
-        // SmartDashboard.getNumber("I Zone", kIz);
-        // SmartDashboard.getNumber("Feed Forward", kFF);
-        // SmartDashboard.getNumber("Max Output", kMaxOutput);
-        // SmartDashboard.getNumber("Min Output", kMinOutput);
-
-        // // display Smart Motion coefficients
-        // SmartDashboard.putNumber("Max Velocity", maxVel);
-        // SmartDashboard.putNumber("Min Velocity", minVel);
-        // SmartDashboard.putNumber("Max Acceleration", maxAcc);
-        // SmartDashboard.putNumber("Allowed Closed Loop Error", allowedErr);
-        // SmartDashboard.putNumber("Set Position", 0);
-        // SmartDashboard.putNumber("Set Velocity", 0);
+     
 
     }
 
@@ -102,17 +81,15 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     @Override
     public void goToPosition(double degrees) {
-        double motorRevs = degrees * HoodedShooterConstants.TILT_DEG_PER_ENCODER_REV;
-
-        mPidController.setReference(motorRevs, ControlType.kPosition, POSITION_SLOT, GRAVITY_COMPENSATION_VOLTS,
+        mPidController.setReference(degrees,ControlType.kPosition, POSITION_SLOT, GRAVITY_COMPENSATION_VOLTS,
                 CANPIDController.ArbFFUnits.kVoltage);
     }
 
     @Override
-    public void goToPositionMotionMagic(double inches) {
-        double meters = Units.inchesToMeters(inches);
-
-        mPidController.setReference(meters, ControlType.kSmartMotion, SMART_MOTION_SLOT);
+    public void goToPositionMotionMagic(double degrees) {
+        SmartDashboard.putNumber("MMTILA", degrees);
+        SmartDashboard.putNumber("MMTILP", mPidController.getP(SMART_MOTION_SLOT));
+        mPidController.setReference(degrees, ControlType.kSmartMotion, SMART_MOTION_SLOT);
     }
 
     public void resetAngle(double position) {
@@ -130,7 +107,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     public double getAngle() {
-        return Units.metersToInches(mEncoder.getPosition());
+        return mEncoder.getPosition();
     }
 
     public double getOut() {
@@ -152,6 +129,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     @Override
     public void simulationPeriodic() {
         mElevatorSim.update();
+        m_motor.updateSim();
     }
 
     @Override
@@ -176,6 +154,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         // set PID coefficients
         mPidController.setP(kP);
+        mPidController.setP(kP,SMART_MOTION_SLOT);
         mPidController.setI(kI);
         mPidController.setD(kD);
         mPidController.setIZone(kIz);

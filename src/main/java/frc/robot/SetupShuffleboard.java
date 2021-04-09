@@ -5,12 +5,14 @@
 package frc.robot;
 
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -61,18 +63,17 @@ public class SetupShuffleboard {
         private final RearIntakeSubsystem m_intake;
         private final FondyFireTrajectory m_traj;
         private final ClimberSubsystem m_climber;
-        private boolean m_showTurret = false;
-        private boolean m_showTilt = false;
-        private boolean m_showShooter = true;
-        private boolean m_showRobot = false;
-        private boolean m_showClimber = true;
+        private boolean m_showTurret = true;
+        private boolean m_showTilt = true;
+        private boolean m_showShooter = false;
+        private boolean m_showRobot = true;
+        private boolean m_showClimber = false;
         private boolean m_showControlPanel = false;
         private boolean m_showTransport = false;
         private boolean m_showIntake = false;
         private boolean m_showVision = false;
         private boolean m_showTrajectory = false;
         private XboxController m_setupController = new XboxController(2);
-        
 
         public SetupShuffleboard(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevDrivetrain drive,
                         RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor,
@@ -97,23 +98,23 @@ public class SetupShuffleboard {
                  */
                 if (m_showTurret) {
                         ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurretTilt")
-                                        .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
+                                        .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 5)
                                         .withProperties(Map.of("Label position", "LEFT")); // hide labels for
                                                                                            // commands
 
                         turretCommands.add("Reset to 0", new ResetTurretAngle(m_turret));
-                        turretCommands.add("To 10", new PositionTurret(m_turret, 10));
-                        turretCommands.add("To -10", new PositionTurret(m_turret, -10));// degrees
+                        turretCommands.add("To 75", new PositionTurret(m_turret, 75));
+                        turretCommands.add("To -60", new PositionTurret(m_turret, -60));// degrees
                         turretCommands.add("To +0", new PositionTurret(m_turret, 0));// degrees
                         turretCommands.add("50 to Vision", new PositionTurretToVision(m_turret, 50, m_limelight));
                         turretCommands.add("-50 to Vision", new PositionTurretToVision(m_turret, -50, m_limelight));
 
                         ShuffleboardLayout turretValues = Shuffleboard.getTab("SetupTurretTilt")
                                         .getLayout("TurretValues", BuiltInLayouts.kList).withPosition(2, 0)
-                                        .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // hide labels
+                                        .withSize(2, 5).withProperties(Map.of("Label position", "LEFT")); // hide labels
                                                                                                           // for
 
-                        turretValues.addNumber("Angle", () -> m_turret.getAngle());
+                        turretValues.addNumber("TUAngle", () -> m_turret.getAngle());
                         turretValues.addNumber("Amps", () -> m_turret.getOut());
                         turretValues.addNumber("Speed", () -> m_turret.getSpeed());
                         turretValues.addBoolean("PlusLimit", () -> m_turret.onPlusSoftwareLimit());
@@ -127,7 +128,7 @@ public class SetupShuffleboard {
                  */
                 if (m_showTilt) {
                         ShuffleboardLayout tiltCommands = Shuffleboard.getTab("SetupTurretTilt")
-                                        .getLayout("Tilt", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 4)
+                                        .getLayout("Tilt", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 5)
                                         .withProperties(Map.of("Label position", "LEFT")); // hide
                                                                                            // labels
                                                                                            // for
@@ -140,12 +141,13 @@ public class SetupShuffleboard {
                         tiltCommands.add("5 to Vision", new PositionTiltToVision(m_tilt, 5, m_limelight));
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTurretTilt")
-                                        .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)
+                                        .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 5)
                                         .withProperties(Map.of("Label position", "LEFT")); // hide labels for
 
-                        tiltValues.addNumber("Angle", () -> m_tilt.getAngle());
+                        tiltValues.addNumber("TIAngle", () -> m_tilt.getAngle());
                         tiltValues.addNumber("Amps", () -> m_tilt.getOut());
                         tiltValues.addNumber("Speed", () -> m_tilt.getSpeed());
+
                         tiltValues.addBoolean("PlusLimit", () -> m_tilt.onPlusSoftwareLimit());
                         tiltValues.addBoolean("MinusLimit", () -> m_tilt.onMinusSoftwareLimit());
                         tiltValues.add("Cmd", m_tilt);

@@ -170,6 +170,7 @@ public final class Constants {
        */
 
       public static final double TILT_DEG_PER_ENCODER_REV = .00029;// 100:1 gear box added
+      public static final double TILT_DEGREE_PER_ENCODER_REV = 3450;
       public static final double TILT_MIN_TURNS = 0;
       public static final double TILT_MAX_TURNS = 10;
 
@@ -182,9 +183,10 @@ public final class Constants {
       /**
        * 100 revs of turret motor turns an 18 tooth pinion one time There are 222
        * teeth in 360 degrees, so 1 tooth = 360/220 = 1.64 degrees So 18 teeth (100
-       * revs) = 18 * 1.64 = 29.5 degrees and one motor rev is .295 degrees
+       * revs) = 18 * 1.64 = 29.5 degrees and one motor rev is .295 degrees so 1/.295
+       * revs per degree or 3.39
        */
-      public static final double TURRET_ENCODER_DEG_PER_REV = .295;
+      public static final double TURRET_ENCODER_REV_PER_DEG = 3.39;
 
       public static final double TARGET_HEIGHT = Units.inchesToMeters(94);
       public static final double BASE_CAMERA_HEIGHT = Units.inchesToMeters(26);

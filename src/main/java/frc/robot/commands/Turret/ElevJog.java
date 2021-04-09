@@ -4,46 +4,40 @@
 
 package frc.robot.commands.Turret;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.RevElevatorSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 
-public class PositionTurret extends CommandBase {
-  /** Creates a new PositionTilt. */
+public class ElevJog extends CommandBase {
+  /** Creates a new TurretJog. */
+  private final RevElevatorSubsystem m_elev;
+  private double m_speed;
 
-  private final RevTurretSubsystem m_turret;
-
-  private double m_position;
-
-
-
-  public PositionTurret(RevTurretSubsystem turret, double position) {
+  public ElevJog(RevElevatorSubsystem elev, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_turret = turret;
-    m_position = position;
-  
-    addRequirements(m_turret);
+    m_elev = elev;
+    m_speed = speed;
+    addRequirements(m_elev);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    SmartDashboard.putNumber("SMPOS", m_position);
-    m_turret.visionCorrection = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_turret.goToPositionMotionMagic(m_position);
+    m_elev.moveManually(m_speed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_elev.moveManually(0);
   }
 
-  // Returns true when the command should end.
+  // Returns true when the command sh.joould end.
   @Override
   public boolean isFinished() {
     return false;
