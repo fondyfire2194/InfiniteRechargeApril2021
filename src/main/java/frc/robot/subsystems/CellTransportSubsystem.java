@@ -69,16 +69,20 @@ public class CellTransportSubsystem extends SubsystemBase {
     m_leftBeltMotor.set(ControlMode.PercentOutput, speed);
   }
 
+  public double getLeftBelt() {
+    return m_leftBeltMotor.getMotorOutputPercent();
+  }
+
   public void runRightBeltMotor(double speed) {
     m_rightBeltMotor.set(ControlMode.PercentOutput, speed);
   }
 
+  public double getRightBelt() {
+    return m_rightBeltMotor.getMotorOutputPercent();
+  }
+
   public double getLeftBeltMotorAmps() {
-    if (Robot.isReal()) {
-      return m_leftBeltMotor.getStatorCurrent();
-    } else {
-      return 0;
-    }
+    return m_leftBeltMotor.getStatorCurrent();
   }
 
   public double getRightBeltMotorAmps() {
@@ -122,6 +126,10 @@ public class CellTransportSubsystem extends SubsystemBase {
     m_frontRollerMotor.set(ControlMode.PercentOutput, -speed);
   }
 
+  public double getFrontRoller() {
+    return m_frontRollerMotor.getMotorOutputPercent();
+  }
+
   public void setFrontRollerBrakeOn(boolean on) {
     if (on) {
       m_frontRollerMotor.setNeutralMode(NeutralMode.Brake);
@@ -134,6 +142,10 @@ public class CellTransportSubsystem extends SubsystemBase {
     m_rearRollerMotor.set(ControlMode.PercentOutput, -speed);
   }
 
+  public double getRearRoller() {
+    return m_rearRollerMotor.getMotorOutputPercent();
+  }
+
   public void setRearRollerBrakeOn(boolean on) {
     if (on) {
       m_rearRollerMotor.setNeutralMode(NeutralMode.Brake);
@@ -143,29 +155,23 @@ public class CellTransportSubsystem extends SubsystemBase {
   }
 
   public double getFrontRollerMotorAmps() {
-    if (Robot.isReal()) {
-      return m_rearRollerMotor.getStatorCurrent();
-    } else {
-      return 0;
-    }
+    return m_rearRollerMotor.getStatorCurrent();
   }
 
   public double getRearRollerMotorAmps() {
-    if (Robot.isReal()) {
-      return m_frontRollerMotor.getStatorCurrent();
-    } else {
-      return 0;
-    }
+    return m_frontRollerMotor.getStatorCurrent();
   }
+
   public void simulationInit() {
 
     PhysicsSim.getInstance().addTalonSRX(m_frontRollerMotor, 1.5, 7200, true);
     PhysicsSim.getInstance().addTalonSRX(m_leftBeltMotor, 1.5, 7200, true);
     PhysicsSim.getInstance().addTalonSRX(m_rightBeltMotor, 1.5, 7200, true);
-        PhysicsSim.getInstance().addTalonSRX(m_rearRollerMotor, 1.5, 7200, true);
+    PhysicsSim.getInstance().addTalonSRX(m_rearRollerMotor, 1.5, 7200, true);
 
-	}
-	public void simulationPeriodic() {
-		PhysicsSim.getInstance().run();
-	}
+  }
+
+  public void simulationPeriodic() {
+    PhysicsSim.getInstance().run();
+  }
 }

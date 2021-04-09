@@ -78,10 +78,11 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
    private String[] seenColor = { "grey", "blue", "green", "red", "yellow" };
 
-   private boolean lookForColor;
+   private boolean lookForColor = true;
 
    private WPI_TalonSRX m_controlPanelMotor = new TalonSRXWrapper(CANConstants.CP_TURN_MOTOR);
    private final DoubleSolenoid m_colorWheelArm = new DoubleSolenoid(0, 1);
+   private int simColorCount;
 
    public ControlPanelSubsystem() {
 
@@ -145,6 +146,15 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
    public void simulationPeriodic() {
       PhysicsSim.getInstance().run();
+      if (lookForColor) {
+         simColorCount++;
+         if (simColorCount > 100) {
+            colorNumber++;
+            simColorCount = 0;
+         }
+         if (colorNumber > 4)
+            colorNumber = 0;
+      }
    }
 
    @Override
@@ -152,42 +162,38 @@ public class ControlPanelSubsystem extends SubsystemBase {
       loopCount++;
       if (loopCount > 5 && lookForColor) {
          // This method will be called once per scheduler run
-         detectedColor = m_colorSensor.getColor();
+         if (!Robot.isSimulation()) {
+            detectedColor = m_colorSensor.getColor();
 
-         ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+            ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
-         if (match.color == kBlueTarget) {
-            colorNumber = 1;
-         } else if (match.color == kGreenTarget) {
-            colorNumber = 2;
-         } else if (match.color == kRedTarget) {
-            colorNumber = 3;
-         } else if (match.color == kYellowTarget) {
-            colorNumber = 4;
-         } else if (match.color == kBlueTarget) {
-            colorNumber = 4;
-         } else {
-            colorNumber = 4;
+            if (match.color == kBlueTarget) {
+               colorNumber = 1;
+            } else if (match.color == kGreenTarget) {
+               colorNumber = 2;
+            } else if (match.color == kRedTarget) {
+               colorNumber = 3;
+            } else if (match.color == kYellowTarget) {
+               colorNumber = 4;
+            } else if (match.color == kBlueTarget) {
+               colorNumber = 4;
+            } else {
+               colorNumber = 4;
 
+            }
+
+            colorWidget.withProperties(Map.of("colorWhenTrue", seenColor[colorNumber]));
+            filteredColorWidget.withProperties(Map.of("colorWhenTrue", seenColor[colorNumberFiltered]));
+            gameColorWidget.withProperties(Map.of("colorWhenTrue", seenColor[gameColorNumber]));
+            int ourTargetColor = gameColorNumber + 2;
+            if (ourTargetColor > 4)
+               ourTargetColor -= 4;
+            gameTargetColorWidget.withProperties(Map.of("colorWhenTrue", seenColor[ourTargetColor]));
          }
-
-         colorWidget.withProperties(Map.of("colorWhenTrue", seenColor[colorNumber]));
-         filteredColorWidget.withProperties(Map.of("colorWhenTrue", seenColor[colorNumberFiltered]));
-         gameColorWidget.withProperties(Map.of("colorWhenTrue", seenColor[gameColorNumber]));
-         int ourTargetColor = gameColorNumber + 2;
-         if (ourTargetColor > 4)
-            ourTargetColor -= 4;
-         gameTargetColorWidget.withProperties(Map.of("colorWhenTrue", seenColor[ourTargetColor]));
-
          filterColors();
-
-         /**
-          * 
-          * The sensor returns a raw IR value of the infrared light detected.
-          * 
-          */
-
       }
+      SmartDashboard.putNumber("ColorNumber", colorNumber);
+      SmartDashboard.putBoolean("LFC", lookForColor);
 
    }
 

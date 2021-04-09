@@ -67,7 +67,7 @@ public class ShootCells extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    transport.runLeftBeltMotor(0.);
+//    transport.runLeftBeltMotor(0.);
     transport.runFrontRollerMotor(0.);
     transport.runRearRollerMotor(0.);
     shooter.spinAtRpm(0);

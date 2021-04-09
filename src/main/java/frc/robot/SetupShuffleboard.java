@@ -15,11 +15,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import frc.robot.commands.CellIntake.TurnIntakeMotor;
+import frc.robot.commands.CellIntake.StartIntake;
+import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.Climber.TurnClimberMotor;
-import frc.robot.commands.ControlPanel.TurnCPWheel;
+import frc.robot.commands.ControlPanel.ControlPanelArm;
+import frc.robot.commands.ControlPanel.SetLookForColor;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
@@ -63,12 +64,12 @@ public class SetupShuffleboard {
         private final ClimberSubsystem m_climber;
         private boolean m_showTurret = true;
         private boolean m_showTilt = true;
-        private boolean m_showShooter = false;
+        private boolean m_showShooter = true;
         private boolean m_showRobot = true;
-        private boolean m_showClimber = false;
-        private boolean m_showControlPanel = false;
-        private boolean m_showTransport = false;
-        private boolean m_showIntake = false;
+        private boolean m_showClimber = true;
+        private boolean m_showControlPanel = true;
+        private boolean m_showTransport = true;
+        private boolean m_showIntake = true;
         private boolean m_showVision = false;
         private boolean m_showTrajectory = false;
         private XboxController m_setupController = new XboxController(2);
@@ -169,52 +170,26 @@ public class SetupShuffleboard {
                         shooterCommands.add("Shooter", new StartShooter(m_shooter, 1000));
                         shooterCommands.add("Stop", new StopShooter(m_shooter));
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
-                        shooterCommands.add("Inc 250 ", new IncreaseShooterSpeed(m_shooter));
-                        shooterCommands.add("Dec 250 ", new DecreaseShooterSpeed(m_shooter));
+                        shooterCommands.add("Inc 10% ", new IncreaseShooterSpeed(m_shooter));
+                        shooterCommands.add("Dec 10% ", new DecreaseShooterSpeed(m_shooter));
                         shooterCommands.add("Shoot", new ShootCells(m_shooter, m_transport, m_compressor, 3000, 0));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
                                         .getLayout("ShooterValues", BuiltInLayouts.kList).withPosition(2, 0)
-                                        .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // hide labels
+                                        .withSize(2, 5).withProperties(Map.of("Label position", "LEFT")); // hide labels
                                                                                                           // for
 
                         shooterValues.addNumber("LeftRPM", () -> m_shooter.getRPM());
                         shooterValues.addNumber("LeftAmps", () -> m_shooter.getLeftAmps());
                         shooterValues.addNumber("RightAmps", () -> m_shooter.getRightAmps());
                         shooterValues.addNumber("SpeedCommand", () -> m_shooter.requiredSpeed);
-                        shooterValues.add("Cmd", m_shooter);
+                        shooterValues.addBoolean("AtSpeed", () -> m_shooter.atSpeed());
                 }
 
                 if (m_showTransport) {
-                        ShuffleboardLayout transportCommands = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("Transport", BuiltInLayouts.kList).withPosition(5, 0).withSize(2, 4)
-                                        .withProperties(Map.of("Label position", "LEFT")); // hide labels for
-                                                                                           // commands
-                        transportCommands.add("FrontRoller+",
-                                        new StartEndCommand(() -> m_transport.runFrontRollerMotor(.25),
-                                                        () -> m_transport.runFrontRollerMotor(0)));
-                        transportCommands.add("FrontRoller-",
-                                        new StartEndCommand(() -> m_transport.runFrontRollerMotor(-.25),
-                                                        () -> m_transport.runFrontRollerMotor(0)));
-
-                        transportCommands.add("RearRoller+", new RunCommand(() -> m_transport.runRearRollerMotor(.25))
-                                        .andThen(() -> m_transport.runFrontRollerMotor(0)));
-                        transportCommands.add("RearRoller-", new RunCommand(() -> m_transport.runRearRollerMotor(-.25))
-                                        .andThen(() -> m_transport.runFrontRollerMotor(0)));
-
-                        transportCommands.add("LeftBelt+", new RunCommand(() -> m_transport.runLeftBeltMotor(.25))
-                                        .andThen(() -> m_transport.runLeftBeltMotor(0)));
-                        transportCommands.add("Lefttelt-", new RunCommand(() -> m_transport.runLeftBeltMotor(-.25))
-                                        .andThen(() -> m_transport.runLeftBeltMotor(0)));
-
-                        transportCommands.add("RightBelt+", new RunCommand(() -> m_transport.runRightBeltMotor(.25))
-                                        .andThen(() -> m_transport.runRightBeltMotor(0)));
-
-                        transportCommands.add("RightBelt-", new RunCommand(() -> m_transport.runRightBeltMotor(-.25))
-                                        .andThen(() -> m_transport.runRightBeltMotor(0)));
 
                         ShuffleboardLayout transportValues = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("TransportValues", BuiltInLayouts.kList).withPosition(7, 0)
+                                        .getLayout("TransportValues", BuiltInLayouts.kList).withPosition(6, 0)
                                         .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // hide labels
                                                                                                           // for
 
@@ -222,6 +197,11 @@ public class SetupShuffleboard {
                         transportValues.addNumber("RightBeltAmps", () -> m_transport.getRightBeltMotorAmps());
                         transportValues.addNumber("FrontRollerAmps", () -> m_transport.getFrontRollerMotorAmps());
                         transportValues.addNumber("RearRollerAmps", () -> m_transport.getRearRollerMotorAmps());
+                        transportValues.addNumber("LeftBeltOut", () -> m_transport.getLeftBelt());
+                        transportValues.addNumber("RighBeltOut", () -> m_transport.getRightBelt());
+                        transportValues.addNumber("FrontRollerOut", () -> m_transport.getFrontRoller());
+                        transportValues.addNumber("RearRollerOut", () -> m_transport.getRearRoller());
+
                         transportValues.add("Cmd", m_transport);
                 }
                 /**
@@ -364,12 +344,10 @@ public class SetupShuffleboard {
                                         .withSize(1, 3).withProperties(Map.of("Label position", "TOP")); // hide
                                                                                                          // labels
 
-                        controlPanelCommands.add("WheelCCW", new TurnCPWheel(m_controlPanel, -.25));
+                        controlPanelCommands.add("ArmRaise", new ControlPanelArm(m_controlPanel, true));
 
-                        controlPanelCommands.add("ArmRaise",
-                                        new RunCommand(() -> m_controlPanel.raiseArm(), m_controlPanel));
-                        controlPanelCommands.add("ArmLower", new RunCommand(() -> m_controlPanel.lowerArm()));
-
+                        controlPanelCommands.add("ArmLower", new ControlPanelArm(m_controlPanel, false));
+                        controlPanelCommands.add("LookForColor", new SetLookForColor(m_controlPanel, true));
                         ShuffleboardLayout cpValues = Shuffleboard.getTab("SetupClimber_CP")
                                         .getLayout("CPValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "TOP")); // hide
@@ -383,6 +361,7 @@ public class SetupShuffleboard {
                         cpValues.addNumber("ColorNumber", () -> m_controlPanel.colorNumber);
 
                         cpValues.add(m_controlPanel);
+
                 }
 
                 /**
@@ -397,14 +376,6 @@ public class SetupShuffleboard {
                                         .getLayout("Climber", BuiltInLayouts.kList).withPosition(0, 0).withSize(1, 3)
                                         .withProperties(Map.of("Label position", "TOP"));
 
-                        NetworkTableEntry runMotor = Shuffleboard.getTab("SetupClimber_CP")
-                                        .add("Run Climber Motor", false).withPosition(5, 5).withWidget("Toggle Button")
-                                        .getEntry();
-
-                        if (runMotor.getBoolean(false))
-                                new TurnClimberMotor(m_climber, .25);
-                        climberCommands.add("ClimberLower", new StartEndCommand(() -> m_climber.turnClimberMotor(-.25),
-                                        () -> m_climber.turnClimberMotor(0)));
 
                         climberCommands.add("ArmRaise", new InstantCommand(() -> m_climber.raiseArm()));
                         climberCommands.add("ArmLower", new InstantCommand(() -> m_climber.lowerArm()));
@@ -431,11 +402,8 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "TOP")); // hide
                                                                                           // labels
 
-                        intakeCommands.add("Pull In", new TurnIntakeMotor(m_intake, .25));
-                        intakeCommands.add("Push In", new TurnIntakeMotor(m_intake, -.25));
-
-                        intakeCommands.add("ArmRaise", new RunCommand(() -> m_controlPanel.raiseArm()));
-                        intakeCommands.add("ArmLower", new RunCommand(() -> m_controlPanel.lowerArm()));
+                        intakeCommands.add("StartIntake", new StartIntake(m_intake));
+                        intakeCommands.add("StopIntake", new StopIntake(m_intake));
 
                         ShuffleboardLayout intakeValues = Shuffleboard.getTab("RearIntake")
                                         .getLayout("CPValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)
@@ -443,7 +411,7 @@ public class SetupShuffleboard {
                                                                                           // labels
 
                         intakeValues.addNumber("Motor Amps", () -> m_intake.getMotorAmps());
-                        intakeValues.addNumber("Motor CMD", () -> m_controlPanel.getMotorSet());
+                        intakeValues.addNumber("Motor CMD", () -> m_intake.getMotor());
                         intakeValues.add("ITK", m_intake);
 
                 }

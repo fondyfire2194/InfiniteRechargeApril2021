@@ -23,9 +23,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private final CANEncoder mEncoder;
     private final CANPIDController mPidController;
     private ISimWrapper mSimulator;
-	public double requiredSpeedLast;
-	public double requiredSpeed;
-	public double shootTime;
+    public double requiredSpeedLast;
+    public double requiredSpeed;
+    public double shootTime;
     public static DCMotor kGearbox = DCMotor.getNeo550(2);
     public static double kGearing = 1;
     public static double kInertia = 0.008;
@@ -39,7 +39,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mEncoder = mLeftMotor.getEncoder(EncoderType.kQuadrature, 8192);
         mPidController = mLeftMotor.getPIDController();
 
-        mPidController.setP(0.0005);
+        mPidController.setP(0.001);
         mPidController.setFF(1.0 / 4700);
 
         if (RobotBase.isSimulation()) {
@@ -56,6 +56,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     @Override
     public void spinAtRpm(double rpm) {
+        requiredSpeed = rpm;
         mPidController.setReference(rpm, ControlType.kVelocity);
     }
 
@@ -64,14 +65,18 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         return mEncoder.getVelocity();
     }
 
-    public double getLeftAmps(){
+    public boolean atSpeed() {
+        return Math.abs(requiredSpeed - getRPM()) < 50;
+
+    }
+
+    public double getLeftAmps() {
         return mLeftMotor.getOutputCurrent();
     }
 
-    public double getRightAmps(){
+    public double getRightAmps() {
         return mRightMotor.getOutputCurrent();
     }
-
 
     @Override
     public void simulationPeriodic() {

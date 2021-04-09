@@ -74,7 +74,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void moveManually(double speed) {
         m_motor.set(speed);
-
     }
 
     @Override
@@ -87,13 +86,10 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     @Override
     public void goToPositionMotionMagic(double angle) {
-        SmartDashboard.putNumber("MMTURA", angle);
-        SmartDashboard.putNumber("MMTURP", mPidController.getP(SMART_MOTION_SLOT));
         mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
     }
 
     public void resetAngle(double angle) {
-        SmartDashboard.putNumber("RPOS", angle);
         mEncoder.setPosition(angle);
     }
 

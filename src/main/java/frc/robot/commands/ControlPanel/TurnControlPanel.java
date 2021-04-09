@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ControlPanelSubsystem;
 
-public class RotateControlPanel extends CommandBase {
+public class TurnControlPanel extends CommandBase {
   /**
    * Creates a new RotateControlPanel.
    * 
@@ -25,7 +25,7 @@ public class RotateControlPanel extends CommandBase {
   private int colorsToPass = 9;
   private boolean redSeen;
 
-  public RotateControlPanel(ControlPanelSubsystem cp) {
+  public TurnControlPanel(ControlPanelSubsystem cp) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(cp);
     this.cp = cp;

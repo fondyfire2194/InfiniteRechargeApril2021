@@ -7,17 +7,14 @@
 
 package frc.robot.subsystems;
 
-import java.util.List;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.Constants.CANConstants;
+import frc.robot.Robot;
 import frc.robot.sim.PhysicsSim;
 import frc.robot.simulation.TalonSRXWrapper;
 
@@ -27,8 +24,6 @@ public class RearIntakeSubsystem extends SubsystemBase {
    */
   private final WPI_TalonSRX m_intakeMotor = new TalonSRXWrapper(CANConstants.REAR_MOTOR);
   private final DoubleSolenoid m_intakeArm = new DoubleSolenoid(2, 3);
-
-  public List<BaseTalon> intakeTalons;
 
   public RearIntakeSubsystem() {
 
@@ -48,17 +43,19 @@ public class RearIntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
   }
 
   public void runIntakeMotor(double speed) {
     m_intakeMotor.set(ControlMode.PercentOutput, speed);
   }
 
+  public double getMotor() {
+    return m_intakeMotor.get();
+  }
+
   public double getMotorAmps() {
-    if (Robot.isReal()) {
-      return m_intakeMotor.getStatorCurrent();
-    } else
-      return 0;
+    return m_intakeMotor.getStatorCurrent();
   }
 
   public void setBrakeOn(boolean on) {
@@ -75,5 +72,9 @@ public class RearIntakeSubsystem extends SubsystemBase {
 
   public void lowerIntakeArm() {
     m_intakeArm.set(DoubleSolenoid.Value.kForward);
+  }
+
+  public DoubleSolenoid.Value getArmValue() {
+    return m_intakeArm.get();
   }
 }
