@@ -15,13 +15,11 @@ public class PositionTurret extends CommandBase {
 
   private double m_position;
 
-
-
   public PositionTurret(RevTurretSubsystem turret, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
     m_position = position;
-  
+
     addRequirements(m_turret);
   }
 
@@ -41,11 +39,13 @@ public class PositionTurret extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    if (!m_turret.atTargetAngle())
+      m_turret.targetAngle = m_turret.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_turret.atTargetAngle();
   }
 }

@@ -33,7 +33,8 @@ public class TurretJog extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_turret.moveManually(0);
+    m_turret.stop();
+    m_turret.targetAngle = m_turret.getAngle();
   }
 
   // Returns true when the command sh.joould end.

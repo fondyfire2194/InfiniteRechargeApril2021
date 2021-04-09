@@ -20,11 +20,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Tilt.JogTilt;
 import frc.robot.commands.Tilt.PositionHoldTilt;
-import frc.robot.commands.Tilt.PositionTilt;
-import frc.robot.commands.Turret.ElevJog;
 import frc.robot.commands.Turret.PositionHoldElev;
 import frc.robot.commands.Turret.PositionHoldTurret;
-import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -152,9 +149,9 @@ public class RobotContainer {
                         .whenReleased(() -> m_climber.turnClimberMotor(0))
                         .whenReleased(() -> m_controlPanel.turnWheelMotor(0));
 
-                        new JoystickButton(m_driverController, 2).whileHeld(new TurretJog(m_turret, .84).withName("TurretJog"));
+                      //  new JoystickButton(m_driverController, 2)
   
-                        new JoystickButton(m_driverController, 3).whileHeld(new JogTilt(m_tilt, .84).withName("TiltJog"));
+                      //  new JoystickButton(m_driverController, 3)
            
             new JoystickButton(m_driverController, 5)
 
@@ -173,29 +170,23 @@ public class RobotContainer {
             new JoystickButton(m_driverController,9 )
                         .whileHeld(() -> m_tilt.moveManually(.4), m_tilt).whenReleased(() -> m_tilt.stop(), m_tilt);
 
-            // new JoystickButton(m_driverController, 7)
+    
 
-            // .whenPressed(new PositionTilt(m_tilt, .1).withName("SM"));
 
-            // CommandScheduler.getInstance()
-            // .onCommandInitialize(command -> System.out.println(command.getName() + " is
-            // starting"));
-            // CommandScheduler.getInstance()
-            // .onCommandFinish(command -> System.out.println(command.getName() + " has
-            // ended"));
-            // CommandScheduler.getInstance()
-            // .onCommandInterrupt(command -> System.out.println(command.getName() + " was
-            // interrupted"));
-            // CommandScheduler.getInstance().onCommandInitialize(
-            // command -> SmartDashboard.putString("CS", command.getName() + " is
-            // starting"));
-            // CommandScheduler.getInstance()
-            // .onCommandFinish(command -> SmartDashboard.putString("CE", command.getName()
-            // + " has Ended"));
-            // CommandScheduler.getInstance().onCommandInterrupt(
-            // command -> SmartDashboard.putString("CE", command.getName() + "was
-            // Interrupted"));
+            //Setup gamepad XBox 3
 
+            JoystickButton setupA = new JoystickButton(setupGamepad, 1);
+            JoystickButton setupB = new JoystickButton(setupGamepad, 2);
+            JoystickButton setupX = new JoystickButton(setupGamepad, 3);
+            JoystickButton setupY = new JoystickButton(setupGamepad, 4);
+
+
+            setupY.whileHeld(new JogTilt(m_tilt, .5));
+            setupA.whileHeld(new JogTilt(m_tilt,-.5));
+            
+            setupB.whileHeld(new TurretJog(m_turret, .5));
+            setupX.whileHeld(new TurretJog(m_turret,-.5));
+   
             // LiveWindow.disableAllTelemetry();
 
       }

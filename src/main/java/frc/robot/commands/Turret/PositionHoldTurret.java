@@ -19,20 +19,17 @@ public class PositionHoldTurret extends CommandBase {
 
   private int onTarget;
 
-  
-
   public PositionHoldTurret(RevTurretSubsystem turret) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
- 
-  
+
     addRequirements(m_turret);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-       m_position = m_turret.getAngle();
+    m_position = m_turret.targetAngle;
     SmartDashboard.putNumber("SMPOS", m_position);
     m_turret.visionCorrection = 0;
   }

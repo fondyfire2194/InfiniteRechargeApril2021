@@ -4,7 +4,6 @@
 
 package frc.robot.commands.Tilt;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTiltSubsystem;
 
@@ -24,8 +23,7 @@ public class PositionHoldTilt extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_position = m_tilt.getAngle();
-    SmartDashboard.putNumber("SMTURPOS", m_position);
+    m_position = m_tilt.targetAngle;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

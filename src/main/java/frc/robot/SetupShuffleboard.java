@@ -5,14 +5,12 @@
 package frc.robot;
 
 import java.util.Map;
-import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -35,7 +33,7 @@ import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.StopShooter;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
-import frc.robot.commands.Tilt.ResetTilt;
+import frc.robot.commands.Tilt.ResetTiltAngle;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
@@ -115,10 +113,12 @@ public class SetupShuffleboard {
                                                                                                           // for
 
                         turretValues.addNumber("TUAngle", () -> m_turret.getAngle());
+                        turretValues.addNumber("TUTgt", () -> m_turret.targetAngle);
                         turretValues.addNumber("Amps", () -> m_turret.getOut());
                         turretValues.addNumber("Speed", () -> m_turret.getSpeed());
                         turretValues.addBoolean("PlusLimit", () -> m_turret.onPlusSoftwareLimit());
                         turretValues.addBoolean("MinusLimit", () -> m_turret.onMinusSoftwareLimit());
+                        turretValues.addBoolean("InPosition", () -> m_turret.atTargetAngle());
                         turretValues.add("Cmd", m_turret);
                 }
                 /**
@@ -133,7 +133,7 @@ public class SetupShuffleboard {
                                                                                            // labels
                                                                                            // for
                                                                                            // commands
-                        tiltCommands.add("Reset To 0", new ResetTilt(m_tilt));
+                        tiltCommands.add("Reset To 0", new ResetTiltAngle(m_tilt));
                         tiltCommands.add("To 5", new PositionTilt(m_tilt, 5));
                         tiltCommands.add("To 0", new PositionTilt(m_tilt, 0));
                         tiltCommands.add("To Home", new PositionTilt(m_tilt, -1.5));
@@ -145,11 +145,14 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT")); // hide labels for
 
                         tiltValues.addNumber("TIAngle", () -> m_tilt.getAngle());
+                        tiltValues.addNumber("TITgt", () -> m_tilt.targetAngle);
                         tiltValues.addNumber("Amps", () -> m_tilt.getOut());
                         tiltValues.addNumber("Speed", () -> m_tilt.getSpeed());
 
                         tiltValues.addBoolean("PlusLimit", () -> m_tilt.onPlusSoftwareLimit());
                         tiltValues.addBoolean("MinusLimit", () -> m_tilt.onMinusSoftwareLimit());
+                        tiltValues.addBoolean("InPosition", () -> m_tilt.atTargetAngle());
+
                         tiltValues.add("Cmd", m_tilt);
                 }
                 /**

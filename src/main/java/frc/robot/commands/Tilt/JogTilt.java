@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Tilt;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTiltSubsystem;
 
@@ -28,12 +29,14 @@ public class JogTilt extends CommandBase {
   @Override
   public void execute() {
     m_tilt.moveManually(m_speed);
+    SmartDashboard.putNumber("TLSP", m_speed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_tilt.stop();
+    m_tilt.targetAngle=m_tilt.getAngle();
   }
 
   // Returns true when the command should end.

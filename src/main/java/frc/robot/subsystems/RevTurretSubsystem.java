@@ -21,7 +21,7 @@ import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsystem {
     private static final double GRAVITY_COMPENSATION_VOLTS = .5;
-    private static final double ENC_REVS_PER_DEGREE = 4096;
+    private static final double ENC_REVS_PER_DEGREE = 3.39;
     private static final int POSITION_SLOT = 0;
     private static final int SMART_MOTION_SLOT = 1;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
@@ -31,17 +31,22 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private final CANPIDController mPidController;
     private ISimWrapper mElevatorSim;
     public double visionCorrection;
+    public double targetAngle;
+    private double inPositionBandwidth = 1;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
         mEncoder = m_motor.getEncoder();
         mPidController = m_motor.getPIDController();
 
-        mEncoder.setPositionConversionFactor(3.39);// 1 / HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
+        mEncoder.setPositionConversionFactor(ENC_REVS_PER_DEGREE);// 1 /
+                                                                  // HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
 
         mPidController.setP(.16);
 
         gainSettings();
+
+        targetAngle = getAngle();
 
         if (RobotBase.isSimulation()) {
             ElevatorSimConstants.kCarriageMass = 2;
@@ -58,7 +63,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        
 
     }
 
@@ -114,6 +118,10 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         return Math.abs(angle - getAngle()) < allowableError;
     }
 
+    public boolean atTargetAngle() {
+        return Math.abs(targetAngle - getAngle()) < inPositionBandwidth;
+    }
+
     public double getAngle() {
         return mEncoder.getPosition();
     }
@@ -130,22 +138,22 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     private void gainSettings() {
         // PID coefficients
-        kP = 5e-3;
-        kI = 1e-6;
+        kP = 5e-2;
+        kI = 1e-5;
         kD = 0;
-        kIz = 0;
+        kIz = 1;
         kFF = 0.000156;
         kMaxOutput = 1;
         kMinOutput = -1;
-        maxRPM = 5700;
-
+        maxRPM = 5700;// not used
+        allowedErr = 1;
         // Smart Motion Coefficients
-        maxVel = 3000; // rpm
+        maxVel = 5000; // rpm
         maxAcc = 2500;
 
         // set PID coefficients
         mPidController.setP(kP);
-        mPidController.setP(kP,SMART_MOTION_SLOT);
+        mPidController.setP(kP, SMART_MOTION_SLOT);
         mPidController.setI(kI);
         mPidController.setD(kD);
         mPidController.setIZone(kIz);
