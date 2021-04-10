@@ -26,8 +26,8 @@ public class PositionRobot extends CommandBase {
   @Override
   public void initialize() {
     m_startTime = Timer.getFPGATimestamp();
-    m_drive.leftTargetPosition=m_position;
-    m_drive.rightTargetPosition=m_position;
+    m_drive.leftTargetPosition = m_position;
+    m_drive.rightTargetPosition = m_position;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -39,16 +39,16 @@ public class PositionRobot extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    SmartDashboard.putBoolean("DID",true);
-    SmartDashboard.putNumber("LD",m_drive.getLeftDistance());
-    SmartDashboard.putNumber("RD",m_drive.getRightDistance());
+    SmartDashboard.putBoolean("DID", true);
+    SmartDashboard.putNumber("LD", m_drive.getLeftDistance());
+    SmartDashboard.putNumber("RD", m_drive.getRightDistance());
 
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Timer.getFPGATimestamp() > m_startTime + .25
-        && Math.abs((m_drive.getLeftDistance() + m_drive.getRightDistance()) / 2) - m_position < 1;
+    return Timer.getFPGATimestamp() > m_startTime + .25 && Math.abs(m_drive.getAverageDistance() - m_position) < 1
+        && m_drive.getLeftRate() == 0;
   }
 }

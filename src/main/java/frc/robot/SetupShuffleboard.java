@@ -235,6 +235,10 @@ public class SetupShuffleboard {
                         robotValues.addNumber("RightMeters", () -> m_robotDrive.getRightDistance());
                         robotValues.addNumber("LeftVelMPS", () -> m_robotDrive.getLeftRate());
                         robotValues.addNumber("RightVelMPS", () -> m_robotDrive.getRightRate());
+                        robotValues.addNumber("LeftOut", () -> m_robotDrive.getLeftOut());
+                        robotValues.addNumber("RightOut", () -> m_robotDrive.getRightOut());
+                        robotValues.addNumber("LeftAmps", () -> m_robotDrive.getLeftAmps());
+                        robotValues.addNumber("RightAmps", () -> m_robotDrive.getRightAmps());
                         robotValues.addNumber("Gyro Yaw", () -> m_robotDrive.getYaw());
                         robotValues.add("Cmd", m_robotDrive);
                 }

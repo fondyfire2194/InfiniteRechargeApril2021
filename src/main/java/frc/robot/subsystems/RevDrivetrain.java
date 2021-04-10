@@ -26,7 +26,6 @@ import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
 public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private static final DrivetrainConstants DRIVETRAIN_CONSTANTS = new NeoDrivetrainConstants();
-    
 
     private final SimableCANSparkMax mLeadLeft; // NOPMD
     private final SimableCANSparkMax mFollowerLeft; // NOPMD
@@ -49,7 +48,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private DifferentialDrivetrainSimWrapper mSimulator;
 
     public double leftTargetPosition;
-    public double rightTargetPosition;  
+    public double rightTargetPosition;
 
     @Override
     public void close() {
@@ -83,11 +82,11 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         mLeftEncoder.setPosition(0);
         mRightEncoder.setPosition(0);
-        leftTargetPosition=0;
-        rightTargetPosition=0;
+        leftTargetPosition = 0;
+        rightTargetPosition = 0;
 
         mLeadLeft.setInverted(false);
-        mLeadRight.setInverted(true);
+        mLeadRight.setInverted(false);
 
         mFollowerLeft.follow(mLeadLeft, false);
         mFollowerRight.follow(mLeadRight, false);
@@ -141,6 +140,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         return mRightEncoder.getPosition();
     }
 
+    public double getAverageDistance() {
+        return (getLeftDistance() + getRightDistance()) / 2;
+    }
+
     @Override
     public double getLeftRate() {
         return mLeftEncoder.getVelocity();
@@ -149,6 +152,30 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     @Override
     public double getRightRate() {
         return mRightEncoder.getVelocity();
+    }
+
+    public double getRightOut() {
+        return mLeadRight.getAppliedOutput();
+    }
+
+    public double getRightAmps() {
+        return mLeadRight.getOutputCurrent();
+    }
+
+    public double getLeftOut() {
+        return mLeadLeft.getAppliedOutput();
+    }
+
+    public double getLeftAmps() {
+        return mLeadLeft.getOutputCurrent();
+    }
+
+    public double getRightFollowerOut() {
+        return mFollowerRight.getAppliedOutput();
+    }
+
+    public double getLeftFollowerOut() {
+        return mFollowerLeft.getAppliedOutput();
     }
 
     @Override
@@ -171,10 +198,12 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     @Override
     public void arcadeDrive(double speed, double rotation) {
 
-        if(Math.abs(speed)<.1) speed =0;
-        if(Math.abs(rotation)<.1) rotation =0;
+        if (Math.abs(speed) < .1)
+            speed = 0;
+        if (Math.abs(rotation) < .1)
+            rotation = 0;
         SmartDashboard.putNumber("ASS", speed);
-        SmartDashboard.putNumber("ASR", rotation);      
+        SmartDashboard.putNumber("ASR", rotation);
         mDrive.arcadeDrive(speed, rotation);
     }
 
