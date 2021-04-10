@@ -16,18 +16,19 @@ import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.shuffleboard.SuppliedValueWidget;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
+import frc.robot.Robot;
 import frc.robot.sim.PhysicsSim;
 import frc.robot.simulation.TalonSRXWrapper;
-import frc.robot.Robot;
 
 public class ControlPanelSubsystem extends SubsystemBase {
    /**
@@ -58,9 +59,9 @@ public class ControlPanelSubsystem extends SubsystemBase {
    public final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
    public final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
 
-   ShuffleboardTab colors;
    String colorString;
-   public int colorNumber;
+   public int colorNumber = 0;
+   public int lastColorNumber;
    public int colorNumberFiltered;
    private int loopCount;
 
@@ -71,18 +72,23 @@ public class ControlPanelSubsystem extends SubsystemBase {
    private int greenCount;
 
    public int gameColorNumber;
-   private SuppliedValueWidget<Boolean> colorWidget;
-   private SuppliedValueWidget<Boolean> filteredColorWidget;
-   private SuppliedValueWidget<Boolean> gameColorWidget;
-   private SuppliedValueWidget<Boolean> gameTargetColorWidget;
 
-   private String[] seenColor = { "grey", "blue", "green", "red", "yellow" };
+   public String[] seenColor = { "grey", "blue", "green", "red", "yellow" };
 
    private boolean lookForColor = true;
 
    private WPI_TalonSRX m_controlPanelMotor = new TalonSRXWrapper(CANConstants.CP_TURN_MOTOR);
    private final DoubleSolenoid m_colorWheelArm = new DoubleSolenoid(0, 1);
    private int simColorCount;
+   SimpleWidget colorWidget;
+   NetworkTableEntry colorWidgetEntry;
+   private boolean doneOnce;
+   private int colorNumberLast;
+
+   SimpleWidget gameColorWidget;
+   NetworkTableEntry gameColorWidgetEntry;
+   private boolean gameDoneOnce;
+   private int gameColorNumberLast;
 
    public ControlPanelSubsystem() {
 
@@ -94,6 +100,15 @@ public class ControlPanelSubsystem extends SubsystemBase {
       m_colorMatcher.addColorMatch(kRedTarget);
       m_colorMatcher.addColorMatch(kYellowTarget);
 
+      colorWidget = Shuffleboard.getTab("Example Tab").add("Color", false).withWidget("Boolean Box")
+            .withProperties(Map.of("colorWhenFalse", "maroon"));
+      colorWidgetEntry = colorWidget.getEntry();
+      colorWidgetEntry.getBoolean(false);
+
+      gameColorWidget = Shuffleboard.getTab("Example Tab").add("Game Color", false).withWidget("Boolean Box")
+            .withProperties(Map.of("colorWhenFalse", "maroon"));
+      gameColorWidgetEntry = gameColorWidget.getEntry();
+      gameColorWidgetEntry.getBoolean(false);
    }
 
    public void turnWheelMotor(double speed) {
@@ -182,18 +197,40 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
             }
 
-            colorWidget.withProperties(Map.of("colorWhenTrue", seenColor[colorNumber]));
-            filteredColorWidget.withProperties(Map.of("colorWhenTrue", seenColor[colorNumberFiltered]));
-            gameColorWidget.withProperties(Map.of("colorWhenTrue", seenColor[gameColorNumber]));
+            if (colorNumber != lastColorNumber) {
+
+            }
+            String temp = seenColor[colorNumber];
+            SmartDashboard.putString("SeenColor", temp);
             int ourTargetColor = gameColorNumber + 2;
             if (ourTargetColor > 4)
                ourTargetColor -= 4;
-            gameTargetColorWidget.withProperties(Map.of("colorWhenTrue", seenColor[ourTargetColor]));
+
          }
          filterColors();
       }
+      if (colorNumber != colorNumberLast) {
+         colorNumberLast = colorNumber;
+         doneOnce = false;
+      }
+      if (!doneOnce) {
+         colorWidget.withProperties(Map.of("colorWhenTrue", seenColor[colorNumber]));
+         colorWidgetEntry.setBoolean(true);
+         doneOnce = true;
+      }
       SmartDashboard.putNumber("ColorNumber", colorNumber);
       SmartDashboard.putBoolean("LFC", lookForColor);
+
+      getGameData();
+      if (gameColorNumber != gameColorNumberLast) {
+         gameColorNumberLast = gameColorNumber;
+         gameDoneOnce = false;
+      }
+      if (!gameDoneOnce) {
+         gameColorWidget.withProperties(Map.of("colorWhenTrue", seenColor[gameColorNumber]));
+         gameColorWidgetEntry.setBoolean(true);
+         gameDoneOnce = true;
+      }
 
    }
 

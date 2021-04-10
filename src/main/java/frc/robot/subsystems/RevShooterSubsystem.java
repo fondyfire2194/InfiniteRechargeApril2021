@@ -87,4 +87,25 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public void stop() {
         mLeftMotor.set(0);
     }
+
+    private void setGains() {
+
+        // PID coefficients
+        // kP = 6e-4;
+        // kI = 0;
+        // kD = 0;
+        // kIz = 0;
+        // kFF = 0.00015;
+        // kMaxOutput = 1;
+        // kMinOutput = -1;
+        // maxRPM = 5700;
+        mPidController.setP(3e-4);
+        mPidController.setI(0.00000);
+        mPidController.setD(0.);
+        mPidController.setIZone(1000.);
+        mPidController.setFF(.00017);
+        mPidController.setOutputRange(-1., 1.);
+
+    }
+
 }

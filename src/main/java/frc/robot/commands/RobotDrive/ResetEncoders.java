@@ -19,11 +19,14 @@ public class ResetEncoders extends InstantCommand {
   public ResetEncoders(RevDrivetrain m_robotDrive) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.drive = m_robotDrive;
+    addRequirements(m_robotDrive);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     drive.resetEncoders();
+    drive.leftTargetPosition=0;
+    drive.rightTargetPosition=0;
   }
 }

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.Tilt.JogTilt;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Turret.PositionHoldElev;
@@ -92,6 +93,7 @@ public class RobotContainer {
             // Pref.deleteUnused();
             // Pref.addMissing();
             m_robotDrive = new RevDrivetrain();
+            SmartDashboard.putData(m_robotDrive);
             m_climber = new ClimberSubsystem();
             m_transport = new CellTransportSubsystem();
             m_controlPanel = new ControlPanelSubsystem();
@@ -113,11 +115,8 @@ public class RobotContainer {
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
                         m_limelight, m_controlPanel, m_intake, m_traj, m_climber);
 
-            // m_robotDrive.setDefaultCommand(
-            // // A joystick arcade command, with forward/backward controlled by the left
-            // // hand, and turning controlled by the twist.
-            // new RunCommand(() -> m_robotDrive.arcadeDrive(-m_driverController.getY(),
-            // m_driverController.getTwist() / 3), m_robotDrive));
+           m_robotDrive.setDefaultCommand(getArcadeDriveCommand());
+
             configureButtonBindings();
 
             LiveWindow.disableAllTelemetry();
@@ -149,10 +148,10 @@ public class RobotContainer {
                         .whenReleased(() -> m_climber.turnClimberMotor(0))
                         .whenReleased(() -> m_controlPanel.turnWheelMotor(0));
 
-                      //  new JoystickButton(m_driverController, 2)
-  
-                      //  new JoystickButton(m_driverController, 3)
-           
+            // new JoystickButton(m_driverController, 2)
+
+            // new JoystickButton(m_driverController, 3)
+
             new JoystickButton(m_driverController, 5)
 
                         .whenPressed(() -> m_transport.runFrontRollerMotor(.5))
@@ -165,28 +164,23 @@ public class RobotContainer {
                         .whenReleased(() -> m_transport.runLeftBeltMotor(0))
                         .whenPressed(() -> m_intake.runIntakeMotor(0))
                         .whenReleased(() -> m_transport.runRightBeltMotor(0));
-                        
 
-            new JoystickButton(m_driverController,9 )
-                        .whileHeld(() -> m_tilt.moveManually(.4), m_tilt).whenReleased(() -> m_tilt.stop(), m_tilt);
+            new JoystickButton(m_driverController, 9).whileHeld(() -> m_tilt.moveManually(.4), m_tilt)
+                        .whenReleased(() -> m_tilt.stop(), m_tilt);
 
-    
-
-
-            //Setup gamepad XBox 3
+            // Setup gamepad XBox 3
 
             JoystickButton setupA = new JoystickButton(setupGamepad, 1);
             JoystickButton setupB = new JoystickButton(setupGamepad, 2);
             JoystickButton setupX = new JoystickButton(setupGamepad, 3);
             JoystickButton setupY = new JoystickButton(setupGamepad, 4);
 
-
             setupY.whileHeld(new JogTilt(m_tilt, .5));
-            setupA.whileHeld(new JogTilt(m_tilt,-.5));
-            
+            setupA.whileHeld(new JogTilt(m_tilt, -.5));
+
             setupB.whileHeld(new TurretJog(m_turret, .5));
-            setupX.whileHeld(new TurretJog(m_turret,-.5));
-   
+            setupX.whileHeld(new TurretJog(m_turret, -.5));
+
             // LiveWindow.disableAllTelemetry();
 
       }
@@ -200,6 +194,11 @@ public class RobotContainer {
       public Command getAutonomousCommand() {
             return null;
 
+      }
+
+      public Command getArcadeDriveCommand() {
+            return new ArcadeDrive(m_robotDrive, () -> -m_driverController.getY(),
+                        () -> m_driverController.getTwist());
       }
 
 }

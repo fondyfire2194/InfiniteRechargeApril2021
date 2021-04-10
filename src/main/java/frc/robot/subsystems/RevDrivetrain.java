@@ -26,8 +26,7 @@ import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
 public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private static final DrivetrainConstants DRIVETRAIN_CONSTANTS = new NeoDrivetrainConstants();
-    private static final double ENCODER_CONSTANT = (1.0 / DriveConstants.DRIVE_GEAR_RATIO
-            * DRIVETRAIN_CONSTANTS.getkWheelDiameterMeters() * Math.PI);
+    
 
     private final SimableCANSparkMax mLeadLeft; // NOPMD
     private final SimableCANSparkMax mFollowerLeft; // NOPMD
@@ -35,8 +34,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private final SimableCANSparkMax mLeadRight; // NOPMD
     private final SimableCANSparkMax mFollowerRight; // NOPMD
 
-    private final CANEncoder mRightEncoder;
-    private final CANEncoder mLeftEncoder;
+    public final CANEncoder mRightEncoder;
+    public final CANEncoder mLeftEncoder;
 
     private final CANPIDController mLeftPidController;
     private final CANPIDController mRightPidController;
@@ -48,6 +47,9 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private final DifferentialDrive mDrive;
 
     private DifferentialDrivetrainSimWrapper mSimulator;
+
+    public double leftTargetPosition;
+    public double rightTargetPosition;  
 
     @Override
     public void close() {
@@ -70,17 +72,19 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mRightEncoder = mLeadRight.getEncoder();
         mLeftEncoder = mLeadLeft.getEncoder();
 
-        mLeftEncoder.setPositionConversionFactor(DriveConstants.DISTANCE_PER_PULSE);
-        mRightEncoder.setPositionConversionFactor(DriveConstants.DISTANCE_PER_PULSE);
+        mLeftEncoder.setPositionConversionFactor(DriveConstants.METERS_PER_MOTOR_REV);
+        mRightEncoder.setPositionConversionFactor(DriveConstants.METERS_PER_MOTOR_REV);
 
-        mLeftEncoder.setVelocityConversionFactor(DriveConstants.DISTANCE_PER_PULSE / 60.0);
-        mRightEncoder.setVelocityConversionFactor(DriveConstants.DISTANCE_PER_PULSE / 60.0);
+        mLeftEncoder.setVelocityConversionFactor(DriveConstants.METERS_PER_MOTOR_REV / 60.0);
+        mRightEncoder.setVelocityConversionFactor(DriveConstants.METERS_PER_MOTOR_REV / 60.0);
 
         mLeftPidController = mLeadLeft.getPIDController();
         mRightPidController = mLeadRight.getPIDController();
 
         mLeftEncoder.setPosition(0);
         mRightEncoder.setPosition(0);
+        leftTargetPosition=0;
+        rightTargetPosition=0;
 
         mLeadLeft.setInverted(false);
         mLeadRight.setInverted(true);
@@ -111,6 +115,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
             fieldSim = new Field2d();
             SmartDashboard.putData("Field", fieldSim);
         }
+
     }
 
     private void setupPidController(CANPIDController pidController, double kp, double ki, double kd, double kff,
@@ -165,6 +170,11 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     /////////////////////////////////////
     @Override
     public void arcadeDrive(double speed, double rotation) {
+
+        if(Math.abs(speed)<.1) speed =0;
+        if(Math.abs(rotation)<.1) rotation =0;
+        SmartDashboard.putNumber("ASS", speed);
+        SmartDashboard.putNumber("ASR", rotation);      
         mDrive.arcadeDrive(speed, rotation);
     }
 

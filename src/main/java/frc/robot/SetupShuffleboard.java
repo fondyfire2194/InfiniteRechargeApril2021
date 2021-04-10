@@ -358,7 +358,7 @@ public class SetupShuffleboard {
                         cpValues.add("CP", m_controlPanel);
                         cpValues.addNumber("SensorDistance", () -> m_controlPanel.getSensorDistance());
                         cpValues.addNumber("IR", () -> m_controlPanel.getSensorIR());
-                        cpValues.addNumber("ColorNumber", () -> m_controlPanel.colorNumber);
+                        cpValues.addString("ColorNumber", () -> m_controlPanel.seenColor[m_controlPanel.colorNumber]);
 
                         cpValues.add(m_controlPanel);
 
@@ -375,7 +375,6 @@ public class SetupShuffleboard {
                         ShuffleboardLayout climberCommands = Shuffleboard.getTab("SetupClimber_CP")
                                         .getLayout("Climber", BuiltInLayouts.kList).withPosition(0, 0).withSize(1, 3)
                                         .withProperties(Map.of("Label position", "TOP"));
-
 
                         climberCommands.add("ArmRaise", new InstantCommand(() -> m_climber.raiseArm()));
                         climberCommands.add("ArmLower", new InstantCommand(() -> m_climber.lowerArm()));

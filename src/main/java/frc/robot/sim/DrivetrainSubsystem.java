@@ -149,10 +149,10 @@ public interface DrivetrainSubsystem extends Subsystem, AutoCloseable
                         kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian);
 
         public static final DCMotor kDriveGearbox = DCMotor.getNEO(2);
-        private static final double kDriveGearing = 40.0 / 10.0 * 34.0 / 20.0;
+        private static final double kDriveGearing = 10.25;
 
-        private static final double kTrackwidthMeters = 1.1554881713809029;
-        private static final double kWheelDiameterInches = 4.0;
+        private static final double kTrackwidthMeters = .69;
+        private static final double kWheelDiameterInches = 6.0;
         private static final double kWheelDiameterMeters = Units.inchesToMeters(kWheelDiameterInches);
 
         public static final DifferentialDriveKinematics kDriveKinematics =
