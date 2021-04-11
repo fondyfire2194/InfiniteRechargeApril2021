@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
+import com.revrobotics.CANSparkMax.FaultID;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
@@ -13,15 +15,18 @@ import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.Constants.CANConstants;
+import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsystem {
-    private static final double GRAVITY_COMPENSATION_VOLTS = .5;
-    private static final double ENC_REVS_PER_DEGREE = 3.39;
+    private static final double GRAVITY_COMPENSATION_VOLTS = .1;
+    private static final double ENC_REVS_PER_DEGREE = HoodedShooterConstants.TURRET_ENCODER_REV_PER_DEG;
     private static final int POSITION_SLOT = 0;
     private static final int SMART_MOTION_SLOT = 1;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
@@ -45,7 +50,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mPidController.setP(.16);
 
         gainSettings();
-
+        SmartDashboard.putNumber("FW8", m_motor.getFirmwareVersion());
         targetAngle = getAngle();
 
         if (RobotBase.isSimulation()) {
@@ -74,6 +79,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void moveManually(double speed) {
         m_motor.set(speed);
+        targetAngle = getAngle();
     }
 
     @Override
@@ -101,12 +107,22 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         return mEncoder.getVelocity();
     }
 
+    public void setSoftwareLimits() {
+        m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kForward,
+                (float) HoodedShooterConstants.TURRET_MAX_ANGLE);
+        m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kReverse,
+                (float) HoodedShooterConstants.TURRET_MIN_ANGLE);
+        m_motor.enableSoftLimit(SoftLimitDirection.kForward, true);
+        m_motor.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        m_motor.setIdleMode(IdleMode.kBrake);
+    }
+
     public boolean onPlusSoftwareLimit() {
-        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kForward);
+        return m_motor.getFault(FaultID.kSoftLimitFwd);
     }
 
     public boolean onMinusSoftwareLimit() {
-        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kReverse);
+        return m_motor.getFault(FaultID.kSoftLimitRev);
     }
 
     @Override

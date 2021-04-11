@@ -12,7 +12,6 @@ public class PositionNumberRevs extends CommandBase {
   private final ControlPanelSubsystem m_panel;
   private int m_numberRevs;
   private double m_speed;
-  private int revsMade;
   private int lastColor;
 
   public PositionNumberRevs(ControlPanelSubsystem panel, int numberRevs, double speed) {

@@ -30,7 +30,7 @@ public class PositionTurret extends CommandBase {
     SmartDashboard.putNumber("SMPOS", m_position);
     m_turret.visionCorrection = 0;
     m_startTime = Timer.getFPGATimestamp();
-    m_turret.targetAngle=m_position;
+    m_turret.targetAngle = m_position;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,7 +42,7 @@ public class PositionTurret extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (!m_turret.atTargetAngle())
+    
       m_turret.targetAngle = m_turret.getAngle();
   }
 

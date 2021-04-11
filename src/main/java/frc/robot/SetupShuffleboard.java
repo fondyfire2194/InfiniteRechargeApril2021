@@ -6,7 +6,6 @@ package frc.robot;
 
 import java.util.Map;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.InstantCommand;
@@ -15,10 +14,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
-import frc.robot.commands.Climber.TurnClimberMotor;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
 import frc.robot.commands.ControlPanel.PositionNumberRevs;
 import frc.robot.commands.ControlPanel.PositionToColor;

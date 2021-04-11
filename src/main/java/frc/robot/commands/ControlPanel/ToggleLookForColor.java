@@ -15,7 +15,7 @@ public class ToggleLookForColor extends CommandBase {
   public ToggleLookForColor(ControlPanelSubsystem panel) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_panel = panel;
-  //  addRequirements(m_panel);
+    // addRequirements(m_panel);
 
   }
 

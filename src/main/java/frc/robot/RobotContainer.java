@@ -178,8 +178,8 @@ public class RobotContainer {
             setupY.whileHeld(new JogTilt(m_tilt, .5));
             setupA.whileHeld(new JogTilt(m_tilt, -.5));
 
-            setupB.whileHeld(new TurretJog(m_turret, .5));
-            setupX.whileHeld(new TurretJog(m_turret, -.5));
+            setupB.whileHeld(new TurretJog(m_turret, .15));
+            setupX.whileHeld(new TurretJog(m_turret, -.15));
 
             // LiveWindow.disableAllTelemetry();
 
