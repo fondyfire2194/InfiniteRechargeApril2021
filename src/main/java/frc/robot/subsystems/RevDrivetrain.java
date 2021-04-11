@@ -4,6 +4,7 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
+import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
@@ -180,11 +181,11 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     @Override
     public double getHeadingDegrees() {
-        return mGyro.getYaw();
+        return mGyro.getAngle();
     }
 
     public double getYaw() {
-        return mGyro.getYaw();
+        return Math.IEEEremainder(mGyro.getAngle(), 360) * -1;
     }
 
     @Override
@@ -232,6 +233,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public void resetEncoders() {
         mLeftEncoder.setPosition(0);
         mRightEncoder.setPosition(0);
+        resetSimOdometry(getPose());
     }
 
     @Override

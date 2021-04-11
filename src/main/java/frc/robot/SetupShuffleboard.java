@@ -20,7 +20,7 @@ import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.Climber.TurnClimberMotor;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
-import frc.robot.commands.ControlPanel.SetLookForColor;
+import frc.robot.commands.ControlPanel.ToggleLookForColor;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
@@ -351,9 +351,9 @@ public class SetupShuffleboard {
                         controlPanelCommands.add("ArmRaise", new ControlPanelArm(m_controlPanel, true));
 
                         controlPanelCommands.add("ArmLower", new ControlPanelArm(m_controlPanel, false));
-                        controlPanelCommands.add("LookForColor", new SetLookForColor(m_controlPanel, true));
+                        controlPanelCommands.add("ToggleLookForColor", new ToggleLookForColor(m_controlPanel));
                         ShuffleboardLayout cpValues = Shuffleboard.getTab("SetupClimber_CP")
-                                        .getLayout("CPValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)
+                                        .getLayout("CPValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 6)
                                         .withProperties(Map.of("Label position", "TOP")); // hide
                                                                                           // labels
 
@@ -362,6 +362,7 @@ public class SetupShuffleboard {
                         cpValues.add("CP", m_controlPanel);
                         cpValues.addNumber("SensorDistance", () -> m_controlPanel.getSensorDistance());
                         cpValues.addNumber("IR", () -> m_controlPanel.getSensorIR());
+                        cpValues.addBoolean("LookingForColor", ()->m_controlPanel.lookForColor);
                         cpValues.addString("ColorNumber", () -> m_controlPanel.seenColor[m_controlPanel.colorNumber]);
 
                         cpValues.add(m_controlPanel);

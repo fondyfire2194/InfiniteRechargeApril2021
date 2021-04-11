@@ -75,7 +75,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
    public String[] seenColor = { "grey", "blue", "green", "red", "yellow" };
 
-   private boolean lookForColor = true;
+   public boolean lookForColor;
 
    private WPI_TalonSRX m_controlPanelMotor = new TalonSRXWrapper(CANConstants.CP_TURN_MOTOR);
    private final DoubleSolenoid m_colorWheelArm = new DoubleSolenoid(0, 1);
@@ -100,13 +100,13 @@ public class ControlPanelSubsystem extends SubsystemBase {
       m_colorMatcher.addColorMatch(kRedTarget);
       m_colorMatcher.addColorMatch(kYellowTarget);
 
-      colorWidget = Shuffleboard.getTab("Example Tab").add("Color", false).withWidget("Boolean Box")
-            .withProperties(Map.of("colorWhenFalse", "maroon"));
+      colorWidget = Shuffleboard.getTab("SetupClimber_CP").add("SensorColor", false).withWidget("Boolean Box")
+            .withPosition(8, 0).withProperties(Map.of("colorWhenFalse", "maroon"));
       colorWidgetEntry = colorWidget.getEntry();
       colorWidgetEntry.getBoolean(false);
 
-      gameColorWidget = Shuffleboard.getTab("Example Tab").add("Game Color", false).withWidget("Boolean Box")
-            .withProperties(Map.of("colorWhenFalse", "maroon"));
+      gameColorWidget = Shuffleboard.getTab("SetupClimber_CP").add("Game Color", false).withWidget("Boolean Box")
+            .withPosition(8, 1).withProperties(Map.of("colorWhenFalse", "maroon"));
       gameColorWidgetEntry = gameColorWidget.getEntry();
       gameColorWidgetEntry.getBoolean(false);
    }
@@ -160,10 +160,15 @@ public class ControlPanelSubsystem extends SubsystemBase {
    }
 
    public void simulationPeriodic() {
-      PhysicsSim.getInstance().run();
       if (lookForColor) {
+         m_controlPanelMotor.set(.25);
+      } else {
+         m_controlPanelMotor.set(0);
+      }
+      PhysicsSim.getInstance().run();
+      if (lookForColor && getMotorSet() != 0) {
          simColorCount++;
-         if (simColorCount > 100) {
+         if (simColorCount > 200) {
             colorNumber++;
             simColorCount = 0;
          }
@@ -174,6 +179,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
    @Override
    public void periodic() {
+
       loopCount++;
       if (loopCount > 5 && lookForColor) {
          // This method will be called once per scheduler run
