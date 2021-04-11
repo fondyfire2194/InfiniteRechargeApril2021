@@ -89,6 +89,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
    NetworkTableEntry gameColorWidgetEntry;
    private boolean gameDoneOnce;
    private int gameColorNumberLast;
+   public int revsDone;
 
    public ControlPanelSubsystem() {
 
@@ -185,7 +186,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
          // This method will be called once per scheduler run
          if (!Robot.isSimulation()) {
             detectedColor = m_colorSensor.getColor();
-
+// "grey", "blue", "green", "red", "yellow"
             ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
             if (match.color == kBlueTarget) {
@@ -196,27 +197,27 @@ public class ControlPanelSubsystem extends SubsystemBase {
                colorNumber = 3;
             } else if (match.color == kYellowTarget) {
                colorNumber = 4;
-            } else if (match.color == kBlueTarget) {
-               colorNumber = 4;
-            } else {
-               colorNumber = 4;
-
-            }
-
-            if (colorNumber != lastColorNumber) {
-
-            }
-            String temp = seenColor[colorNumber];
-            SmartDashboard.putString("SeenColor", temp);
-            int ourTargetColor = gameColorNumber + 2;
-            if (ourTargetColor > 4)
-               ourTargetColor -= 4;
+            } else
+               colorNumber = 0;
 
          }
-         filterColors();
+
+         if (colorNumber != lastColorNumber) {
+
+         }
+         String temp = seenColor[colorNumber];
+         SmartDashboard.putString("SeenColor", temp);
+         int ourTargetColor = gameColorNumber + 2;
+         if (ourTargetColor > 4)
+            ourTargetColor -= 4;
+
       }
-      if (colorNumber != colorNumberLast) {
-         colorNumberLast = colorNumber;
+      filterColors();
+
+      if (colorNumberFiltered != colorNumberLast)
+
+      {
+         colorNumberLast = colorNumberFiltered;
          doneOnce = false;
       }
       if (!doneOnce) {
@@ -224,11 +225,12 @@ public class ControlPanelSubsystem extends SubsystemBase {
          colorWidgetEntry.setBoolean(true);
          doneOnce = true;
       }
-      SmartDashboard.putNumber("ColorNumber", colorNumber);
-      SmartDashboard.putBoolean("LFC", lookForColor);
 
       getGameData();
-      if (gameColorNumber != gameColorNumberLast) {
+
+      if (gameColorNumber != gameColorNumberLast)
+
+      {
          gameColorNumberLast = gameColorNumber;
          gameDoneOnce = false;
       }
@@ -311,7 +313,6 @@ public class ControlPanelSubsystem extends SubsystemBase {
                gameColorNumber = 0;
                break;
          }
-         SmartDashboard.putNumber("GameColorNumber", gameColorNumber);
       } else {
          // Code for no data received yet
 

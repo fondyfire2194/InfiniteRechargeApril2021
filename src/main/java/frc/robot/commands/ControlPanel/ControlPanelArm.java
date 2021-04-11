@@ -17,7 +17,7 @@ public class ControlPanelArm extends CommandBase {
   public ControlPanelArm(ControlPanelSubsystem panel, boolean lower) {
     m_panel = panel;
     m_lower = lower;
-    addRequirements(m_panel);
+    //addRequirements(m_panel);
   }
 
   public void initialize() {

@@ -20,6 +20,8 @@ import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.Climber.TurnClimberMotor;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
+import frc.robot.commands.ControlPanel.PositionNumberRevs;
+import frc.robot.commands.ControlPanel.PositionToColor;
 import frc.robot.commands.ControlPanel.ToggleLookForColor;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.RobotDrive.ResetEncoders;
@@ -344,17 +346,23 @@ public class SetupShuffleboard {
                  */
                 if (m_showControlPanel) {
                         ShuffleboardLayout controlPanelCommands = Shuffleboard.getTab("SetupClimber_CP")
-                                        .getLayout("ControlPanel", BuiltInLayouts.kList).withPosition(5, 0)
-                                        .withSize(1, 3).withProperties(Map.of("Label position", "TOP")); // hide
+                                        .getLayout("ControlPanel", BuiltInLayouts.kList).withPosition(4 ,0)
+                                        .withSize(1, 4).withProperties(Map.of("Label position", "Top")); // hide
                                                                                                          // labels
 
                         controlPanelCommands.add("ArmRaise", new ControlPanelArm(m_controlPanel, true));
 
                         controlPanelCommands.add("ArmLower", new ControlPanelArm(m_controlPanel, false));
                         controlPanelCommands.add("ToggleLookForColor", new ToggleLookForColor(m_controlPanel));
+
+                        controlPanelCommands.add("LookForRevs", new PositionNumberRevs(m_controlPanel, 30, .25));
+
+                        controlPanelCommands.add("PositionToColor",
+                                        new PositionToColor(m_controlPanel,  .25));
+
                         ShuffleboardLayout cpValues = Shuffleboard.getTab("SetupClimber_CP")
-                                        .getLayout("CPValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 6)
-                                        .withProperties(Map.of("Label position", "TOP")); // hide
+                                        .getLayout("CPValues", BuiltInLayouts.kList).withPosition(5, 0).withSize(2, 6)
+                                        .withProperties(Map.of("Label position", "Left")); // hide
                                                                                           // labels
 
                         cpValues.addNumber("Motor Amps", () -> m_controlPanel.getMotorAmps());
@@ -362,9 +370,7 @@ public class SetupShuffleboard {
                         cpValues.add("CP", m_controlPanel);
                         cpValues.addNumber("SensorDistance", () -> m_controlPanel.getSensorDistance());
                         cpValues.addNumber("IR", () -> m_controlPanel.getSensorIR());
-                        cpValues.addBoolean("LookingForColor", ()->m_controlPanel.lookForColor);
-                        cpValues.addString("ColorNumber", () -> m_controlPanel.seenColor[m_controlPanel.colorNumber]);
-
+                        cpValues.addNumber("Revs Done", () -> m_controlPanel.revsDone);
                         cpValues.add(m_controlPanel);
 
                 }
