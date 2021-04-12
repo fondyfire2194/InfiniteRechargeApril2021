@@ -348,12 +348,12 @@ public class SetupShuffleboard {
                                                                                                          // labels
 
                         controlPanelCommands.add("ArmRaise", new ControlPanelArm(m_controlPanel, true));
+                        controlPanelCommands.add("LookForRevs", new PositionNumberRevs(m_controlPanel, 30, .25));
 
                         controlPanelCommands.add("ArmLower", new ControlPanelArm(m_controlPanel, false));
                         controlPanelCommands.add("ToggleLookForColor", new ToggleLookForColor(m_controlPanel));
 
-                        controlPanelCommands.add("LookForRevs", new PositionNumberRevs(m_controlPanel, 30, .25));
-
+  
                         controlPanelCommands.add("PositionToColor",
                                         new PositionToColor(m_controlPanel,  .25));
 
@@ -405,7 +405,7 @@ public class SetupShuffleboard {
                 if (m_showIntake) {
 
                         ShuffleboardLayout intakeCommands = Shuffleboard.getTab("RearIntake")
-                                        .getLayout("Intake", BuiltInLayouts.kList).withPosition(5, 0).withSize(1, 3)
+                                        .getLayout("Intake", BuiltInLayouts.kList).withPosition(0, 0).withSize(1, 3)
                                         .withProperties(Map.of("Label position", "TOP")); // hide
                                                                                           // labels
 
@@ -413,7 +413,7 @@ public class SetupShuffleboard {
                         intakeCommands.add("StopIntake", new StopIntake(m_intake));
 
                         ShuffleboardLayout intakeValues = Shuffleboard.getTab("RearIntake")
-                                        .getLayout("CPValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)
+                                        .getLayout("IntakeValues", BuiltInLayouts.kList).withPosition(3, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "TOP")); // hide
                                                                                           // labels
 
