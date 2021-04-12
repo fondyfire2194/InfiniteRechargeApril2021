@@ -19,23 +19,27 @@ public class ResetTurretAngle extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     m_turret.resetAngle(0);
-    m_turret.targetAngle=0;
+    m_turret.targetAngle = 0;
+    m_turret.setSoftwareLimits();
+   
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+     m_turret.setDefaultCommand(new PositionHoldTurret(m_turret));
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_turret.getAngle() == 0;
+    return m_turret.getAngle() == 0 && m_turret.getSoftwareLimitsEnabled();
   }
 }

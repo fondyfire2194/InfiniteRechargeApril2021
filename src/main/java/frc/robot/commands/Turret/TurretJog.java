@@ -27,6 +27,8 @@ public class TurretJog extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if (Math.abs(m_speed) < .1)
+      m_speed = 0;
     m_turret.moveManually(m_speed);
   }
 

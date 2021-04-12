@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.Turret.PositionHoldTurret;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -67,7 +68,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     // SmartDashboard.putNumber("MatchTime",
-   
+
     SmartDashboard.putData("CS", CommandScheduler.getInstance());
 
   }
@@ -80,7 +81,6 @@ public class Robot extends TimedRobot {
 
     CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().run();
-    
 
   }
 
@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
    */
 
   public void autonomousInit() {
-
+    m_robotContainer.m_turret.setDefaultCommand(new PositionHoldTurret(m_robotContainer.m_turret));
   }
 
   /**

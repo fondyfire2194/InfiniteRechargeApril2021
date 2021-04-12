@@ -26,6 +26,8 @@ import edu.wpi.first.wpiutil.math.numbers.N2;
  */
 public final class Constants {
    public static final double inchToMetersConversionFactor = 0.0254;
+public static final double MINIMUM_TURN_SPEED = 0;
+
 
    public static final class CANConstants {
       public static final int PDP = 1;
@@ -79,13 +81,12 @@ public final class Constants {
        */
       // DIMENSIONS IN METERS
 
-      public static double WHEEL_DIAMETER = .1524;
+      public static double WHEEL_DIAMETER = .1524;//6"
       public static double WHEEL_CIRCUMFERENCE = .4788;
-      public static double METERS_PER_MOTOR_REV = 0.0456;
+      public static double METERS_PER_MOTOR_REV = 0.0467;//pi * diameter /geaar ratio
       public static double NEO550_COUNTS_PER_REV = 4096;
       public static double DRIVE_GEAR_RATIO = 10.25;
 
-      public static double DISTANCE_PER_PULSE = 1.169e-4; // simulation encoder
       public final static double WHEELBASE_WIDTH = .69;
 
       public static double ksVolts = .171;

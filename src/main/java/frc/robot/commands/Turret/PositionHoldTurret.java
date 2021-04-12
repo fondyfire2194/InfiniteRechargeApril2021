@@ -4,7 +4,6 @@
 
 package frc.robot.commands.Turret;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTurretSubsystem;
 
@@ -14,10 +13,6 @@ public class PositionHoldTurret extends CommandBase {
   private final RevTurretSubsystem m_turret;
 
   private double m_position;
-
-  private double m_endpoint;
-
-  private int onTarget;
 
   public PositionHoldTurret(RevTurretSubsystem turret) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -30,7 +25,6 @@ public class PositionHoldTurret extends CommandBase {
   @Override
   public void initialize() {
     m_position = m_turret.targetAngle;
-    SmartDashboard.putNumber("SMPOS", m_position);
     m_turret.visionCorrection = 0;
   }
 
@@ -38,7 +32,7 @@ public class PositionHoldTurret extends CommandBase {
   @Override
   public void execute() {
     m_position = m_turret.targetAngle;
-    m_turret.goToPosition(m_position);
+    m_turret.goToPositionMotionMagic(m_position);
   }
 
   // Called once the command ends or is interrupted.

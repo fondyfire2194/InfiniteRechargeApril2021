@@ -13,8 +13,6 @@ public class StartIntake extends CommandBase {
   /** Creates a new RunIntake. */
   private final RearIntakeSubsystem m_rearIntake;
 
-  private double m_startTime;
-
   public StartIntake(RearIntakeSubsystem rearIntake) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_rearIntake = rearIntake;
@@ -27,7 +25,7 @@ public class StartIntake extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_startTime = Timer.getFPGATimestamp();
+    Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,11 +39,15 @@ public class StartIntake extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_rearIntake.runIntakeMotor(0);
+    m_rearIntake.raiseIntakeArm();
+
+
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Timer.getFPGATimestamp() > m_startTime + .5;
+    return false;
   }
 }

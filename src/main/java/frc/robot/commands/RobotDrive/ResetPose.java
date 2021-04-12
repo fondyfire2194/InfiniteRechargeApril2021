@@ -7,7 +7,6 @@
 
 package frc.robot.commands.RobotDrive;
 
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.RevDrivetrain;
 

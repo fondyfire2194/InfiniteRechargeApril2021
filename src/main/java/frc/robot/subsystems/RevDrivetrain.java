@@ -4,18 +4,20 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
-import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import com.revrobotics.SimableCANSparkMax;
+
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
-
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PDPConstants;
@@ -47,9 +49,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private final DifferentialDrive mDrive;
 
     private DifferentialDrivetrainSimWrapper mSimulator;
-
+    
     public double leftTargetPosition;
     public double rightTargetPosition;
+    private final NetworkTable m_customNetworkTable;
 
     @Override
     public void close() {
@@ -116,6 +119,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
             SmartDashboard.putData("Field", fieldSim);
         }
 
+        NetworkTable coordinateGuiContainer = NetworkTableInstance.getDefault().getTable("CoordinateGui");
+        coordinateGuiContainer.getEntry(".type").setString("CoordinateGui");
+
+        m_customNetworkTable = coordinateGuiContainer.getSubTable("RobotPosition");
     }
 
     private void setupPidController(CANPIDController pidController, double kp, double ki, double kd, double kff,
@@ -241,12 +248,28 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mSimulator.resetOdometry(pose);
     }
 
+    public Translation2d getTranslation() {
+        return getPose().getTranslation();
+    }
+
+    public double getX() {
+        return getTranslation().getX();
+    }
+
+    public double getY() {
+        return getTranslation().getY();
+    }
+
     ///////////////////////////////
     // Life Cycle
     ///////////////////////////////
     @Override
     public void periodic() {
         updateOdometry();
+        m_customNetworkTable.getEntry("X").setDouble(getX());
+        m_customNetworkTable.getEntry("Y").setDouble(getY());
+        m_customNetworkTable.getEntry("Angle").setDouble(getHeading());
+
     }
 
     @Override
@@ -255,6 +278,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     public void resetGyro() {
+    }
+
+    public double getHeading() {
+        return Math.IEEEremainder(mGyro.getAngle(), 360) * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
     }
 
     public void resetPose(Pose2d pose) {

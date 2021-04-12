@@ -63,6 +63,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
             mElevatorSim = new ElevatorSimWrapper(ElevatorSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
         }
+       // setSoftwareLimits();
     }
 
     @Override
@@ -113,8 +114,13 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kReverse,
                 (float) HoodedShooterConstants.TURRET_MIN_ANGLE);
         m_motor.enableSoftLimit(SoftLimitDirection.kForward, true);
-        m_motor.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        m_motor.enableSoftLimit(SoftLimitDirection.kReverse, true);
         m_motor.setIdleMode(IdleMode.kBrake);
+    }
+
+    public boolean getSoftwareLimitsEnabled() {
+        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kForward)
+                || m_motor.isSoftLimitEnabled(SoftLimitDirection.kReverse);
     }
 
     public boolean onPlusSoftwareLimit() {
@@ -161,7 +167,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         allowedErr = 1;
         // Smart Motion Coefficients
         maxVel = 5000; // rpm
-        maxAcc = 2500;
+        maxAcc = 750;
 
         // set PID coefficients
         mPidController.setP(kP);

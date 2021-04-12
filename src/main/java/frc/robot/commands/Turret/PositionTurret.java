@@ -21,7 +21,7 @@ public class PositionTurret extends CommandBase {
     m_turret = turret;
     m_position = position;
 
-    addRequirements(m_turret);
+    // addRequirements(m_turret);
   }
 
   // Called when the command is initially scheduled.
@@ -36,19 +36,19 @@ public class PositionTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_turret.goToPositionMotionMagic(m_position);
+    // m_turret.goToPositionMotionMagic(m_position);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    
-      m_turret.targetAngle = m_turret.getAngle();
+
+    // m_turret.targetAngle = m_turret.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_turret.atTargetAngle() && Timer.getFPGATimestamp() > m_startTime + .25;
+    return true;// m_turret.atTargetAngle() && Timer.getFPGATimestamp() > m_startTime + .25;
   }
 }
