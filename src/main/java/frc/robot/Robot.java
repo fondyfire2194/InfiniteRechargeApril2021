@@ -80,7 +80,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
 
     CommandScheduler.getInstance().cancelAll();
-    CommandScheduler.getInstance().run();
+//    CommandScheduler.getInstance().run();
 
   }
 

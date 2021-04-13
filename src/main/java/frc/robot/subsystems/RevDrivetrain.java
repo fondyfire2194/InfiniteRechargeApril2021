@@ -54,6 +54,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public double rightTargetPosition;
     private final NetworkTable m_customNetworkTable;
 
+    private int m_robotPositionCtr;
+
     @Override
     public void close() {
         mLeadLeft.close();
@@ -266,10 +268,15 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     @Override
     public void periodic() {
         updateOdometry();
-        m_customNetworkTable.getEntry("X").setDouble(getX());
-        m_customNetworkTable.getEntry("Y").setDouble(getY());
+        m_customNetworkTable.getEntry("X").setDouble(getX()*39.37);
+        m_customNetworkTable.getEntry("Y").setDouble(getY()*39.37);
         m_customNetworkTable.getEntry("Angle").setDouble(getHeading());
+      // Actually update the display every 5 loops = 100ms
+      if (m_robotPositionCtr % 5 == 0) {
+        m_customNetworkTable.getEntry("Ctr").setDouble(m_robotPositionCtr);
 
+     }
+     ++m_robotPositionCtr;
     }
 
     @Override

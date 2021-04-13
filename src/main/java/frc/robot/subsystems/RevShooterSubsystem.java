@@ -6,6 +6,8 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import com.revrobotics.EncoderType;
 import com.revrobotics.SimableCANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,7 +21,7 @@ import org.snobotv2.sim_wrappers.ISimWrapper;
 
 public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsystem {
     public final SimableCANSparkMax mLeftMotor; // NOPMD
-    private final SimableCANSparkMax mRightMotor; // NOPMD
+    // private final SimableCANSparkMax mRightMotor; // NOPMD
     private final CANEncoder mEncoder;
     private final CANPIDController mPidController;
     private ISimWrapper mSimulator;
@@ -32,13 +34,18 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     public RevShooterSubsystem() {
         mLeftMotor = new SimableCANSparkMax(CANConstants.LEFT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mRightMotor = new SimableCANSparkMax(CANConstants.RIGHT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
+        // mRightMotor = new SimableCANSparkMax(CANConstants.RIGHT_MOTOR,
+        // CANSparkMaxLowLevel.MotorType.kBrushless);
 
-        mRightMotor.follow(mLeftMotor);
+        // mRightMotor.follow(mLeftMotor);
 
         mEncoder = mLeftMotor.getEncoder(EncoderType.kQuadrature, 8192);
         mPidController = mLeftMotor.getPIDController();
-
+        mLeftMotor.restoreFactoryDefaults();
+        // mRightMotor.restoreFactoryDefaults();
+        mLeftMotor.setOpenLoopRampRate(5.);
+        mLeftMotor.setIdleMode(IdleMode.kBrake);
+        // mRightMotor.setIdleMode(IdleMode.kBrake) ;
         mPidController.setP(0.001);
         mPidController.setFF(1.0 / 4700);
 
@@ -51,7 +58,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     @Override
     public void close() {
         mLeftMotor.close();
-        mRightMotor.close();
+        // mRightMotor.close();
     }
 
     @Override
@@ -70,12 +77,16 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     }
 
+    public void jogLeftMotor() {
+        mPidController.setReference(.1, ControlType.kDutyCycle);
+    }
+
     public double getLeftAmps() {
         return mLeftMotor.getOutputCurrent();
     }
 
     public double getRightAmps() {
-        return mRightMotor.getOutputCurrent();
+        return 0;// mRightMotor.getOutputCurrent();
     }
 
     @Override
@@ -86,6 +97,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     @Override
     public void stop() {
         mLeftMotor.set(0);
+     //   mRightMotor.set(0);
     }
 
     private void setGains() {

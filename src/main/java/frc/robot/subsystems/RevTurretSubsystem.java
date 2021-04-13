@@ -14,19 +14,20 @@ import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsystem {
     private static final double GRAVITY_COMPENSATION_VOLTS = .1;
-    private static final double ENC_REVS_PER_DEGREE = HoodedShooterConstants.TURRET_ENCODER_REV_PER_DEG;
+    private static final double DEG_PER_MOTOR_REV = HoodedShooterConstants.TURRET_DEG_PER_MOTOR_REV;
     private static final int POSITION_SLOT = 0;
     private static final int SMART_MOTION_SLOT = 1;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
@@ -38,20 +39,22 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double visionCorrection;
     public double targetAngle;
     private double inPositionBandwidth = 1;
+    public boolean getEndpoint;
+    public double endpoint;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
         mEncoder = m_motor.getEncoder();
         mPidController = m_motor.getPIDController();
+        m_motor.restoreFactoryDefaults();
+        mEncoder.setPositionConversionFactor(DEG_PER_MOTOR_REV);// 1 /
+                                                                // HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
 
-        mEncoder.setPositionConversionFactor(ENC_REVS_PER_DEGREE);// 1 /
-                                                                  // HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
-
-        mPidController.setP(.16);
+        m_motor.setOpenLoopRampRate(5);
 
         gainSettings();
-        SmartDashboard.putNumber("FW8", m_motor.getFirmwareVersion());
-        targetAngle = getAngle();
+        mEncoder.setPosition(0);
+        targetAngle = 0;
 
         if (RobotBase.isSimulation()) {
             ElevatorSimConstants.kCarriageMass = 2;
@@ -63,12 +66,18 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
             mElevatorSim = new ElevatorSimWrapper(ElevatorSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
         }
-       // setSoftwareLimits();
+        // setSoftwareLimits();
+        SmartDashboard.putNumber("TurretEndpoint", 0);
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+
+        if (getEndpoint) {
+            endpoint = SmartDashboard.getNumber("TurretEndpoint", 0);
+            getEndpoint = false;
+        }
 
     }
 
@@ -156,18 +165,18 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     private void gainSettings() {
         // PID coefficients
-        kP = 5e-2;
-        kI = 1e-5;
+        kP = 5e-5;
+        kI = 0;// 1e-5;
         kD = 0;
         kIz = 1;
-        kFF = 0.000156;
-        kMaxOutput = 1;
-        kMinOutput = -1;
+        kFF = 0.00000156;
+        kMaxOutput = .5;
+        kMinOutput = -.5;
         maxRPM = 5700;// not used
         allowedErr = 1;
         // Smart Motion Coefficients
-        maxVel = 5000; // rpm
-        maxAcc = 750;
+        maxVel = 500; // rpm
+        maxAcc = 75;
 
         // set PID coefficients
         mPidController.setP(kP);
@@ -187,4 +196,11 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         return 0;
     }
 
+    public void clearFaults() {
+        m_motor.clearFaults();
+    }
+
+    public int getFaults() {
+        return m_motor.getFaults();
+    }
 }

@@ -26,7 +26,9 @@ public class ResetTiltAngle extends CommandBase {
     @Override
     public void execute() {
         m_tilt.resetAngle(0);
-        m_tilt.targetAngle=0;
+        m_tilt.targetAngle = 0;
+        m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt));
+        m_tilt.setSoftwareLimits();
     }
 
     // Called once the command ends or is interrupted.
@@ -37,7 +39,7 @@ public class ResetTiltAngle extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return m_tilt.getAngle() == 0;
+        return m_tilt.getAngle() == 0 && m_tilt.getSoftwareLimitsEnabled();
 
     }
 }

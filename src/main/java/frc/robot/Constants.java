@@ -82,9 +82,9 @@ public static final double MINIMUM_TURN_SPEED = 0;
       // DIMENSIONS IN METERS
 
       public static double WHEEL_DIAMETER = .1524;//6"
-      public static double WHEEL_CIRCUMFERENCE = .4788;
+      public static double WHEEL_CIRCUMFERENCE = .4788;//meters
       public static double METERS_PER_MOTOR_REV = 0.0467;//pi * diameter /geaar ratio
-      public static double NEO550_COUNTS_PER_REV = 4096;
+      public static double NEO550_COUNTS_PER_REV = 4096;//not used
       public static double DRIVE_GEAR_RATIO = 10.25;
 
       public final static double WHEELBASE_WIDTH = .69;
@@ -171,9 +171,8 @@ public static final double MINIMUM_TURN_SPEED = 0;
        */
 
       public static final double TILT_DEG_PER_ENCODER_REV = .00029;// 100:1 gear box added
-      public static final double TILT_DEGREE_PER_ENCODER_REV = 3450;
-      public static final double TILT_MIN_TURNS = 0;
-      public static final double TILT_MAX_TURNS = 10;
+      public static final double TILT_MIN_ANGLE = 0;
+      public static final double TILT_MAX_ANGLE = 10;
 
       // turret
 
@@ -186,7 +185,7 @@ public static final double MINIMUM_TURN_SPEED = 0;
        * teeth in 360 degrees, so 1 tooth = 360/220 = 1.64 degrees So 18 teeth (100
        * revs) = 18 * 1.64 = 29.5 degrees and one motor rev is .295 degrees 
        */
-      public static final double TURRET_ENCODER_REV_PER_DEG = .295;
+      public static final double TURRET_DEG_PER_MOTOR_REV = .295;
 
       public static final double TARGET_HEIGHT = Units.inchesToMeters(94);
       public static final double BASE_CAMERA_HEIGHT = Units.inchesToMeters(26);

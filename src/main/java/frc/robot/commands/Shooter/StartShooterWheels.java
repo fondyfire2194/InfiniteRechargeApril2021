@@ -5,38 +5,35 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Tilt;
+package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
-import frc.robot.subsystems.RevTiltSubsystem;
+import frc.robot.subsystems.RevShooterSubsystem;
 
-public class TiltMoveToReverseLimit extends CommandBase {
+public class StartShooterWheels extends CommandBase {
   /**
-   * Creates a new TiltMoveToReverseLimit.
+   * Creates a new StartShooter.
    */
-  private int simCtr;
-  private final RevTiltSubsystem m_tilt;
+  private RevShooterSubsystem m_shooter;
+  private double m_rpm;
 
-  public TiltMoveToReverseLimit(RevTiltSubsystem tilt) {
+  public StartShooterWheels(RevShooterSubsystem shooter, double rpm) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_tilt = tilt;
-    addRequirements(m_tilt);
+    addRequirements(shooter);
+    m_shooter = shooter;
+    m_rpm = rpm;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    simCtr = 0;
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!m_tilt.positionResetDone)
-      m_tilt.moveManually(-.2);
-    if (Robot.isSimulation())
-      simCtr++;
+    m_shooter.spinAtRpm(m_rpm);
   }
 
   // Called once the command ends or is interrupted.
@@ -47,6 +44,6 @@ public class TiltMoveToReverseLimit extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_tilt.positionResetDone || m_tilt.m_reverseLimit.get() || simCtr > 25;
+    return false;
   }
 }

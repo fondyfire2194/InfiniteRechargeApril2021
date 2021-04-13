@@ -4,44 +4,46 @@
 
 package frc.robot.commands.Tilt;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTiltSubsystem;
 
-public class JogTilt extends CommandBase {
-  /** Creates a new JogTilt. */
-  private final RevTiltSubsystem m_tilt;
-  private double m_speed;
+public class StopTilt extends CommandBase {
+  /** Creates a new PositionTilt. */
 
-  public JogTilt(RevTiltSubsystem tilt, double speed) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  private final RevTiltSubsystem m_tilt;
+
+  private double m_position;
+
+  public StopTilt(RevTiltSubsystem tilt) {
     m_tilt = tilt;
-    m_speed = speed;
+    m_position = m_tilt.getAngle();
     addRequirements(m_tilt);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_tilt.targetAngle = m_position;
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Math.abs(m_speed) < .1)
-      m_speed = 0;
-    m_tilt.moveManually(m_speed);
+    m_tilt.goToPositionMotionMagic(m_position);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_tilt.stop();
+
     m_tilt.targetAngle = m_tilt.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

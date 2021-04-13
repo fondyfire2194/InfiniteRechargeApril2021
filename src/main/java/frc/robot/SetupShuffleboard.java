@@ -8,8 +8,7 @@ import java.util.Map;
 
 import edu.wpi.cscore.HttpCamera;
 import edu.wpi.cscore.HttpCamera.HttpCameraKind;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableType;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.command.InstantCommand;
@@ -20,6 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
 import frc.robot.commands.ControlPanel.PositionNumberRevs;
 import frc.robot.commands.ControlPanel.PositionToColor;
@@ -32,17 +32,21 @@ import frc.robot.commands.RobotDrive.TurnToAngleProfiled;
 import frc.robot.commands.Shooter.DecreaseShooterSpeed;
 import frc.robot.commands.Shooter.IncreaseShooterSpeed;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StartShooter;
+import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
-import frc.robot.commands.Shooter.StopShooter;
+import frc.robot.commands.Shooter.StopShooterWheels;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.ResetTiltAngle;
+import frc.robot.commands.Tilt.StopTilt;
+import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.AdjustPositionTarget;
+import frc.robot.commands.Turret.ClearTurFaults;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.ResetTurretAngle;
+import frc.robot.commands.Turret.StopTurret;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ControlPanelSubsystem;
@@ -105,12 +109,11 @@ public class SetupShuffleboard {
                                                                                            // commands
 
                         turretCommands.add("Reset to 0", new ResetTurretAngle(m_turret));
-                        turretCommands.add("To 75", new PositionTurret(m_turret, 75));
-                        turretCommands.add("To -60", new PositionTurret(m_turret, -60));// degrees
-                        turretCommands.add("To +0", new PositionTurret(m_turret, 0));// degrees
+                        turretCommands.add("To Endpoint", new PositionTurret(m_turret));// degrees
                         turretCommands.add("Add 10", new AdjustPositionTarget(m_turret, 10));
-                        turretCommands.add("50 to Vision", new PositionTurretToVision(m_turret, 50, m_limelight));
-                        turretCommands.add("-50 to Vision", new PositionTurretToVision(m_turret, -50, m_limelight));
+                        turretCommands.add("Endpoint to Vision", new PositionTurretToVision(m_turret, 50, m_limelight));
+                        turretCommands.add("StopTurret", new StopTurret(m_turret));
+                        turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
 
                         ShuffleboardLayout turretValues = Shuffleboard.getTab("SetupTurretTilt")
                                         .getLayout("TurretValues", BuiltInLayouts.kList).withPosition(2, 0)
@@ -121,6 +124,7 @@ public class SetupShuffleboard {
                         turretValues.addNumber("TUTgt", () -> m_turret.targetAngle);
                         turretValues.addNumber("Pct", () -> m_turret.getOut());
                         turretValues.addNumber("Speed", () -> m_turret.getSpeed());
+
                         turretValues.addBoolean("PlusLimit", () -> m_turret.onPlusSoftwareLimit())
                                         .withWidget(BuiltInWidgets.kTextView);
                         turretValues.addBoolean("MinusLimit", () -> m_turret.onMinusSoftwareLimit())
@@ -144,11 +148,11 @@ public class SetupShuffleboard {
                                                                                            // for
                                                                                            // commands
                         tiltCommands.add("Reset To 0", new ResetTiltAngle(m_tilt));
-                        tiltCommands.add("To 5", new PositionTilt(m_tilt, 5));
-                        tiltCommands.add("To 0", new PositionTilt(m_tilt, 0));
-                        tiltCommands.add("To Home", new PositionTilt(m_tilt, -1.5));
+                        tiltCommands.add("To Setpoint", new PositionTilt(m_tilt));
                         tiltCommands.add("To Bottom Switch", new TiltMoveToReverseLimit(m_tilt));
                         tiltCommands.add("5 to Vision", new PositionTiltToVision(m_tilt, 5, m_limelight));
+                        tiltCommands.add("StopTilt", new StopTilt(m_tilt));
+                        tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTurretTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 5)
@@ -159,11 +163,13 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("Amps", () -> m_tilt.getOut());
                         tiltValues.addNumber("Speed", () -> m_tilt.getSpeed());
 
-                        tiltValues.addBoolean("PlusLimit", () -> m_tilt.onPlusSoftwareLimit())
+                        tiltValues.addBoolean("PlusSWLimit", () -> m_tilt.onPlusSoftwareLimit())
                                         .withWidget(BuiltInWidgets.kTextView);
-                        tiltValues.addBoolean("MinusLimit", () -> m_tilt.onMinusSoftwareLimit())
+                        tiltValues.addBoolean("MinusSWLimit", () -> m_tilt.onMinusSoftwareLimit())
                                         .withWidget(BuiltInWidgets.kTextView);
                         tiltValues.addBoolean("InPosition", () -> m_tilt.atTargetAngle())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        tiltValues.addBoolean("OnBottomLS", () -> m_tilt.m_reverseLimit.get())
                                         .withWidget(BuiltInWidgets.kTextView);
 
                         tiltValues.add("Cmd", m_tilt);
@@ -179,8 +185,8 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT")); // hide labels for
                                                                                            // commands
 
-                        shooterCommands.add("Shooter", new StartShooter(m_shooter, 1000));
-                        shooterCommands.add("Stop", new StopShooter(m_shooter));
+                        shooterCommands.add("Shooter", new StartShooterWheels(m_shooter, 500));
+                        shooterCommands.add("Stop", new StopShooterWheels(m_shooter));
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
                         shooterCommands.add("Inc 10% ", new IncreaseShooterSpeed(m_shooter));
                         shooterCommands.add("Dec 10% ", new DecreaseShooterSpeed(m_shooter));
@@ -269,11 +275,9 @@ public class SetupShuffleboard {
                                         .getLayout("RobotOdometry", BuiltInLayouts.kList).withPosition(5, 0)
                                         .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // hide labels
 
-                        // robotOdometry.addNumber("X Posn", () -> m_robotDrive.getPose().getX());
-                        // robotOdometry.addNumber("Y Posn", () -> m_robotDrive.getPose().getY());
-                        // robotOdometry.addNumber("Rotn", () ->
-                        // m_robotDrive.getPose().getRotation().getDegrees());
-                        
+                        robotOdometry.addNumber("X Posn", () -> m_robotDrive.getPose().getX());
+                        robotOdometry.addNumber("Y Posn", () -> m_robotDrive.getPose().getY());
+                        robotOdometry.addNumber("Rotn", () -> m_robotDrive.getPose().getRotation().getDegrees());
 
                 }
                 /**

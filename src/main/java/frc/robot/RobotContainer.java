@@ -10,7 +10,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.XboxController;
@@ -21,7 +20,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
-import frc.robot.commands.Tilt.JogTilt;
+import frc.robot.commands.Shooter.JogShooter;
+import frc.robot.commands.Shooter.StopShooterWheels;
+import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -103,8 +104,11 @@ public class RobotContainer {
             m_compressor = new Compressor();
             m_traj = new FondyFireTrajectory(m_robotDrive);
 
-            m_tilt.setDefaultCommand(new JogTilt(m_tilt, setupGamepad.getY(Hand.kLeft)).withName("TiltJog"));
-            m_turret.setDefaultCommand(new TurretJog(m_turret, setupGamepad.getX(Hand.kLeft)).withName("TurretJog"));
+            m_turret.setDefaultCommand(getJogTurretCommand());
+
+            m_tilt.setDefaultCommand(getJogTiltCommand());
+
+            m_shooter.setDefaultCommand(new StopShooterWheels(m_shooter));
 
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
                         m_limelight, m_controlPanel, m_intake, m_traj, m_climber);
@@ -140,7 +144,7 @@ public class RobotContainer {
             // Setup gamepad XBox 3
             JoystickButton setupA = new JoystickButton(setupGamepad, 1);
             JoystickButton setupB = new JoystickButton(setupGamepad, 2);
-            // JoystickButton setupX = new JoystickButton(setupGamepad, 3);
+            JoystickButton setupX = new JoystickButton(setupGamepad, 3);
             // JoystickButton setupY = new JoystickButton(setupGamepad, 4);
 
             setupA
@@ -157,7 +161,9 @@ public class RobotContainer {
 
             setupB.whenPressed(new StartIntake(m_intake));
 
-            // LiveWindow.disableAllTelemetry();
+            setupX.whileHeld(new JogShooter(m_shooter));
+
+            LiveWindow.disableAllTelemetry();
 
       }
 
@@ -176,4 +182,11 @@ public class RobotContainer {
             return new ArcadeDrive(m_robotDrive, () -> -m_driverController.getY(), () -> m_driverController.getTwist());
       }
 
+      public Command getJogTurretCommand() {
+            return new TurretJog(m_turret, () -> setupGamepad.getRawAxis(0) / 2);
+      }
+
+      public Command getJogTiltCommand() {
+            return new TiltJog(m_tilt, () -> setupGamepad.getRawAxis(1) / 2);
+      }
 }
