@@ -4,33 +4,38 @@
 
 package frc.robot.commands.Turret;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTurretSubsystem;
 
 public class AdjustPositionTarget extends CommandBase {
   /** Creates a new AdjustPositionTarget. */
   private final RevTurretSubsystem m_turret;
-  private double m_adjustment;
+  private double m_position;
+  private int loopCtr;
 
-  public AdjustPositionTarget(RevTurretSubsystem turret, double adjustment) {
+  public AdjustPositionTarget(RevTurretSubsystem turret) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
-    m_adjustment = adjustment;
-  //  addRequirements(m_turret);
+    addRequirements(m_turret);
 
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_turret.targetAngle += m_adjustment;
-    m_turret.goToPositionMotionMagic(m_turret.targetAngle);
-    
+    loopCtr = 0;
+    m_turret.getEndpoint = true;
+    m_position = m_turret.targetAngle;
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    loopCtr++;
+    if (!m_turret.getEndpoint && loopCtr > 2)
+      m_turret.targetAngle = m_position + m_turret.endpoint;
   }
 
   // Called once the command ends or is interrupted.
@@ -41,6 +46,6 @@ public class AdjustPositionTarget extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return !m_turret.getEndpoint & loopCtr > 2 || loopCtr > 5;
   }
 }

@@ -34,6 +34,7 @@ import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.StopShooterWheels;
+import frc.robot.commands.Tilt.AdjustTiltPositionTarget;
 import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
@@ -103,20 +104,20 @@ public class SetupShuffleboard {
                  */
                 if (m_showTurret) {
                         ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurretTilt")
-                                        .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 5)
+                                        .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "LEFT")); // hide labels for
                                                                                            // commands
 
                         turretCommands.add("Reset to 0", new ResetTurretAngle(m_turret));
-                        turretCommands.add("To Endpoint", new PositionTurret(m_turret));// degrees
-                        turretCommands.add("Add 10", new AdjustPositionTarget(m_turret, 10));
+                        turretCommands.add("To Setpoint", new PositionTurret(m_turret));// degrees
+                        turretCommands.add("Add Ep Value", new AdjustPositionTarget(m_turret));
                         turretCommands.add("Endpoint to Vision", new PositionTurretToVision(m_turret, 50, m_limelight));
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
 
                         ShuffleboardLayout turretValues = Shuffleboard.getTab("SetupTurretTilt")
                                         .getLayout("TurretValues", BuiltInLayouts.kList).withPosition(2, 0)
-                                        .withSize(2, 6).withProperties(Map.of("Label position", "LEFT")); // hide labels
+                                        .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // hide labels
                                                                                                           // for
 
                         turretValues.addNumber("TUAngle", () -> m_turret.getAngle());
@@ -141,7 +142,7 @@ public class SetupShuffleboard {
                  */
                 if (m_showTilt) {
                         ShuffleboardLayout tiltCommands = Shuffleboard.getTab("SetupTurretTilt")
-                                        .getLayout("Tilt", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 5)
+                                        .getLayout("Tilt", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "LEFT")); // hide
                                                                                            // labels
                                                                                            // for
@@ -152,9 +153,11 @@ public class SetupShuffleboard {
                         tiltCommands.add("5 to Vision", new PositionTiltToVision(m_tilt, 5, m_limelight));
                         tiltCommands.add("StopTilt", new StopTilt(m_tilt));
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
+                        tiltCommands.add("Add Ep Value", new AdjustTiltPositionTarget(m_tilt));
+  
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTurretTilt")
-                                        .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 5)
+                                        .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); // hide labels for
 
                         tiltValues.addNumber("TIAngle", () -> m_tilt.getAngle());

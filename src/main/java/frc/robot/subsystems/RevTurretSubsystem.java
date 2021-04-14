@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.FaultID;
@@ -14,7 +16,11 @@ import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -38,6 +44,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private double inPositionBandwidth = 1;
     public boolean getEndpoint;
     public double endpoint;
+    private NetworkTableEntry turretSetpoint;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -63,8 +70,13 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
             mElevatorSim = new ElevatorSimWrapper(ElevatorSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
         }
-        // setSoftwareLimits();
-        SmartDashboard.putNumber("TurretEndpoint", 0);
+
+        ShuffleboardLayout turretEndpoint = Shuffleboard.getTab("SetupTurretTilt")
+                .getLayout("TurretEndpoints", BuiltInLayouts.kList).withPosition(0, 3).withSize(2, 1)
+                .withProperties(Map.of("Label position", "LEFT")); 
+
+        turretSetpoint = turretEndpoint.add("TurretEndpoint", 0).getEntry();
+
     }
 
     @Override
@@ -72,7 +84,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         // This method will be called once per scheduler run
 
         if (getEndpoint) {
-            endpoint = SmartDashboard.getNumber("TurretEndpoint", 0);
+            endpoint = turretSetpoint.getDouble(0);
             getEndpoint = false;
         }
 

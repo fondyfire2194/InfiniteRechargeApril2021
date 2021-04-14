@@ -40,6 +40,6 @@ public class ResetTurretAngle extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_turret.getAngle() == 0 && m_turret.getSoftwareLimitsEnabled();
+    return m_turret.targetAngle == 0 && m_turret.getSoftwareLimitsEnabled();
   }
 }

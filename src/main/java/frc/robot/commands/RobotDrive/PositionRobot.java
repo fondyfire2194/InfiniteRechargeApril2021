@@ -5,7 +5,6 @@
 package frc.robot.commands.RobotDrive;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevDrivetrain;
 
@@ -39,10 +38,7 @@ public class PositionRobot extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    SmartDashboard.putBoolean("DID", true);
-    SmartDashboard.putNumber("LD", m_drive.getLeftDistance());
-    SmartDashboard.putNumber("RD", m_drive.getRightDistance());
-
+  
   }
 
   // Returns true when the command should end.

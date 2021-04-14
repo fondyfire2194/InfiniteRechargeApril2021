@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANEncoder;
@@ -15,7 +17,11 @@ import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.util.Units;
@@ -42,6 +48,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private double inPositionBandwidth = 1;
     public boolean getEndpoint;
     public double endpoint;
+    private NetworkTableEntry tiltSetpoint;
 
     public RevTiltSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TILT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -69,14 +76,21 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
             mElevatorSim = new ElevatorSimWrapper(ElevatorSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
         }
-        SmartDashboard.putNumber("TiltEndpoint", 0);
+
+        ShuffleboardLayout tiltEndpoint = Shuffleboard.getTab("SetupTurretTilt")
+                .getLayout("TiltEndpoints", BuiltInLayouts.kList).withPosition(4, 3).withSize(2, 1)
+                .withProperties(Map.of("Label position", "LEFT")); 
+
+        tiltSetpoint = tiltEndpoint.add("TiltEndpoint", 0).getEntry();
+
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        if (getEndpoint) {
-            endpoint = SmartDashboard.getNumber("TiltEndpoint", 0);
+               if (getEndpoint) {
+            endpoint = tiltSetpoint.getDouble(0);
+            targetAngle = endpoint;
             getEndpoint = false;
         }
     }
