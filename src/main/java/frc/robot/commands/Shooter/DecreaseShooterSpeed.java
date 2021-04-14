@@ -19,12 +19,16 @@ public class DecreaseShooterSpeed extends InstantCommand {
   public DecreaseShooterSpeed(RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
+   // addRequirements(m_shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     double currentSpeed = m_shooter.getRPM();
-    m_shooter.spinAtRpm(currentSpeed *.9);
+    double newSpeed = currentSpeed / 1.1;
+    m_shooter.requiredSpeed = newSpeed;
+    m_shooter.spinAtRpm(newSpeed);
+
   }
 }

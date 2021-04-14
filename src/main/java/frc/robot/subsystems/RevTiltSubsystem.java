@@ -170,6 +170,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         m_motor.clearFaults();
     }
 
+    public int getFaults() {
+        return m_motor.getFaults();
+    }
+
     private void gainSettings() {
         // PID coefficients
         kP = 5e-3;

@@ -8,7 +8,6 @@ import java.util.Map;
 
 import edu.wpi.cscore.HttpCamera;
 import edu.wpi.cscore.HttpCamera.HttpCameraKind;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.command.InstantCommand;
@@ -16,30 +15,30 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
 import frc.robot.commands.ControlPanel.PositionNumberRevs;
 import frc.robot.commands.ControlPanel.PositionToColor;
 import frc.robot.commands.ControlPanel.ToggleLookForColor;
+import frc.robot.commands.RobotDrive.ClearRobFaults;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.RobotDrive.ResetPose;
 import frc.robot.commands.RobotDrive.TurnToAngleProfiled;
+import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.DecreaseShooterSpeed;
 import frc.robot.commands.Shooter.IncreaseShooterSpeed;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.StopShooterWheels;
+import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.ResetTiltAngle;
 import frc.robot.commands.Tilt.StopTilt;
-import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.AdjustPositionTarget;
 import frc.robot.commands.Turret.ClearTurFaults;
@@ -124,7 +123,7 @@ public class SetupShuffleboard {
                         turretValues.addNumber("TUTgt", () -> m_turret.targetAngle);
                         turretValues.addNumber("Pct", () -> m_turret.getOut());
                         turretValues.addNumber("Speed", () -> m_turret.getSpeed());
-
+                        turretValues.addNumber("Faults", () -> m_turret.getFaults());
                         turretValues.addBoolean("PlusLimit", () -> m_turret.onPlusSoftwareLimit())
                                         .withWidget(BuiltInWidgets.kTextView);
                         turretValues.addBoolean("MinusLimit", () -> m_turret.onMinusSoftwareLimit())
@@ -162,7 +161,7 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("TITgt", () -> m_tilt.targetAngle);
                         tiltValues.addNumber("Amps", () -> m_tilt.getOut());
                         tiltValues.addNumber("Speed", () -> m_tilt.getSpeed());
-
+                        tiltValues.addNumber("Faults", () -> m_tilt.getFaults());
                         tiltValues.addBoolean("PlusSWLimit", () -> m_tilt.onPlusSoftwareLimit())
                                         .withWidget(BuiltInWidgets.kTextView);
                         tiltValues.addBoolean("MinusSWLimit", () -> m_tilt.onMinusSoftwareLimit())
@@ -191,6 +190,7 @@ public class SetupShuffleboard {
                         shooterCommands.add("Inc 10% ", new IncreaseShooterSpeed(m_shooter));
                         shooterCommands.add("Dec 10% ", new DecreaseShooterSpeed(m_shooter));
                         shooterCommands.add("Shoot", new ShootCells(m_shooter, m_transport, m_compressor, 3000, 0));
+                        shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
                                         .getLayout("ShooterValues", BuiltInLayouts.kList).withPosition(2, 0)
@@ -201,6 +201,7 @@ public class SetupShuffleboard {
                         shooterValues.addNumber("LeftAmps", () -> m_shooter.getLeftAmps());
                         shooterValues.addNumber("RightAmps", () -> m_shooter.getRightAmps());
                         shooterValues.addNumber("SpeedCommand", () -> m_shooter.requiredSpeed);
+                        shooterValues.addNumber("Faults", () -> m_shooter.getFaults());
                         shooterValues.addBoolean("AtSpeed", () -> m_shooter.atSpeed())
                                         .withWidget(BuiltInWidgets.kTextView);
                         shooterValues.add(m_shooter);
@@ -254,6 +255,7 @@ public class SetupShuffleboard {
                         robotCommands.add("Rot to 90", new TurnToAngleProfiled(90, m_robotDrive));
                         robotCommands.add("Rot to 0", new TurnToAngleProfiled(0, m_robotDrive));
                         robotCommands.add("Rot to -90", new TurnToAngleProfiled(-90, m_robotDrive));
+                        robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
 
                         ShuffleboardLayout robotValues = Shuffleboard.getTab("SetupRobot")
                                         .getLayout("RobotValues", BuiltInLayouts.kList).withPosition(2, 0)
@@ -269,6 +271,7 @@ public class SetupShuffleboard {
                         robotValues.addNumber("LeftAmps", () -> m_robotDrive.getLeftAmps());
                         robotValues.addNumber("RightAmps", () -> m_robotDrive.getRightAmps());
                         robotValues.addNumber("Gyro Yaw", () -> m_robotDrive.getYaw());
+                        robotValues.addNumber("Faults", () -> m_robotDrive.getFaults());
                         robotValues.add("Cmd", m_robotDrive);
 
                         ShuffleboardLayout robotOdometry = Shuffleboard.getTab("SetupRobot")

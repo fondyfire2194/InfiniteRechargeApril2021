@@ -10,6 +10,7 @@ import frc.robot.subsystems.RevShooterSubsystem;
 public class StopShooterWheels extends CommandBase {
   /** Creates a new StopShooterWheels. */
   private RevShooterSubsystem m_shooter;
+
   public StopShooterWheels(RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
@@ -18,23 +19,26 @@ public class StopShooterWheels extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    m_shooter.stop();
+    m_shooter.requiredSpeed = 0;
+    m_shooter.requiredSpeedLast = 0;
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooter.stop();
-    m_shooter.requiredSpeed=0;
-    m_shooter.requiredSpeedLast=0;
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Math.abs(m_shooter.getRPM()) < 100;
   }
 }

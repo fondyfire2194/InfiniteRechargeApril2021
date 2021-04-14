@@ -40,6 +40,7 @@ public static final double MINIMUM_TURN_SPEED = 0;
 
       public static final int LEFT_MOTOR = 6;
       public static final int RIGHT_MOTOR = 7;
+
       public static final int TURRET_ROTATE_MOTOR = 8;// turret
 
       public static final int TILT_MOTOR = 9;

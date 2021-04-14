@@ -108,13 +108,13 @@ public class RobotContainer {
 
             m_tilt.setDefaultCommand(getJogTiltCommand());
 
-            m_shooter.setDefaultCommand(new StopShooterWheels(m_shooter));
+             m_shooter.setDefaultCommand(getJogShooterCommand());
 
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
                         m_limelight, m_controlPanel, m_intake, m_traj, m_climber);
 
             m_robotDrive.setDefaultCommand(getArcadeDriveCommand());
-
+      
             configureButtonBindings();
 
             LiveWindow.disableAllTelemetry();
@@ -147,7 +147,7 @@ public class RobotContainer {
             JoystickButton setupX = new JoystickButton(setupGamepad, 3);
             // JoystickButton setupY = new JoystickButton(setupGamepad, 4);
 
-            setupA
+            setupX
 
                         .whenPressed(() -> m_transport.runFrontRollerMotor(.5))
                         .whenPressed(() -> m_transport.runRearRollerMotor(.5))
@@ -161,7 +161,7 @@ public class RobotContainer {
 
             setupB.whenPressed(new StartIntake(m_intake));
 
-            setupX.whileHeld(new JogShooter(m_shooter));
+            setupA.whileHeld(getJogShooterCommand());
 
             LiveWindow.disableAllTelemetry();
 
@@ -188,5 +188,10 @@ public class RobotContainer {
 
       public Command getJogTiltCommand() {
             return new TiltJog(m_tilt, () -> setupGamepad.getRawAxis(1) / 2);
+      }
+
+      public Command getJogShooterCommand() {
+            return new JogShooter(m_shooter, () -> setupGamepad.getRawAxis(2) / 2);
+
       }
 }

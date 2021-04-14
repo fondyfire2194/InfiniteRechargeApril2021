@@ -1,13 +1,17 @@
 package frc.robot.subsystems;
 
+import java.util.Arrays;
+
 //import com.kauailabs.navx.frc.AHRS;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
+import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import com.revrobotics.SimableCANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -49,7 +53,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private final DifferentialDrive mDrive;
 
     private DifferentialDrivetrainSimWrapper mSimulator;
-    
+
     public double leftTargetPosition;
     public double rightTargetPosition;
     private final NetworkTable m_customNetworkTable;
@@ -125,6 +129,14 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         coordinateGuiContainer.getEntry(".type").setString("CoordinateGui");
 
         m_customNetworkTable = coordinateGuiContainer.getSubTable("RobotPosition");
+        // Set current limiting on drive train to prevent brown outs
+        Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
+                .forEach((SimableCANSparkMax spark) -> spark.setSmartCurrentLimit(35));
+
+        // Set motors to brake when idle. We don't want the drive train to coast.
+        Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
+                .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kBrake));
+
     }
 
     private void setupPidController(CANPIDController pidController, double kp, double ki, double kd, double kff,
@@ -268,15 +280,16 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     @Override
     public void periodic() {
         updateOdometry();
-        m_customNetworkTable.getEntry("X").setDouble(getX()*39.37);
-        m_customNetworkTable.getEntry("Y").setDouble(getY()*39.37);
+        m_customNetworkTable.getEntry("X").setDouble(getX() * 39.37);
+        m_customNetworkTable.getEntry("Y").setDouble(getY() * 39.37);
         m_customNetworkTable.getEntry("Angle").setDouble(getHeading());
-      // Actually update the display every 5 loops = 100ms
-      if (m_robotPositionCtr % 5 == 0) {
-        m_customNetworkTable.getEntry("Ctr").setDouble(m_robotPositionCtr);
+        // Actually update the display every 5 loops = 100ms
+        if (m_robotPositionCtr % 5 == 0) {
+            m_customNetworkTable.getEntry("Ctr").setDouble(m_robotPositionCtr);
 
-     }
-     ++m_robotPositionCtr;
+        }
+        ++m_robotPositionCtr;
+        
     }
 
     @Override
@@ -292,5 +305,15 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     public void resetPose(Pose2d pose) {
+    }
+
+    public void clearFaults() {
+        Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
+                .forEach((SimableCANSparkMax spark) -> spark.clearFaults());
+
+    }
+
+    public int getFaults() {
+        return mLeadLeft.getFaults() + mLeadRight.getFaults() + mFollowerLeft.getFaults() + mFollowerRight.getFaults();
     }
 }
