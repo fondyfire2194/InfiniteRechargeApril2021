@@ -41,7 +41,7 @@ public class ArcadeDrive extends CommandBase {
   public void execute() {
 
     m_drivetrain.arcadeDrive(m_xaxisSpeedSupplier.get(), m_zaxisRotateSupplier.get());
-    SmartDashboard.putNumber("ASS", m_xaxisSpeedSupplier.get());
+  
   }
 
   // Called once the command ends or is interrupted.

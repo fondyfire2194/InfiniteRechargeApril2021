@@ -20,7 +20,7 @@ public class PositionTiltToVision extends CommandBase {
 
   private double m_endpoint;
 
-  public PositionTiltToVision(RevTiltSubsystem tilt, double position, LimeLight limelight) {
+  public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
     m_position = position;

@@ -14,15 +14,18 @@ public class PositionTilt extends CommandBase {
 
   private int loopCtr;
 
-  public PositionTilt(RevTiltSubsystem tilt) {
+  private double m_endpoint;
+
+  public PositionTilt(RevTiltSubsystem tilt, double endpoint) {
     m_tilt = tilt;
+    m_endpoint = endpoint;
     addRequirements(m_tilt);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_tilt.getEndpoint = true;
+
     loopCtr = 0;
 
   }
@@ -31,8 +34,7 @@ public class PositionTilt extends CommandBase {
   @Override
   public void execute() {
     loopCtr++;
-    if (!m_tilt.getEndpoint && loopCtr > 2)
-      m_tilt.targetAngle = m_tilt.endpoint;
+    m_tilt.targetAngle = m_endpoint;
   }
 
   // Called once the command ends or is interrupted.
@@ -44,6 +46,6 @@ public class PositionTilt extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !m_tilt.getEndpoint & loopCtr > 2 || loopCtr > 5;
+    return loopCtr > 2;
   }
 }

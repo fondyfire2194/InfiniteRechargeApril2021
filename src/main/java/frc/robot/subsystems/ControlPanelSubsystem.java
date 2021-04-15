@@ -114,7 +114,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
    public void turnWheelMotor(double speed) {
       m_controlPanelMotor.set(ControlMode.PercentOutput, speed);
-      SmartDashboard.putNumber("CPS", speed);
+ 
    }
 
    public double getMotorSet() {
@@ -206,7 +206,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
          }
          String temp = seenColor[colorNumber];
-         SmartDashboard.putString("SeenColor", temp);
+ 
          int ourTargetColor = gameColorNumber + 2;
          if (ourTargetColor > 4)
             ourTargetColor -= 4;

@@ -103,8 +103,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     @Override
     public void goToPosition(double angle) {
-        SmartDashboard.putNumber("MMAP", angle);
-        SmartDashboard.putNumber("MMPP", mPidController.getP(POSITION_SLOT));
+    
         mPidController.setReference(angle, ControlType.kPosition, POSITION_SLOT, GRAVITY_COMPENSATION_VOLTS,
                 CANPIDController.ArbFFUnits.kVoltage);
     }

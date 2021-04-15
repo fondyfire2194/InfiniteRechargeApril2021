@@ -19,7 +19,7 @@ public class PositionTurretToVision extends CommandBase {
 
   private int onTarget;
 
-  public PositionTurretToVision(RevTurretSubsystem turret, double position, LimeLight limelight) {
+  public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
     m_limelight = limelight;

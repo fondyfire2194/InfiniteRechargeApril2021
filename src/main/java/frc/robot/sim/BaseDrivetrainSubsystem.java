@@ -17,7 +17,7 @@ public abstract class BaseDrivetrainSubsystem extends SubsystemBase implements D
     {
         mOdometry = new DifferentialDriveOdometry(new Rotation2d());
         mField = new Field2d();
-        SmartDashboard.putData(mField);
+ //       SmartDashboard.putData(mField);
     }
 
     public double getPositionError(double leftGoal, double rightGoal)

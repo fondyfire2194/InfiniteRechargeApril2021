@@ -14,14 +14,16 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.LimelightControlMode.CamMode;
+import frc.robot.LimelightControlMode.LedMode;
+import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.Shooter.JogShooter;
-import frc.robot.commands.Shooter.StopShooterWheels;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.subsystems.CellTransportSubsystem;
@@ -90,7 +92,7 @@ public class RobotContainer {
             // Pref.deleteUnused();
             // Pref.addMissing();
             m_robotDrive = new RevDrivetrain();
-            SmartDashboard.putData(m_robotDrive);
+
             m_climber = new ClimberSubsystem();
             m_transport = new CellTransportSubsystem();
             m_controlPanel = new ControlPanelSubsystem();
@@ -98,9 +100,13 @@ public class RobotContainer {
             m_shooter = new RevShooterSubsystem();
             m_turret = new RevTurretSubsystem();
             m_tilt = new RevTiltSubsystem();
-            SmartDashboard.putData(m_tilt);
-            SmartDashboard.putData(m_turret);
+
             m_limelight = new LimeLight();
+            m_limelight.setCamMode(CamMode.kvision);
+            m_limelight.setLEDMode(LedMode.kpipeLine);
+            m_limelight.setStream((StreamType.kPiPMain));
+            m_limelight.setPipeline(0);
+
             m_compressor = new Compressor();
             m_traj = new FondyFireTrajectory(m_robotDrive);
 
@@ -108,18 +114,17 @@ public class RobotContainer {
 
             m_tilt.setDefaultCommand(getJogTiltCommand());
 
-             m_shooter.setDefaultCommand(getJogShooterCommand());
+            m_shooter.setDefaultCommand(getJogShooterCommand());
 
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
                         m_limelight, m_controlPanel, m_intake, m_traj, m_climber);
 
             m_robotDrive.setDefaultCommand(getArcadeDriveCommand());
-      
+
             configureButtonBindings();
 
             LiveWindow.disableAllTelemetry();
 
-            // SmartDashboard.putData("TuneTilt", new TiltTune(m_tilt));
       }
 
       /**

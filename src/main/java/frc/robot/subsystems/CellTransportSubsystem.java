@@ -61,7 +61,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("FrontRoller", m_frontRollerMotor.get());
+  
 
   }
 

@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -12,7 +14,12 @@ import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.FlywheelSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
@@ -31,6 +38,15 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public static double kGearing = 1;
     public static double kInertia = 0.008;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
+    private SimpleWidget shootColorWidget;
+    private NetworkTableEntry shootColorWidgetEntry;
+    private boolean doneOnce;
+
+    public String[] shootColor = { "red", "yellow", "green" };
+    public int shootColorNumber;
+    private int shootColorNumberLast = 1;
+
+    public double calculatedCameraDistance;
 
     public RevShooterSubsystem() {
         mLeftMotor = new SimableCANSparkMax(CANConstants.LEFT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -41,12 +57,10 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
         mEncoder = mLeftMotor.getEncoder();
         mPidController = mLeftMotor.getPIDController();
-        // CANError lfm = mLeftMotor.restoreFactoryDefaults();
-        // SmartDashboard.putBoolean("LeftMotorOK", lfm == CANError.kOk);
         // mRightMotor.restoreFactoryDefaults();
-         mLeftMotor.setOpenLoopRampRate(5.);
-         mLeftMotor.setClosedLoopRampRate(5.); 
-         mLeftMotor.setIdleMode(IdleMode.kBrake);
+        mLeftMotor.setOpenLoopRampRate(5.);
+        mLeftMotor.setClosedLoopRampRate(5.);
+        mLeftMotor.setIdleMode(IdleMode.kBrake);
         // mRightMotor.setIdleMode(IdleMode.kBrake) ;
         // mPidController.setP(0.001);
         // mPidController.setFF(1.0 / 4700);
@@ -55,6 +69,21 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             mSimulator = new FlywheelSimWrapper(FlywheelSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(mLeftMotor), RevEncoderSimWrapper.create(mLeftMotor));
         }
+
+        shootColorWidget = Shuffleboard.getTab("Competition").add("ShootColor", false).withWidget("Boolean Box")
+                .withPosition(0, 0).withSize(2, 2).withProperties(Map.of("colorWhenFalse", "black"));
+        shootColorWidgetEntry = shootColorWidget.getEntry();
+        shootColorWidgetEntry.getBoolean(false);
+
+    }
+
+    public void calibratePID(final double p, final double i, final double d, final double f) {
+        mPidController.setIAccum(0);
+        mPidController.setP(p);
+        mPidController.setI(i);
+        mPidController.setD(d);
+        mPidController.setFF(f);
+        mPidController.setIZone(1000);
     }
 
     @Override
@@ -76,7 +105,23 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-
+        
+        shootColorNumber = (int) SmartDashboard.getNumber("ShootColor", 0);
+        if (shootColorNumber > 2)
+            shootColorNumber = 2;
+        if (shootColorNumber != shootColorNumberLast) {
+            if (shootColorNumber == 0) {
+                shootColorWidgetEntry.setBoolean(false);
+                shootColorNumberLast = shootColorNumber;
+            } else
+                doneOnce = false;
+        }
+        if (!doneOnce) {
+            shootColorWidget.withProperties(Map.of("colorWhenTrue", shootColor[shootColorNumber]));
+            shootColorWidgetEntry.setBoolean(true);
+            shootColorNumberLast = shootColorNumber;
+            doneOnce = true;
+        }
     }
 
     @Override

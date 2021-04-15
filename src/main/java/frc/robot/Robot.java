@@ -8,9 +8,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.Turret.PositionHoldTurret;
@@ -24,8 +23,7 @@ import frc.robot.commands.Turret.PositionHoldTurret;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  public static SendableChooser<Integer> autoChooser;
-  public static SendableChooser<Integer> startDelayChooser = new SendableChooser<>();
+ 
   private RobotContainer m_robotContainer;
 
   /**
@@ -37,13 +35,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings.
 
     m_robotContainer = new RobotContainer();
-    autoChooser = new SendableChooser<>();
 
-    // Put
-    // autonomous chooser on the dashboard.
-    // The first argument is the root container
-    // The second argument is whether logging and config should be given separate
-    // tabs
+Shuffleboard.selectTab("Pre-Round");
 
   }
 
@@ -67,9 +60,7 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    // SmartDashboard.putNumber("MatchTime",
 
-    SmartDashboard.putData("CS", CommandScheduler.getInstance());
 
   }
 
@@ -96,6 +87,7 @@ public class Robot extends TimedRobot {
 
   public void autonomousInit() {
     m_robotContainer.m_turret.setDefaultCommand(new PositionHoldTurret(m_robotContainer.m_turret));
+    Shuffleboard.selectTab("Competition");
   }
 
   /**
@@ -117,6 +109,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     CommandScheduler.getInstance().cancelAll();
+    
+   
 
   }
 
@@ -126,8 +120,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
-    if (m_robotContainer.m_driverController.getRawButton(6))
-      SmartDashboard.putNumber("TEST2", 911);
+   
   }
 
   @Override

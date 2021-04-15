@@ -2,30 +2,27 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Turret;
+package frc.robot.commands.Tilt;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.RevTurretSubsystem;
+import frc.robot.subsystems.RevTiltSubsystem;
 
-public class PositionTurret extends CommandBase {
+public class PositionTiltTest extends CommandBase {
   /** Creates a new PositionTilt. */
 
-  private final RevTurretSubsystem m_turret;
+  private final RevTiltSubsystem m_tilt;
+
   private int loopCtr;
-  private double m_endpoint;
 
-  public PositionTurret(RevTurretSubsystem turret, double endpoint) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    m_turret = turret;
-    m_endpoint = endpoint;
-
-    addRequirements(m_turret);
-
+  public PositionTiltTest(RevTiltSubsystem tilt) {
+    m_tilt = tilt;
+    addRequirements(m_tilt);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_tilt.getEndpoint = true;
     loopCtr = 0;
 
   }
@@ -34,8 +31,8 @@ public class PositionTurret extends CommandBase {
   @Override
   public void execute() {
     loopCtr++;
-    m_turret.targetAngle = m_endpoint;
-
+    if (!m_tilt.getEndpoint && loopCtr > 2)
+      m_tilt.targetAngle = m_tilt.endpoint;
   }
 
   // Called once the command ends or is interrupted.
@@ -47,6 +44,6 @@ public class PositionTurret extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return loopCtr > 5;
+    return !m_tilt.getEndpoint & loopCtr > 2 || loopCtr > 5;
   }
 }

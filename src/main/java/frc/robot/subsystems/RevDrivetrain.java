@@ -6,12 +6,16 @@ import java.util.Arrays;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
-import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import com.revrobotics.SimableCANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
+
+import org.snobotv2.module_wrappers.navx.NavxWrapper;
+import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
+import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
+import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -26,10 +30,6 @@ import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PDPConstants;
 import frc.robot.sim.BaseDrivetrainSubsystem;
-import org.snobotv2.module_wrappers.navx.NavxWrapper;
-import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
-import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
-import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
 public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private static final DrivetrainConstants DRIVETRAIN_CONSTANTS = new NeoDrivetrainConstants();
@@ -224,8 +224,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
             speed = 0;
         if (Math.abs(rotation) < .1)
             rotation = 0;
-        SmartDashboard.putNumber("ASS", speed);
-        SmartDashboard.putNumber("ASR", rotation);
         mDrive.arcadeDrive(speed, rotation);
     }
 

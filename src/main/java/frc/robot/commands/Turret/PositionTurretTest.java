@@ -7,17 +7,15 @@ package frc.robot.commands.Turret;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTurretSubsystem;
 
-public class PositionTurret extends CommandBase {
+public class PositionTurretTest extends CommandBase {
   /** Creates a new PositionTilt. */
 
   private final RevTurretSubsystem m_turret;
   private int loopCtr;
-  private double m_endpoint;
 
-  public PositionTurret(RevTurretSubsystem turret, double endpoint) {
+  public PositionTurretTest(RevTurretSubsystem turret) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
-    m_endpoint = endpoint;
 
     addRequirements(m_turret);
 
@@ -34,7 +32,8 @@ public class PositionTurret extends CommandBase {
   @Override
   public void execute() {
     loopCtr++;
-    m_turret.targetAngle = m_endpoint;
+    if (!m_turret.getEndpoint && loopCtr > 2)
+      m_turret.targetAngle = m_turret.endpoint;
 
   }
 
@@ -47,6 +46,6 @@ public class PositionTurret extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return loopCtr > 5;
+    return !m_turret.getEndpoint & loopCtr > 2 || loopCtr > 5;
   }
 }
