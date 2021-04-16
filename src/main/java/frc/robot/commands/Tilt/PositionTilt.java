@@ -35,6 +35,7 @@ public class PositionTilt extends CommandBase {
   public void execute() {
     loopCtr++;
     m_tilt.targetAngle = m_endpoint;
+    m_tilt.goToPositionMotionMagic(m_tilt.targetAngle);
   }
 
   // Called once the command ends or is interrupted.
@@ -46,6 +47,6 @@ public class PositionTilt extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return loopCtr > 2;
+    return m_tilt.atTargetAngle()&&loopCtr>10;
   }
 }

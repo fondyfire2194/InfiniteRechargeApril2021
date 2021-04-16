@@ -54,8 +54,8 @@ public class Auto0 extends SequentialCommandGroup {
         new StartShooterWheels(shooter, shootSpeed),
         new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, tiltAngle),
             new PositionTurretToVision(turret, limelight, turretAngle)),
-        // s_trajectory.getRamsete(s_trajectory.centerStart).andThen(() ->
-        // drive.tankDriveVolts(0, 0)),
+        s_trajectory.getRamsete(s_trajectory.centerStart).andThen(() ->
+        drive.tankDriveVolts(0, 0)),
 
         new ParallelCommandGroup(new ShootCells(shooter, transport, compressor, shootSpeed, shootTime)
             .deadlineWith(new ParallelCommandGroup(new PositionHoldTilt(tilt)), new PositionHoldTurret(turret))),

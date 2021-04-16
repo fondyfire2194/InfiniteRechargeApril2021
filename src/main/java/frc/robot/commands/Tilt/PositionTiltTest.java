@@ -31,8 +31,12 @@ public class PositionTiltTest extends CommandBase {
   @Override
   public void execute() {
     loopCtr++;
-    if (!m_tilt.getEndpoint && loopCtr > 2)
+    if (!m_tilt.getEndpoint && loopCtr > 10) {
       m_tilt.targetAngle = m_tilt.endpoint;
+      m_tilt.getEndpoint = false;
+    }
+
+    m_tilt.goToPositionMotionMagic(m_tilt.endpoint);
   }
 
   // Called once the command ends or is interrupted.
@@ -44,6 +48,6 @@ public class PositionTiltTest extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !m_tilt.getEndpoint & loopCtr > 2 || loopCtr > 5;
+    return m_tilt.atTargetAngle() && loopCtr > 20;
   }
 }

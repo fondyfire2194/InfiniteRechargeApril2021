@@ -7,12 +7,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.Turret.PositionHoldTurret;
+import frc.robot.trajectories.FondyFireTrajectory;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,8 +26,13 @@ import frc.robot.commands.Turret.PositionHoldTurret;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
- 
+  private int autoChoice;
+
   private RobotContainer m_robotContainer;
+  private boolean autoHasRun;
+  private double m_startDelay;
+  private double startTime;
+  public double timeToStart;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -36,7 +44,7 @@ public class Robot extends TimedRobot {
 
     m_robotContainer = new RobotContainer();
 
-Shuffleboard.selectTab("Pre-Round");
+    Shuffleboard.selectTab("Pre-Round");
 
   }
 
@@ -60,8 +68,6 @@ Shuffleboard.selectTab("Pre-Round");
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-
-
   }
 
   /**
@@ -70,8 +76,8 @@ Shuffleboard.selectTab("Pre-Round");
   @Override
   public void disabledInit() {
 
-    CommandScheduler.getInstance().cancelAll();
-//    CommandScheduler.getInstance().run();
+   // CommandScheduler.getInstance().cancelAll();
+     CommandScheduler.getInstance().run();
 
   }
 
@@ -87,7 +93,65 @@ Shuffleboard.selectTab("Pre-Round");
 
   public void autonomousInit() {
     m_robotContainer.m_turret.setDefaultCommand(new PositionHoldTurret(m_robotContainer.m_turret));
+    FondyFireTrajectory m_trajectory = m_robotContainer.m_trajectory;
     Shuffleboard.selectTab("Competition");
+
+    // get delay time
+
+    m_startDelay = (double) m_robotContainer.m_setup.startDelayChooser.getSelected();
+
+    SmartDashboard.putNumber("Delay", m_startDelay);
+
+    autoChoice = m_robotContainer.m_setup.autoChooser.getSelected();
+
+    switch (autoChoice) {
+
+      case 0:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+
+        // m_robotContainer.m_robotDrive.resetAll();
+        m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand0();
+
+        break;
+
+      case 1:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+
+        // m_robotContainer.m_robotDrive.resetAll();
+        m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand1();
+
+        break;
+      case 2:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+
+        // m_robotContainer.m_robotDrive.resetAll();
+        m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand2();
+
+        break;
+
+      case 3:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+
+        // m_robotContainer.m_robotDrive.resetAll();
+        m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand3();
+
+        break;
+
+      case 4:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+
+        // m_robotContainer.m_robotDrive.resetAll();
+        m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand4();
+
+        break;
+
+      default:
+
+        break;
+
+    }
+    startTime = Timer.getFPGATimestamp();
+
   }
 
   /**
@@ -95,6 +159,20 @@ Shuffleboard.selectTab("Pre-Round");
    */
   @Override
   public void autonomousPeriodic() {
+    if (!autoHasRun && Timer.getFPGATimestamp() > startTime + m_startDelay && m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+      autoHasRun = true;
+    }
+
+    m_robotContainer.m_setup.timeToStart = Math.round(startTime + m_startDelay - Timer.getFPGATimestamp());
+
+    if (m_robotContainer.m_setup.timeToStart < 0)
+      m_robotContainer.m_setup.timeToStart = 0;
+
+    // CommandScheduler.getInstance().run();
+
+    if (DriverStation.getInstance().getMatchTime() < 10)
+      Shuffleboard.stopRecording();
 
   }
 
@@ -108,9 +186,7 @@ Shuffleboard.selectTab("Pre-Round");
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    CommandScheduler.getInstance().cancelAll();
-    
-   
+  //  CommandScheduler.getInstance().cancelAll();
 
   }
 
@@ -120,13 +196,13 @@ Shuffleboard.selectTab("Pre-Round");
   @Override
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
-   
+
   }
 
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
+    //CommandScheduler.getInstance().cancelAll();
   }
 
   /**

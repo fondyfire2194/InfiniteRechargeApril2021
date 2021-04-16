@@ -25,27 +25,30 @@ public class PositionTurretTest extends CommandBase {
   @Override
   public void initialize() {
     loopCtr = 0;
-
+    m_turret.getEndpoint = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     loopCtr++;
-    if (!m_turret.getEndpoint && loopCtr > 2)
+    if (!m_turret.getEndpoint && loopCtr > 10) {
       m_turret.targetAngle = m_turret.endpoint;
+      m_turret.getEndpoint = false;
+    }
 
+    m_turret.goToPositionMotionMagic(m_turret.endpoint);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    m_turret.getEndpoint = false;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !m_turret.getEndpoint & loopCtr > 2 || loopCtr > 5;
+    return m_turret.atTargetAngle() && loopCtr > 10;
   }
 }

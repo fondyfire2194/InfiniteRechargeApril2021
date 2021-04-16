@@ -29,7 +29,7 @@ import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsystem {
-    private static final double GRAVITY_COMPENSATION_VOLTS = .1;
+    private static final double GRAVITY_COMPENSATION_VOLTS = .0001;
     private static final double DEG_PER_MOTOR_REV = HoodedShooterConstants.TURRET_DEG_PER_MOTOR_REV;
     private static final int POSITION_SLOT = 0;
     private static final int SMART_MOTION_SLOT = 1;
@@ -55,14 +55,18 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
                                                                 // HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
 
         m_motor.setOpenLoopRampRate(5);
+        mEncoder.setPosition(0);
 
         gainSettings();
+        if (RobotBase.isSimulation())
+            mPidController.setP(0.16);
+
         mEncoder.setPosition(0);
         targetAngle = 0;
 
         if (RobotBase.isSimulation()) {
-            ElevatorSimConstants.kCarriageMass = 2;
-            ElevatorSimConstants.kElevatorGearing = 18;
+            ElevatorSimConstants.kCarriageMass = .2;
+            ElevatorSimConstants.kElevatorGearing = 180;
             ElevatorSimConstants.kMaxElevatorHeight = 100;
             ElevatorSimConstants.kMinElevatorHeight = -110;
             ElevatorSimConstants.kElevatorGearbox = DCMotor.getNEO(1);
@@ -73,7 +77,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
         ShuffleboardLayout turretEndpoint = Shuffleboard.getTab("SetupTurretTilt")
                 .getLayout("TurretEndpoints", BuiltInLayouts.kList).withPosition(0, 3).withSize(2, 1)
-                .withProperties(Map.of("Label position", "LEFT")); 
+                .withProperties(Map.of("Label position", "LEFT"));
 
         turretSetpoint = turretEndpoint.add("TurretEndpoint", 0).getEntry();
 
@@ -103,7 +107,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     @Override
     public void goToPosition(double angle) {
-    
+
         mPidController.setReference(angle, ControlType.kPosition, POSITION_SLOT, GRAVITY_COMPENSATION_VOLTS,
                 CANPIDController.ArbFFUnits.kVoltage);
     }
@@ -111,6 +115,12 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void goToPositionMotionMagic(double angle) {
         mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
+        SmartDashboard.putNumber("An", angle);
+        SmartDashboard.putNumber("SMKP", mPidController.getP(SMART_MOTION_SLOT));
+        SmartDashboard.putNumber("SMKA", mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
+        SmartDashboard.putNumber("SMKmin", mPidController.getOutputMin(SMART_MOTION_SLOT));
+        SmartDashboard.putNumber("SMKmax", mPidController.getOutputMax(SMART_MOTION_SLOT));
+
     }
 
     public void resetAngle(double angle) {
@@ -119,6 +129,10 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public double getOut() {
         return m_motor.get();
+    }
+
+    public double getAmps() {
+        return m_motor.getOutputCurrent();
     }
 
     public double getSpeed() {
@@ -173,13 +187,13 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     private void gainSettings() {
         // PID coefficients
-        kP = 5e-5;
+        kP = 5e-1;
         kI = 0;// 1e-5;
         kD = 0;
         kIz = 1;
-        kFF = 0.00000156;
-        kMaxOutput = .5;
-        kMinOutput = -.5;
+        kFF = 0.0000156;
+        kMaxOutput = 1;
+        kMinOutput = -1;
         maxRPM = 5700;// not used
         allowedErr = 1;
         // Smart Motion Coefficients
@@ -187,13 +201,13 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         maxAcc = 75;
 
         // set PID coefficients
-        mPidController.setP(kP);
+
         mPidController.setP(kP, SMART_MOTION_SLOT);
-        mPidController.setI(kI);
-        mPidController.setD(kD);
-        mPidController.setIZone(kIz);
-        mPidController.setFF(kFF);
-        mPidController.setOutputRange(kMinOutput, kMaxOutput);
+        mPidController.setI(kI, SMART_MOTION_SLOT);
+        mPidController.setD(kD, SMART_MOTION_SLOT);
+        mPidController.setIZone(kIz, SMART_MOTION_SLOT);
+        mPidController.setFF(kFF, SMART_MOTION_SLOT);
+        mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
         mPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
         mPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
     }

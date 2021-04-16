@@ -47,6 +47,6 @@ public class TiltMoveToReverseLimit extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_tilt.positionResetDone || m_tilt.m_reverseLimit.get() || simCtr > 25;
+    return m_tilt.m_reverseLimit.get() || simCtr > 25;
   }
 }

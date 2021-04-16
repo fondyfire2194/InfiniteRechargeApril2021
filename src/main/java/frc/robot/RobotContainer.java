@@ -12,19 +12,26 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
+import frc.robot.commands.AutoCommands.Auto0;
+import frc.robot.commands.AutoCommands.Auto1;
+import frc.robot.commands.AutoCommands.Auto2;
+import frc.robot.commands.AutoCommands.AutoNH1;
+import frc.robot.commands.AutoCommands.AutoTrenchStart;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Tilt.TiltJog;
+import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -72,13 +79,13 @@ public class RobotContainer {
 
       public static boolean autoSelected;
 
-      private SetupShuffleboard m_setup;
+      public SetupShuffleboard m_setup;
 
       private LimeLight m_limelight;
 
       private Compressor m_compressor;
 
-      private FondyFireTrajectory m_traj;
+      FondyFireTrajectory m_trajectory;
 
       // AutoCommands ac;// = new AutoCommands(m_robotDrive);
       public int shootPosition;
@@ -105,25 +112,31 @@ public class RobotContainer {
             m_limelight.setCamMode(CamMode.kvision);
             m_limelight.setLEDMode(LedMode.kpipeLine);
             m_limelight.setStream((StreamType.kPiPMain));
+            m_limelight.setCamMode(CamMode.kdriver);
             m_limelight.setPipeline(0);
 
             m_compressor = new Compressor();
-            m_traj = new FondyFireTrajectory(m_robotDrive);
+            m_trajectory = new FondyFireTrajectory(m_robotDrive);
 
-            m_turret.setDefaultCommand(getJogTurretCommand());
+          
+                  m_turret.setDefaultCommand(getJogTurretCommand());
+           
+                
 
             m_tilt.setDefaultCommand(getJogTiltCommand());
 
             m_shooter.setDefaultCommand(getJogShooterCommand());
 
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
-                        m_limelight, m_controlPanel, m_intake, m_traj, m_climber);
+                        m_limelight, m_controlPanel, m_intake, m_trajectory, m_climber);
 
             m_robotDrive.setDefaultCommand(getArcadeDriveCommand());
 
             configureButtonBindings();
 
-            LiveWindow.disableAllTelemetry();
+        //    LiveWindow.disableAllTelemetry();
+
+        SmartDashboard.putData(CommandScheduler.getInstance());
 
       }
 
@@ -168,7 +181,7 @@ public class RobotContainer {
 
             setupA.whileHeld(getJogShooterCommand());
 
-            LiveWindow.disableAllTelemetry();
+        //    LiveWindow.disableAllTelemetry();
 
       }
 
@@ -199,4 +212,30 @@ public class RobotContainer {
             return new JogShooter(m_shooter, () -> setupGamepad.getRawAxis(2) / 2);
 
       }
+
+      public Command getAutonomousCommand0() {
+            return new Auto0(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_trajectory,
+                        m_compressor);
+      }
+
+      public Command getAutonomousCommand1() {
+            return new Auto1(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_trajectory,
+                        m_compressor);
+      }
+
+      public Command getAutonomousCommand2() {
+            return new Auto2(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_trajectory,
+                        m_compressor);
+      }
+
+      public Command getAutonomousCommand3() {
+            return new AutoNH1(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_trajectory,
+                        m_compressor);
+      }
+
+      public Command getAutonomousCommand4() {
+            return new AutoTrenchStart(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_intake, m_limelight,
+                        m_trajectory, m_compressor);
+      }
+
 }

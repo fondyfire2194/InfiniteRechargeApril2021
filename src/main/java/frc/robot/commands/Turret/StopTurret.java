@@ -19,7 +19,7 @@ public class StopTurret extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
 
-    // addRequirements(m_turret);
+    addRequirements(m_turret);
   }
 
   // Called when the command is initially scheduled.
@@ -34,7 +34,7 @@ public class StopTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_turret.goToPositionMotionMagic(m_turret.targetAngle);
+   // m_turret.goToPositionMotionMagic(m_turret.targetAngle);
   }
 
   // Called once the command ends or is interrupted.

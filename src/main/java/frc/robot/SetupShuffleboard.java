@@ -89,12 +89,12 @@ public class SetupShuffleboard {
         private boolean m_showTransport = true;
         private boolean m_showVision = true;
         private boolean m_showTrajectory = false;
-        private boolean m_showSubsystems = false;
+        private boolean m_showSubsystems = true;
         private HttpCamera LLFeed;
+        public double timeToStart;
 
-
-        private SendableChooser<Integer> autoChooser = new SendableChooser<>();
-        private SendableChooser<Integer> startDelayChooser = new SendableChooser<>();
+        public SendableChooser<Integer> autoChooser = new SendableChooser<>();
+        public SendableChooser<Integer> startDelayChooser = new SendableChooser<>();
 
         public SetupShuffleboard(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevDrivetrain drive,
                         RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor,
@@ -154,8 +154,17 @@ public class SetupShuffleboard {
                 startDelayChooser.addOption("four Seconds", 4);
                 startDelayChooser.addOption("Five Seconds", 5);
 
-                Shuffleboard.getTab("Pre-Round").add("Tilt Down OK", m_tilt.m_reverseLimit.get())
-                                .withWidget(BuiltInWidgets.kBooleanBox).withSize(2, 1).withPosition(0, 4);
+                ShuffleboardLayout preMatch = Shuffleboard.getTab("Pre-Round").getLayout("Info", BuiltInLayouts.kList)
+                                .withPosition(0, 1).withSize(2, 4).withProperties(Map.of("Label position", "TOP"));
+
+                preMatch.addNumber("TiltView", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kDial)
+                                .withProperties(Map.of("Min", -2, "Max", 70, "Show Text", true)).withSize(2, 2);
+
+                preMatch.addNumber("TurretView", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
+                                .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", true)).withSize(2, 1);
+
+                preMatch.add("Tilt Down OK", m_tilt.m_reverseLimit.get()).withWidget(BuiltInWidgets.kBooleanBox)
+                                .withSize(2, 1).withPosition(0, 4);
 
                 if (RobotBase.isReal()) {
 
@@ -172,19 +181,25 @@ public class SetupShuffleboard {
                  * 
                  */
 
-                ShuffleboardTab competition = Shuffleboard.getTab("Competition");
-                // .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 2).withSize(2, 2)
-                // .withProperties(Map.of("Label position", "LEFT"));
+                ShuffleboardLayout competition = Shuffleboard.getTab("Competition")
+                                .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(1, 4)
+                                .withProperties(Map.of("Label position", "TOP"));
 
                 competition.addNumber("TiltView", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kDial)
-                                .withProperties(Map.of("Min", 0, "Max", 70, "Show Text", false)).withSize(2, 2)
-                                .withPosition(0, 1);
+                                .withProperties(Map.of("Min", -2, "Max", 70, "Show Text", true)).withSize(2, 2);
 
                 competition.addNumber("TurretView", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
-                                .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", false)).withSize(2, 1)
-                                .withPosition(0, 3);
+                                .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", true)).withSize(2, 1);
 
                 competition.addNumber("MatchRemaining", () -> DriverStation.getInstance().getMatchTime());
+
+                ShuffleboardLayout active = Shuffleboard.getTab("Competition").getLayout("Active", BuiltInLayouts.kList)
+                                .withPosition(1, 1).withSize(1, 5).withProperties(Map.of("Label position", "TOP"));
+                active.addNumber("Pipeline", () -> m_limelight.getPipeline());
+                active.addNumber("ShooterSpeed", () -> m_shooter.requiredSpeed);
+                active.addNumber("Tilt", () -> m_tilt.targetAngle);
+                active.addNumber("Turret", () -> m_turret.targetAngle);
+                active.addNumber("TimeToStart", () -> timeToStart);
 
                 if (RobotBase.isReal()) {
 
@@ -225,6 +240,7 @@ public class SetupShuffleboard {
                         turretValues.addNumber("TUAngle", () -> m_turret.getAngle());
                         turretValues.addNumber("TUTgt", () -> m_turret.targetAngle);
                         turretValues.addNumber("Pct", () -> m_turret.getOut());
+                        turretValues.addNumber("Amps", () -> m_tilt.getAmps());
                         turretValues.addNumber("Speed", () -> m_turret.getSpeed());
                         turretValues.addNumber("Faults", () -> m_turret.getFaults());
                         turretValues.addBoolean("PlusLimit", () -> m_turret.onPlusSoftwareLimit())
@@ -263,7 +279,8 @@ public class SetupShuffleboard {
 
                         tiltValues.addNumber("TIAngle", () -> m_tilt.getAngle());
                         tiltValues.addNumber("TITgt", () -> m_tilt.targetAngle);
-                        tiltValues.addNumber("Amps", () -> m_tilt.getOut());
+                        tiltValues.addNumber("PCT", () -> m_tilt.getOut());
+                        tiltValues.addNumber("Amps", () -> m_tilt.getAmps());
                         tiltValues.addNumber("Speed", () -> m_tilt.getSpeed());
                         tiltValues.addNumber("Faults", () -> m_tilt.getFaults());
                         tiltValues.addBoolean("PlusSWLimit", () -> m_tilt.onPlusSoftwareLimit())

@@ -35,6 +35,7 @@ public class PositionTurret extends CommandBase {
   public void execute() {
     loopCtr++;
     m_turret.targetAngle = m_endpoint;
+    m_turret.goToPositionMotionMagic(m_turret.targetAngle);
 
   }
 
@@ -47,6 +48,6 @@ public class PositionTurret extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return loopCtr > 5;
+    return m_turret.atTargetAngle() && loopCtr > 2;
   }
 }

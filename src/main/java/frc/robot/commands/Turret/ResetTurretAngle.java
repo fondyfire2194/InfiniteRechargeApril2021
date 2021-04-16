@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Turret;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTurretSubsystem;
 
@@ -27,10 +28,14 @@ public class ResetTurretAngle extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
     loopCtr++;
     m_turret.resetAngle(0);
     m_turret.targetAngle = 0;
-    m_turret.setSoftwareLimits();
+    if (RobotBase.isReal()) {
+      m_turret.setSoftwareLimits();
+
+    }
 
   }
 
@@ -43,6 +48,6 @@ public class ResetTurretAngle extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_turret.targetAngle == 0 || loopCtr > 5 && m_turret.getSoftwareLimitsEnabled();
+    return loopCtr > 1;
   }
 }
