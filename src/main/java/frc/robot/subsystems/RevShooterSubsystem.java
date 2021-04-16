@@ -71,7 +71,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         }
 
         shootColorWidget = Shuffleboard.getTab("Competition").add("ShootColor", false).withWidget("Boolean Box")
-                .withPosition(0, 0).withSize(2, 2).withProperties(Map.of("colorWhenFalse", "black"));
+                .withPosition(0, 0).withSize(2, 1).withProperties(Map.of("colorWhenFalse", "black"));
         shootColorWidgetEntry = shootColorWidget.getEntry();
         shootColorWidgetEntry.getBoolean(false);
 

@@ -92,7 +92,6 @@ public class SetupShuffleboard {
         private boolean m_showSubsystems = false;
         private HttpCamera LLFeed;
 
-        private double matchLength = 180;
 
         private SendableChooser<Integer> autoChooser = new SendableChooser<>();
         private SendableChooser<Integer> startDelayChooser = new SendableChooser<>();
@@ -164,10 +163,7 @@ public class SetupShuffleboard {
 
                         Shuffleboard.getTab("Pre-Round").add("Limelight", LLFeed)
                                         .withWidget(BuiltInWidgets.kCameraStream).withPosition(4, 0).withSize(3, 2)
-                                        .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));// specify
-                                                                                                                // widget
-                                                                                                                // properties
-                                                                                                                // here
+                                        .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
                 }
 
                 /**
@@ -176,11 +172,19 @@ public class SetupShuffleboard {
                  * 
                  */
 
-                ShuffleboardLayout competition = Shuffleboard.getTab("Competition")
-                                .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 2).withSize(2, 2)
-                                .withProperties(Map.of("Label position", "LEFT"));
+                ShuffleboardTab competition = Shuffleboard.getTab("Competition");
+                // .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 2).withSize(2, 2)
+                // .withProperties(Map.of("Label position", "LEFT"));
 
-                competition.addNumber("MatchRemaining", () -> matchLength - DriverStation.getInstance().getMatchTime());
+                competition.addNumber("TiltView", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kDial)
+                                .withProperties(Map.of("Min", 0, "Max", 70, "Show Text", false)).withSize(2, 2)
+                                .withPosition(0, 1);
+
+                competition.addNumber("TurretView", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
+                                .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", false)).withSize(2, 1)
+                                .withPosition(0, 3);
+
+                competition.addNumber("MatchRemaining", () -> DriverStation.getInstance().getMatchTime());
 
                 if (RobotBase.isReal()) {
 
@@ -242,7 +246,7 @@ public class SetupShuffleboard {
                         ShuffleboardLayout tiltCommands = Shuffleboard.getTab("SetupTurretTilt")
                                         .getLayout("Tilt", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "LEFT")); //
-                                                                                        
+
                         tiltCommands.add("Reset To 0", new ResetTiltAngle(m_tilt));
                         tiltCommands.add("To Setpoint", new PositionTiltTest(m_tilt));
                         tiltCommands.add("To Value", new PositionTilt(m_tilt, 10));

@@ -32,11 +32,10 @@ import frc.robot.trajectories.FondyFireTrajectory;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class Auto0 extends SequentialCommandGroup {
+public class AutoNH1 extends SequentialCommandGroup {
   /**
    * Creates a new Auto0.
    */
-
   private final static int shootPosition = 1;
   private final static double shootTime = 5;
   private final static int pipeline = ShootData.getPipeline(shootPosition);
@@ -44,23 +43,17 @@ public class Auto0 extends SequentialCommandGroup {
   private final static double turretAngle = ShootData.getTurretAngle(shootPosition);
   private final static double shootSpeed = ShootData.getShootSpeed(shootPosition);
 
-  public Auto0(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+  public AutoNH1(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
       CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight, FondyFireTrajectory s_trajectory,
       Compressor compressor) {
     // Add your commands in the super() call, e.g.
     // super(new FooCommand(), new BarCommand());
 
     super(new TiltMoveToReverseLimit(tilt), new LimelightSetPipeline(limelight, pipeline),
-        new StartShooterWheels(shooter, shootSpeed),
-        new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, tiltAngle),
-            new PositionTurretToVision(turret, limelight, turretAngle)),
-        // s_trajectory.getRamsete(s_trajectory.centerStart).andThen(() ->
-        // drive.tankDriveVolts(0, 0)),
-
+        new StartShooterWheels(shooter, shootSpeed), new PositionHoldTilt(tilt), new PositionHoldTurret(turret),
+        s_trajectory.getRamsete(s_trajectory.centerStart).andThen(() -> drive.tankDriveVolts(0, 0)),
         new ParallelCommandGroup(new ShootCells(shooter, transport, compressor, shootSpeed, shootTime)
             .deadlineWith(new ParallelCommandGroup(new PositionHoldTilt(tilt)), new PositionHoldTurret(turret))),
-
         new ParallelCommandGroup(new PositionTilt(tilt, -1), new PositionTurret(turret, 0)));
-
   }
 }
