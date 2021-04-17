@@ -5,6 +5,7 @@
 package frc.robot.commands.RobotDrive;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevDrivetrain;
 
@@ -33,18 +34,19 @@ public class PositionRobot extends CommandBase {
   @Override
   public void execute() {
     m_drive.driveDistance(m_position, m_position);
+    SmartDashboard.putNumber("TRFP", Timer.getFPGATimestamp());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-  
+
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Timer.getFPGATimestamp() > m_startTime + .25 && Math.abs(m_drive.getAverageDistance() - m_position) < 1
+    return Timer.getFPGATimestamp() > m_startTime + .05 && Math.abs(m_drive.getAverageDistance() - m_position) < 1
         && m_drive.getLeftRate() == 0;
   }
 }

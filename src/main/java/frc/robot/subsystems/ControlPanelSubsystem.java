@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Robot;
 import frc.robot.sim.PhysicsSim;
-import frc.robot.simulation.TalonSRXWrapper;
+import frc.robot.sim.TalonSRXWrapper;
 
 public class ControlPanelSubsystem extends SubsystemBase {
    /**

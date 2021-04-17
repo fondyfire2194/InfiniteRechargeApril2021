@@ -35,7 +35,7 @@ public class PositionTilt extends CommandBase {
   public void execute() {
     loopCtr++;
     m_tilt.targetAngle = m_endpoint;
-    m_tilt.goToPositionMotionMagic(m_tilt.targetAngle);
+    m_tilt.goToPosition(m_tilt.targetAngle);
   }
 
   // Called once the command ends or is interrupted.

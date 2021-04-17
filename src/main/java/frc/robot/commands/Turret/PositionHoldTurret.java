@@ -32,7 +32,7 @@ public class PositionHoldTurret extends CommandBase {
   @Override
   public void execute() {
    // m_position = m_turret.targetAngle;
-    m_turret.goToPositionMotionMagic(m_turret.targetAngle);
+    m_turret.goToPosition(m_turret.targetAngle);
   }
 
   // Called once the command ends or is interrupted.

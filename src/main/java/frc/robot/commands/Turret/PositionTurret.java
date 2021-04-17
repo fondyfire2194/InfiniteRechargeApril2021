@@ -35,7 +35,7 @@ public class PositionTurret extends CommandBase {
   public void execute() {
     loopCtr++;
     m_turret.targetAngle = m_endpoint;
-    m_turret.goToPositionMotionMagic(m_turret.targetAngle);
+    m_turret.goToPosition(m_turret.targetAngle);
 
   }
 

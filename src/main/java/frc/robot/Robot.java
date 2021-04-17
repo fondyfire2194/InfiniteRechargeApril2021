@@ -114,12 +114,12 @@ public class Robot extends TimedRobot {
     switch (autoChoice) {
 
     case 0:// in front of power port 0 shooter data index use pipeline 0 - no zoom
-    Pose2d initialPose = new Pose2d(FieldMapHome.gridPoint('C', 1), rotation180);
+    Pose2d initialPose = FieldMap.startPosition[0];
     m_robotContainer.m_robotDrive.fieldSim.setRobotPose(initialPose);
       startPosition = FieldMap.goalCenterPoint;
-       m_robotContainer.m_robotDrive.resetAll();
-      m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand0();
+      //  m_robotContainer.m_robotDrive.resetAll();
+      // m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      // m_autonomousCommand = m_robotContainer.getAutonomousCommand0();
 
      
 

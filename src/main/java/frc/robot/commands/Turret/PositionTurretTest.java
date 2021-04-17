@@ -37,7 +37,7 @@ public class PositionTurretTest extends CommandBase {
       m_turret.getEndpoint = false;
     }
 
-    m_turret.goToPositionMotionMagic(m_turret.endpoint);
+    m_turret.goToPosition(m_turret.endpoint);
   }
 
   // Called once the command ends or is interrupted.

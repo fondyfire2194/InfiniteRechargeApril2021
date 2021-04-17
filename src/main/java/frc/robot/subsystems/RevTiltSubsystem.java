@@ -205,10 +205,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         kFF = 0.0000156;
         kMaxOutput = 1;
         kMinOutput = -1;
-        maxRPM = 5700;// not used
+        maxRPM = 11000;// not used
         allowedErr = 1;
         // Smart Motion Coefficients
-        maxVel = 500; // rpm
+        maxVel = 10000; // rpm
         maxAcc = 75;
 
         // set PID coefficients

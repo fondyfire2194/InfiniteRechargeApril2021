@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.sim.PhysicsSim;
-import frc.robot.simulation.TalonSRXWrapper;
+import frc.robot.sim.TalonSRXWrapper;
 
 public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new Climber. */

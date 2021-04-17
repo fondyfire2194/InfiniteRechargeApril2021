@@ -392,13 +392,6 @@ public class SetupShuffleboard {
                         robotValues.addNumber("Faults", () -> m_robotDrive.getFaults());
                         robotValues.add("Cmd", m_robotDrive);
 
-                        ShuffleboardLayout robotOdometry = Shuffleboard.getTab("SetupRobot")
-                                        .getLayout("RobotOdometry", BuiltInLayouts.kList).withPosition(4, 0)
-                                        .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels
-
-                        robotOdometry.addNumber("X Posn", () -> m_robotDrive.getPose().getX());
-                        robotOdometry.addNumber("Y Posn", () -> m_robotDrive.getPose().getY());
-                        robotOdometry.addNumber("Rotn", () -> m_robotDrive.getPose().getRotation().getDegrees());
 
                 }
                 /**

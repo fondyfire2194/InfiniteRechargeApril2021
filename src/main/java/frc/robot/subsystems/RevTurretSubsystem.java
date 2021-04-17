@@ -115,11 +115,11 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void goToPositionMotionMagic(double angle) {
         mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
-        SmartDashboard.putNumber("An", angle);
-        SmartDashboard.putNumber("SMKP", mPidController.getP(SMART_MOTION_SLOT));
-        SmartDashboard.putNumber("SMKA", mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
-        SmartDashboard.putNumber("SMKmin", mPidController.getOutputMin(SMART_MOTION_SLOT));
-        SmartDashboard.putNumber("SMKmax", mPidController.getOutputMax(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("An", angle);
+        // SmartDashboard.putNumber("SMKP", mPidController.getP(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("SMKA", mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("SMKmin", mPidController.getOutputMin(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("SMKmax", mPidController.getOutputMax(SMART_MOTION_SLOT));
 
     }
 
@@ -197,7 +197,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         maxRPM = 5700;// not used
         allowedErr = 1;
         // Smart Motion Coefficients
-        maxVel = 500; // rpm
+        maxVel = 5000; // rpm
         maxAcc = 75;
 
         // set PID coefficients

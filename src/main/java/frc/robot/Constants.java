@@ -97,7 +97,7 @@ public static final double MINIMUM_TURN_SPEED = 0;
       public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
             WHEELBASE_WIDTH);
       public static final double kMaxSpeedMetersPerSecond = 8.0;
-      public static final boolean kGyroReversed = true;
+      public static final boolean kGyroReversed = false;
       /**
        * 
        * Robot turn constants

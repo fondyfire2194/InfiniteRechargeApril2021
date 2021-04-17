@@ -17,8 +17,6 @@ import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
 import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -57,11 +55,12 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public double leftTargetPosition;
     public double rightTargetPosition;
-    private final NetworkTable m_customNetworkTable;
 
     public double startDistance;
 
-    private int m_robotPositionCtr;
+    private int SMART_MOTION_SLOT = 1;
+
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
 
     @Override
     public void close() {
@@ -128,10 +127,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
             SmartDashboard.putData("Field", fieldSim);
         }
 
-        NetworkTable coordinateGuiContainer = NetworkTableInstance.getDefault().getTable("CoordinateGui");
-        coordinateGuiContainer.getEntry(".type").setString("CoordinateGui");
-
-        m_customNetworkTable = coordinateGuiContainer.getSubTable("RobotPosition");
         // Set current limiting on drive train to prevent brown outs
         Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
                 .forEach((SimableCANSparkMax spark) -> spark.setSmartCurrentLimit(35));
@@ -139,6 +134,9 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         // Set motors to brake when idle. We don't want the drive train to coast.
         Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
                 .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kBrake));
+
+        setLeftGains();
+        setRightGains();
 
     }
 
@@ -203,7 +201,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         return mFollowerLeft.getAppliedOutput();
     }
 
-   
     @Override
     public DrivetrainConstants getConstants() {
         return DRIVETRAIN_CONSTANTS;
@@ -238,8 +235,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     @Override
     public void driveDistance(double leftPosition, double rightPosition) {
-        mLeftPidController.setReference(leftPosition, ControlType.kSmartMotion);
-        mRightPidController.setReference(rightPosition, ControlType.kSmartMotion);
+        mLeftPidController.setReference(leftPosition, ControlType.kPosition, SMART_MOTION_SLOT);
+        mRightPidController.setReference(rightPosition, ControlType.kPosition, SMART_MOTION_SLOT);
         mDrive.feed();
     }
 
@@ -249,8 +246,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mRightEncoder.setPosition(0);
         resetSimOdometry(getPose());
     }
-
- 
 
     public double getX() {
         return getTranslation().getX();
@@ -266,26 +261,19 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     @Override
     public void periodic() {
         updateOdometry();
-        m_customNetworkTable.getEntry("X").setDouble(getX() * 39.37);
-        m_customNetworkTable.getEntry("Y").setDouble(getY() * 39.37);
-        m_customNetworkTable.getEntry("Angle").setDouble(getHeading());
-        // Actually update the display every 5 loops = 100ms
-        if (m_robotPositionCtr % 5 == 0) {
-            m_customNetworkTable.getEntry("Ctr").setDouble(m_robotPositionCtr);
 
-        }
-        ++m_robotPositionCtr;
-        
     }
 
     public void resetAll() {
         resetGyro();
         resetEncoders();
-     }
+    }
 
     @Override
     public void simulationPeriodic() {
         mSimulator.update();
+        fieldSim.setRobotPose(getPose());
+        SmartDashboard.putString("Pose", getPose().toString());
     }
 
     @Override
@@ -322,12 +310,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     // public void setRobotFromFieldPose() {
-    //     // only applies for simulation
-    //     if (RobotBase.isSimulation())
-    //         setPose(fieldSim.getRobotPose());
+    // // only applies for simulation
+    // if (RobotBase.isSimulation())
+    // setPose(fieldSim.getRobotPose());
     // }
-
-
 
     public void clearFaults() {
         Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
@@ -338,4 +324,59 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public int getFaults() {
         return mLeadLeft.getFaults() + mLeadRight.getFaults() + mFollowerLeft.getFaults() + mFollowerRight.getFaults();
     }
+
+    private void setRightGains() {
+        // PID coefficients
+        kP = 5e-1;
+        kI = 0;// 1e-5;
+        kD = 0;
+        kIz = 1;
+        kFF = 0.0000156;
+        kMaxOutput = 1;
+        kMinOutput = -1;
+        maxRPM = 5700;// not used
+        allowedErr = 1;
+        // Smart Motion Coefficients
+        maxVel = 500; // rpm
+        maxAcc = 75;
+
+        // set PID coefficients
+
+        mRightPidController.setP(kP, SMART_MOTION_SLOT);
+        mRightPidController.setI(kI, SMART_MOTION_SLOT);
+        mRightPidController.setD(kD, SMART_MOTION_SLOT);
+        mRightPidController.setIZone(kIz, SMART_MOTION_SLOT);
+        mRightPidController.setFF(kFF, SMART_MOTION_SLOT);
+        mRightPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
+        mRightPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
+        mRightPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
+    }
+
+    private void setLeftGains() {
+        // PID coefficients
+        kP = 5e-1;
+        kI = 0;// 1e-5;
+        kD = 0;
+        kIz = 1;
+        kFF = 0.0000156;
+        kMaxOutput = 1;
+        kMinOutput = -1;
+        maxRPM = 5700;// not used
+        allowedErr = 1;
+        // Smart Motion Coefficients
+        maxVel = 500; // rpm
+        maxAcc = 75;
+
+        // set PID coefficients
+
+        mLeftPidController.setP(kP, SMART_MOTION_SLOT);
+        mLeftPidController.setI(kI, SMART_MOTION_SLOT);
+        mLeftPidController.setD(kD, SMART_MOTION_SLOT);
+        mLeftPidController.setIZone(kIz, SMART_MOTION_SLOT);
+        mLeftPidController.setFF(kFF, SMART_MOTION_SLOT);
+        mLeftPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
+        mLeftPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
+        mLeftPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
+    }
+
 }
