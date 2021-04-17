@@ -22,6 +22,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -48,7 +49,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     private final AHRS mGyro;
 
-    private Field2d fieldSim;
+    public Field2d fieldSim;
 
     private final DifferentialDrive mDrive;
 
@@ -57,6 +58,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public double leftTargetPosition;
     public double rightTargetPosition;
     private final NetworkTable m_customNetworkTable;
+
+    public double startDistance;
 
     private int m_robotPositionCtr;
 
@@ -200,15 +203,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         return mFollowerLeft.getAppliedOutput();
     }
 
-    @Override
-    public double getHeadingDegrees() {
-        return mGyro.getAngle();
-    }
-
-    public double getYaw() {
-        return Math.IEEEremainder(mGyro.getAngle(), 360) * -1;
-    }
-
+   
     @Override
     public DrivetrainConstants getConstants() {
         return DRIVETRAIN_CONSTANTS;
@@ -255,14 +250,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         resetSimOdometry(getPose());
     }
 
-    @Override
-    protected void resetSimOdometry(Pose2d pose) {
-        mSimulator.resetOdometry(pose);
-    }
-
-    public Translation2d getTranslation() {
-        return getPose().getTranslation();
-    }
+ 
 
     public double getX() {
         return getTranslation().getX();
@@ -290,12 +278,36 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         
     }
 
+    public void resetAll() {
+        resetGyro();
+        resetEncoders();
+     }
+
     @Override
     public void simulationPeriodic() {
         mSimulator.update();
     }
 
+    @Override
+    protected void resetSimOdometry(Pose2d pose) {
+        mSimulator.resetOdometry(pose);
+    }
+
+    @Override
+    public double getHeadingDegrees() {
+        return mGyro.getAngle();
+    }
+
+    public double getYaw() {
+        return Math.IEEEremainder(mGyro.getAngle(), 360) * -1;
+    }
+
+    public Translation2d getTranslation() {
+        return getPose().getTranslation();
+    }
+
     public void resetGyro() {
+        mGyro.reset();
     }
 
     public double getHeading() {
@@ -303,7 +315,19 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     public void resetPose(Pose2d pose) {
+        // The left and right encoders MUST be reset when odometry is reset
+        mLeftEncoder.setPosition(0);
+        mRightEncoder.setPosition(0);
+        mOdometry.resetPosition(pose, Rotation2d.fromDegrees(getHeadingDegrees()));
     }
+
+    // public void setRobotFromFieldPose() {
+    //     // only applies for simulation
+    //     if (RobotBase.isSimulation())
+    //         setPose(fieldSim.getRobotPose());
+    // }
+
+
 
     public void clearFaults() {
         Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)

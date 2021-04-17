@@ -42,7 +42,7 @@ public class Auto2 extends SequentialCommandGroup {
   private static double tiltAngle = ShootData.getTiltAngle(shootPosition);
   private final static double turretAngle = ShootData.getTurretAngle(shootPosition);
   private final static double shootSpeed = ShootData.getShootSpeed(shootPosition);
-
+  public static double startDistance = ShootData.getDistance(shootPosition);
 
   public Auto2(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
       CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight, FondyFireTrajectory s_trajectory,
@@ -51,11 +51,10 @@ public class Auto2 extends SequentialCommandGroup {
     // super(new FooCommand(), new BarCommand());
 
     super(new TiltMoveToReverseLimit(tilt), new LimelightSetPipeline(limelight, pipeline),
-    new StartShooterWheels(shooter, shootSpeed),
-    new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, tiltAngle),
-        new PositionTurretToVision(turret, limelight, turretAngle)),
-        // s_trajectory.getRamsete(s_trajectory.rightStart).andThen(() ->
-        // drive.tankDriveVolts(0, 0))),
+        new StartShooterWheels(shooter, shootSpeed),
+        new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, tiltAngle),
+            new PositionTurretToVision(turret, limelight, turretAngle),
+            s_trajectory.getRamsete(s_trajectory.rightStart).andThen(() -> drive.tankDriveVolts(0, 0))),
 
         new ParallelCommandGroup(new ShootCells(shooter, transport, compressor, shootSpeed, shootTime)
             .deadlineWith(new ParallelCommandGroup(new PositionHoldTilt(tilt)), new PositionHoldTurret(turret))),

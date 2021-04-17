@@ -45,7 +45,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public String[] shootColor = { "red", "yellow", "green" };
     public int shootColorNumber;
     private int shootColorNumberLast = 1;
-
+    public double startDistance;
     public double calculatedCameraDistance;
 
     public RevShooterSubsystem() {
@@ -105,7 +105,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        
+
         shootColorNumber = (int) SmartDashboard.getNumber("ShootColor", 0);
         if (shootColorNumber > 2)
             shootColorNumber = 2;

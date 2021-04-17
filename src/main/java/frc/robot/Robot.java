@@ -10,6 +10,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,6 +36,10 @@ public class Robot extends TimedRobot {
   private double m_startDelay;
   private double startTime;
   public double timeToStart;
+  private Translation2d startPosition;
+  final Rotation2d rotation180 = Rotation2d.fromDegrees(180.0);
+  final Rotation2d rotation270 = Rotation2d.fromDegrees(270.0);
+  final Rotation2d rotation90 = Rotation2d.fromDegrees(90.0);
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -76,8 +83,8 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
 
-   // CommandScheduler.getInstance().cancelAll();
-     CommandScheduler.getInstance().run();
+    // CommandScheduler.getInstance().cancelAll();
+    CommandScheduler.getInstance().run();
 
   }
 
@@ -106,48 +113,52 @@ public class Robot extends TimedRobot {
 
     switch (autoChoice) {
 
-      case 0:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+    case 0:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+    Pose2d initialPose = new Pose2d(FieldMapHome.gridPoint('C', 1), rotation180);
+    m_robotContainer.m_robotDrive.fieldSim.setRobotPose(initialPose);
+      startPosition = FieldMap.goalCenterPoint;
+       m_robotContainer.m_robotDrive.resetAll();
+      m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand0();
 
-        // m_robotContainer.m_robotDrive.resetAll();
-        m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand0();
+     
 
-        break;
+      break;
 
-      case 1:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+    case 1:// in front of power port 0 shooter data index use pipeline 0 - no zoom
 
-        // m_robotContainer.m_robotDrive.resetAll();
-        m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand1();
+      m_robotContainer.m_robotDrive.resetAll();
+      m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand1();
 
-        break;
-      case 2:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+      break;
+    case 2:// in front of power port 0 shooter data index use pipeline 0 - no zoom
 
-        // m_robotContainer.m_robotDrive.resetAll();
-        m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand2();
+      m_robotContainer.m_robotDrive.resetAll();
+      m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand2();
 
-        break;
+      break;
 
-      case 3:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+    case 3:// in front of power port 0 shooter data index use pipeline 0 - no zoom
 
-        // m_robotContainer.m_robotDrive.resetAll();
-        m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand3();
+      m_robotContainer.m_robotDrive.resetAll();
+      m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand3();
 
-        break;
+      break;
 
-      case 4:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+    case 4:// in front of power port 0 shooter data index use pipeline 0 - no zoom
 
-        // m_robotContainer.m_robotDrive.resetAll();
-        m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand4();
+      m_robotContainer.m_robotDrive.resetAll();
+      m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand4();
 
-        break;
+      break;
 
-      default:
+    default:
 
-        break;
+      break;
 
     }
     startTime = Timer.getFPGATimestamp();
@@ -186,7 +197,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-  //  CommandScheduler.getInstance().cancelAll();
+    // CommandScheduler.getInstance().cancelAll();
 
   }
 
@@ -202,7 +213,7 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
-    //CommandScheduler.getInstance().cancelAll();
+    // CommandScheduler.getInstance().cancelAll();
   }
 
   /**

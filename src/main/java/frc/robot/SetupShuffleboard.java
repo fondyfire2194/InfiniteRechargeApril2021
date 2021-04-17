@@ -88,7 +88,7 @@ public class SetupShuffleboard {
         private boolean m_showControlPanel = true;
         private boolean m_showTransport = true;
         private boolean m_showVision = true;
-        private boolean m_showTrajectory = false;
+        private boolean m_showTrajectory = true;
         private boolean m_showSubsystems = true;
         private HttpCamera LLFeed;
         public double timeToStart;
@@ -199,7 +199,8 @@ public class SetupShuffleboard {
                 active.addNumber("ShooterSpeed", () -> m_shooter.requiredSpeed);
                 active.addNumber("Tilt", () -> m_tilt.targetAngle);
                 active.addNumber("Turret", () -> m_turret.targetAngle);
-                active.addNumber("TimeToStart", () -> timeToStart);
+                
+
 
                 if (RobotBase.isReal()) {
 
@@ -392,7 +393,7 @@ public class SetupShuffleboard {
                         robotValues.add("Cmd", m_robotDrive);
 
                         ShuffleboardLayout robotOdometry = Shuffleboard.getTab("SetupRobot")
-                                        .getLayout("RobotOdometry", BuiltInLayouts.kList).withPosition(5, 0)
+                                        .getLayout("RobotOdometry", BuiltInLayouts.kList).withPosition(4, 0)
                                         .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels
 
                         robotOdometry.addNumber("X Posn", () -> m_robotDrive.getPose().getX());
@@ -408,7 +409,7 @@ public class SetupShuffleboard {
                 if (m_showTrajectory) {
                         SendableChooser<Trajectory> trajChooser = new SendableChooser<>();
                         Shuffleboard.getTab("SetupRobot").add("Trajectories", trajChooser).withSize(2, 1)
-                                        .withPosition(4, 0);
+                                        .withPosition(6, 0);
                         trajChooser.setDefaultOption("CrossLine", m_traj.crossLine);
                         trajChooser.addOption("CenterStart", m_traj.centerStart);
 
@@ -416,7 +417,7 @@ public class SetupShuffleboard {
                                         .add("StartTraj",
                                                         m_traj.getRamsete(trajChooser.getSelected())
                                                                         .andThen(() -> drive.tankDriveVolts(0, 0)))
-                                        .withPosition(4, 1).withSize(2, 1);
+                                        .withPosition(6, 1).withSize(2, 1);
 
                         /**
                          * 
