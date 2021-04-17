@@ -25,7 +25,7 @@ public class DecreaseShooterSpeed extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    double currentSpeed = m_shooter.getRPM();
+    double currentSpeed = m_shooter.requiredSpeed;
     double newSpeed = currentSpeed / 1.1;
     m_shooter.requiredSpeed = newSpeed;
     m_shooter.spinAtRpm(newSpeed);

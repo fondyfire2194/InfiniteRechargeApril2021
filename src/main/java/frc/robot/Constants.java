@@ -26,8 +26,7 @@ import edu.wpi.first.wpiutil.math.numbers.N2;
  */
 public final class Constants {
    public static final double inchToMetersConversionFactor = 0.0254;
-public static final double MINIMUM_TURN_SPEED = 0;
-
+   public static final double MINIMUM_TURN_SPEED = 0;
 
    public static final class CANConstants {
       public static final int PDP = 1;
@@ -51,7 +50,7 @@ public static final double MINIMUM_TURN_SPEED = 0;
 
       public static final int FRONT_ROLLER = 14;
       public static final int REAR_ROLLER = 12;
-      public static final int LEFT_BELT_MOTOR = 13;    
+      public static final int LEFT_BELT_MOTOR = 13;
       public static final int RIGHT_BELT_MOTOR = 11;
 
       public static final int CLIMB_MOTOR = 15;
@@ -60,15 +59,15 @@ public static final double MINIMUM_TURN_SPEED = 0;
 
    public static final class PDPConstants {
 
-   // PDP slots
-   public static final int DRIVETRAIN_LEFT_MOTOR_A_PDP = 1;
-   public static final int DRIVETRAIN_LEFT_MOTOR_B_PDP = 2;
-   public static final int DRIVETRAIN_RIGHT_MOTOR_A_PDP = 3;
-   public static final int DRIVETRAIN_RIGHT_MOTOR_B_PDP = 4;
-   public static final int ELEVATOR_MOTOR_A_PDP = 5;
-   public static final int ELEVATOR_MOTOR_B_PDP = 6;
-   public static final int SHOOTER_MOTOR_A_PDP = 7;
-   public static final int SHOOTER_MOTOR_B_PDP = 8;
+      // PDP slots
+      public static final int DRIVETRAIN_LEFT_MOTOR_A_PDP = 1;
+      public static final int DRIVETRAIN_LEFT_MOTOR_B_PDP = 2;
+      public static final int DRIVETRAIN_RIGHT_MOTOR_A_PDP = 3;
+      public static final int DRIVETRAIN_RIGHT_MOTOR_B_PDP = 4;
+      public static final int ELEVATOR_MOTOR_A_PDP = 5;
+      public static final int ELEVATOR_MOTOR_B_PDP = 6;
+      public static final int SHOOTER_MOTOR_A_PDP = 7;
+      public static final int SHOOTER_MOTOR_B_PDP = 8;
 
    }
 
@@ -82,10 +81,10 @@ public static final double MINIMUM_TURN_SPEED = 0;
        */
       // DIMENSIONS IN METERS
 
-      public static double WHEEL_DIAMETER = .1524;//6"
-      public static double WHEEL_CIRCUMFERENCE = .4788;//meters
-      public static double METERS_PER_MOTOR_REV = 0.0467;//pi * diameter /geaar ratio
-      public static double NEO550_COUNTS_PER_REV = 4096;//not used
+      public static double WHEEL_DIAMETER = .1524;// 6"
+      public static double WHEEL_CIRCUMFERENCE = .4788;// meters
+      public static double METERS_PER_MOTOR_REV = 0.0467;// pi * diameter /geaar ratio
+      public static double NEO550_COUNTS_PER_REV = 4096;// not used
       public static double DRIVE_GEAR_RATIO = 10.25;
 
       public final static double WHEELBASE_WIDTH = .69;
@@ -184,9 +183,9 @@ public static final double MINIMUM_TURN_SPEED = 0;
       /**
        * 100 revs of turret motor turns an 18 tooth pinion one time There are 222
        * teeth in 360 degrees, so 1 tooth = 360/220 = 1.64 degrees So 18 teeth (100
-       * revs) = 18 * 1.64 = 29.5 degrees and one motor rev is .295 degrees 
+       * revs) = 18 * 1.64 = 29.5 degrees and one motor rev is .295 degrees
        */
-      public static final double TURRET_DEG_PER_MOTOR_REV = .295;
+      public static final double TURRET_DEG_PER_MOTOR_REV =  .295;
 
       public static final double TARGET_HEIGHT = Units.inchesToMeters(94);
       public static final double BASE_CAMERA_HEIGHT = Units.inchesToMeters(26);

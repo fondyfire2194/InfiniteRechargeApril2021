@@ -38,18 +38,14 @@ import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.StopShooterWheels;
-import frc.robot.commands.Tilt.AdjustTiltPositionTarget;
 import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.PositionTilt;
-import frc.robot.commands.Tilt.PositionTiltTest;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.ResetTiltAngle;
 import frc.robot.commands.Tilt.StopTilt;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
-import frc.robot.commands.Turret.AdjustPositionTarget;
 import frc.robot.commands.Turret.ClearTurFaults;
 import frc.robot.commands.Turret.PositionTurret;
-import frc.robot.commands.Turret.PositionTurretTest;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.ResetTurretAngle;
 import frc.robot.commands.Turret.StopTurret;
@@ -226,10 +222,10 @@ public class SetupShuffleboard {
                                                                                            // commands
 
                         turretCommands.add("Reset to 0", new ResetTurretAngle(m_turret));
-                        turretCommands.add("To Setpoint", new PositionTurretTest(m_turret));// degrees
-                        turretCommands.add("To Value", new PositionTurret(m_turret, 20));// degrees
-                        turretCommands.add("Add Ep Value", new AdjustPositionTarget(m_turret));
-                        turretCommands.add("Endpoint to Vision", new PositionTurretToVision(m_turret, m_limelight, 50));
+                        turretCommands.add("Position To 0", new PositionTurret(m_turret,0));// degrees
+                        turretCommands.add("Position To 20", new PositionTurret(m_turret, 20));// degrees
+                        turretCommands.add("Position To 50", new PositionTurret(m_turret,50));
+                        turretCommands.add("50 to Vision", new PositionTurretToVision(m_turret, m_limelight, 50));
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
 
@@ -241,7 +237,7 @@ public class SetupShuffleboard {
                         turretValues.addNumber("TUAngle", () -> m_turret.getAngle());
                         turretValues.addNumber("TUTgt", () -> m_turret.targetAngle);
                         turretValues.addNumber("Pct", () -> m_turret.getOut());
-                        turretValues.addNumber("Amps", () -> m_tilt.getAmps());
+                        turretValues.addNumber("Amps", () -> m_turret.getAmps());
                         turretValues.addNumber("Speed", () -> m_turret.getSpeed());
                         turretValues.addNumber("Faults", () -> m_turret.getFaults());
                         turretValues.addBoolean("PlusLimit", () -> m_turret.onPlusSoftwareLimit())
@@ -265,14 +261,13 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT")); //
 
                         tiltCommands.add("Reset To 0", new ResetTiltAngle(m_tilt));
-                        tiltCommands.add("To Setpoint", new PositionTiltTest(m_tilt));
-                        tiltCommands.add("To Value", new PositionTilt(m_tilt, 10));
+                        tiltCommands.add("Position To 5", new PositionTilt(m_tilt,5));
+                        tiltCommands.add("Position To 10", new PositionTilt(m_tilt, 10));
 
                         tiltCommands.add("To Bottom Switch", new TiltMoveToReverseLimit(m_tilt));
                         tiltCommands.add("5 to Vision", new PositionTiltToVision(m_tilt, m_limelight, 5));
                         tiltCommands.add("StopTilt", new StopTilt(m_tilt));
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
-                        tiltCommands.add("Add Ep Value", new AdjustTiltPositionTarget(m_tilt));
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTurretTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)

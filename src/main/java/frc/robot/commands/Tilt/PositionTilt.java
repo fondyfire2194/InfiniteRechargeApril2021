@@ -47,6 +47,6 @@ public class PositionTilt extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_tilt.atTargetAngle()&&loopCtr>10;
+    return m_tilt.atTargetAngle() && loopCtr > 10;
   }
 }

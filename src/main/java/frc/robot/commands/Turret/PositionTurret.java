@@ -27,14 +27,14 @@ public class PositionTurret extends CommandBase {
   @Override
   public void initialize() {
     loopCtr = 0;
-
+    m_turret.targetAngle = m_endpoint;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     loopCtr++;
-    m_turret.targetAngle = m_endpoint;
+
     m_turret.goToPosition(m_turret.targetAngle);
 
   }

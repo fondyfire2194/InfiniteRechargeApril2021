@@ -75,26 +75,26 @@ public class FondyFireTrajectory {
                                 configReversed);
 
                 // straight line opposite power port
-                centerStart = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, -5.7, new Rotation2d(0)),
-                                new Pose2d(12, -5.7, new Rotation2d(0))), configReversed);
+                centerStart = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, 5.7, new Rotation2d(0)),
+                                new Pose2d(12, 5.7, new Rotation2d(0))), configReversed);
 
                 // straight line left of power port
-                leftStart = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, -5.2, new Rotation2d(0)),
-                                new Pose2d(12, -5.2, new Rotation2d(0))), configReversed);
+                leftStart = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, 5.2, new Rotation2d(0)),
+                                new Pose2d(12, 5.2, new Rotation2d(0))), configReversed);
 
                 // straight line right of power port
-                rightStart = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, -6.3, new Rotation2d(0)),
-                                new Pose2d(12, -6.3, new Rotation2d(0))), configReversed);
+                rightStart = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, 6.3, new Rotation2d(0)),
+                                new Pose2d(12, 6.3, new Rotation2d(0))), configReversed);
 
                 // start left of power port curve back for straight shot
-                leftStartCurve = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, -5.2, new Rotation2d(0)),
-                                new Pose2d(12, -5.3, new Rotation2d(0))), configReversed);
+                leftStartCurve = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, 5.2, new Rotation2d(0)),
+                                new Pose2d(12, 5.3, new Rotation2d(0))), configReversed);
 
                 // start right of power port curve back for straight shot
                 rightStartCurve = TrajectoryGenerator
                                 .generateTrajectory(
-                                                List.of(new Pose2d(13, -6.3, new Rotation2d(0)),
-                                                                new Pose2d(12, -5.3, new Rotation2d(0))),
+                                                List.of(new Pose2d(13, 6.3, new Rotation2d(0)),
+                                                                new Pose2d(12, 5.3, new Rotation2d(0))),
                                                 configReversed);
 
                 // zig zag
@@ -102,15 +102,14 @@ public class FondyFireTrajectory {
                                 // Start at the origin facing the +X direction
                                 new Pose2d(0, 0, new Rotation2d(0)),
                                 // Pass through these two interior waypoints, making an 's' curve path
-                                List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+                                List.of(new Translation2d(1, 1), new Translation2d(2, 1)),
                                 // End 3 meters straight ahead of where we started, facing forward
                                 new Pose2d(3, 0, new Rotation2d(0)),
                                 // Pass config
                                 configForward);
 
                 trenchStartOne = TrajectoryGenerator.generateTrajectory(
-                                // List.of(new Pose2d(2, 0, new Rotation2d(0)), new Pose2d(4, 0, new
-                                // Rotation2d(0))),
+                                
                                 new Pose2d(0, 0, new Rotation2d(0)),
                                 List.of(new Translation2d(1, 0), new Translation2d(2, 0)),
                                 new Pose2d(4, 0.1, new Rotation2d(0)),
@@ -143,7 +142,7 @@ public class FondyFireTrajectory {
 
                 // controlPanelStartTwo = TrajectoryGenerator.generateTrajectory(
                 // // Start at the origin facing the +X direction
-                // List.of(new Pose2d(12, .71, new Rotation2d(0)), new Pose2d(12, -6, new
+                // List.of(new Pose2d(12, .71, new Rotation2d(0)), new Pose2d(12, 6, new
                 // Rotation2d(.2))),
                 // // Pass config
                 // configForward);

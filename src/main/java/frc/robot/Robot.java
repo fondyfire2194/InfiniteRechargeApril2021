@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -114,14 +115,15 @@ public class Robot extends TimedRobot {
     switch (autoChoice) {
 
     case 0:// in front of power port 0 shooter data index use pipeline 0 - no zoom
-    Pose2d initialPose = FieldMap.startPosition[0];
-    m_robotContainer.m_robotDrive.fieldSim.setRobotPose(initialPose);
-      startPosition = FieldMap.goalCenterPoint;
-      //  m_robotContainer.m_robotDrive.resetAll();
-      // m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
-      // m_autonomousCommand = m_robotContainer.getAutonomousCommand0();
 
-     
+      m_robotContainer.m_robotDrive.resetOdometry(FieldMap.startPosition[0]);
+
+      // m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+
+      m_robotContainer.m_robotDrive.resetAll();
+      if (RobotBase.isSimulation())
+        m_robotContainer.m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
+      // m_autonomousCommand = m_robotContainer.getAutonomousCommand0();
 
       break;
 

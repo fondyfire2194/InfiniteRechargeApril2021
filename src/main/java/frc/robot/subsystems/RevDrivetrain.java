@@ -29,6 +29,7 @@ import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PDPConstants;
 import frc.robot.sim.BaseDrivetrainSubsystem;
+import frc.robot.simulation.AHRSSimWrapper;
 
 public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private static final DrivetrainConstants DRIVETRAIN_CONSTANTS = new NeoDrivetrainConstants();

@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.Map;
-
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.FaultID;
@@ -16,12 +14,7 @@ import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
@@ -42,9 +35,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double visionCorrection;
     public double targetAngle;
     private double inPositionBandwidth = 1;
-    public boolean getEndpoint;
-    public double endpoint;
-    private NetworkTableEntry turretSetpoint;
+
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -69,28 +60,17 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
             ElevatorSimConstants.kElevatorGearing = 180;
             ElevatorSimConstants.kMaxElevatorHeight = 100;
             ElevatorSimConstants.kMinElevatorHeight = -110;
-            ElevatorSimConstants.kElevatorGearbox = DCMotor.getNEO(1);
+            ElevatorSimConstants.kElevatorGearbox = DCMotor.getNeo550(1);
 
             mElevatorSim = new ElevatorSimWrapper(ElevatorSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
         }
-
-        ShuffleboardLayout turretEndpoint = Shuffleboard.getTab("SetupTurretTilt")
-                .getLayout("TurretEndpoints", BuiltInLayouts.kList).withPosition(0, 3).withSize(2, 1)
-                .withProperties(Map.of("Label position", "LEFT"));
-
-        turretSetpoint = turretEndpoint.add("TurretEndpoint", 0).getEntry();
 
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-
-        if (getEndpoint) {
-            endpoint = turretSetpoint.getDouble(0);
-            getEndpoint = false;
-        }
 
     }
 
@@ -117,9 +97,12 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
         // SmartDashboard.putNumber("An", angle);
         // SmartDashboard.putNumber("SMKP", mPidController.getP(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("SMKA", mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("SMKmin", mPidController.getOutputMin(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("SMKmax", mPidController.getOutputMax(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("SMKA",
+        // mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("SMKmin",
+        // mPidController.getOutputMin(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("SMKmax",
+        // mPidController.getOutputMax(SMART_MOTION_SLOT));
 
     }
 
@@ -197,8 +180,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         maxRPM = 5700;// not used
         allowedErr = 1;
         // Smart Motion Coefficients
-        maxVel = 5000; // rpm
-        maxAcc = 75;
+        maxVel = 10000; // rpm
+        maxAcc = 750;
 
         // set PID coefficients
 
