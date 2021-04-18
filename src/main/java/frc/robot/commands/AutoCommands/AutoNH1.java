@@ -49,8 +49,8 @@ public class AutoNH1 extends SequentialCommandGroup {
     // Add your commands in the super() call, e.g.
     // super(new FooCommand(), new BarCommand());
 
-    super(new TiltMoveToReverseLimit(tilt), new LimelightSetPipeline(limelight, pipeline),
-        new StartShooterWheels(shooter, shootSpeed), new PositionHoldTilt(tilt), new PositionHoldTurret(turret),
+    super(new LimelightSetPipeline(limelight, pipeline),
+       // new StartShooterWheels(shooter, shootSpeed), new PositionHoldTilt(tilt), new PositionHoldTurret(turret),
         s_trajectory.getRamsete(s_trajectory.centerStart).andThen(() -> drive.tankDriveVolts(0, 0)),
         new ParallelCommandGroup(new ShootCells(shooter, transport, compressor, shootSpeed, shootTime)
             .deadlineWith(new ParallelCommandGroup(new PositionHoldTilt(tilt)), new PositionHoldTurret(turret))),

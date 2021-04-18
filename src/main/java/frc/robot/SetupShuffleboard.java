@@ -365,9 +365,9 @@ public class SetupShuffleboard {
                         robotCommands.add("Reset Pose", new ResetPose(m_robotDrive));
                         robotCommands.add("Pos to 3M", new PositionRobot(m_robotDrive, 3.));
                         robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0));
-                        robotCommands.add("Rot to 90", new TurnToAngleProfiled(90, m_robotDrive));
-                        robotCommands.add("Rot to 0", new TurnToAngleProfiled(0, m_robotDrive));
-                        robotCommands.add("Rot to -90", new TurnToAngleProfiled(-90, m_robotDrive));
+                        robotCommands.add("Rot to 90", new TurnToAngleProfiled(m_robotDrive,90));
+                        robotCommands.add("Rot to 0", new TurnToAngleProfiled( m_robotDrive,0));
+                        robotCommands.add("Rot to -90", new TurnToAngleProfiled(m_robotDrive,-90));
                         robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
 
                         ShuffleboardLayout robotValues = Shuffleboard.getTab("SetupRobot")
@@ -398,7 +398,7 @@ public class SetupShuffleboard {
                         SendableChooser<Trajectory> trajChooser = new SendableChooser<>();
                         Shuffleboard.getTab("SetupRobot").add("Trajectories", trajChooser).withSize(2, 1)
                                         .withPosition(6, 0);
-                        trajChooser.setDefaultOption("CrossLine", m_traj.crossLine);
+                        trajChooser.setDefaultOption("TrenchStart", m_traj.trenchStartOne);
                         trajChooser.addOption("CenterStart", m_traj.centerStart);
 
                         Shuffleboard.getTab("SetupRobot")

@@ -50,7 +50,7 @@ public class Auto0 extends SequentialCommandGroup {
     // Add your commands in the super() call, e.g.
     // super(new FooCommand(), new BarCommand());
 
-    super(new TiltMoveToReverseLimit(tilt), new LimelightSetPipeline(limelight, pipeline),
+    super(new LimelightSetPipeline(limelight, pipeline),
         new StartShooterWheels(shooter, shootSpeed),
         new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, tiltAngle),
             new PositionTurretToVision(turret, limelight, turretAngle)),

@@ -36,14 +36,15 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double targetAngle;
     private double inPositionBandwidth = 1;
 
-
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
         mEncoder = m_motor.getEncoder();
         mPidController = m_motor.getPIDController();
         m_motor.restoreFactoryDefaults();
-        mEncoder.setPositionConversionFactor(DEG_PER_MOTOR_REV);// 1 /
-                                                                // HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
+        if (RobotBase.isReal())
+            mEncoder.setPositionConversionFactor(DEG_PER_MOTOR_REV);// 1 /
+        else
+            mEncoder.setPositionConversionFactor(1); // // HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
 
         m_motor.setOpenLoopRampRate(5);
         mEncoder.setPosition(0);
@@ -57,7 +58,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
         if (RobotBase.isSimulation()) {
             ElevatorSimConstants.kCarriageMass = .2;
-            ElevatorSimConstants.kElevatorGearing = 180;
+            ElevatorSimConstants.kElevatorGearing = 10;
             ElevatorSimConstants.kMaxElevatorHeight = 100;
             ElevatorSimConstants.kMinElevatorHeight = -110;
             ElevatorSimConstants.kElevatorGearbox = DCMotor.getNeo550(1);

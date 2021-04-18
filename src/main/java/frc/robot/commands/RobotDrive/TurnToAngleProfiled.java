@@ -25,7 +25,7 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
    * @param targetAngleDegrees The angle to turn to
    * @param drive              The drive subsystem to use
    */
-  public TurnToAngleProfiled(double targetAngleDegrees, RevDrivetrain drive) {
+  public TurnToAngleProfiled(RevDrivetrain drive, double targetAngleDegrees) {
     super(
         new ProfiledPIDController(DriveConstants.kTurnP, DriveConstants.kTurnI, DriveConstants.kTurnD,
             new TrapezoidProfile.Constraints(DriveConstants.kMaxTurnRateDegPerS,

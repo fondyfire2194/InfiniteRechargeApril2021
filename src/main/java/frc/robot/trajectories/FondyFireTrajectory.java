@@ -69,14 +69,14 @@ public class FondyFireTrajectory {
                                                 // Apply the voltage constraint
                                                 .addConstraint(autoVoltageConstraint);
 
-                // straight line
-                crossLine = TrajectoryGenerator.generateTrajectory(
-                                List.of(new Pose2d(13, 0, new Rotation2d(0)), new Pose2d(12, 0, new Rotation2d(0))),
-                                configReversed);
+                // // straight line
+                // crossLine = TrajectoryGenerator.generateTrajectory(
+                //                 List.of(new Pose2d(13, 0, new Rotation2d(0)), new Pose2d(12, 0, new Rotation2d(0))),
+                //                 configReversed);
 
                 // straight line opposite power port
                 centerStart = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, 5.7, new Rotation2d(0)),
-                                new Pose2d(12, 5.7, new Rotation2d(0))), configReversed);
+                                new Pose2d(11, 4.5, new Rotation2d(0))), configReversed);
 
                 // straight line left of power port
                 leftStart = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, 5.2, new Rotation2d(0)),

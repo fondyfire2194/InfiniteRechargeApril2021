@@ -18,7 +18,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Turret.PositionHoldTurret;
+import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.trajectories.FondyFireTrajectory;
 
 /**
@@ -102,6 +104,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_robotContainer.m_turret.setDefaultCommand(new PositionHoldTurret(m_robotContainer.m_turret));
     FondyFireTrajectory m_trajectory = m_robotContainer.m_trajectory;
+    RevDrivetrain m_robotDrive = m_robotContainer.m_robotDrive;
+
     Shuffleboard.selectTab("Competition");
 
     // get delay time
@@ -116,44 +120,60 @@ public class Robot extends TimedRobot {
 
     case 0:// in front of power port 0 shooter data index use pipeline 0 - no zoom
 
-      m_robotContainer.m_robotDrive.resetOdometry(FieldMap.startPosition[0]);
+      m_robotDrive.resetOdometry(FieldMap.startPosition[0]);
 
-      // m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      // m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
 
-      m_robotContainer.m_robotDrive.resetAll();
+      m_robotDrive.resetAll();
       if (RobotBase.isSimulation())
-        m_robotContainer.m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
-      // m_autonomousCommand = m_robotContainer.getAutonomousCommand0();
+        m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand0();
 
       break;
 
     case 1:// in front of power port 0 shooter data index use pipeline 0 - no zoom
 
-      m_robotContainer.m_robotDrive.resetAll();
-      m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      m_robotDrive.resetAll();
+      m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      if (RobotBase.isSimulation())
+        m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
       m_autonomousCommand = m_robotContainer.getAutonomousCommand1();
 
       break;
+
     case 2:// in front of power port 0 shooter data index use pipeline 0 - no zoom
 
-      m_robotContainer.m_robotDrive.resetAll();
-      m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      m_robotDrive.resetAll();
+      m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      if (RobotBase.isSimulation())
+        m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
       m_autonomousCommand = m_robotContainer.getAutonomousCommand2();
 
       break;
 
     case 3:// in front of power port 0 shooter data index use pipeline 0 - no zoom
-
-      m_robotContainer.m_robotDrive.resetAll();
-      m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+SmartDashboard.putBoolean("AUTO3", true);
+      m_robotDrive.resetAll();
+      m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      if (RobotBase.isSimulation())
+        m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
       m_autonomousCommand = m_robotContainer.getAutonomousCommand3();
 
       break;
 
-    case 4:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+    case 4:// cross line
+      m_robotDrive.resetAll();
+      m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      if (RobotBase.isSimulation())
+        m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
+      new PositionRobot(m_robotDrive, -2).schedule(true);
+      break;
+    case 5:// in front of power port 0 shooter data index use pipeline 0 - no zoom
 
-      m_robotContainer.m_robotDrive.resetAll();
-      m_robotContainer.m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      m_robotDrive.resetAll();
+      m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      if (RobotBase.isSimulation())
+        m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
       m_autonomousCommand = m_robotContainer.getAutonomousCommand4();
 
       break;
