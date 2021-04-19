@@ -15,7 +15,6 @@ import org.snobotv2.sim_wrappers.FlywheelSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
@@ -23,11 +22,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
+import frc.robot.Robot;
 import frc.robot.sim.ShooterSubsystem;
 
 public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsystem {
     public final SimableCANSparkMax mLeftMotor; // NOPMD
-    // private final SimableCANSparkMax mRightMotor; // NOPMD
+    private final SimableCANSparkMax mRightMotor; // NOPMD
     private final CANEncoder mEncoder;
     private final CANPIDController mPidController;
     private ISimWrapper mSimulator;
@@ -48,23 +48,25 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double startDistance;
     public double calculatedCameraDistance;
 
+    private boolean tuneOn = false;
+
     public RevShooterSubsystem() {
         mLeftMotor = new SimableCANSparkMax(CANConstants.LEFT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
-        // mRightMotor = new SimableCANSparkMax(CANConstants.RIGHT_MOTOR,
-        // CANSparkMaxLowLevel.MotorType.kBrushless);
+        mRightMotor = new SimableCANSparkMax(CANConstants.RIGHT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-        // mRightMotor.follow(mLeftMotor);
+        mRightMotor.follow(mLeftMotor);
 
         mEncoder = mLeftMotor.getEncoder();
         mPidController = mLeftMotor.getPIDController();
-        // mRightMotor.restoreFactoryDefaults();
+        mRightMotor.restoreFactoryDefaults();
         mLeftMotor.setOpenLoopRampRate(5.);
         mLeftMotor.setClosedLoopRampRate(5.);
         mLeftMotor.setIdleMode(IdleMode.kBrake);
-        // mRightMotor.setIdleMode(IdleMode.kBrake) ;
-        // mPidController.setP(0.001);
-        // mPidController.setFF(1.0 / 4700);
-        setGains();
+        mRightMotor.setIdleMode(IdleMode.kBrake);
+        kMaxOutput = 1;
+        kMinOutput = -1;
+        mPidController.setOutputRange(kMinOutput, kMaxOutput);
+
         if (RobotBase.isSimulation()) {
             mSimulator = new FlywheelSimWrapper(FlywheelSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(mLeftMotor), RevEncoderSimWrapper.create(mLeftMotor));
@@ -75,15 +77,19 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         shootColorWidgetEntry = shootColorWidget.getEntry();
         shootColorWidgetEntry.getBoolean(false);
 
+        if (!tuneOn) {
+            setGains();
+        }
+
     }
 
-    public void calibratePID(final double p, final double i, final double d, final double f) {
+    public void calibratePID(final double p, final double i, final double d, final double f, final double kIz) {
         mPidController.setIAccum(0);
         mPidController.setP(p);
         mPidController.setI(i);
         mPidController.setD(d);
         mPidController.setFF(f);
-        mPidController.setIZone(1000);
+        mPidController.setIZone(kIz);
     }
 
     @Override
@@ -105,6 +111,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+
+        if (tuneOn)
+            tuneGains();
 
         shootColorNumber = (int) SmartDashboard.getNumber("ShootColor", 0);
         if (shootColorNumber > 2)
@@ -167,23 +176,25 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     }
 
     private void setGains() {
-
-        // PID coefficients
-        kP = 6e-4;
-        kI = 0;
-        kD = 0;
-        kIz = 0;
-        kFF = 0.00015;
-        kMaxOutput = 1;
-        kMinOutput = -1;
         maxRPM = 5700;
-        mPidController.setP(3e-4);
-        mPidController.setI(0.00000);
-        mPidController.setD(0.);
-        mPidController.setIZone(1000.);
-        mPidController.setFF(.00017);
-        mPidController.setOutputRange(-1., 1.);
+        kP = .002;
+        kI = 0.01;
+        kD = 0;
+        kIz = 2;
+        kFF = 2e-4;
 
+        calibratePID(kP, kI, kD, kFF, kIz);
+    }
+
+    private void tuneGains() {
+
+        double p = Robot.tuneValues.getEntry("kP").getDouble(0.002);
+        double i = Robot.tuneValues.getEntry("kI").getDouble(0.01);
+        double d = Robot.tuneValues.getEntry("kD").getDouble(0);
+        double ff = Robot.tuneValues.getEntry("kFF").getDouble(2);
+        double iz = Robot.tuneValues.getEntry("kIZ").getDouble(2e-4);
+     
+        calibratePID(p, i, d, ff, iz);
     }
 
 }

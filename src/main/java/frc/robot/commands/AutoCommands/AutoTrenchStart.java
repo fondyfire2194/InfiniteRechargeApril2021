@@ -36,69 +36,79 @@ import frc.robot.trajectories.FondyFireTrajectory;
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
 public class AutoTrenchStart extends SequentialCommandGroup {
-    /**
-     * Creates a new Auto0.
-     */
- 
-    private final static int shootPosition = 1;
-    private final static double shootTime = 5;
-    private final static int pipeline = ShootData.getPipeline(shootPosition);
-    private static double tiltAngle = ShootData.getTiltAngle(shootPosition);
-    private final static double turretAngle = ShootData.getTurretAngle(shootPosition);
-    private final static double shootSpeed = ShootData.getShootSpeed(shootPosition);
-
-    private final static int shootPosition1 = 2;
-    private final static double shootTime1 = 5;
-    private final static int pipeline1 = ShootData.getPipeline(shootPosition1);
-    private static double tiltAngle1 = ShootData.getTiltAngle(shootPosition1);
-    private final static double turretAngle1 = ShootData.getTurretAngle(shootPosition1);
-    private final static double shootSpeed1 = ShootData.getShootSpeed(shootPosition1);
-
-
-    public AutoTrenchStart(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
-            CellTransportSubsystem transport, RevDrivetrain drive, RearIntakeSubsystem rearIntake, LimeLight limelight,
-            FondyFireTrajectory s_trajectory, Compressor compressor) {
-        // Add your commands in the super() call, e.g.
-        // super(new FooCommand(), new BarCommand());
         /**
-         * Start position is in line with trench center line preloaded with 3 cells.
-         * 
-         * 1) Reverse to pick up 2 more cells, run intake, plus shooter at lower speed,
-         * preposition tilt and turret during move
-         * 
-         * 2) Lock on target with vision, keeping intake down and running
-         * 
-         * 3) Lock on target with position and shoot 5 cells
-         * 
-         * 4) Lock on target with vision and reverse to pick up remaining 2 cells
-         * 
-         * 5) Lock on target with position and shoot 5 cells
-         * 
+         * Creates a new Auto0.
          */
 
-        super(new TiltMoveToReverseLimit(tilt), new LimelightSetPipeline(limelight, pipeline),
-                new StartShooterWheels(shooter, shootSpeed), new StartIntake(rearIntake),
-                new ParallelCommandGroup(new PositionTurret(turret, turretAngle), new PositionTilt(tilt, tiltAngle),
-                        s_trajectory.getRamsete(s_trajectory.trenchStartOne).andThen(() -> drive.tankDriveVolts(0, 0))),
+        private final static int shootPosition = 1;
+        private final static double shootTime = 5;
+        private final static int pipeline = ShootData.getPipeline(shootPosition);
+        private static double tiltAngle = ShootData.getTiltAngle(shootPosition);
+        private final static double turretAngle = ShootData.getTurretAngle(shootPosition);
+        private final static double shootSpeed = ShootData.getShootSpeed(shootPosition);
 
-                new ParallelCommandGroup(new PositionHoldTilt(tilt), new PositionHoldTurret(turret)),
+        private final static int shootPosition1 = 2;
+        private final static double shootTime1 = 5;
+        private final static int pipeline1 = ShootData.getPipeline(shootPosition1);
+        private static double tiltAngle1 = ShootData.getTiltAngle(shootPosition1);
+        private final static double turretAngle1 = ShootData.getTurretAngle(shootPosition1);
+        private final static double shootSpeed1 = ShootData.getShootSpeed(shootPosition1);
 
-                new ParallelCommandGroup(
-                        new ShootCells(shooter, transport, compressor, shootSpeed, shootTime).deadlineWith(
-                                new ParallelCommandGroup(new PositionHoldTilt(tilt)), new PositionHoldTurret(turret))),
+        public AutoTrenchStart(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+                        CellTransportSubsystem transport, RevDrivetrain drive, RearIntakeSubsystem rearIntake,
+                        LimeLight limelight, FondyFireTrajectory s_trajectory, Compressor compressor) {
+                // Add your commands in the super() call, e.g.
+                // super(new FooCommand(), new BarCommand());
+                /**
+                 * Start position is in line with trench center line preloaded with 3 cells.
+                 * 
+                 * 1) Reverse to pick up 2 more cells, run intake, plus shooter at lower speed,
+                 * preposition tilt and turret during move
+                 * 
+                 * 2) Lock on target with vision, keeping intake down and running
+                 * 
+                 * 3) Lock on target with position and shoot 5 cells
+                 * 
+                 * 4) Lock on target with vision and reverse to pick up remaining 2 cells
+                 * 
+                 * 5) Lock on target with position and shoot 5 cells
+                 * 
+                 */
 
-                new ParallelCommandGroup(new PositionTurret(turret, turretAngle), new PositionTilt(tilt, tiltAngle),
-                        s_trajectory.getRamsete(s_trajectory.trenchStartTwo).andThen(() -> drive.tankDriveVolts(0, 0))),
-                new StopIntake(rearIntake),
+                super(new TiltMoveToReverseLimit(tilt), new LimelightSetPipeline(limelight, pipeline),
+                                new StartShooterWheels(shooter, shootSpeed), new StartIntake(rearIntake),
+                                new ParallelCommandGroup(new PositionTurret(turret, turretAngle),
+                                                new PositionTilt(tilt, tiltAngle),
+                                                s_trajectory.getRamsete(s_trajectory.trenchStartThree)
+                                                                .andThen(() -> drive.tankDriveVolts(0, 0))));
 
-                new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, tiltAngle),
-                        new PositionTurretToVision(turret, limelight, turretAngle),
+                // new ParallelCommandGroup(new PositionHoldTilt(tilt), new
+                // PositionHoldTurret(turret)),
 
-                        new ParallelCommandGroup(new ShootCells(shooter, transport, compressor, shootSpeed, shootTime)
-                                .deadlineWith(new ParallelCommandGroup(new PositionHoldTilt(tilt)),
-                                        new PositionHoldTurret(turret))),
+                // new ParallelCommandGroup(new ShootCells(shooter, transport, compressor,
+                // shootSpeed,
+                // shootTime).deadlineWith(
+                // new ParallelCommandGroup(new PositionHoldTilt(tilt)),
+                // new PositionHoldTurret(turret))),
 
-                        new ParallelCommandGroup(new PositionTilt(tilt, -1), new PositionTurret(turret, 0))));
+                // new ParallelCommandGroup(new PositionTurret(turret, turretAngle),
+                // new PositionTilt(tilt, tiltAngle),
+                // s_trajectory.getRamsete(s_trajectory.trenchStartTwo)
+                // .andThen(() -> drive.tankDriveVolts(0, 0))),
+                // new StopIntake(rearIntake),
 
-    }
+                // new ParallelCommandGroup(new PositionTilt(tilt, tiltAngle),
+                // new PositionTurret(turret, turretAngle),
+
+                // new ParallelCommandGroup(new ShootCells(shooter, transport, compressor,
+                // shootSpeed, shootTime).deadlineWith(
+                // new ParallelCommandGroup(
+                // new PositionHoldTilt(
+                // tilt)),
+                // new PositionHoldTurret(turret))),
+
+                // new ParallelCommandGroup(new PositionTilt(tilt, -1),
+                // new PositionTurret(turret, 0))));
+
+        }
 }

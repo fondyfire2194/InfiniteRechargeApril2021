@@ -116,12 +116,7 @@ public class RobotContainer {
             m_compressor = new Compressor();
             m_trajectory = new FondyFireTrajectory(m_robotDrive);
 
-          
-                  m_turret.setDefaultCommand(getJogTurretCommand());
-           
-                
-
-            m_tilt.setDefaultCommand(getJogTiltCommand());
+            // m_tilt.setDefaultCommand(getJogTiltCommand());
 
             m_shooter.setDefaultCommand(getJogShooterCommand());
 
@@ -132,9 +127,9 @@ public class RobotContainer {
 
             configureButtonBindings();
 
-        //    LiveWindow.disableAllTelemetry();
+            // LiveWindow.disableAllTelemetry();
 
-        SmartDashboard.putData(CommandScheduler.getInstance());
+            SmartDashboard.putData(CommandScheduler.getInstance());
 
       }
 
@@ -161,9 +156,11 @@ public class RobotContainer {
             JoystickButton setupA = new JoystickButton(setupGamepad, 1);
             JoystickButton setupB = new JoystickButton(setupGamepad, 2);
             JoystickButton setupX = new JoystickButton(setupGamepad, 3);
-            // JoystickButton setupY = new JoystickButton(setupGamepad, 4);
+            JoystickButton setupY = new JoystickButton(setupGamepad, 4);
+            JoystickButton setupBack = new JoystickButton(setupGamepad, 6);
+            JoystickButton setupStart = new JoystickButton(setupGamepad, 7);
 
-            setupX
+            setupStart
 
                         .whenPressed(() -> m_transport.runFrontRollerMotor(.5))
                         .whenPressed(() -> m_transport.runRearRollerMotor(.5))
@@ -172,14 +169,17 @@ public class RobotContainer {
 
                         .whenReleased(() -> m_transport.runFrontRollerMotor(0))
                         .whenReleased(() -> m_transport.runRearRollerMotor(0))
-                        .whenReleased(() -> m_transport.runLeftBeltMotor(0))
-                        .whenReleased(() -> m_transport.runRightBeltMotor(0));
+                        .whenReleased(() -> m_transport.runLeftBeltMotor(0));
 
-            setupB.whenPressed(new StartIntake(m_intake));
+            setupBack.whenPressed(new StartIntake(m_intake));
 
-            setupA.whileHeld(getJogShooterCommand());
+            setupB.whileHeld(getJogShooterCommand());
 
-        //    LiveWindow.disableAllTelemetry();
+            setupY.whileHeld(getJogTiltCommand());
+
+            setupX.whileHeld(getJogTurretCommand());
+
+            // LiveWindow.disableAllTelemetry();
 
       }
 
@@ -203,7 +203,7 @@ public class RobotContainer {
       }
 
       public Command getJogTiltCommand() {
-            return new TiltJog(m_tilt, () -> setupGamepad.getRawAxis(1) / 2);
+            return new TiltJog(m_tilt, () -> -setupGamepad.getRawAxis(1) / 2);
       }
 
       public Command getJogShooterCommand() {

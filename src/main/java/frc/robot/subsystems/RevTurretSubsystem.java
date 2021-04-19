@@ -17,6 +17,7 @@ import org.snobotv2.sim_wrappers.ISimWrapper;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.sim.ElevatorSubsystem;
@@ -35,6 +36,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double visionCorrection;
     public double targetAngle;
     private double inPositionBandwidth = 1;
+    public boolean tuneOn = false;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -49,9 +51,11 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         m_motor.setOpenLoopRampRate(5);
         mEncoder.setPosition(0);
 
-        gainSettings();
-        if (RobotBase.isSimulation())
-            mPidController.setP(0.16);
+        if (!tuneOn)
+            setGains();
+
+        // if (RobotBase.isSimulation())
+        //     mPidController.setP(0.16);
 
         mEncoder.setPosition(0);
         targetAngle = 0;
@@ -72,6 +76,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        if (tuneOn)
+            tuneGains();
 
     }
 
@@ -169,7 +175,16 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         m_motor.set(0);
     }
 
-    private void gainSettings() {
+    public void calibratePID(final double p, final double i, final double d, final double f, final double kIz) {
+        mPidController.setIAccum(0);
+        mPidController.setP(p);
+        mPidController.setI(i);
+        mPidController.setD(d);
+        mPidController.setFF(f);
+        mPidController.setIZone(kIz);
+    }
+
+    private void setGains() {
         // PID coefficients
         kP = 5e-1;
         kI = 0;// 1e-5;
@@ -194,6 +209,17 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
         mPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
         mPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
+    }
+
+    private void tuneGains() {
+
+        double p = Robot.tuneValues.getEntry("kP").getDouble(0.002);
+        double i = Robot.tuneValues.getEntry("kI").getDouble(0.01);
+        double d = Robot.tuneValues.getEntry("kD").getDouble(0);
+        double ff = Robot.tuneValues.getEntry("kFF").getDouble(2);
+        double iz = Robot.tuneValues.getEntry("kIZ").getDouble(2e-4);
+
+        calibratePID(p, i, d, ff, iz);
     }
 
     @Override

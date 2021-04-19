@@ -18,10 +18,15 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.trajectories.FondyFireTrajectory;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -44,6 +49,14 @@ public class Robot extends TimedRobot {
   final Rotation2d rotation270 = Rotation2d.fromDegrees(270.0);
   final Rotation2d rotation90 = Rotation2d.fromDegrees(90.0);
 
+  public static NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
+  public static edu.wpi.first.networktables.NetworkTable tuneValues;
+  public NetworkTableEntry kpEntry;
+  public NetworkTableEntry kiEntry;
+  public NetworkTableEntry kiZEntry;
+  public NetworkTableEntry kdEntry;
+  public NetworkTableEntry kFFEntry;
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -55,6 +68,20 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     Shuffleboard.selectTab("Pre-Round");
+    ntinst.startServer();
+    tuneValues = ntinst.getTable("tuneValues");
+
+    kpEntry = tuneValues.getEntry("kP");
+    kiEntry = tuneValues.getEntry("kI");
+    kiZEntry = tuneValues.getEntry("kIZ");
+    kdEntry = tuneValues.getEntry("kD");
+    kFFEntry = tuneValues.getEntry("kFF");
+
+    kpEntry.setDouble(.002);
+    kiEntry.setDouble(0.01);
+    kiZEntry.setDouble(2);
+    kdEntry.setDouble(0);
+    kFFEntry.setDouble(2e-4);
 
   }
 
@@ -102,6 +129,7 @@ public class Robot extends TimedRobot {
    */
 
   public void autonomousInit() {
+    new TiltMoveToReverseLimit(m_robotContainer.m_tilt);
     m_robotContainer.m_turret.setDefaultCommand(new PositionHoldTurret(m_robotContainer.m_turret));
     FondyFireTrajectory m_trajectory = m_robotContainer.m_trajectory;
     RevDrivetrain m_robotDrive = m_robotContainer.m_robotDrive;
@@ -120,9 +148,7 @@ public class Robot extends TimedRobot {
 
     case 0:// in front of power port 0 shooter data index use pipeline 0 - no zoom
 
-      m_robotDrive.resetOdometry(FieldMap.startPosition[0]);
-
-      // m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+      m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
 
       m_robotDrive.resetAll();
       if (RobotBase.isSimulation())
@@ -152,7 +178,7 @@ public class Robot extends TimedRobot {
       break;
 
     case 3:// in front of power port 0 shooter data index use pipeline 0 - no zoom
-SmartDashboard.putBoolean("AUTO3", true);
+      SmartDashboard.putBoolean("AUTO3", true);
       m_robotDrive.resetAll();
       m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
       if (RobotBase.isSimulation())
@@ -168,12 +194,23 @@ SmartDashboard.putBoolean("AUTO3", true);
         m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
       new PositionRobot(m_robotDrive, -2).schedule(true);
       break;
+
     case 5:// in front of power port 0 shooter data index use pipeline 0 - no zoom
 
       m_robotDrive.resetAll();
       m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
       if (RobotBase.isSimulation())
         m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand4();
+
+      break;
+
+    case 7:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+
+      m_robotDrive.resetAll();
+      m_robotDrive.resetOdometry(m_trajectory.example.getInitialPose());
+      if (RobotBase.isSimulation())
+        m_robotDrive.fieldSim.setRobotPose(m_trajectory.example.getInitialPose());
       m_autonomousCommand = m_robotContainer.getAutonomousCommand4();
 
       break;
@@ -219,6 +256,7 @@ SmartDashboard.putBoolean("AUTO3", true);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    // new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
     // CommandScheduler.getInstance().cancelAll();
 
   }

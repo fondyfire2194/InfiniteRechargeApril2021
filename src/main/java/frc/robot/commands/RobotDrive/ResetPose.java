@@ -7,6 +7,7 @@
 
 package frc.robot.commands.RobotDrive;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.RevDrivetrain;
 
@@ -27,6 +28,7 @@ public class ResetPose extends InstantCommand {
    public void initialize() {
       drive.resetEncoders();
       drive.resetPose(drive.getPose());
+   
 
    }
 }

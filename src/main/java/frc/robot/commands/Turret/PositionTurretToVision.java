@@ -16,7 +16,7 @@ public class PositionTurretToVision extends CommandBase {
   private double m_position;
 
   private double m_endpoint;
-
+  private int loopCtr;
   private int onTarget;
 
   public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double position) {
@@ -32,21 +32,24 @@ public class PositionTurretToVision extends CommandBase {
   public void initialize() {
     m_endpoint = m_position;
     m_turret.visionCorrection = 0;
+    loopCtr = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    loopCtr++;
     if (!m_limelight.getIsTargetFound()) {
       m_turret.visionCorrection = 0;
 
     } else {
       m_turret.visionCorrection = m_limelight.getdegRotationToTarget();
-
-      m_turret.goToPositionMotionMagic(m_endpoint);
     }
+    m_turret.goToPosition(m_endpoint);
+    m_turret.targetAngle = m_endpoint;
+
     if (m_limelight.getVertOnTarget())
-      onTarget++;
+       m_turret.targetAngle = m_endpoint;
   }
 
   // Called once the command ends or is interrupted.
@@ -57,6 +60,6 @@ public class PositionTurretToVision extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_turret.atTargetAngle() && loopCtr > 2;
   }
 }

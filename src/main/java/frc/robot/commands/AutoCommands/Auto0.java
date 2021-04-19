@@ -17,7 +17,6 @@ import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
-import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
@@ -37,8 +36,8 @@ public class Auto0 extends SequentialCommandGroup {
    * Creates a new Auto0.
    */
 
-  private final static int shootPosition = 1;
-  private final static double shootTime = 5;
+  private final static int shootPosition = 0;
+  private final static double shootTime = ShootData.getShootTime(shootPosition);
   private final static int pipeline = ShootData.getPipeline(shootPosition);
   private static double tiltAngle = ShootData.getTiltAngle(shootPosition);
   private final static double turretAngle = ShootData.getTurretAngle(shootPosition);
@@ -51,11 +50,11 @@ public class Auto0 extends SequentialCommandGroup {
     // super(new FooCommand(), new BarCommand());
 
     super(new LimelightSetPipeline(limelight, pipeline),
-        new StartShooterWheels(shooter, shootSpeed),
+
         new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, tiltAngle),
-            new PositionTurretToVision(turret, limelight, turretAngle)),
-        s_trajectory.getRamsete(s_trajectory.centerStart).andThen(() ->
-        drive.tankDriveVolts(0, 0)),
+            new PositionTurretToVision(turret, limelight, turretAngle))
+                .deadlineWith(new StartShooterWheels(shooter, shootSpeed)),
+        s_trajectory.getRamsete(s_trajectory.centerStart).andThen(() -> drive.tankDriveVolts(0, 0)),
 
         new ParallelCommandGroup(new ShootCells(shooter, transport, compressor, shootSpeed, shootTime)
             .deadlineWith(new ParallelCommandGroup(new PositionHoldTilt(tilt)), new PositionHoldTurret(turret))),

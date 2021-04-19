@@ -66,7 +66,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
 
     // start NetworkTables
-		NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
+    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
 
     NetworkTable falconTable;
     public static NetworkTableEntry robotX;
@@ -276,8 +276,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     @Override
     public void periodic() {
         updateOdometry();
-        robotX.setDouble(getPose().getTranslation().getX());
-        robotY.setDouble(getPose().getTranslation().getY());
+        robotX.setDouble(Units.metersToFeet(getPose().getTranslation().getX()));
+        robotY.setDouble(Units.metersToFeet(getPose().getTranslation().getY()));
         robotHeading.setDouble(getPose().getRotation().getDegrees());
     }
 
@@ -324,6 +324,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mLeftEncoder.setPosition(0);
         mRightEncoder.setPosition(0);
         mOdometry.resetPosition(pose, Rotation2d.fromDegrees(getHeadingDegrees()));
+        if (RobotBase.isSimulation())
+            resetSimOdometry(pose);
     }
 
     // public void setRobotFromFieldPose() {

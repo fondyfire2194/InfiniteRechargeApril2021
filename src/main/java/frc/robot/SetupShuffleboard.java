@@ -187,12 +187,12 @@ public class SetupShuffleboard {
                 competition.addNumber("TurretView", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
                                 .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", true)).withSize(2, 1);
 
-                competition.addNumber("MatchRemaining", () -> DriverStation.getInstance().getMatchTime());
+                competition.addNumber("MatchTime", () -> DriverStation.getInstance().getMatchTime());
 
                 ShuffleboardLayout active = Shuffleboard.getTab("Competition").getLayout("Active", BuiltInLayouts.kList)
                                 .withPosition(1, 1).withSize(1, 5).withProperties(Map.of("Label position", "TOP"));
                 active.addNumber("Pipeline", () -> m_limelight.getPipeline());
-                active.addNumber("ShooterSpeed", () -> m_shooter.requiredSpeed);
+                active.addNumber("ShooterSpeed", () -> m_shooter.getRPM());
                 active.addNumber("Tilt", () -> m_tilt.targetAngle);
                 active.addNumber("Turret", () -> m_turret.targetAngle);
                 
@@ -400,6 +400,7 @@ public class SetupShuffleboard {
                                         .withPosition(6, 0);
                         trajChooser.setDefaultOption("TrenchStart", m_traj.trenchStartOne);
                         trajChooser.addOption("CenterStart", m_traj.centerStart);
+                        trajChooser.addOption("Example", m_traj.example);
 
                         Shuffleboard.getTab("SetupRobot")
                                         .add("StartTraj",
@@ -555,6 +556,7 @@ public class SetupShuffleboard {
                         climberValues.add("Climber", m_climber);
 
                 }
+                       
 
         }
 }

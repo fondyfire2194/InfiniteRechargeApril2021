@@ -8,7 +8,8 @@ package frc.robot;
 public class ShootData {
 
     /**
-     * array contents are pipeline, distance, shoot speed, turret angle, tilt angle.
+     * array contents are pipeline, distance, shoot speed, shoot time, turret angle,
+     * tilt angle.
      * 
      * 
      * 
@@ -16,7 +17,7 @@ public class ShootData {
 
     private static double[][] shootValues =
 
-            { { 0, 3., 4500, -54, 4.7 }// front of power port at initiation line
+            { { 0, 3., 4500, 5, -54, 4.7 }// front of power port at initiation line
                     , { 2, 3, 4, 5, 0 } //
                     , { 2, 3, 4, 5, 0 }, //
                     { 2, 3, 4, 5, 0 } //
@@ -37,12 +38,16 @@ public class ShootData {
         return shootValues[pointer][2];
     }
 
-    public static double getTurretAngle(int pointer) {
+    public static double getShootTime(int pointer) {
         return shootValues[pointer][3];
     }
 
-    public static double getTiltAngle(int pointer) {
+    public static double getTurretAngle(int pointer) {
         return shootValues[pointer][4];
+    }
+
+    public static double getTiltAngle(int pointer) {
+        return shootValues[pointer][5];
     }
 
 }
