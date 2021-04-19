@@ -17,6 +17,9 @@ import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
 import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -29,7 +32,6 @@ import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PDPConstants;
 import frc.robot.sim.BaseDrivetrainSubsystem;
-import frc.robot.simulation.AHRSSimWrapper;
 
 public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private static final DrivetrainConstants DRIVETRAIN_CONSTANTS = new NeoDrivetrainConstants();
@@ -62,6 +64,14 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private int SMART_MOTION_SLOT = 1;
 
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
+
+    // start NetworkTables
+		NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
+
+    NetworkTable falconTable;
+    public static NetworkTableEntry robotX;
+    public static NetworkTableEntry robotY;
+    public static NetworkTableEntry robotHeading;
 
     @Override
     public void close() {
@@ -138,6 +148,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         setLeftGains();
         setRightGains();
+        falconTable = ntinst.getTable("Live_Dashboard");
+        robotX = falconTable.getEntry("robotX");
+        robotY = falconTable.getEntry("robotY");
+        robotHeading = falconTable.getEntry("robotHeading");
 
     }
 
@@ -262,7 +276,9 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     @Override
     public void periodic() {
         updateOdometry();
-
+        robotX.setDouble(getPose().getTranslation().getX());
+        robotY.setDouble(getPose().getTranslation().getY());
+        robotHeading.setDouble(getPose().getRotation().getDegrees());
     }
 
     public void resetAll() {
