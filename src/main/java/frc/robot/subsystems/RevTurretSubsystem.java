@@ -15,6 +15,7 @@ import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -36,7 +37,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double visionCorrection;
     public double targetAngle;
     private double inPositionBandwidth = 1;
-    public boolean tuneOn = false;
+    public boolean tuneOn = true;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -55,14 +56,14 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
             setGains();
 
         // if (RobotBase.isSimulation())
-        //     mPidController.setP(0.16);
+        // mPidController.setP(0.16);
 
         mEncoder.setPosition(0);
         targetAngle = 0;
 
         if (RobotBase.isSimulation()) {
-            ElevatorSimConstants.kCarriageMass = .2;
-            ElevatorSimConstants.kElevatorGearing = 10;
+            ElevatorSimConstants.kCarriageMass = .001;
+            ElevatorSimConstants.kElevatorGearing = 1;
             ElevatorSimConstants.kMaxElevatorHeight = 100;
             ElevatorSimConstants.kMinElevatorHeight = -110;
             ElevatorSimConstants.kElevatorGearbox = DCMotor.getNeo550(1);
@@ -95,8 +96,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void goToPosition(double angle) {
 
-        mPidController.setReference(angle, ControlType.kPosition, POSITION_SLOT, GRAVITY_COMPENSATION_VOLTS,
-                CANPIDController.ArbFFUnits.kVoltage);
+        mPidController.setReference(angle, ControlType.kPosition, POSITION_SLOT);
+        SmartDashboard.putNumber("PSGetP", mPidController.getP(POSITION_SLOT));
+        SmartDashboard.putNumber("PS1GetP", mPidController.getP(SMART_MOTION_SLOT));
     }
 
     @Override
@@ -173,6 +175,11 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void stop() {
         m_motor.set(0);
+    }
+
+    public void moveManuallyVelocity(double speed) {
+        targetAngle = getAngle();
+        mPidController.setReference(speed, ControlType.kVelocity);
     }
 
     public void calibratePID(final double p, final double i, final double d, final double f, final double kIz) {

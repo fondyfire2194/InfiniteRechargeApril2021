@@ -30,6 +30,7 @@ import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.RobotDrive.ResetPose;
+import frc.robot.commands.RobotDrive.StopRobot;
 import frc.robot.commands.RobotDrive.TurnToAngleProfiled;
 import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.DecreaseShooterSpeed;
@@ -195,8 +196,6 @@ public class SetupShuffleboard {
                 active.addNumber("ShooterSpeed", () -> m_shooter.getRPM());
                 active.addNumber("Tilt", () -> m_tilt.targetAngle);
                 active.addNumber("Turret", () -> m_turret.targetAngle);
-                
-
 
                 if (RobotBase.isReal()) {
 
@@ -222,9 +221,9 @@ public class SetupShuffleboard {
                                                                                            // commands
 
                         turretCommands.add("Reset to 0", new ResetTurretAngle(m_turret));
-                        turretCommands.add("Position To 0", new PositionTurret(m_turret,0));// degrees
+                        turretCommands.add("Position To 0", new PositionTurret(m_turret, 0));// degrees
                         turretCommands.add("Position To 20", new PositionTurret(m_turret, 20));// degrees
-                        turretCommands.add("Position To 50", new PositionTurret(m_turret,50));
+                        turretCommands.add("Position To 50", new PositionTurret(m_turret, 50));
                         turretCommands.add("50 to Vision", new PositionTurretToVision(m_turret, m_limelight, 50));
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
@@ -261,7 +260,7 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT")); //
 
                         tiltCommands.add("Reset To 0", new ResetTiltAngle(m_tilt));
-                        tiltCommands.add("Position To 5", new PositionTilt(m_tilt,5));
+                        tiltCommands.add("Position To 5", new PositionTilt(m_tilt, 5));
                         tiltCommands.add("Position To 10", new PositionTilt(m_tilt, 10));
 
                         tiltCommands.add("To Bottom Switch", new TiltMoveToReverseLimit(m_tilt));
@@ -365,10 +364,11 @@ public class SetupShuffleboard {
                         robotCommands.add("Reset Pose", new ResetPose(m_robotDrive));
                         robotCommands.add("Pos to 3M", new PositionRobot(m_robotDrive, 3.));
                         robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0));
-                        robotCommands.add("Rot to 90", new TurnToAngleProfiled(m_robotDrive,90));
-                        robotCommands.add("Rot to 0", new TurnToAngleProfiled( m_robotDrive,0));
-                        robotCommands.add("Rot to -90", new TurnToAngleProfiled(m_robotDrive,-90));
+                        robotCommands.add("Rot to 90", new TurnToAngleProfiled(m_robotDrive, 90));
+                        robotCommands.add("Rot to 0", new TurnToAngleProfiled(m_robotDrive, 0));
+                        robotCommands.add("Rot to -90", new TurnToAngleProfiled(m_robotDrive, -90));
                         robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
+                        robotCommands.add("Stop Robot", new StopRobot(m_robotDrive));
 
                         ShuffleboardLayout robotValues = Shuffleboard.getTab("SetupRobot")
                                         .getLayout("RobotValues", BuiltInLayouts.kList).withPosition(2, 0)
@@ -386,7 +386,6 @@ public class SetupShuffleboard {
                         robotValues.addNumber("Gyro Yaw", () -> m_robotDrive.getYaw());
                         robotValues.addNumber("Faults", () -> m_robotDrive.getFaults());
                         robotValues.add("Cmd", m_robotDrive);
-
 
                 }
                 /**
@@ -556,7 +555,6 @@ public class SetupShuffleboard {
                         climberValues.add("Climber", m_climber);
 
                 }
-                       
 
         }
 }

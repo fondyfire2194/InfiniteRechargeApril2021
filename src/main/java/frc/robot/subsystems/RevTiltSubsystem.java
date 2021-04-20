@@ -64,10 +64,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         targetAngle = getAngle();
         if (RobotBase.isSimulation()) {
-            ElevatorSimConstants.kCarriageMass = 2;
-            ElevatorSimConstants.kElevatorGearing = 10;
-            ElevatorSimConstants.kMaxElevatorHeight = 10;
-            ElevatorSimConstants.kMinElevatorHeight = -1;
+            ElevatorSimConstants.kCarriageMass = .001;
+            ElevatorSimConstants.kElevatorGearing = 1;
+            ElevatorSimConstants.kMaxElevatorHeight = 1000000000;
+            ElevatorSimConstants.kMinElevatorHeight = -1000000000;
             ElevatorSimConstants.kElevatorGearbox = DCMotor.getNeo550(1);
 
             mElevatorSim = new ElevatorSimWrapper(ElevatorSimConstants.createSim(),
@@ -87,6 +87,11 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     @Override
     public void close() {
         m_motor.close();
+    }
+
+    public void moveManuallyVelocity(double speed) {
+        targetAngle = getAngle();
+        mPidController.setReference(speed, ControlType.kVelocity);
     }
 
     @Override
@@ -193,8 +198,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     private void setGains() {
         // PID coefficients
-        kP = 5e-1;
-        kI = 0;// 1e-5;
+        kP = 0;
+        kI = 0;//
         kD = 0;
         kIz = 1;
         kFF = 0.0000156;
@@ -204,7 +209,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         allowedErr = 1;
         // Smart Motion Coefficients
         maxVel = 10000; // rpm
-        maxAcc = 75;
+        maxAcc = 750;
 
         // set PID coefficients
 

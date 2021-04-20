@@ -2,48 +2,41 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Turret;
+package frc.robot.commands.RobotDrive;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.RevTurretSubsystem;
+import frc.robot.subsystems.RevDrivetrain;
 
-public class StopTurret extends CommandBase {
-  /** Creates a new PositionTilt. */
+public class StopRobot extends CommandBase {
+  /** Creates a new StopRobot. */
 
-  private final RevTurretSubsystem m_turret;
+  private RevDrivetrain m_robotDrive;
 
-  public StopTurret(RevTurretSubsystem turret) {
+  public StopRobot(RevDrivetrain drive) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_turret = turret;
-
-    addRequirements(m_turret);
+    m_robotDrive = drive;
+    addRequirements(m_robotDrive);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
-    m_turret.visionCorrection = 0;
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_turret.stop();
-    m_turret.targetAngle = m_turret.getAngle();
+    m_robotDrive.stop();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
-    m_turret.targetAngle = m_turret.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(m_turret.getSpeed()) < .1;
+    return Math.abs(m_robotDrive.getLeftRate()) < .2 && Math.abs(m_robotDrive.getRightRate()) < .2;
   }
 }

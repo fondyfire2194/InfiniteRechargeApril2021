@@ -4,7 +4,6 @@
 
 package frc.robot.commands.Tilt;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTiltSubsystem;
 
@@ -13,25 +12,22 @@ public class StopTilt extends CommandBase {
 
   private final RevTiltSubsystem m_tilt;
 
-  private double m_position;
-
   public StopTilt(RevTiltSubsystem tilt) {
     m_tilt = tilt;
-    m_position = m_tilt.getAngle();
     addRequirements(m_tilt);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_tilt.targetAngle = m_position;
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_tilt.goToPositionMotionMagic(m_position);
+    m_tilt.stop();
+    m_tilt.targetAngle = m_tilt.getAngle();
   }
 
   // Called once the command ends or is interrupted.
@@ -44,6 +40,6 @@ public class StopTilt extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return Math.abs(m_tilt.getSpeed()) < 1;
   }
 }

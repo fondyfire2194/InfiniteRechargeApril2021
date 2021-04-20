@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Tilt;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTiltSubsystem;
 
@@ -35,13 +36,16 @@ public class PositionTilt extends CommandBase {
   public void execute() {
     loopCtr++;
     m_tilt.targetAngle = m_endpoint;
-    m_tilt.goToPosition(m_tilt.targetAngle);
+    if (RobotBase.isReal())
+      m_tilt.goToPositionMotionMagic(m_tilt.targetAngle);
+    else
+      m_tilt.goToPosition(m_tilt.targetAngle);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    m_tilt.targetAngle = m_tilt.getAngle();
   }
 
   // Returns true when the command should end.

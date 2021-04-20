@@ -29,8 +29,11 @@ import frc.robot.commands.AutoCommands.AutoTrenchStart;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.Shooter.JogShooter;
+import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.TiltJog;
+import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.TurretJog;
+import frc.robot.commands.Turret.TurretJogVelocity;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ControlPanelSubsystem;
@@ -114,9 +117,12 @@ public class RobotContainer {
             m_limelight.setPipeline(0);
 
             m_compressor = new Compressor();
+
             m_trajectory = new FondyFireTrajectory(m_robotDrive);
 
-            // m_tilt.setDefaultCommand(getJogTiltCommand());
+            m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt));
+
+            // m_turret.setDefaultCommand(new PositionHoldTurret(m_turret));
 
             m_shooter.setDefaultCommand(getJogShooterCommand());
 
@@ -173,11 +179,13 @@ public class RobotContainer {
 
             setupBack.whenPressed(new StartIntake(m_intake));
 
-            setupB.whileHeld(getJogShooterCommand());
+            // setupB.whileHeld(getJogShooterCommand());
 
             setupY.whileHeld(getJogTiltCommand());
 
-            setupX.whileHeld(getJogTurretCommand());
+            setupA.whileHeld(getJogTurretCommand());
+
+            setupB.whileHeld(getJogTurretVelocityCommand());
 
             // LiveWindow.disableAllTelemetry();
 
@@ -196,6 +204,10 @@ public class RobotContainer {
 
       public Command getArcadeDriveCommand() {
             return new ArcadeDrive(m_robotDrive, () -> -m_driverController.getY(), () -> m_driverController.getTwist());
+      }
+
+      public Command getJogTurretVelocityCommand() {
+            return new TurretJogVelocity(m_turret, () -> setupGamepad.getRawAxis(0) / 2);
       }
 
       public Command getJogTurretCommand() {

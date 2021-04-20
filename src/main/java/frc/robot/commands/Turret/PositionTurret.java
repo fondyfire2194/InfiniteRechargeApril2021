@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Turret;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTurretSubsystem;
 
@@ -34,15 +35,16 @@ public class PositionTurret extends CommandBase {
   @Override
   public void execute() {
     loopCtr++;
-
-    m_turret.goToPosition(m_turret.targetAngle);
-
+    if (RobotBase.isReal())
+      m_turret.goToPositionMotionMagic(m_turret.targetAngle);
+    else
+      m_turret.goToPosition(m_turret.targetAngle);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    m_turret.targetAngle = m_turret.getAngle();
   }
 
   // Returns true when the command should end.
