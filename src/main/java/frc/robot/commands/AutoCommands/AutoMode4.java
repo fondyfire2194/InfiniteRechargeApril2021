@@ -12,12 +12,12 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
+import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
-import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
@@ -27,40 +27,40 @@ import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
-import frc.robot.trajectories.FondyFireTrajectory;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class Auto1 extends SequentialCommandGroup {
+public class AutoMode4 extends SequentialCommandGroup {
   /**
-   * Creates a new Auto0.
+   * Creates a new Auto4
+   * 
+   * Start right of power port and shoot
    */
-  private final static int shootPosition = 2;
-  private final static double shootTime = 5;
+
+  private final static int shootPosition = 0;
+  private final static double shootTime = ShootData.getShootTime(shootPosition);
   private final static int pipeline = ShootData.getPipeline(shootPosition);
   private static double tiltAngle = ShootData.getTiltAngle(shootPosition);
   private final static double turretAngle = ShootData.getTurretAngle(shootPosition);
   private final static double shootSpeed = ShootData.getShootSpeed(shootPosition);
+  private final static double moveDistance = ShootData.getDistance(shootPosition);
 
-
-  public Auto1(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
-      CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight, FondyFireTrajectory s_trajectory,
-      Compressor compressor) {
+  public AutoMode4(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+      CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight, Compressor compressor) {
     // Add your commands in the super() call, e.g.
     // super(new FooCommand(), new BarCommand());
 
-    super(new TiltMoveToReverseLimit(tilt), new LimelightSetPipeline(limelight, pipeline),
-    new StartShooterWheels(shooter, shootSpeed),
-    new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, tiltAngle),
-        new PositionTurretToVision(turret, limelight, turretAngle)),
-        // s_trajectory.getRamsete(s_trajectory.leftStart).andThen(() ->
-        // drive.tankDriveVolts(0, 0))),
+    super(new LimelightSetPipeline(limelight, pipeline),
+
+        new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, tiltAngle),
+            new PositionTurretToVision(turret, limelight, turretAngle),
+            new PositionRobot(drive, moveDistance).deadlineWith(new StartShooterWheels(shooter, shootSpeed))),
 
         new ParallelCommandGroup(new ShootCells(shooter, transport, compressor, shootSpeed, shootTime)
-        .deadlineWith(new ParallelCommandGroup(new PositionHoldTilt(tilt)), new PositionHoldTurret(turret))),
+            .deadlineWith(new ParallelCommandGroup(new PositionHoldTilt(tilt)), new PositionHoldTurret(turret))),
 
-    new ParallelCommandGroup(new PositionTilt(tilt, -1), new PositionTurret(turret, 0)));
+        new ParallelCommandGroup(new PositionTilt(tilt, -1), new PositionTurret(turret, 0)));
 
   }
 }

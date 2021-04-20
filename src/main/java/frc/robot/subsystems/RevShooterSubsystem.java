@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
+import frc.robot.Pref;
 import frc.robot.Robot;
 import frc.robot.sim.ShooterSubsystem;
 
@@ -83,12 +84,13 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     }
 
-    public void calibratePID(final double p, final double i, final double d, final double f, final double kIz) {
+    public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
+            int slotNumber) {
         mPidController.setIAccum(0);
-        mPidController.setP(p);
-        mPidController.setI(i);
-        mPidController.setD(d);
-        mPidController.setFF(f);
+        mPidController.setP(p, slotNumber);
+        mPidController.setI(i, slotNumber);
+        mPidController.setD(d, slotNumber);
+        mPidController.setFF(f, slotNumber);
         mPidController.setIZone(kIz);
     }
 
@@ -183,18 +185,17 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         kIz = 2;
         kFF = 2e-4;
 
-        calibratePID(kP, kI, kD, kFF, kIz);
+        calibratePID(kP, kI, kD, kFF, kIz, 0);
     }
 
     private void tuneGains() {
 
-        double p = Robot.tuneValues.getEntry("kP").getDouble(0.002);
-        double i = Robot.tuneValues.getEntry("kI").getDouble(0.01);
-        double d = Robot.tuneValues.getEntry("kD").getDouble(0);
-        double ff = Robot.tuneValues.getEntry("kFF").getDouble(2);
-        double iz = Robot.tuneValues.getEntry("kIZ").getDouble(2e-4);
-     
-        calibratePID(p, i, d, ff, iz);
+        double p = Pref.getPref("sHKp");
+        double i = Pref.getPref("sHkI");
+        double d = Pref.getPref("sHKd");
+        double iz = Pref.getPref("sHKiz");
+
+        calibratePID(p, i, d, kFF, iz, 0);
     }
 
 }

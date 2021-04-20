@@ -17,10 +17,13 @@ public class ShootData {
 
     private static double[][] shootValues =
 
-            { { 0, 3., 4500, 5, -54, 4.7 }// front of power port at initiation line
-                    , { 2, 3, 4, 5, 0 } //
-                    , { 2, 3, 4, 5, 0 }, //
-                    { 2, 3, 4, 5, 0 } //
+// front of power port at initiation line
+            { { 0, 0, 4500, 5, 0, 4.7 },
+                    // front of power port retract 2 meters
+                    { 0, 2, 4500, 5, -54, 6 },
+                    //
+                    { 0, 3., 4500, 5, -54, 4.7 }, //
+                    { 0, 3., 4500, 5, -54, 4.7 } //
             };
 
     public ShootData() {

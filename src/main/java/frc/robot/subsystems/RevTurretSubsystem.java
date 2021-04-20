@@ -22,6 +22,7 @@ import frc.robot.Robot;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.sim.ElevatorSubsystem;
+import frc.robot.Pref;
 
 public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsystem {
     private static final double GRAVITY_COMPENSATION_VOLTS = .0001;
@@ -37,7 +38,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double visionCorrection;
     public double targetAngle;
     private double inPositionBandwidth = 1;
-    public boolean tuneOn = true;
+    public boolean tuneOn = false;
+    public double targetHorizontalOffset;
+    private int ctr;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -97,22 +100,12 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public void goToPosition(double angle) {
 
         mPidController.setReference(angle, ControlType.kPosition, POSITION_SLOT);
-        SmartDashboard.putNumber("PSGetP", mPidController.getP(POSITION_SLOT));
-        SmartDashboard.putNumber("PS1GetP", mPidController.getP(SMART_MOTION_SLOT));
+
     }
 
-    @Override
-    public void goToPositionMotionMagic(double angle) {
+    
+    public void goToPositionSmartMotion(double angle) {
         mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
-        // SmartDashboard.putNumber("An", angle);
-        // SmartDashboard.putNumber("SMKP", mPidController.getP(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("SMKA",
-        // mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("SMKmin",
-        // mPidController.getOutputMin(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("SMKmax",
-        // mPidController.getOutputMax(SMART_MOTION_SLOT));
-
     }
 
     public void resetAngle(double angle) {
@@ -179,40 +172,42 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public void moveManuallyVelocity(double speed) {
         targetAngle = getAngle();
-        mPidController.setReference(speed, ControlType.kVelocity);
+        mPidController.setReference(speed, ControlType.kVelocity, POSITION_SLOT);
+        SmartDashboard.putNumber("PSGetP", mPidController.getP(POSITION_SLOT));
+        SmartDashboard.putNumber("PS1FF", mPidController.getFF(POSITION_SLOT));
     }
 
-    public void calibratePID(final double p, final double i, final double d, final double f, final double kIz) {
+    public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
+            int slotNumber) {
         mPidController.setIAccum(0);
-        mPidController.setP(p);
-        mPidController.setI(i);
-        mPidController.setD(d);
-        mPidController.setFF(f);
+        mPidController.setP(p, slotNumber);
+        mPidController.setI(i, slotNumber);
+        mPidController.setD(d, slotNumber);
+        mPidController.setFF(f, slotNumber);
         mPidController.setIZone(kIz);
     }
 
     private void setGains() {
         // PID coefficients
-        kP = 5e-1;
+
+      kFF = 8.5e-5;// 95%
+
+        kP = 5e-4;
         kI = 0;// 1e-5;
         kD = 0;
         kIz = 1;
-        kFF = 0.0000156;
+  
         kMaxOutput = 1;
         kMinOutput = -1;
-        maxRPM = 5700;// not used
+        maxRPM = 11000;// not used
         allowedErr = 1;
         // Smart Motion Coefficients
-        maxVel = 10000; // rpm
+        maxVel = 5000; // rpm
         maxAcc = 750;
 
         // set PID coefficients
+        calibratePID(kP, kI, kD, kFF, kIz, SMART_MOTION_SLOT);
 
-        mPidController.setP(kP, SMART_MOTION_SLOT);
-        mPidController.setI(kI, SMART_MOTION_SLOT);
-        mPidController.setD(kD, SMART_MOTION_SLOT);
-        mPidController.setIZone(kIz, SMART_MOTION_SLOT);
-        mPidController.setFF(kFF, SMART_MOTION_SLOT);
         mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
         mPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
         mPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
@@ -220,13 +215,12 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     private void tuneGains() {
 
-        double p = Robot.tuneValues.getEntry("kP").getDouble(0.002);
-        double i = Robot.tuneValues.getEntry("kI").getDouble(0.01);
-        double d = Robot.tuneValues.getEntry("kD").getDouble(0);
-        double ff = Robot.tuneValues.getEntry("kFF").getDouble(2);
-        double iz = Robot.tuneValues.getEntry("kIZ").getDouble(2e-4);
+        double p = Pref.getPref("tUKp");
+        double i = Pref.getPref("tUkI");
+        double d = Pref.getPref("tUKd");
+        double iz = Pref.getPref("tUKiz");
 
-        calibratePID(p, i, d, ff, iz);
+        calibratePID(p, i, d, kFF, iz, SMART_MOTION_SLOT);
     }
 
     @Override
@@ -241,5 +235,11 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public int getFaults() {
         return m_motor.getFaults();
+    }
+
+    @Override
+    public void goToPositionMotionMagic(double inches) {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Turret;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTurretSubsystem;
 
@@ -11,8 +12,6 @@ public class PositionHoldTurret extends CommandBase {
   /** Creates a new PositionTilt. */
 
   private final RevTurretSubsystem m_turret;
-
-  private double m_position;
 
   public PositionHoldTurret(RevTurretSubsystem turret) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -24,15 +23,23 @@ public class PositionHoldTurret extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_position = m_turret.targetAngle;
-    m_turret.visionCorrection = 0;
+  
+  
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-   // m_position = m_turret.targetAngle;
-    m_turret.goToPosition(m_turret.targetAngle);
+    
+
+
+    if (RobotBase.isReal())
+
+      m_turret.goToPositionMotionMagic(m_turret.targetAngle);
+
+    else
+
+      m_turret.goToPosition(m_turret.targetAngle);
   }
 
   // Called once the command ends or is interrupted.

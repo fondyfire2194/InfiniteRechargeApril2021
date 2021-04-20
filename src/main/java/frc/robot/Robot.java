@@ -8,25 +8,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.PositionHoldTurret;
-import frc.robot.subsystems.RevDrivetrain;
-import frc.robot.trajectories.FondyFireTrajectory;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -39,23 +29,13 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private int autoChoice;
 
-  private RobotContainer m_robotContainer;
+  public RobotContainer m_robotContainer;
   private boolean autoHasRun;
   private double m_startDelay;
   private double startTime;
   public double timeToStart;
-  private Translation2d startPosition;
-  final Rotation2d rotation180 = Rotation2d.fromDegrees(180.0);
-  final Rotation2d rotation270 = Rotation2d.fromDegrees(270.0);
-  final Rotation2d rotation90 = Rotation2d.fromDegrees(90.0);
+ 
 
-  public static NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
-  public static edu.wpi.first.networktables.NetworkTable tuneValues;
-  public NetworkTableEntry kpEntry;
-  public NetworkTableEntry kiEntry;
-  public NetworkTableEntry kiZEntry;
-  public NetworkTableEntry kdEntry;
-  public NetworkTableEntry kFFEntry;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -68,20 +48,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     Shuffleboard.selectTab("Pre-Round");
-    ntinst.startServer();
-    tuneValues = ntinst.getTable("tuneValues");
-
-    kpEntry = tuneValues.getEntry("kP");
-    kiEntry = tuneValues.getEntry("kI");
-    kiZEntry = tuneValues.getEntry("kIZ");
-    kdEntry = tuneValues.getEntry("kD");
-    kFFEntry = tuneValues.getEntry("kFF");
-
-    kpEntry.setDouble(.002);
-    kiEntry.setDouble(0.01);
-    kiZEntry.setDouble(2);
-    kdEntry.setDouble(0);
-    kFFEntry.setDouble(2e-4);
+  
 
   }
 
@@ -112,7 +79,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-
+    SmartDashboard.updateValues();
     // CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().run();
 
@@ -131,8 +98,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     new TiltMoveToReverseLimit(m_robotContainer.m_tilt);
     m_robotContainer.m_turret.setDefaultCommand(new PositionHoldTurret(m_robotContainer.m_turret));
-    FondyFireTrajectory m_trajectory = m_robotContainer.m_trajectory;
-    RevDrivetrain m_robotDrive = m_robotContainer.m_robotDrive;
+
+    AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 
     Shuffleboard.selectTab("Competition");
 
@@ -146,73 +113,54 @@ public class Robot extends TimedRobot {
 
     switch (autoChoice) {
 
-    case 0:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+    case 0:// in front of power port use 0 shooter data index use pipeline 0 - no zoom
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
+      break;
 
-      m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
+    case 1:// in front of power port, move back use 1 shooter data index use pipeline 0 -
+           // no zoom
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
+      break;
 
-      m_robotDrive.resetAll();
-      if (RobotBase.isSimulation())
-        m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand0();
+    case 2:// Left of power port use 2 shooter data index use pipeline 0 - no zoom
+
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
 
       break;
 
-    case 1:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+    case 3:// Left of power port move back use 3 shooter data index use pipeline 0 - no
+           // zoom
 
-      m_robotDrive.resetAll();
-      m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
-      if (RobotBase.isSimulation())
-        m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand1();
-
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
       break;
 
-    case 2:// in front of power port 0 shooter data index use pipeline 0 - no zoom
-
-      m_robotDrive.resetAll();
-      m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
-      if (RobotBase.isSimulation())
-        m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand2();
-
+    case 4:// Right of power port use 4 shooter data index use pipeline 0 - no zoom
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
       break;
 
-    case 3:// in front of power port 0 shooter data index use pipeline 0 - no zoom
-      SmartDashboard.putBoolean("AUTO3", true);
-      m_robotDrive.resetAll();
-      m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
-      if (RobotBase.isSimulation())
-        m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand3();
-
+    case 5:// Right of power port nmove back use 5 shooter data index use pipeline 0 - no
+           // zoom
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
       break;
 
-    case 4:// cross line
-      m_robotDrive.resetAll();
-      m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
-      if (RobotBase.isSimulation())
-        m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
-      new PositionRobot(m_robotDrive, -2).schedule(true);
+    case 6:// Front of trench move back use 6 shooter data index use pipeline 0 - no zoom
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
       break;
 
-    case 5:// in front of power port 0 shooter data index use pipeline 0 - no zoom
+    case 7:// Front of trench move back use 6 shooter data index move back again pickup and
+           // use 7 shooter data
 
-      m_robotDrive.resetAll();
-      m_robotDrive.resetOdometry(m_trajectory.centerStart.getInitialPose());
-      if (RobotBase.isSimulation())
-        m_robotDrive.fieldSim.setRobotPose(m_trajectory.centerStart.getInitialPose());
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand4();
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
+      break;
+    case 8:// Front of trench move back use 6 shooter data index move back under control
+           // panel pickup move back and shoot
+      // use 7 shooter data
 
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
       break;
 
-    case 7:// in front of power port 0 shooter data index use pipeline 0 - no zoom
-
-      m_robotDrive.resetAll();
-      m_robotDrive.resetOdometry(m_trajectory.example.getInitialPose());
-      if (RobotBase.isSimulation())
-        m_robotDrive.fieldSim.setRobotPose(m_trajectory.example.getInitialPose());
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand4();
-
+    case 9:// cross line
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
       break;
 
     default:

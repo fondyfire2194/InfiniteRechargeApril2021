@@ -40,17 +40,24 @@ public class Pref {
 
   static {
 
-    // Tilt position and vision lock
+    // Tilt smart motion
+    prefDict.put("tIkP", .0001);
+    prefDict.put("tIkI", .0);
+    prefDict.put("tIkD", .0);
+    prefDict.put("tIKiz", .0);
 
-    prefDict.put("TiPkP", .05);
-    prefDict.put("TiPkI", .0);
-    prefDict.put("TiPkD", .0);
-    prefDict.put("TiPkIZ", .0);
+    // Turret smart motion
+    prefDict.put("tUkP", .0001);
+    prefDict.put("tUkI", .0);
+    prefDict.put("tukD", .0);
+    prefDict.put("tuKiz", .0);
 
-    prefDict.put("TiLkP", .032);
-    prefDict.put("TiLkI", .0);
-    prefDict.put("TiLkD", .0);
-    prefDict.put("TiLkIZ", .0);
+    // shooter velocity
+
+    prefDict.put("sHkP", .0001);
+    prefDict.put("sHkI", .0);
+    prefDict.put("sHkD", .0);
+    prefDict.put("sHKiz", .0);
 
     // Drive
     prefDict.put("DrStKp", .01);// right side proportional gain

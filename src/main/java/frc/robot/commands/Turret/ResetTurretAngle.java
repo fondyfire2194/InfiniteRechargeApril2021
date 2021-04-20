@@ -48,6 +48,6 @@ public class ResetTurretAngle extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return loopCtr > 1;
+    return loopCtr > 10;
   }
 }

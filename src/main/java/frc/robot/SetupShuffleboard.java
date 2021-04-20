@@ -9,6 +9,7 @@ import java.util.Map;
 import edu.wpi.cscore.HttpCamera;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -63,6 +64,7 @@ import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 import frc.robot.trajectories.FondyFireTrajectory;
+import frc.robot.Pref;
 
 /** Add your docs here. */
 public class SetupShuffleboard {
@@ -89,6 +91,7 @@ public class SetupShuffleboard {
         private boolean m_showSubsystems = true;
         private HttpCamera LLFeed;
         public double timeToStart;
+
 
         public SendableChooser<Integer> autoChooser = new SendableChooser<>();
         public SendableChooser<Integer> startDelayChooser = new SendableChooser<>();
@@ -124,21 +127,26 @@ public class SetupShuffleboard {
                                 .withPosition(0, 0); // place it in the top-left corner
 
                 int place = 0;
-                autoChooser.setDefaultOption("Center Start Retract Shoot", place);
+                autoChooser.setDefaultOption("Center Start Shoot", place);
                 place = 1;
-                autoChooser.addOption("Left Start Retract Shoot", place);
+                autoChooser.setDefaultOption("Center Start Retract Shoot", place);
                 place = 2;
-                autoChooser.addOption("Right Start Retract Shoot", place);
+                autoChooser.addOption("Left Start Shoot", place);
                 place = 3;
-                autoChooser.addOption("Right Shoot Trench Pickup", place);
+                autoChooser.addOption("Left Start Retract Shoot", place);
                 place = 4;
-                autoChooser.addOption("Cross Line", place);
+                autoChooser.addOption("Right Start Shoot", place);
                 place = 5;
-                autoChooser.addOption(("Example S Shape"), place);
+                autoChooser.addOption("Right Start Retract Shoot", place);
                 place = 6;
-                autoChooser.addOption(("AutoNH1"), place);
+                autoChooser.addOption("Trench Start Two Pickup Shoot", place);
                 place = 7;
-                autoChooser.addOption(("Trench Start"), place);
+                autoChooser.addOption("Trench Start One More Pickup Shoot", place);
+                place = 8;
+                autoChooser.addOption("Trench Start Three More Pickup Shoot", place);
+                place = 9;
+
+                autoChooser.addOption("Cross Line", place);
 
                 Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1) // make the widget
                                 // 2x1
@@ -248,6 +256,9 @@ public class SetupShuffleboard {
                         turretValues.addBoolean("InPosition", () -> m_turret.atTargetAngle())
                                         .withWidget(BuiltInWidgets.kTextView);
                         turretValues.add("Cmd", m_turret);
+
+
+
                 }
                 /**
                  * 
@@ -267,6 +278,7 @@ public class SetupShuffleboard {
                         tiltCommands.add("5 to Vision", new PositionTiltToVision(m_tilt, m_limelight, 5));
                         tiltCommands.add("StopTilt", new StopTilt(m_tilt));
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
+
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTurretTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)

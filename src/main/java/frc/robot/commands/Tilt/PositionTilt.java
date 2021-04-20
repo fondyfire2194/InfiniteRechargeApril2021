@@ -37,7 +37,7 @@ public class PositionTilt extends CommandBase {
     loopCtr++;
     m_tilt.targetAngle = m_endpoint;
     if (RobotBase.isReal())
-      m_tilt.goToPositionMotionMagic(m_tilt.targetAngle);
+      m_tilt.goToPositionSmartMotion(m_tilt.targetAngle);
     else
       m_tilt.goToPosition(m_tilt.targetAngle);
   }

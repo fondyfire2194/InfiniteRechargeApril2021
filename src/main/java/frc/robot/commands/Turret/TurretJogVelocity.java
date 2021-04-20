@@ -6,6 +6,7 @@ package frc.robot.commands.Turret;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTurretSubsystem;
 
@@ -32,10 +33,11 @@ public class TurretJogVelocity extends CommandBase {
   @Override
   public void execute() {
 
-    if (Math.abs(m_xaxisSpeedSupplier.get()) < .1)
+    if (Math.abs(m_xaxisSpeedSupplier.get()) < .05)
       m_turret.moveManually(0);
     else
-      m_turret.moveManually(m_xaxisSpeedSupplier.get() * maxSpeed);
+      m_turret.moveManuallyVelocity(m_xaxisSpeedSupplier.get() * maxSpeed);
+    SmartDashboard.putNumber("TUSP", m_xaxisSpeedSupplier.get() * maxSpeed);
   }
 
   // Called once the command ends or is interrupted.
@@ -48,6 +50,6 @@ public class TurretJogVelocity extends CommandBase {
   // Returns true when the command sh.joould end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Math.abs(m_turret.getSpeed()) < 10;
   }
 }

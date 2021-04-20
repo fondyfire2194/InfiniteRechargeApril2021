@@ -17,45 +17,56 @@ public class PositionTiltToVision extends CommandBase {
 
   private final LimeLight m_limelight;
 
-  private double m_position;
-
+  private double m_originalTarget;
+private boolean targetSeen;
   private double m_endpoint;
-
+private int visionFoundCounter;
   private int loopCtr;
+  private double visionFoundAngle;
 
   public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
-    m_position = position;
+    m_originalTarget = position;
     m_limelight = limelight;
-    loopCtr=0;
     addRequirements(m_tilt);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_endpoint = m_position;
+    m_endpoint = m_originalTarget;
     m_tilt.visionCorrection = 0;
     loopCtr=0;
-
-    SmartDashboard.putNumber("TLEP", m_position);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     loopCtr++;
-    if (!m_limelight.getIsTargetFound()) {
-      m_tilt.visionCorrection = 0;
 
-    } else {
-      m_tilt.visionCorrection = m_limelight.getdegVerticalToTarget();
+    if (m_limelight.getIsTargetFound() && visionFoundCounter < 5) {
+      visionFoundCounter++;
     }
-    m_tilt.targetAngle = m_endpoint;
-    m_tilt.goToPosition(m_endpoint);
-  }
+    if (visionFoundCounter >= 5)
+      targetSeen = true;
 
+    if (!m_limelight.getIsTargetFound() && targetSeen) {
+      visionFoundCounter--;
+    }
+
+    if (targetSeen && visionFoundCounter <= 0) {
+      targetSeen = false;
+    }
+
+    if (targetSeen)
+      visionFoundAngle = m_tilt.getAngle() + m_limelight.getdegVerticalToTarget();
+
+    m_endpoint = visionFoundAngle;
+
+    m_tilt.goToPositionSmartMotion(m_endpoint);
+
+  }
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {

@@ -50,6 +50,6 @@ public class PositionTurret extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_turret.atTargetAngle() && loopCtr > 2;
+    return m_turret.atTargetAngle() && Math.abs(m_turret.getSpeed()) < 1;
   }
 }

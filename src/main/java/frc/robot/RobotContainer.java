@@ -21,17 +21,12 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
-import frc.robot.commands.AutoCommands.Auto0;
-import frc.robot.commands.AutoCommands.Auto1;
-import frc.robot.commands.AutoCommands.Auto2;
-import frc.robot.commands.AutoCommands.AutoNH1;
-import frc.robot.commands.AutoCommands.AutoTrenchStart;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.TiltJog;
-import frc.robot.commands.Turret.PositionHoldTurret;
+import frc.robot.commands.Turret.ChangeTurretPositionTest;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretJogVelocity;
 import frc.robot.subsystems.CellTransportSubsystem;
@@ -88,6 +83,8 @@ public class RobotContainer {
 
       FondyFireTrajectory m_trajectory;
 
+      AutoFactory m_autoFactory;
+
       // AutoCommands ac;// = new AutoCommands(m_robotDrive);
       public int shootPosition;
 
@@ -95,10 +92,11 @@ public class RobotContainer {
        * The container for the robot. Contains subsysems, OI devices, and commands.
        */
       public RobotContainer() {
+          
             prefs = Preferences.getInstance();
             // Pref.deleteAllPrefs();
-            // Pref.deleteUnused();
-            // Pref.addMissing();
+            //  Pref.deleteUnused();
+            //  Pref.addMissing();
             m_robotDrive = new RevDrivetrain();
 
             m_climber = new ClimberSubsystem();
@@ -117,6 +115,9 @@ public class RobotContainer {
             m_limelight.setPipeline(0);
 
             m_compressor = new Compressor();
+
+            m_autoFactory = new AutoFactory(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
+                        m_compressor);
 
             m_trajectory = new FondyFireTrajectory(m_robotDrive);
 
@@ -163,8 +164,11 @@ public class RobotContainer {
             JoystickButton setupB = new JoystickButton(setupGamepad, 2);
             JoystickButton setupX = new JoystickButton(setupGamepad, 3);
             JoystickButton setupY = new JoystickButton(setupGamepad, 4);
-            JoystickButton setupBack = new JoystickButton(setupGamepad, 6);
-            JoystickButton setupStart = new JoystickButton(setupGamepad, 7);
+            JoystickButton setupLeftTrigger = new JoystickButton(setupGamepad, 5);
+            JoystickButton setupRightTrigger = new JoystickButton(setupGamepad, 6);
+
+            JoystickButton setupBack = new JoystickButton(setupGamepad, 7);
+            JoystickButton setupStart = new JoystickButton(setupGamepad, 0);
 
             setupStart
 
@@ -186,6 +190,9 @@ public class RobotContainer {
             setupA.whileHeld(getJogTurretCommand());
 
             setupB.whileHeld(getJogTurretVelocityCommand());
+
+            setupLeftTrigger.whenPressed(new ChangeTurretPositionTest(m_turret, 2));
+            setupRightTrigger.whenPressed(new ChangeTurretPositionTest(m_turret, -2));
 
             // LiveWindow.disableAllTelemetry();
 
@@ -221,31 +228,6 @@ public class RobotContainer {
       public Command getJogShooterCommand() {
             return new JogShooter(m_shooter, () -> setupGamepad.getRawAxis(2) / 2);
 
-      }
-
-      public Command getAutonomousCommand0() {
-            return new Auto0(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_trajectory,
-                        m_compressor);
-      }
-
-      public Command getAutonomousCommand1() {
-            return new Auto1(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_trajectory,
-                        m_compressor);
-      }
-
-      public Command getAutonomousCommand2() {
-            return new Auto2(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_trajectory,
-                        m_compressor);
-      }
-
-      public Command getAutonomousCommand3() {
-            return new AutoNH1(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_trajectory,
-                        m_compressor);
-      }
-
-      public Command getAutonomousCommand4() {
-            return new AutoTrenchStart(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_intake, m_limelight,
-                        m_trajectory, m_compressor);
       }
 
 }

@@ -13,53 +13,80 @@ public class PositionTurretToVision extends CommandBase {
 
   private final RevTurretSubsystem m_turret;
   private final LimeLight m_limelight;
-  private double m_position;
+  private double m_originalTarget;
 
   private double m_endpoint;
+  private double visionFoundAngle;
   private int loopCtr;
-  private int onTarget;
+
+  private int visionFoundCounter;
+  private boolean targetSeen;
 
   public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
     m_limelight = limelight;
-    m_position = position;
+    m_originalTarget = position;
     addRequirements(m_turret);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_endpoint = m_position;
+    m_endpoint = m_originalTarget;
     m_turret.visionCorrection = 0;
+    targetSeen = false;
+    visionFoundCounter = 0;
     loopCtr = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
+
+  /**
+   * Watching for camera finding target. When it does, the vision value can be
+   * added on to the current position an dbecomes the new target. This will be
+   * repeated until the vision error is reduced to 0 +-tolerance;
+   * 
+   * A filter ignores loss of target for 100ms
+   * 
+   * 
+   */
   @Override
   public void execute() {
     loopCtr++;
-    if (!m_limelight.getIsTargetFound()) {
-      m_turret.visionCorrection = 0;
 
-    } else {
-      m_turret.visionCorrection = m_limelight.getdegRotationToTarget();
+    if (m_limelight.getIsTargetFound() && visionFoundCounter < 5) {
+      visionFoundCounter++;
     }
-    m_turret.goToPosition(m_endpoint);
-    m_turret.targetAngle = m_endpoint;
+    if (visionFoundCounter >= 5)
+      targetSeen = true;
 
-    if (m_limelight.getVertOnTarget())
-       m_turret.targetAngle = m_endpoint;
+    if (!m_limelight.getIsTargetFound() && targetSeen) {
+      visionFoundCounter--;
+    }
+
+    if (targetSeen && visionFoundCounter <= 0) {
+      targetSeen = false;
+    }
+
+    if (targetSeen)
+      visionFoundAngle = m_turret.getAngle() + m_limelight.getdegVerticalToTarget();
+
+    m_endpoint = visionFoundAngle;
+
+    m_turret.goToPositionSmartMotion(m_endpoint);
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_turret.targetAngle = m_turret.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_turret.atTargetAngle() && loopCtr > 2;
+    return (m_turret.atTargetAngle() && Math.abs(m_turret.getSpeed()) < .1) && loopCtr > 4;
   }
 }
