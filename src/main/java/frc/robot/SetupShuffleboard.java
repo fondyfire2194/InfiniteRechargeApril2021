@@ -9,7 +9,6 @@ import java.util.Map;
 import edu.wpi.cscore.HttpCamera;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -64,7 +63,6 @@ import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 import frc.robot.trajectories.FondyFireTrajectory;
-import frc.robot.Pref;
 
 /** Add your docs here. */
 public class SetupShuffleboard {
@@ -87,11 +85,10 @@ public class SetupShuffleboard {
         private boolean m_showControlPanel = true;
         private boolean m_showTransport = true;
         private boolean m_showVision = true;
-        private boolean m_showTrajectory = true;
+        private boolean m_showTrajectory = false;
         private boolean m_showSubsystems = true;
         private HttpCamera LLFeed;
         public double timeToStart;
-
 
         public SendableChooser<Integer> autoChooser = new SendableChooser<>();
         public SendableChooser<Integer> startDelayChooser = new SendableChooser<>();
@@ -145,7 +142,6 @@ public class SetupShuffleboard {
                 place = 8;
                 autoChooser.addOption("Trench Start Three More Pickup Shoot", place);
                 place = 9;
-
                 autoChooser.addOption("Cross Line", place);
 
                 Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1) // make the widget
@@ -156,14 +152,14 @@ public class SetupShuffleboard {
                 startDelayChooser.addOption("One Second", 1);
                 startDelayChooser.addOption("Two Seconds", 2);
                 startDelayChooser.addOption("Three Seconds", 3);
-                startDelayChooser.addOption("four Seconds", 4);
+                startDelayChooser.addOption("Four Seconds", 4);
                 startDelayChooser.addOption("Five Seconds", 5);
 
                 ShuffleboardLayout preMatch = Shuffleboard.getTab("Pre-Round").getLayout("Info", BuiltInLayouts.kList)
                                 .withPosition(0, 1).withSize(2, 4).withProperties(Map.of("Label position", "TOP"));
 
                 preMatch.addNumber("TiltView", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kDial)
-                                .withProperties(Map.of("Min", -2, "Max", 70, "Show Text", true)).withSize(2, 2);
+                                .withProperties(Map.of("Min", 55, "Max", 72, "Show Text", true)).withSize(2, 2);
 
                 preMatch.addNumber("TurretView", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
                                 .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", true)).withSize(2, 1);
@@ -191,19 +187,26 @@ public class SetupShuffleboard {
                                 .withProperties(Map.of("Label position", "TOP"));
 
                 competition.addNumber("TiltView", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kDial)
-                                .withProperties(Map.of("Min", -2, "Max", 70, "Show Text", true)).withSize(2, 2);
+                                .withProperties(Map.of("Min", 57, "Max", 70, "Show Text", true)).withSize(2, 2);
 
                 competition.addNumber("TurretView", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
                                 .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", true)).withSize(2, 1);
 
-                competition.addNumber("MatchTime", () -> DriverStation.getInstance().getMatchTime());
+                competition.addNumber("ShooterView", () -> m_shooter.getRPM()).withWidget(BuiltInWidgets.kNumberBar)
+                                .withProperties(Map.of("Min", 0, "Max", 5000, "Show Text", true)).withSize(2, 1);
 
                 ShuffleboardLayout active = Shuffleboard.getTab("Competition").getLayout("Active", BuiltInLayouts.kList)
-                                .withPosition(1, 1).withSize(1, 5).withProperties(Map.of("Label position", "TOP"));
+                                .withPosition(1, 1).withSize(1, 5).withProperties(Map.of("Label position", "LEFT"));
                 active.addNumber("Pipeline", () -> m_limelight.getPipeline());
                 active.addNumber("ShooterSpeed", () -> m_shooter.getRPM());
-                active.addNumber("Tilt", () -> m_tilt.targetAngle);
-                active.addNumber("Turret", () -> m_turret.targetAngle);
+                active.addNumber("TiltTarget", () -> m_tilt.targetAngle);
+                active.addNumber("TurretTarget", () -> m_turret.targetAngle);
+                active.addNumber("TimeToStart", () -> timeToStart);
+                active.addNumber("FrontRoller", () -> m_transport.getFrontRoller());
+                active.addNumber("RearRoller", () -> m_transport.getRearRoller());
+                active.addNumber(("Shoot Time"), () -> m_shooter.shootTime);
+                active.addNumber(("Rmng Shoot Time"), () -> m_shooter.shootTimeRemaining);
+                
 
                 if (RobotBase.isReal()) {
 
@@ -257,8 +260,6 @@ public class SetupShuffleboard {
                                         .withWidget(BuiltInWidgets.kTextView);
                         turretValues.add("Cmd", m_turret);
 
-
-
                 }
                 /**
                  * 
@@ -271,14 +272,13 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT")); //
 
                         tiltCommands.add("Reset To 0", new ResetTiltAngle(m_tilt));
-                        tiltCommands.add("Position To 5", new PositionTilt(m_tilt, 5));
-                        tiltCommands.add("Position To 10", new PositionTilt(m_tilt, 10));
+                        tiltCommands.add("Position To 61", new PositionTilt(m_tilt, 61));
+                        tiltCommands.add("Position To 69", new PositionTilt(m_tilt, 69));
 
                         tiltCommands.add("To Bottom Switch", new TiltMoveToReverseLimit(m_tilt));
-                        tiltCommands.add("5 to Vision", new PositionTiltToVision(m_tilt, m_limelight, 5));
+                        tiltCommands.add("66 to Vision", new PositionTiltToVision(m_tilt, m_limelight, 66));
                         tiltCommands.add("StopTilt", new StopTilt(m_tilt));
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
-
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTurretTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)

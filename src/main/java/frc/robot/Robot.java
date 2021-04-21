@@ -8,15 +8,18 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.PositionHoldTurret;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -34,8 +37,6 @@ public class Robot extends TimedRobot {
   private double m_startDelay;
   private double startTime;
   public double timeToStart;
- 
-
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -48,7 +49,6 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     Shuffleboard.selectTab("Pre-Round");
-  
 
   }
 
@@ -96,7 +96,7 @@ public class Robot extends TimedRobot {
    */
 
   public void autonomousInit() {
-    new TiltMoveToReverseLimit(m_robotContainer.m_tilt);
+    new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
     m_robotContainer.m_turret.setDefaultCommand(new PositionHoldTurret(m_robotContainer.m_turret));
 
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
@@ -114,53 +114,92 @@ public class Robot extends TimedRobot {
     switch (autoChoice) {
 
     case 0:// in front of power port use 0 shooter data index use pipeline 0 - no zoom
+      setStartingPose(
+          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
+              FieldConstants.centerPowerPort, new Rotation2d(0)));
+      m_autoFactory.shootNumber = 0;
       m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
 
     case 1:// in front of power port, move back use 1 shooter data index use pipeline 0 -
            // no zoom
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
+      setStartingPose(
+          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
+              FieldConstants.centerPowerPort, new Rotation2d(0)));
+      m_autoFactory.shootNumber = 1;
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
 
     case 2:// Left of power port use 2 shooter data index use pipeline 0 - no zoom
 
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
+      setStartingPose(
+          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
+              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
+      m_autoFactory.shootNumber = 2;
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
 
       break;
 
     case 3:// Left of power port move back use 3 shooter data index use pipeline 0 - no
            // zoom
+      setStartingPose(
+          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
+              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
 
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
+      m_autoFactory.shootNumber = 3;
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
 
     case 4:// Right of power port use 4 shooter data index use pipeline 0 - no zoom
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
+           // m_autoFactory.shootNumber = 0;
+      setStartingPose(
+          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
+              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
+      m_autoFactory.shootNumber = 2;
+
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
 
     case 5:// Right of power port nmove back use 5 shooter data index use pipeline 0 - no
            // zoom
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
+      setStartingPose(
+          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
+              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
+      m_autoFactory.shootNumber = 2;
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
 
     case 6:// Front of trench move back use 6 shooter data index use pipeline 0 - no zoom
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
+      setStartingPose(
+          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
+              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
+      m_autoFactory.shootNumber = 2;
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
 
     case 7:// Front of trench move back use 6 shooter data index move back again pickup and
            // use 7 shooter data
-
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
+      setStartingPose(
+          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
+              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
+      m_autoFactory.shootNumber = 2;
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
     case 8:// Front of trench move back use 6 shooter data index move back under control
            // panel pickup move back and shoot
       // use 7 shooter data
-
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
+      setStartingPose(
+          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
+              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
+      m_autoFactory.shootNumber = 2;
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
 
     case 9:// cross line
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
+
+      setStartingPose(new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine), 3.5, new Rotation2d(0)));
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
+
       break;
 
     default:
@@ -177,6 +216,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+
     if (!autoHasRun && Timer.getFPGATimestamp() > startTime + m_startDelay && m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
       autoHasRun = true;
@@ -204,7 +244,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    // new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
+    autoHasRun = false;
+    new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
     // CommandScheduler.getInstance().cancelAll();
 
   }
@@ -229,6 +270,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+  }
+
+  private void setStartingPose(Pose2d pose) {
+
+    m_robotContainer.m_robotDrive.resetAll();
+
+    if (RobotBase.isSimulation())
+      m_robotContainer.m_robotDrive.fieldSim.setRobotPose(pose);
+
+    m_robotContainer.m_robotDrive.resetPose(pose);
   }
 
 }

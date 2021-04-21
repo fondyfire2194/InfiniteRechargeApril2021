@@ -26,8 +26,8 @@ public class ShootCells extends CommandBase {
   private double speed;
   private double time;
 
-  public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor,
-      double speed, double time) {
+  public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor, double speed,
+      double time) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
     this.transport = transport;
@@ -35,7 +35,7 @@ public class ShootCells extends CommandBase {
     this.speed = speed;
     this.time = time;
 
-    addRequirements(shooter,transport);
+    addRequirements(shooter, transport);
   }
 
   // Called when the command is initially scheduled.
@@ -55,11 +55,11 @@ public class ShootCells extends CommandBase {
 
     shooter.spinAtRpm(shooter.requiredSpeed);
     if (Timer.getFPGATimestamp() > startTime + 1) {
-   //   belts.pulseBelt(-.5, .5, .25);
+      // belts.pulseBelt(-.5, .5, .25);
       // transport.runBeltMotor(CellTransportConstants.BELT_SPEED);
       transport.runFrontRollerMotor(CellTransportConstants.FRONT_SHOOT_SPEED);
       transport.runRearRollerMotor(CellTransportConstants.REAR_SHOOT_SPEED);
-
+      shooter.shootTimeRemaining = startTime + shooter.shootTime - Timer.getFPGATimestamp();
     }
 
   }
@@ -67,7 +67,7 @@ public class ShootCells extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-//    transport.runLeftBeltMotor(0.);
+    // transport.runLeftBeltMotor(0.);
     transport.runFrontRollerMotor(0.);
     transport.runRearRollerMotor(0.);
     shooter.spinAtRpm(0);
@@ -77,10 +77,6 @@ public class ShootCells extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (shooter.shootTime != 0) {
-      return Timer.getFPGATimestamp() > startTime + shooter.shootTime;
-    } else {
-      return false;
-    }
+    return Timer.getFPGATimestamp() > startTime + shooter.shootTime;
   }
 }

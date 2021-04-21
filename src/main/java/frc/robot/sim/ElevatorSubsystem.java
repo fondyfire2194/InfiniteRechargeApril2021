@@ -36,9 +36,9 @@ public interface ElevatorSubsystem extends Subsystem, AutoCloseable {
 
     void goToPosition(double inches);
 
-    void goToPositionMotionMagic(double inches);
+   void goToPositionMotionMagic(double inches);
 
-    double getHeightInches();
+  //  double getHeightInches();
 
     default boolean isAtHeight(double inches) {
         return isAtHeight(inches, DEFAULT_ALLOWABLE_HEIGHT_ERROR_INCHES);

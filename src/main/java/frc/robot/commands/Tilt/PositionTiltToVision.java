@@ -4,10 +4,9 @@
 
 package frc.robot.commands.Tilt;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
-import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.subsystems.RevTiltSubsystem;
 
 public class PositionTiltToVision extends CommandBase {
@@ -18,11 +17,12 @@ public class PositionTiltToVision extends CommandBase {
   private final LimeLight m_limelight;
 
   private double m_originalTarget;
-private boolean targetSeen;
+  private boolean targetSeen;
   private double m_endpoint;
-private int visionFoundCounter;
+  private int visionFoundCounter;
   private int loopCtr;
   private double visionFoundAngle;
+  private boolean endIt;
 
   public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -37,7 +37,13 @@ private int visionFoundCounter;
   public void initialize() {
     m_endpoint = m_originalTarget;
     m_tilt.visionCorrection = 0;
-    loopCtr=0;
+    m_tilt.targetAngle = m_endpoint;
+    loopCtr = 0;
+    if (RobotBase.isSimulation()) {
+      targetSeen = true;
+      m_endpoint += Math.random();
+      m_tilt.targetAngle = m_endpoint;
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -45,13 +51,16 @@ private int visionFoundCounter;
   public void execute() {
     loopCtr++;
 
-    if (m_limelight.getIsTargetFound() && visionFoundCounter < 5) {
+    if (RobotBase.isReal())
+      targetSeen = m_limelight.getIsTargetFound();
+
+    if (targetSeen && visionFoundCounter < 5) {
       visionFoundCounter++;
     }
     if (visionFoundCounter >= 5)
       targetSeen = true;
 
-    if (!m_limelight.getIsTargetFound() && targetSeen) {
+    if (!targetSeen && targetSeen) {
       visionFoundCounter--;
     }
 
@@ -59,22 +68,28 @@ private int visionFoundCounter;
       targetSeen = false;
     }
 
-    if (targetSeen)
+    if (RobotBase.isReal() && targetSeen) {
       visionFoundAngle = m_tilt.getAngle() + m_limelight.getdegVerticalToTarget();
+      m_endpoint = visionFoundAngle;
+      m_tilt.targetAngle= m_endpoint;
+    }
 
-    m_endpoint = visionFoundAngle;
+    m_tilt.goToPositionMotionMagic(m_endpoint);
 
-    m_tilt.goToPositionSmartMotion(m_endpoint);
+    endIt = m_tilt.atTargetAngle() && loopCtr > 10;
 
   }
+
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    if (!endIt)
+      m_tilt.targetAngle = m_tilt.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_tilt.atTargetAngle() && loopCtr > 10;
+    return endIt;
   }
 }

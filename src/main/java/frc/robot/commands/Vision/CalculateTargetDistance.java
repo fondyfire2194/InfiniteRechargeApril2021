@@ -6,6 +6,7 @@ package frc.robot.commands.Vision;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -31,8 +32,8 @@ public class CalculateTargetDistance extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    baseCameraHeight = HoodedShooterConstants.BASE_CAMERA_HEIGHT;
-    targetHeight = HoodedShooterConstants.TARGET_HEIGHT;
+    baseCameraHeight = FieldConstants.BASE_CAMERA_HEIGHT;
+    targetHeight = FieldConstants.TARGET_HEIGHT;
 
   }
 

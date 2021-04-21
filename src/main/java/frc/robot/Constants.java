@@ -171,8 +171,8 @@ public final class Constants {
        */
 
       public static final double TILT_DEG_PER_ENCODER_REV = .00029;// 100:1 gear box added
-      public static final double TILT_MIN_ANGLE = 0;
-      public static final double TILT_MAX_ANGLE = 10;
+      public static final double TILT_MIN_ANGLE = 59;
+      public static final double TILT_MAX_ANGLE = 70;
 
       // turret
 
@@ -185,13 +185,9 @@ public final class Constants {
        * teeth in 360 degrees, so 1 tooth = 360/220 = 1.64 degrees So 18 teeth (100
        * revs) = 18 * 1.64 = 29.5 degrees and one motor rev is .295 degrees
        */
-      public static final double TURRET_DEG_PER_MOTOR_REV =  .295;
+      public static final double TURRET_DEG_PER_MOTOR_REV = .295;
 
-      public static final double TARGET_HEIGHT = Units.inchesToMeters(94);
-      public static final double BASE_CAMERA_HEIGHT = Units.inchesToMeters(26);
-      public static final double MAX_CAMERA_HEIGHT = Units.inchesToMeters(27);
-      public static final double CAMERA_RADIUS_OF_TURN = Units.inchesToMeters(8);
-      public static final double CAMERA_BASE_ANGLE = 51.;
+      
    }
 
    public static final class IntakeConstants {
@@ -225,5 +221,29 @@ public final class Constants {
       public static final int kCoDriverControllerPort = 1;
       public static final int kSetupControllerPort = 3;
       public static final int kShootBoxControllerPort = 2;
+   }
+
+   public static final class FieldConstants {
+
+      public static final double fieldWidth = Units.inchesToMeters(323);
+      public static final double fieldLength = Units.inchesToMeters(626.25);
+      public static final double initiationLine = Units.inchesToMeters(115);// meters from Alliance wall
+      public static final double centerPowerPort = 2.4;// meters
+      public static final double centerTrench = 0;
+      public static final double trenchToSecondBall = 0;
+      public static final double trenchToThirdBall = 0;
+
+      public static final double trenchToUnderCP = 0;
+
+      public static final double robotLength = 1.5;
+      public static final double robotWidth = 0;
+
+
+      public static final double powerPortTargetCenterHeight = Units.inchesToMeters(84);
+      public static final double TARGET_HEIGHT = Units.inchesToMeters(94);
+      public static final double BASE_CAMERA_HEIGHT = Units.inchesToMeters(26);
+      public static final double MAX_CAMERA_HEIGHT = Units.inchesToMeters(27);
+      public static final double CAMERA_RADIUS_OF_TURN = Units.inchesToMeters(8);
+      public static final double CAMERA_BASE_ANGLE = 51.;
    }
 }

@@ -18,14 +18,14 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.sim.ElevatorSubsystem;
 import frc.robot.Pref;
+import frc.robot.Robot;
 
 public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsystem {
-    private static final double GRAVITY_COMPENSATION_VOLTS = .0001;
+    private static final double GRAVITY_COMPENSATION_VOLTS = .001;
     private static final double DEG_PER_MOTOR_REV = HoodedShooterConstants.TURRET_DEG_PER_MOTOR_REV;
     private static final int POSITION_SLOT = 0;
     private static final int SMART_MOTION_SLOT = 1;
@@ -47,17 +47,24 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mEncoder = m_motor.getEncoder();
         mPidController = m_motor.getPIDController();
         m_motor.restoreFactoryDefaults();
-        if (RobotBase.isReal())
-            mEncoder.setPositionConversionFactor(DEG_PER_MOTOR_REV);// 1 /
-        else
-            mEncoder.setPositionConversionFactor(1); // // HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
-
         m_motor.setOpenLoopRampRate(5);
         mEncoder.setPosition(0);
-
         if (!tuneOn)
-            setGains();
+        setGains();
 
+         if (RobotBase.isReal())
+            mEncoder.setPositionConversionFactor(DEG_PER_MOTOR_REV);// 1 /
+        else {
+            mEncoder.setPositionConversionFactor(1); // // HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
+            mPidController.setP(.1, SMART_MOTION_SLOT);
+  //          mPidController.setFF(0.000005, SMART_MOTION_SLOT); 
+        }
+
+        m_motor.setOpenLoopRampRate(5);
+
+        
+
+ 
         // if (RobotBase.isSimulation())
         // mPidController.setP(0.16);
 
@@ -73,6 +80,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
             mElevatorSim = new ElevatorSimWrapper(ElevatorSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
+
         }
 
     }
@@ -98,14 +106,14 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     @Override
     public void goToPosition(double angle) {
-
         mPidController.setReference(angle, ControlType.kPosition, POSITION_SLOT);
-
     }
 
-    
-    public void goToPositionSmartMotion(double angle) {
-        mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
+    @Override
+    public void goToPositionMotionMagic(double angle) {
+     
+            mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
+ 
     }
 
     public void resetAngle(double angle) {
@@ -190,20 +198,20 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private void setGains() {
         // PID coefficients
 
-      kFF = 8.5e-5;// 95%
+        kFF = 8.5e-5;// 95%
 
         kP = 5e-4;
         kI = 0;// 1e-5;
         kD = 0;
         kIz = 1;
-  
-        kMaxOutput = 1;
-        kMinOutput = -1;
+
+        kMaxOutput = .75;
+        kMinOutput = -.75;
         maxRPM = 11000;// not used
         allowedErr = 1;
         // Smart Motion Coefficients
         maxVel = 5000; // rpm
-        maxAcc = 750;
+        maxAcc = 200;
 
         // set PID coefficients
         calibratePID(kP, kI, kD, kFF, kIz, SMART_MOTION_SLOT);
@@ -223,12 +231,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         calibratePID(p, i, d, kFF, iz, SMART_MOTION_SLOT);
     }
 
-    @Override
-    public double getHeightInches() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
     public void clearFaults() {
         m_motor.clearFaults();
     }
@@ -237,9 +239,4 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         return m_motor.getFaults();
     }
 
-    @Override
-    public void goToPositionMotionMagic(double inches) {
-        // TODO Auto-generated method stub
-        
-    }
 }

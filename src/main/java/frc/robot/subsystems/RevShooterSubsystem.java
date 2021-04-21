@@ -35,6 +35,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double requiredSpeedLast;
     public double requiredSpeed;
     public double shootTime;
+    public double shootTimeRemaining;
     public static DCMotor kGearbox = DCMotor.getNeo550(2);
     public static double kGearing = 1;
     public static double kInertia = 0.008;
@@ -117,7 +118,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         if (tuneOn)
             tuneGains();
 
-        shootColorNumber = (int) SmartDashboard.getNumber("ShootColor", 0);
+        
         if (shootColorNumber > 2)
             shootColorNumber = 2;
         if (shootColorNumber != shootColorNumberLast) {

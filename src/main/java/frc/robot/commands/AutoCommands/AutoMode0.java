@@ -12,13 +12,12 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
+import frc.robot.commands.MessageCommand;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
-import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
-import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Vision.LimelightSetPipeline;
@@ -32,35 +31,46 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
 public class AutoMode0 extends SequentialCommandGroup {
-  /**
-   * Creates a new Auto0.
-   * 
-   * Start in front of power port and shoot
-   */
+    /**
+     * Creates a new Auto0.
+     * 
+     * Start in front of power port and shoot
+     */
 
-  private final static int shootPosition = 0;
-  private final static double shootTime = ShootData.getShootTime(shootPosition);
-  private final static int pipeline = ShootData.getPipeline(shootPosition);
-  private static double tiltAngle = ShootData.getTiltAngle(shootPosition);
-  private final static double turretAngle = ShootData.getTurretAngle(shootPosition);
-  private final static double shootSpeed = ShootData.getShootSpeed(shootPosition);
-  private final static double moveDistance = ShootData.getDistance(shootPosition);
+    // private final static int shootPosition = 0;
+    // private final static double shootTime =
+    // ShootData.getShootTime(shootPosition);
+    // private final static int pipeline = ShootData.getPipeline(shootPosition);
+    // private static double tiltAngle = ShootData.getTiltAngle(shootPosition);
+    // private final static double turretAngle =
+    // ShootData.getTurretAngle(shootPosition);
+    // private final static double shootSpeed =
+    // ShootData.getShootSpeed(shootPosition);
+    // private final static double moveDistance =
+    // ShootData.getMoveDistance(shootPosition);
+    // private final static double shootDistance =
+    // ShootData.getShootDistance(shootPosition);
 
-  public AutoMode0(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
-      CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight, Compressor compressor) {
-    // Add your commands in the super() call, e.g.
-    // super(new FooCommand(), new BarCommand());
+    public AutoMode0(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+            CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight, Compressor compressor,
+            int shootNumber) {
+        // Add your commands in the super() call, e.g.
+        // super(new FooCommand(), new BarCommand());
 
-    super(new LimelightSetPipeline(limelight, pipeline),
+        super(new LimelightSetPipeline(limelight, ShootData.getPipeline(shootNumber)),
 
-        new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, tiltAngle),
-            new PositionTurretToVision(turret, limelight, turretAngle),
-            new PositionRobot(drive, moveDistance).deadlineWith(new StartShooterWheels(shooter, shootSpeed))),
+                new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)),
+                        new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
+                        new PositionRobot(drive, ShootData.getFirstDistance(shootNumber))
+                                .deadlineWith(new StartShooterWheels(shooter, ShootData.getShootSpeed(shootNumber)))),
 
-        new ParallelCommandGroup(new ShootCells(shooter, transport, compressor, shootSpeed, shootTime)
-            .deadlineWith(new ParallelCommandGroup(new PositionHoldTilt(tilt)), new PositionHoldTurret(turret))),
+                new ParallelCommandGroup(new MessageCommand("Group2Started"),
+                        new ShootCells(shooter, transport, compressor, ShootData.getShootSpeed(shootNumber),
+                                ShootData.getShootTime(shootNumber))),
 
-        new ParallelCommandGroup(new PositionTilt(tilt, -1), new PositionTurret(turret, 0)));
+                new ParallelCommandGroup(new MessageCommand("GroupStarted"),
+                        new PositionRobot(drive, ShootData.getSecondDistance(shootNumber)), new PositionTilt(tilt, 60),
+                        new PositionTurret(turret, 0)));
 
-  }
+    }
 }

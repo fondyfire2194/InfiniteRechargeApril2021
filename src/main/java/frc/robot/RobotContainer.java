@@ -27,6 +27,7 @@ import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Turret.ChangeTurretPositionTest;
+import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretJogVelocity;
 import frc.robot.subsystems.CellTransportSubsystem;
@@ -92,11 +93,11 @@ public class RobotContainer {
        * The container for the robot. Contains subsysems, OI devices, and commands.
        */
       public RobotContainer() {
-          
-            prefs = Preferences.getInstance();
+
+            // prefs = Preferences.getInstance();
             // Pref.deleteAllPrefs();
-            //  Pref.deleteUnused();
-            //  Pref.addMissing();
+            // Pref.deleteUnused();
+            // Pref.addMissing();
             m_robotDrive = new RevDrivetrain();
 
             m_climber = new ClimberSubsystem();
@@ -117,13 +118,13 @@ public class RobotContainer {
             m_compressor = new Compressor();
 
             m_autoFactory = new AutoFactory(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
-                        m_compressor);
+                        m_compressor,0);
 
             m_trajectory = new FondyFireTrajectory(m_robotDrive);
 
             m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt));
 
-            // m_turret.setDefaultCommand(new PositionHoldTurret(m_turret));
+            m_turret.setDefaultCommand(new PositionHoldTurret(m_turret));
 
             m_shooter.setDefaultCommand(getJogShooterCommand());
 
@@ -137,6 +138,19 @@ public class RobotContainer {
             // LiveWindow.disableAllTelemetry();
 
             SmartDashboard.putData(CommandScheduler.getInstance());
+
+            CommandScheduler.getInstance()
+                        .onCommandInitialize(command -> System.out.println(command.getName() + " is starting"));
+            CommandScheduler.getInstance()
+                        .onCommandFinish(command -> System.out.println(command.getName() + " has ended"));
+            CommandScheduler.getInstance()
+                        .onCommandInterrupt(command -> System.out.println(command.getName() + " was interrupted"));
+            CommandScheduler.getInstance().onCommandInitialize(
+                        command -> SmartDashboard.putString("CS", command.getName() + " is starting"));
+            CommandScheduler.getInstance()
+                        .onCommandFinish(command -> SmartDashboard.putString("CE", command.getName() + " has Ended"));
+            CommandScheduler.getInstance().onCommandInterrupt(
+                        command -> SmartDashboard.putString("CE", command.getName() + "was Interrupted"));
 
       }
 

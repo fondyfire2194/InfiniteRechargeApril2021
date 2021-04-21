@@ -35,16 +35,15 @@ public class PositionTurret extends CommandBase {
   @Override
   public void execute() {
     loopCtr++;
-    if (RobotBase.isReal())
+    
       m_turret.goToPositionMotionMagic(m_turret.targetAngle);
-    else
-      m_turret.goToPosition(m_turret.targetAngle);
+  
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_turret.targetAngle = m_turret.getAngle();
+    //m_turret.targetAngle = m_turret.getAngle();
   }
 
   // Returns true when the command should end.

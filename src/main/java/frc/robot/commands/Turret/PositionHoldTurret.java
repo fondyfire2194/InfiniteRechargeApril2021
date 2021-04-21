@@ -30,16 +30,7 @@ public class PositionHoldTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
-
-
-    if (RobotBase.isReal())
-
       m_turret.goToPositionMotionMagic(m_turret.targetAngle);
-
-    else
-
-      m_turret.goToPosition(m_turret.targetAngle);
   }
 
   // Called once the command ends or is interrupted.

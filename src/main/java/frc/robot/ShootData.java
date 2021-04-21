@@ -8,22 +8,32 @@ package frc.robot;
 public class ShootData {
 
     /**
-     * array contents are pipeline, distance, shoot speed, shoot time, turret angle,
-     * tilt angle.
+     * 
      * 
      * 
      * 
      */
 
     private static double[][] shootValues =
+            // array contents are pipeline, first moveDistance, second moveDistance,
+            // shootdistance, shoot speed, shoot
+            // time, turret angle, tilt angle.
+            // front of power port at initiation line 0
+            { { 0, 0, -1, 30, 4500, 5, 0, 62.0 }, // 0 center start shoot retract
+                    // front of power port retract 2 meters 1
+                    { 0, -1, -1, 30, 3500, 5, 0, 63.5 }, // 1 center start retract shoot
 
-// front of power port at initiation line
-            { { 0, 0, 4500, 5, 0, 4.7 },
-                    // front of power port retract 2 meters
-                    { 0, 2, 4500, 5, -54, 6 },
-                    //
-                    { 0, 3., 4500, 5, -54, 4.7 }, //
-                    { 0, 3., 4500, 5, -54, 4.7 } //
+                    { 0, 0, -1, 30, 3575, 5, 30, 61 }, // 2 left start shoot retract
+
+                    { 0, -1, 0, 30, 4500, 5, -58, 63.5 }, // 3 left start retract shoot
+
+                    { 0, 0, -1, 30, 4500, 5, -58, 63.5 }, // 4 right start shoot retract
+
+                    { 0, -1, 0, 30, 4500, 5, -58, 63.5 }, // 5 right start retract shoot
+
+                    { 0, 0, 30, 4500, 5, -58, 63.5 }, // 6
+
+                    { 0, 0, 30, 4500, 5, -58, 63.5 } // 7
             };
 
     public ShootData() {
@@ -33,24 +43,33 @@ public class ShootData {
         return (int) shootValues[pointer][0];
     }
 
-    public static double getDistance(int pointer) {
+    public static double getFirstDistance(int pointer) {
         return shootValues[pointer][1];
+
     }
 
-    public static double getShootSpeed(int pointer) {
+    public static double getSecondDistance(int pointer) {
         return shootValues[pointer][2];
     }
 
-    public static double getShootTime(int pointer) {
+    public static double getShootDistance(int pointer) {
         return shootValues[pointer][3];
     }
 
-    public static double getTurretAngle(int pointer) {
+    public static double getShootSpeed(int pointer) {
         return shootValues[pointer][4];
     }
 
-    public static double getTiltAngle(int pointer) {
+    public static double getShootTime(int pointer) {
         return shootValues[pointer][5];
+    }
+
+    public static double getTurretAngle(int pointer) {
+        return shootValues[pointer][6];
+    }
+
+    public static double getTiltAngle(int pointer) {
+        return shootValues[pointer][7];
     }
 
 }
