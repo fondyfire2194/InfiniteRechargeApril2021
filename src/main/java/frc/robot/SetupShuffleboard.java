@@ -185,18 +185,18 @@ public class SetupShuffleboard {
                                 .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(2, 6)
                                 .withProperties(Map.of("Label position", "TOP"));
 
-                competition.addNumber("TiltPosn", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kDial)
-                                .withProperties(Map.of("Min", 57, "Max", 70, "Show Text", true)).withSize(2, 2);
+                competition.addNumber("TiltPosn", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
+                                .withProperties(Map.of("Min", 57, "Max", 70, "Show Text",false)).withSize(2, 2);
 
                 competition.addNumber("TurretPosn", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
-                                .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", true)).withSize(2, 1);
+                                .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", false)).withSize(2, 1);
 
                 competition.addNumber("RobotPosn", () -> m_robotDrive.getAverageDistance())
                                 .withWidget(BuiltInWidgets.kNumberBar)
-                                .withProperties(Map.of("Min", -5, "Max", 0, "Show Text", true)).withSize(2, 1);
+                                .withProperties(Map.of("Min", -5, "Max", 0, "Show Text", false)).withSize(2, 1);
 
-                competition.addNumber("ShooterView", () -> m_shooter.getRPM()).withWidget(BuiltInWidgets.kNumberBar)
-                                .withProperties(Map.of("Min", 0, "Max", 5000, "Show Text", true)).withSize(2, 1);
+                competition.addNumber("ShooterSpeed", () -> m_shooter.getRPM()).withWidget(BuiltInWidgets.kNumberBar)
+                                .withProperties(Map.of("Min", 0, "Max", 5000, "Show Text",false)).withSize(2, 1);
 
                 if (RobotBase.isSimulation()) {
 
@@ -204,7 +204,7 @@ public class SetupShuffleboard {
                                         .getLayout("Active", BuiltInLayouts.kList).withPosition(2, 1).withSize(2, 6)
                                         .withProperties(Map.of("Label position", "LEFT"));
                         active.addNumber("Pipeline", () -> m_limelight.getPipeline());
-                        active.addNumber("ShooterSpeed", () -> m_shooter.getRPM());
+                        active.addNumber("ShooterSetpoint", () -> m_shooter.requiredSpeed);
                         active.addNumber("TiltTarget", () -> m_tilt.targetAngle);
                         active.addNumber("TurretTarget", () -> m_turret.targetAngle);
                         active.addNumber("TimeToStart", () -> timeToStart);
@@ -213,6 +213,7 @@ public class SetupShuffleboard {
                         active.addNumber(("Shoot Time"), () -> m_shooter.shootTime);
                         active.addNumber(("Rmng Shoot Time"), () -> m_shooter.shootTimeRemaining);
                         active.addNumber(("Robot Target"), () -> m_robotDrive.leftTargetPosition);
+                        active.addNumber(("Intake"), () -> m_intake.getMotor());
                 }
                 if (RobotBase.isReal()) {
 

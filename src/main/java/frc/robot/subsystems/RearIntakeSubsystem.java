@@ -50,7 +50,7 @@ public class RearIntakeSubsystem extends SubsystemBase {
   }
 
   public double getMotor() {
-    return m_intakeMotor.get();
+    return m_intakeMotor.getMotorOutputPercent();
   }
 
   public double getMotorAmps() {

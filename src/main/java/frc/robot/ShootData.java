@@ -31,9 +31,9 @@ public class ShootData {
 
                     { 0, -1, -1, 30, 4100, 5, -20, 64.5 }, // 5 right start retract shoot
 
-                    { 0, 0, 0, 30, 4500, 5, -58, 63.5 }, // 6 trench start pickup 2 and shoot
+                    { 0, -3, -3, 30, 4500, 5, -28, 61.5 }, // 6 trench start pickup 2 and shoot
 
-                    { 0, 0, 0.30, 4500, 5, -58, 63.5 } // 7
+                    { 0, -4, -3, 30, 4500, 5, -58, 63.5 } // 7 move to pick up 3rd trench ball and shoot
             };
 
     public ShootData() {

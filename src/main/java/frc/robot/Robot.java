@@ -166,29 +166,26 @@ public class Robot extends TimedRobot {
     case 6:// Front of trench move back pick up 2 shoot use 6 shooter data index use
            // pipeline 0 - no zoom
       // move back pick up 3, return shoot
-      setStartingPose(
-          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
-              (FieldConstants.centerTrench), new Rotation2d(0)));
+      setStartingPose(new Pose2d(FieldMap.startLineX - FieldMap.robotLength,
+          FieldMap.friendlyTrenchY + FieldMap.robotWidth / 2, new Rotation2d(0)));
       m_autoFactory.shootNumber = 6;
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
       break;
 
     case 7:// Front of trench move back use 6 shooter data index move back again pickup and
            // use 7 shooter data
-      setStartingPose(
-          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
-              (FieldConstants.centerTrench), new Rotation2d(0)));
-      m_autoFactory.shootNumber = 7;
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
+           setStartingPose(new Pose2d(FieldMap.startLineX - FieldMap.robotLength,
+           FieldMap.friendlyTrenchY + FieldMap.robotWidth / 2, new Rotation2d(0)));
+      m_autoFactory.shootNumber = 6;
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
       break;
     case 8:// Front of trench move back use 6 shooter data index move back under control
            // panel pickup move back and shoot
       // use 7 shooter data
-      setStartingPose(
-          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
-              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
-      m_autoFactory.shootNumber = 7;
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
+      setStartingPose(new Pose2d(FieldMap.startLineX - FieldMap.robotLength,
+      FieldMap.friendlyTrenchY + FieldMap.robotWidth / 2, new Rotation2d(0)));
+      m_autoFactory.shootNumber = 6;
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
       break;
 
     case 9:// cross line
