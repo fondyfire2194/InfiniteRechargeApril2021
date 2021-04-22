@@ -191,6 +191,19 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         return m_motor.getFaults();
     }
 
+    public void aimHigher() {
+        targetVerticalOffset += 1;
+    }
+
+    public void aimLower() {
+        targetVerticalOffset -= 1;
+    }
+
+    public void aimCenter() {
+        targetVerticalOffset = 0;
+        ;
+    }
+
     public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
             int slotNumber) {
         mPidController.setIAccum(0);

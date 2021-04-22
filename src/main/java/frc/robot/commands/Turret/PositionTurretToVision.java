@@ -48,7 +48,7 @@ public class PositionTurretToVision extends CommandBase {
     if (RobotBase.isSimulation()) {
       targetSeen = true;
       m_endpoint += Math.random();
-      m_turret.targetAngle =m_endpoint;
+      m_turret.targetAngle = m_endpoint;
     }
   }
 
@@ -85,7 +85,7 @@ public class PositionTurretToVision extends CommandBase {
     }
 
     if (Robot.isReal() && targetSeen) {
-      visionFoundAngle = m_turret.getAngle() + m_limelight.getdegVerticalToTarget();
+      visionFoundAngle = m_turret.getAngle() + m_limelight.getdegVerticalToTarget() + m_turret.targetHorizontalOffset;
       m_endpoint = visionFoundAngle;
       m_turret.targetAngle = m_endpoint;
     }

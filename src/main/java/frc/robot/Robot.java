@@ -18,8 +18,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.PositionHoldTurret;
+import frc.robot.subsystems.RevDrivetrain;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -115,26 +117,21 @@ public class Robot extends TimedRobot {
 
     case 0:// in front of power port use 0 shooter data index use pipeline 0 - no zoom
       setStartingPose(
-          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
-              FieldConstants.centerPowerPort, new Rotation2d(0)));
+          new Pose2d(FieldMap.startLineX - FieldMap.robotLength, FieldMap.targetCenterPointY, new Rotation2d(0)));
       m_autoFactory.shootNumber = 0;
       m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
-
     case 1:// in front of power port, move back use 1 shooter data index use pipeline 0 -
            // no zoom
-      setStartingPose(
-          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
-              FieldConstants.centerPowerPort, new Rotation2d(0)));
+
       m_autoFactory.shootNumber = 1;
       m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
 
     case 2:// Left of power port use 2 shooter data index use pipeline 0 - no zoom
 
-      setStartingPose(
-          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
-              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
+      setStartingPose(new Pose2d(FieldMap.startLineX - FieldMap.robotLength,
+          FieldMap.targetCenterPointY + FieldMap.robotWidth + .25, new Rotation2d(0)));
       m_autoFactory.shootNumber = 2;
       m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
 
@@ -142,9 +139,8 @@ public class Robot extends TimedRobot {
 
     case 3:// Left of power port move back use 3 shooter data index use pipeline 0 - no
            // zoom
-      setStartingPose(
-          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
-              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
+      setStartingPose(new Pose2d(FieldMap.startLineX - FieldMap.robotLength,
+          FieldMap.targetCenterPointY + FieldMap.robotWidth + .25, new Rotation2d(0)));
 
       m_autoFactory.shootNumber = 3;
       m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
@@ -152,28 +148,28 @@ public class Robot extends TimedRobot {
 
     case 4:// Right of power port use 4 shooter data index use pipeline 0 - no zoom
            // m_autoFactory.shootNumber = 0;
-      setStartingPose(
-          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
-              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
-      m_autoFactory.shootNumber = 2;
+      setStartingPose(new Pose2d(FieldMap.startLineX - FieldMap.robotLength,
+          FieldMap.targetCenterPointY - FieldMap.robotWidth - .25, new Rotation2d(0)));
+      m_autoFactory.shootNumber = 4;
 
       m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
 
     case 5:// Right of power port nmove back use 5 shooter data index use pipeline 0 - no
            // zoom
-      setStartingPose(
-          new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
-              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
-      m_autoFactory.shootNumber = 2;
+      setStartingPose(new Pose2d(FieldMap.startLineX - FieldMap.robotLength,
+          FieldMap.targetCenterPointY - FieldMap.robotWidth - .25, new Rotation2d(0)));
+      m_autoFactory.shootNumber = 5;
       m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
 
-    case 6:// Front of trench move back use 6 shooter data index use pipeline 0 - no zoom
+    case 6:// Front of trench move back pick up 2 shoot use 6 shooter data index use
+           // pipeline 0 - no zoom
+      // move back pick up 3, return shoot
       setStartingPose(
           new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
-              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
-      m_autoFactory.shootNumber = 2;
+              (FieldConstants.centerTrench), new Rotation2d(0)));
+      m_autoFactory.shootNumber = 6;
       m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
 
@@ -181,9 +177,9 @@ public class Robot extends TimedRobot {
            // use 7 shooter data
       setStartingPose(
           new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
-              (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
-      m_autoFactory.shootNumber = 2;
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
+              (FieldConstants.centerTrench), new Rotation2d(0)));
+      m_autoFactory.shootNumber = 7;
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
       break;
     case 8:// Front of trench move back use 6 shooter data index move back under control
            // panel pickup move back and shoot
@@ -191,14 +187,15 @@ public class Robot extends TimedRobot {
       setStartingPose(
           new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine - FieldConstants.robotLength + .5),
               (FieldConstants.centerPowerPort - FieldConstants.robotWidth - .25), new Rotation2d(0)));
-      m_autoFactory.shootNumber = 2;
+      m_autoFactory.shootNumber = 7;
       m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
 
     case 9:// cross line
 
-      setStartingPose(new Pose2d((FieldConstants.fieldLength - FieldConstants.initiationLine), 3.5, new Rotation2d(0)));
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
+      setStartingPose(
+          new Pose2d(FieldMap.startLineX - FieldMap.robotLength, FieldMap.fieldWidth - 2, new Rotation2d(0)));
+      m_autonomousCommand = new PositionRobot(m_robotContainer.m_robotDrive, -1);
 
       break;
 

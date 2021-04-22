@@ -118,7 +118,7 @@ public class RobotContainer {
             m_compressor = new Compressor();
 
             m_autoFactory = new AutoFactory(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
-                        m_compressor,0);
+                        m_compressor, m_intake, 0);
 
             m_trajectory = new FondyFireTrajectory(m_robotDrive);
 

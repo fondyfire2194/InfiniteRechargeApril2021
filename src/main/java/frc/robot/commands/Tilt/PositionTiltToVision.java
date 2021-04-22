@@ -69,9 +69,9 @@ public class PositionTiltToVision extends CommandBase {
     }
 
     if (RobotBase.isReal() && targetSeen) {
-      visionFoundAngle = m_tilt.getAngle() + m_limelight.getdegVerticalToTarget();
+      visionFoundAngle = m_tilt.getAngle() + m_limelight.getdegVerticalToTarget() + m_tilt.targetVerticalOffset;
       m_endpoint = visionFoundAngle;
-      m_tilt.targetAngle= m_endpoint;
+      m_tilt.targetAngle = m_endpoint;
     }
 
     m_tilt.goToPositionMotionMagic(m_endpoint);

@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
+import frc.robot.commands.CellIntake.StartIntake;
+import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
@@ -23,6 +25,7 @@ import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Vision.CalculateTargetDistance;
 import frc.robot.commands.Vision.LimelightSetPipeline;
 import frc.robot.subsystems.CellTransportSubsystem;
+import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
@@ -31,54 +34,46 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class AutoMode0 extends SequentialCommandGroup {
+public class AutoMode1 extends SequentialCommandGroup {
         /**
          * Creates a new Auto0.
          * 
          * Start in front of power port and shoot
          */
 
-        // private final static int shootPosition = 0;
-        // private final static double shootTime =
-        // ShootData.getShootTime(shootPosition);
-        // private final static int pipeline = ShootData.getPipeline(shootPosition);
-        // private static double tiltAngle = ShootData.getTiltAngle(shootPosition);
-        // private final static double turretAngle =
-        // ShootData.getTurretAngle(shootPosition);
-        // private final static double shootSpeed =
-        // ShootData.getShootSpeed(shootPosition);
-        // private final static double moveDistance =
-        // ShootData.getMoveDistance(shootPosition);
-        // private final static double shootDistance =
-        // ShootData.getShootDistance(shootPosition);
-
-        public AutoMode0(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+        public AutoMode1(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
-                        Compressor compressor, int shootNumber) {
+                        Compressor compressor, RearIntakeSubsystem intake, int shootNumber) {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
+                // move back and pickup 2
+                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
+                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
+                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)))
 
-                super(new LimelightSetPipeline(limelight, ShootData.getPipeline(shootNumber)),
-
-                                new ParallelCommandGroup(
-                                                new PositionTiltToVision(tilt, limelight,
-                                                                ShootData.getTiltAngle(shootNumber)),
-                                                new PositionTurretToVision(turret, limelight,
-                                                                ShootData.getTurretAngle(shootNumber)),
-                                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber))
-                                                                .deadlineWith(new StartShooterWheels(shooter,
+                                                .deadlineWith(new StartIntake(intake),
+                                                                new StartShooterWheels(shooter,
                                                                                 ShootData.getShootSpeed(shootNumber)),
-                                                                                new CalculateTargetDistance(limelight,
-                                                                                                tilt, shooter))),
+                                                                new CalculateTargetDistance(limelight, tilt, shooter)),
 
-                                new ParallelCommandGroup(new MessageCommand("Group2Started"),
+                                // shoot 5
+
+                                new ParallelCommandGroup(new StopIntake(intake),
                                                 new ShootCells(shooter, transport, compressor,
                                                                 ShootData.getShootSpeed(shootNumber),
                                                                 ShootData.getShootTime(shootNumber))),
 
-                                new ParallelCommandGroup(new MessageCommand("GroupStarted"),
+                                // move back and pickup 1 or 3? done by shoot data second distance
+
+                                new ParallelCommandGroup(
                                                 new PositionRobot(drive, ShootData.getSecondDistance(shootNumber)),
-                                                new PositionTilt(tilt, 60), new PositionTurret(turret, 0)));
+                                                new PositionTurret(turret, ShootData.getTurretAngle(shootNumber)),
+                                                new PositionTilt(tilt, ShootData.getTiltAngle(shootNumber)))
+
+                                                                .deadlineWith(new StartIntake(intake)),
+                                // return to first position and shoot
+                                new AutoMode0(shooter, turret, tilt, transport, drive, limelight, compressor,
+                                                shootNumber));
 
         }
 }

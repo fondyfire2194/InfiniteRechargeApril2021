@@ -8,7 +8,6 @@ import java.util.Map;
 
 import edu.wpi.cscore.HttpCamera;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -183,31 +182,38 @@ public class SetupShuffleboard {
                  */
 
                 ShuffleboardLayout competition = Shuffleboard.getTab("Competition")
-                                .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(1, 4)
+                                .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(2, 6)
                                 .withProperties(Map.of("Label position", "TOP"));
 
-                competition.addNumber("TiltView", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kDial)
+                competition.addNumber("TiltPosn", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kDial)
                                 .withProperties(Map.of("Min", 57, "Max", 70, "Show Text", true)).withSize(2, 2);
 
-                competition.addNumber("TurretView", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
+                competition.addNumber("TurretPosn", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
                                 .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", true)).withSize(2, 1);
+
+                competition.addNumber("RobotPosn", () -> m_robotDrive.getAverageDistance())
+                                .withWidget(BuiltInWidgets.kNumberBar)
+                                .withProperties(Map.of("Min", -5, "Max", 0, "Show Text", true)).withSize(2, 1);
 
                 competition.addNumber("ShooterView", () -> m_shooter.getRPM()).withWidget(BuiltInWidgets.kNumberBar)
                                 .withProperties(Map.of("Min", 0, "Max", 5000, "Show Text", true)).withSize(2, 1);
 
-                ShuffleboardLayout active = Shuffleboard.getTab("Competition").getLayout("Active", BuiltInLayouts.kList)
-                                .withPosition(1, 1).withSize(1, 5).withProperties(Map.of("Label position", "LEFT"));
-                active.addNumber("Pipeline", () -> m_limelight.getPipeline());
-                active.addNumber("ShooterSpeed", () -> m_shooter.getRPM());
-                active.addNumber("TiltTarget", () -> m_tilt.targetAngle);
-                active.addNumber("TurretTarget", () -> m_turret.targetAngle);
-                active.addNumber("TimeToStart", () -> timeToStart);
-                active.addNumber("FrontRoller", () -> m_transport.getFrontRoller());
-                active.addNumber("RearRoller", () -> m_transport.getRearRoller());
-                active.addNumber(("Shoot Time"), () -> m_shooter.shootTime);
-                active.addNumber(("Rmng Shoot Time"), () -> m_shooter.shootTimeRemaining);
-                
+                if (RobotBase.isSimulation()) {
 
+                        ShuffleboardLayout active = Shuffleboard.getTab("Competition")
+                                        .getLayout("Active", BuiltInLayouts.kList).withPosition(2, 1).withSize(2, 6)
+                                        .withProperties(Map.of("Label position", "LEFT"));
+                        active.addNumber("Pipeline", () -> m_limelight.getPipeline());
+                        active.addNumber("ShooterSpeed", () -> m_shooter.getRPM());
+                        active.addNumber("TiltTarget", () -> m_tilt.targetAngle);
+                        active.addNumber("TurretTarget", () -> m_turret.targetAngle);
+                        active.addNumber("TimeToStart", () -> timeToStart);
+                        active.addNumber("FrontRoller", () -> m_transport.getFrontRoller());
+                        active.addNumber("RearRoller", () -> m_transport.getRearRoller());
+                        active.addNumber(("Shoot Time"), () -> m_shooter.shootTime);
+                        active.addNumber(("Rmng Shoot Time"), () -> m_shooter.shootTimeRemaining);
+                        active.addNumber(("Robot Target"), () -> m_robotDrive.leftTargetPosition);
+                }
                 if (RobotBase.isReal()) {
 
                         LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");

@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.Tilt.PositionTilt;
@@ -17,13 +17,18 @@ public class ReturnTiltTurret extends ParallelCommandGroup {
   /** Creates a new ReturnTiltTurret. */
   private final RevTurretSubsystem m_turret;
   private final RevTiltSubsystem m_tilt;
+  private double m_turretPosition;
+  private double m_tiltPosition;
 
-  public ReturnTiltTurret(RevTurretSubsystem turret, RevTiltSubsystem tilt) {
+  public ReturnTiltTurret(RevTurretSubsystem turret, double turretPosition, RevTiltSubsystem tilt,
+      double tiltPosition) {
     m_turret = turret;
     m_tilt = tilt;
+    m_turretPosition = turretPosition;
+    m_tiltPosition = tiltPosition;
     // Add your commands in the adddCommands() call, e.g. tilt
     // addCommands(new FooCommand(), new BarCommand());
 
-    addCommands(new PositionTurret(m_turret, 0), new PositionTilt(m_tilt, 60));
+    addCommands(new PositionTurret(m_turret, m_turretPosition), new PositionTilt(m_tilt, m_tiltPosition));
   }
 }

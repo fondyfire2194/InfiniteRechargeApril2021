@@ -50,21 +50,18 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         m_motor.setOpenLoopRampRate(5);
         mEncoder.setPosition(0);
         if (!tuneOn)
-        setGains();
+            setGains();
 
-         if (RobotBase.isReal())
+        if (RobotBase.isReal())
             mEncoder.setPositionConversionFactor(DEG_PER_MOTOR_REV);// 1 /
         else {
             mEncoder.setPositionConversionFactor(1); // // HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
             mPidController.setP(.1, SMART_MOTION_SLOT);
-  //          mPidController.setFF(0.000005, SMART_MOTION_SLOT); 
+            // mPidController.setFF(0.000005, SMART_MOTION_SLOT);
         }
 
         m_motor.setOpenLoopRampRate(5);
 
-        
-
- 
         // if (RobotBase.isSimulation())
         // mPidController.setP(0.16);
 
@@ -111,9 +108,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     @Override
     public void goToPositionMotionMagic(double angle) {
-     
-            mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
- 
+
+        mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
+
     }
 
     public void resetAngle(double angle) {
@@ -237,6 +234,18 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public int getFaults() {
         return m_motor.getFaults();
+    }
+
+    public void aimFurtherLeft() {
+        targetHorizontalOffset += 1;
+    }
+
+    public void aimFurtherRight() {
+        targetHorizontalOffset -= 1;
+    }
+
+    public void aimCenter() {
+        targetHorizontalOffset = 0;
     }
 
 }

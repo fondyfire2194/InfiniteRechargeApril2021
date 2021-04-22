@@ -19,21 +19,21 @@ public class ShootData {
             // shootdistance, shoot speed, shoot
             // time, turret angle, tilt angle.
             // front of power port at initiation line 0
-            { { 0, 0, -1, 30, 4500, 5, 0, 62.0 }, // 0 center start shoot retract
-                    // front of power port retract 2 meters 1
+            { { 0, 0, -1, 30, 4500, 5, 0, 69.0 }, // 0 center start shoot retract
+
                     { 0, -1, -1, 30, 3500, 5, 0, 63.5 }, // 1 center start retract shoot
 
-                    { 0, 0, -1, 30, 3575, 5, 30, 61 }, // 2 left start shoot retract
+                    { 0, 0, -1, 30, 3575, 5, 30, 63.5 }, // 2 left start shoot retract
 
-                    { 0, -1, 0, 30, 4500, 5, -58, 63.5 }, // 3 left start retract shoot
+                    { 0, -1, -1, 30, 4100, 5, 20, 64.5 }, // 3 left start retract shoot
 
-                    { 0, 0, -1, 30, 4500, 5, -58, 63.5 }, // 4 right start shoot retract
+                    { 0, 0, -1, 30, 3575, 5, -30, 63.5 }, // 4 right start shoot retract
 
-                    { 0, -1, 0, 30, 4500, 5, -58, 63.5 }, // 5 right start retract shoot
+                    { 0, -1, -1, 30, 4100, 5, -20, 64.5 }, // 5 right start retract shoot
 
-                    { 0, 0, 30, 4500, 5, -58, 63.5 }, // 6
+                    { 0, 0, 0, 30, 4500, 5, -58, 63.5 }, // 6 trench start pickup 2 and shoot
 
-                    { 0, 0, 30, 4500, 5, -58, 63.5 } // 7
+                    { 0, 0, 0.30, 4500, 5, -58, 63.5 } // 7
             };
 
     public ShootData() {

@@ -344,6 +344,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         return mLeadLeft.getFaults() + mLeadRight.getFaults() + mFollowerLeft.getFaults() + mFollowerRight.getFaults();
     }
 
+    public boolean getInPosition() {
+        return Math.abs(leftTargetPosition - getAverageDistance()) < .25;
+    }
+
     private void setRightGains() {
         // PID coefficients
         kP = 5e-1;
