@@ -82,9 +82,11 @@ public class RobotContainer {
 
       private Compressor m_compressor;
 
-      FondyFireTrajectory m_trajectory;
+      private FondyFireTrajectory m_trajectory;
 
-      AutoFactory m_autoFactory;
+      private AutoFactory m_autoFactory;
+
+      public boolean isMatch = false;
 
       // AutoCommands ac;// = new AutoCommands(m_robotDrive);
       public int shootPosition;
@@ -129,7 +131,7 @@ public class RobotContainer {
             m_shooter.setDefaultCommand(getJogShooterCommand());
 
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
-                        m_limelight, m_controlPanel, m_intake, m_trajectory, m_climber);
+                        m_limelight, m_controlPanel, m_intake, m_trajectory, m_climber, isMatch);
 
             m_robotDrive.setDefaultCommand(getArcadeDriveCommand());
 

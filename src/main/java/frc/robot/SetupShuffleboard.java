@@ -95,7 +95,7 @@ public class SetupShuffleboard {
         public SetupShuffleboard(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevDrivetrain drive,
                         RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor,
                         LimeLight limelight, ControlPanelSubsystem panel, RearIntakeSubsystem intake,
-                        FondyFireTrajectory traj, ClimberSubsystem climber) {
+                        FondyFireTrajectory traj, ClimberSubsystem climber, boolean liveMatch) {
                 m_turret = turret;
                 m_tilt = tilt;
                 m_robotDrive = drive;
@@ -186,7 +186,7 @@ public class SetupShuffleboard {
                                 .withProperties(Map.of("Label position", "TOP"));
 
                 competition.addNumber("TiltPosn", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
-                                .withProperties(Map.of("Min", 57, "Max", 70, "Show Text",false)).withSize(2, 2);
+                                .withProperties(Map.of("Min", 57, "Max", 70, "Show Text", false)).withSize(2, 2);
 
                 competition.addNumber("TurretPosn", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
                                 .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", false)).withSize(2, 1);
@@ -196,7 +196,7 @@ public class SetupShuffleboard {
                                 .withProperties(Map.of("Min", -5, "Max", 0, "Show Text", false)).withSize(2, 1);
 
                 competition.addNumber("ShooterSpeed", () -> m_shooter.getRPM()).withWidget(BuiltInWidgets.kNumberBar)
-                                .withProperties(Map.of("Min", 0, "Max", 5000, "Show Text",false)).withSize(2, 1);
+                                .withProperties(Map.of("Min", 0, "Max", 5000, "Show Text", false)).withSize(2, 1);
 
                 if (RobotBase.isSimulation()) {
 
@@ -232,7 +232,7 @@ public class SetupShuffleboard {
                  * Shooter Turret
                  * 
                  */
-                if (m_showTurret) {
+                if (m_showTurret & !liveMatch) {
                         ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurretTilt")
                                         .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
@@ -273,7 +273,7 @@ public class SetupShuffleboard {
                  * Shooter Tilt
                  * 
                  */
-                if (m_showTilt) {
+                if (m_showTilt & !liveMatch) {
                         ShuffleboardLayout tiltCommands = Shuffleboard.getTab("SetupTurretTilt")
                                         .getLayout("Tilt", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "LEFT")); //
@@ -313,7 +313,7 @@ public class SetupShuffleboard {
                  * Shooter and Transport
                  * 
                  */
-                if (m_showShooter) {
+                if (m_showShooter & !liveMatch) {
                         ShuffleboardLayout shooterCommands = Shuffleboard.getTab("SetupShooter")
                                         .getLayout("Shooter", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
@@ -342,7 +342,7 @@ public class SetupShuffleboard {
                         shooterValues.add(m_shooter);
                 }
 
-                if (m_showTransport) {
+                if (m_showTransport & !liveMatch) {
 
                         ShuffleboardLayout transportValues = Shuffleboard.getTab("SetupShooter")
                                         .getLayout("TransportValues", BuiltInLayouts.kList).withPosition(5, 0)
@@ -373,7 +373,7 @@ public class SetupShuffleboard {
                  * Robot
                  * 
                  */
-                if (m_showRobot) {
+                if (m_showRobot & !liveMatch) {
                         ShuffleboardLayout robotCommands = Shuffleboard.getTab("SetupRobot")
                                         .getLayout("Robot", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT"));
@@ -412,7 +412,7 @@ public class SetupShuffleboard {
                  * Run Trajectory
                  * 
                  */
-                if (m_showTrajectory) {
+                if (m_showTrajectory & !liveMatch) {
                         SendableChooser<Trajectory> trajChooser = new SendableChooser<>();
                         Shuffleboard.getTab("SetupRobot").add("Trajectories", trajChooser).withSize(2, 1)
                                         .withPosition(6, 0);
@@ -433,7 +433,7 @@ public class SetupShuffleboard {
                          */
                 }
 
-                if (m_showSubsystems) {
+                if (m_showSubsystems & !liveMatch) {
                         ShuffleboardLayout subSystems = Shuffleboard.getTab("Subsystems")
                                         .getLayout("All", BuiltInLayouts.kList).withPosition(0, 0).withSize(3, 7)
                                         .withProperties(Map.of("Label position", "LEFT")); //
@@ -453,7 +453,7 @@ public class SetupShuffleboard {
                  * Vision
                  * 
                  */
-                if (m_showVision) {
+                if (m_showVision & !liveMatch) {
                         ShuffleboardLayout zoomCommands = Shuffleboard.getTab("Vision")
                                         .getLayout("Zoom", BuiltInLayouts.kList).withPosition(0, 0).withSize(1, 4)
                                         .withProperties(Map.of("Label position", "TOP")); //
@@ -520,7 +520,7 @@ public class SetupShuffleboard {
                  * Control Panel
                  * 
                  */
-                if (m_showControlPanel) {
+                if (m_showControlPanel & !liveMatch) {
                         ShuffleboardLayout controlPanelCommands = Shuffleboard.getTab("SetupClimber_CP")
                                         .getLayout("ControlPanel", BuiltInLayouts.kList).withPosition(4, 0)
                                         .withSize(1, 4).withProperties(Map.of("Label position", "Top")); //
@@ -554,7 +554,7 @@ public class SetupShuffleboard {
                  * Climber
                  * 
                  */
-                if (m_showClimber)
+                if (m_showClimber & !liveMatch)
 
                 {
                         ShuffleboardLayout climberCommands = Shuffleboard.getTab("SetupClimber_CP")

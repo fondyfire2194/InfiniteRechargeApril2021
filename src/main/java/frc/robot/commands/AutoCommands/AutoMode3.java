@@ -64,16 +64,17 @@ public class AutoMode3 extends SequentialCommandGroup {
 
                                 // pick up 3 move back under control panel
                                 new ParallelCommandGroup(
-                                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber + 1)),
-                                                new ReturnTiltTurret(turret, 65, tilt, 0))
+                                                new PositionRobot(drive,
+                                                                ShootData.getFirstDistance(shootNumber + 1) - 2),
+                                                new ReturnTiltTurret(turret, 0, tilt, 60))
 
                                                                 .deadlineWith(new StartIntake(intake),
                                                                                 new StopShooterWheels(shooter)),
 
-                                // move under control panel again
+                                // // move under control panel again
 
                                 new SequentialCommandGroup(
-                                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber + 1)),
+                                                new PositionRobot(drive, ShootData.getSecondDistance(shootNumber + 1)),
                                                 new StopIntake(intake)),
 
                                 new ParallelCommandGroup(
@@ -91,7 +92,7 @@ public class AutoMode3 extends SequentialCommandGroup {
                                                                                                                 tilt,
                                                                                                                 shooter)),
 
-                                // shoot 3
+                                // // shoot 3
 
                                 new ShootCells(shooter, transport, compressor, ShootData.getShootSpeed(shootNumber + 1),
                                                 ShootData.getShootTime(shootNumber + 1)));

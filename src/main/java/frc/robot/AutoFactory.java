@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AutoCommands.AutoMode0;
 import frc.robot.commands.AutoCommands.AutoMode1;
 import frc.robot.commands.AutoCommands.AutoMode2;
+import frc.robot.commands.AutoCommands.AutoMode3;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;

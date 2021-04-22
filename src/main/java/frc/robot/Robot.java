@@ -185,7 +185,7 @@ public class Robot extends TimedRobot {
       setStartingPose(new Pose2d(FieldMap.startLineX - FieldMap.robotLength,
       FieldMap.friendlyTrenchY + FieldMap.robotWidth / 2, new Rotation2d(0)));
       m_autoFactory.shootNumber = 6;
-      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
+    m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
       break;
 
     case 9:// cross line
