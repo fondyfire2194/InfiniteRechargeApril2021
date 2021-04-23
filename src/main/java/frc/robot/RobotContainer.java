@@ -22,8 +22,11 @@ import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.StartIntake;
+import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.Shooter.JogShooter;
+import frc.robot.commands.Shooter.ShootCells;
+import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Turret.ChangeTurretPositionTest;
@@ -84,7 +87,7 @@ public class RobotContainer {
 
       private FondyFireTrajectory m_trajectory;
 
-      private AutoFactory m_autoFactory;
+      public AutoFactory m_autoFactory;
 
       public boolean isMatch = false;
 
@@ -169,11 +172,14 @@ public class RobotContainer {
             }
             // Driver Joystick
 
-            // new JoystickButton(m_driverController, 1)
+            new JoystickButton(m_driverController, 1).whileHeld(new StartIntake(m_intake))
+                        .whenReleased(new StopIntake(m_intake));
 
-            // new JoystickButton(m_driverController, 2)
+            new JoystickButton(m_driverController, 2)
+                        .whileHeld(new ShootCells(m_shooter, m_transport, m_compressor, 3000, 100))
+                        .whenReleased(new StopShoot(m_shooter, m_transport));
 
-            // new JoystickButton(m_driverController, 3)
+          //   new JoystickButton(m_driverController,3)
 
             // Setup gamepad XBox 3
             JoystickButton setupA = new JoystickButton(setupGamepad, 1);
