@@ -6,16 +6,20 @@ package frc.robot.commands.CellIntake;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.LimeLight;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.subsystems.RearIntakeSubsystem;
 
 public class StartIntake extends CommandBase {
   /** Creates a new RunIntake. */
   private final RearIntakeSubsystem m_rearIntake;
+  private final LimeLight m_limelight;
 
-  public StartIntake(RearIntakeSubsystem rearIntake) {
+  public StartIntake(RearIntakeSubsystem rearIntake, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_rearIntake = rearIntake;
+    m_limelight= limelight;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(rearIntake);
@@ -26,6 +30,8 @@ public class StartIntake extends CommandBase {
   @Override
   public void initialize() {
     Timer.getFPGATimestamp();
+    m_limelight.setStream((StreamType.kPiPSecondary));
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,6 +47,7 @@ public class StartIntake extends CommandBase {
   public void end(boolean interrupted) {
     m_rearIntake.runIntakeMotor(0);
     m_rearIntake.raiseIntakeArm();
+    m_limelight.setStream(StreamType.kStandard);
 
 
   }

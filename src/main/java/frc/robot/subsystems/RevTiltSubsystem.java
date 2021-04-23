@@ -49,7 +49,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         mPidController = m_motor.getPIDController();
         m_motor.restoreFactoryDefaults();
         m_motor.setOpenLoopRampRate(5);
-
+        aimCenter();
         if (!tuneOn)
             setGains();
         if (RobotBase.isReal())

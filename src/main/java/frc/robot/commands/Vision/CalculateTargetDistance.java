@@ -4,27 +4,30 @@
 
 package frc.robot.commands.Vision;
 
+import java.math.BigDecimal;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.LimeLight;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.HoodedShooterConstants;
-import frc.robot.LimelightControlMode.CamMode;
+import frc.robot.LimeLight;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 
 public class CalculateTargetDistance extends CommandBase {
   /** Creates a new CalculateTargetDistance. */
-  private final LimeLight m_limeleight;
+  private final LimeLight m_limelight;
   private final RevTiltSubsystem m_tilt;
   private final RevShooterSubsystem m_shooter;
 
-  private double baseCameraHeight;
-  private double targetHeight;
+  private double baseCameraHeight = FieldConstants.BASE_CAMERA_HEIGHT;
+  private double targetHeight = FieldConstants.TARGET_HEIGHT;
   private double magicNumber = .05;
+  private double calculatedCameraDistance;
+  private double baseDistance = 3;
 
   public CalculateTargetDistance(LimeLight limelight, RevTiltSubsystem tilt, RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_limeleight = limelight;
+    m_limelight = limelight;
     m_tilt = tilt;
     m_shooter = shooter;
   }
@@ -32,8 +35,6 @@ public class CalculateTargetDistance extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    baseCameraHeight = FieldConstants.BASE_CAMERA_HEIGHT;
-    targetHeight = FieldConstants.TARGET_HEIGHT;
 
   }
 
@@ -58,18 +59,52 @@ public class CalculateTargetDistance extends CommandBase {
   @Override
   public void execute() {
 
-    if (m_limeleight.getIsTargetFound()) {
+    if (m_limelight.getIsTargetFound()) {
 
       double heightDifference = baseCameraHeight - +m_tilt.getAngle() * (1 + magicNumber);
 
-      double angleDifference = m_limeleight.getdegVerticalToTarget() - m_tilt.getAngle();
+      double angleDifference = m_limelight.getdegVerticalToTarget() - m_tilt.getAngle();
 
       double tanAngleDiff = Math.tan((Math.toRadians(angleDifference)));
 
-      m_shooter.calculatedCameraDistance = heightDifference / tanAngleDiff;
+      calculatedCameraDistance = heightDifference / tanAngleDiff;
 
     } else {
-      m_shooter.calculatedCameraDistance = 0;
+      calculatedCameraDistance = 0;
+    }
+
+    /**
+     * Check distance calculated is in the acceptable range then interpolate speed
+     * from array
+     * 
+     * Get whole number of meters and fetch speed for it and one above then
+     * interpolate
+     * 
+     * 
+     * 
+     * 
+     * 
+     */
+    if (calculatedCameraDistance >= 3 && calculatedCameraDistance <= 13) {
+      // subtract base distance of 3 meters
+      double distance = calculatedCameraDistance - baseDistance;
+
+      int baseI = (int) distance;
+      double base = (double) baseI;
+
+      double rem = distance - base;
+
+      double baseSpeed = m_shooter.speedFromCamera[baseI];
+      double upperSpeed = m_shooter.speedFromCamera[baseI + 1];
+
+      double speedRange = upperSpeed - baseSpeed;
+
+      double speedAdder = speedRange * rem;
+
+      m_shooter.cameraCalculatedSpeed = baseSpeed + speedAdder;
+
+    } else {
+      m_shooter.cameraCalculatedSpeed = 0;
     }
 
   }

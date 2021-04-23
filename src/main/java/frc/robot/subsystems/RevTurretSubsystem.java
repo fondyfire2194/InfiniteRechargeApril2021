@@ -20,9 +20,8 @@ import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.HoodedShooterConstants;
-import frc.robot.sim.ElevatorSubsystem;
 import frc.robot.Pref;
-import frc.robot.Robot;
+import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsystem {
     private static final double GRAVITY_COMPENSATION_VOLTS = .001;
@@ -49,6 +48,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         m_motor.restoreFactoryDefaults();
         m_motor.setOpenLoopRampRate(5);
         mEncoder.setPosition(0);
+        aimCenter();
         if (!tuneOn)
             setGains();
 

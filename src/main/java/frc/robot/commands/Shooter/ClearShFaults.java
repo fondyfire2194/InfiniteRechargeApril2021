@@ -6,7 +6,6 @@ package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.RevShooterSubsystem;
-import frc.robot.subsystems.RevTiltSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:

@@ -11,17 +11,17 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.buttons.POVButton;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.PositionHoldTurret;
-import frc.robot.subsystems.RevDrivetrain;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -39,6 +39,7 @@ public class Robot extends TimedRobot {
   private double m_startDelay;
   private double startTime;
   public double timeToStart;
+  public POV driverStick;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -49,7 +50,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings.
 
     m_robotContainer = new RobotContainer();
-
+    driverStick = new POV(m_robotContainer.m_driverController);
     Shuffleboard.selectTab("Pre-Round");
 
   }
@@ -174,8 +175,8 @@ public class Robot extends TimedRobot {
 
     case 7:// Front of trench move back use 6 shooter data index move back again pickup and
            // use 7 shooter data
-           setStartingPose(new Pose2d(FieldMap.startLineX - FieldMap.robotLength,
-           FieldMap.friendlyTrenchY + FieldMap.robotWidth / 2, new Rotation2d(0)));
+      setStartingPose(new Pose2d(FieldMap.startLineX - FieldMap.robotLength,
+          FieldMap.friendlyTrenchY + FieldMap.robotWidth / 2, new Rotation2d(0)));
       m_autoFactory.shootNumber = 6;
       m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
       break;
@@ -183,9 +184,9 @@ public class Robot extends TimedRobot {
            // panel pickup move back and shoot
       // use 7 shooter data
       setStartingPose(new Pose2d(FieldMap.startLineX - FieldMap.robotLength,
-      FieldMap.friendlyTrenchY + FieldMap.robotWidth / 2, new Rotation2d(0)));
+          FieldMap.friendlyTrenchY + FieldMap.robotWidth / 2, new Rotation2d(0)));
       m_autoFactory.shootNumber = 6;
-    m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
+      m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
       break;
 
     case 9:// cross line
@@ -250,6 +251,16 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
+
+    if (driverStick.DPadUp())
+      m_robotContainer.m_tilt.aimHigher();
+    if (driverStick.DPadDown())
+      m_robotContainer.m_tilt.aimLower();
+
+    if (driverStick.DPadLeft())
+      m_robotContainer.m_turret.aimFurtherLeft();
+    if (driverStick.DPadRight())
+      m_robotContainer.m_turret.aimFurtherRight();
 
   }
 

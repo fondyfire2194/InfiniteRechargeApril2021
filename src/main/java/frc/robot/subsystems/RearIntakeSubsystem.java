@@ -22,7 +22,7 @@ public class RearIntakeSubsystem extends SubsystemBase {
    * Creates a new RearIntake.
    */
   private final WPI_TalonSRX m_intakeMotor = new TalonSRXWrapper(CANConstants.REAR_MOTOR);
-  private final DoubleSolenoid m_intakeArm = new DoubleSolenoid(2, 3);
+  public final DoubleSolenoid m_intakeArm = new DoubleSolenoid(2, 3);
 
   public RearIntakeSubsystem() {
 
@@ -73,7 +73,11 @@ public class RearIntakeSubsystem extends SubsystemBase {
     m_intakeArm.set(DoubleSolenoid.Value.kForward);
   }
 
-  public DoubleSolenoid.Value getArmValue() {
-    return m_intakeArm.get();
+  public boolean getArmDown() {
+    return m_intakeArm.get() == DoubleSolenoid.Value.kForward;
+  }
+
+  public boolean getArmUp() {
+    return m_intakeArm.get() == DoubleSolenoid.Value.kReverse;
   }
 }

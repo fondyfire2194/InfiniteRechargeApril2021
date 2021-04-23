@@ -32,8 +32,7 @@ import frc.robot.commands.RobotDrive.ResetPose;
 import frc.robot.commands.RobotDrive.StopRobot;
 import frc.robot.commands.RobotDrive.TurnToAngleProfiled;
 import frc.robot.commands.Shooter.ClearShFaults;
-import frc.robot.commands.Shooter.DecreaseShooterSpeed;
-import frc.robot.commands.Shooter.IncreaseShooterSpeed;
+import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
@@ -322,8 +321,8 @@ public class SetupShuffleboard {
                         shooterCommands.add("Shooter", new StartShooterWheels(m_shooter, 500));
                         shooterCommands.add("Stop", new StopShooterWheels(m_shooter));
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
-                        shooterCommands.add("Inc 10% ", new IncreaseShooterSpeed(m_shooter));
-                        shooterCommands.add("Dec 10% ", new DecreaseShooterSpeed(m_shooter));
+                        shooterCommands.add("Inc 250", new ChangeShooterSpeed(m_shooter, 250));
+                        shooterCommands.add("Dec 250 ", new ChangeShooterSpeed(m_shooter, -250));
                         shooterCommands.add("Shoot", new ShootCells(m_shooter, m_transport, m_compressor, 3000, 0));
                         shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
 
@@ -340,6 +339,9 @@ public class SetupShuffleboard {
                         shooterValues.addBoolean("AtSpeed", () -> m_shooter.atSpeed())
                                         .withWidget(BuiltInWidgets.kTextView);
                         shooterValues.add(m_shooter);
+                        shooterValues.addNumber("VertOffset", () -> m_tilt.targetVerticalOffset);
+                        shooterValues.addNumber("HorOffset", () -> m_turret.targetHorizontalOffset);
+
                 }
 
                 if (m_showTransport & !liveMatch) {
@@ -366,7 +368,8 @@ public class SetupShuffleboard {
 
                         intakeValues.addNumber("Motor Amps", () -> m_intake.getMotorAmps());
                         intakeValues.addNumber("Motor CMD", () -> m_intake.getMotor());
-                        intakeValues.add("ITK", m_intake);
+                        intakeValues.addBoolean("Arm Up", () -> m_intake.getArmUp());
+                        intakeValues.addBoolean("Arm Down", () -> m_intake.getArmDown());
                 }
                 /**
                  * 
@@ -501,6 +504,7 @@ public class SetupShuffleboard {
                         visionData.addNumber("BndBoxHeight", () -> m_limelight.getBoundingBoxHeight());
 
                         visionData.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
+                        visionData.addNumber("CameraCalculatedRPM", () -> m_shooter.cameraCalculatedSpeed);
 
                         if (RobotBase.isReal()) {
 

@@ -48,7 +48,7 @@ public class AutoMode2 extends SequentialCommandGroup {
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)))
 
-                                                .deadlineWith(new StartIntake(intake),
+                                                .deadlineWith(new StartIntake(intake,limelight),
                                                                 new StartShooterWheels(shooter,
                                                                                 ShootData.getShootSpeed(shootNumber)),
                                                                 new CalculateTargetDistance(limelight, tilt, shooter)),
@@ -67,7 +67,7 @@ public class AutoMode2 extends SequentialCommandGroup {
                                                 new PositionTiltToVision(tilt, limelight,
                                                                 ShootData.getTiltAngle(shootNumber + 1)))
 
-                                                                                .deadlineWith(new StartIntake(intake),
+                                                                                .deadlineWith(new StartIntake(intake,limelight),
                                                                                                 new StartShooterWheels(
                                                                                                                 shooter,
                                                                                                                 ShootData.getShootSpeed(
