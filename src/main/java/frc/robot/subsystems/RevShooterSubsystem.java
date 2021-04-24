@@ -42,6 +42,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private NetworkTableEntry shootColorWidgetEntry;
     private boolean doneOnce;
     public double cameraCalculatedSpeed;
+    public boolean useCameraSpeed;
 /**
  * 
  * 

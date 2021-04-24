@@ -23,7 +23,7 @@ public class SetShootPosition extends ParallelCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)),
-        new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
+        new PositionTurretToVision(turret,limelight, ShootData.getTurretAngle(shootNumber)),
         new StartShooterWheels(shooter, ShootData.getShootSpeed(shootNumber)));
 
   }

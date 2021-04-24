@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.buttons.POVButton;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -19,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RobotDrive.PositionRobot;
-import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.PositionHoldTurret;
 
@@ -40,6 +38,7 @@ public class Robot extends TimedRobot {
   private double startTime;
   public double timeToStart;
   public POV driverStick;
+  public POVXBox gamepadPOV;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -51,6 +50,7 @@ public class Robot extends TimedRobot {
 
     m_robotContainer = new RobotContainer();
     driverStick = new POV(m_robotContainer.m_driverController);
+    gamepadPOV = new POVXBox(m_robotContainer.m_gamepad);
     Shuffleboard.selectTab("Pre-Round");
 
   }

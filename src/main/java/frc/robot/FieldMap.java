@@ -26,7 +26,7 @@ public class FieldMap {
     public static final double targetCenterPointY = 94.66 * Constants.inchToMetersConversionFactor; // of target
     // the position of the Our goal
     public static final Translation2d goalCenterPoint = new Translation2d(fieldLength, targetCenterPointY);
-    // center the robot on the startpoint (Inside of back frame rail lines up with near edge of line)
+    // center the robot on the startpoint (Outside of initiation line just overlapping)
     public static final double startPositionX = startLineX + robotLength/2 - 2 * Constants.inchToMetersConversionFactor; 
     // center line through long axis of trench
     public static final double friendlyTrenchY = 27.75 * Constants.inchToMetersConversionFactor; 

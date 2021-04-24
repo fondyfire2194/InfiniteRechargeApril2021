@@ -4,30 +4,30 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 
 /** Add your docs here. */
-public class POV {
-    private Joystick m_joystick;
+public class POVXBox {
+    private XboxController m_gamepad;
 
-    public POV(Joystick joystick) {
+    public POVXBox(XboxController gamepad) {
 
-        m_joystick = joystick;
-    }
+      m_gamepad=gamepad;
+    } 
 
     // JOYSTICK DPAD HAT METHODS
     /**
      * @return The current "angle" from the DPad (POV switch)
      */
     public int DPad() {
-        return m_joystick.getPOV(0);
+        return m_gamepad.getPOV(0);
     }
 
     /**
      * @return True if the DPad is pushed up, False if it is not pressed
      */
     public boolean DPadUp() {
-        if ((m_joystick.getPOV(0) >= 315 || m_joystick.getPOV(0) <= 45) && m_joystick.getPOV(0) != -1)
+        if ((m_gamepad.getPOV(0) >= 315 || m_gamepad.getPOV(0) <= 45) && m_gamepad.getPOV(0) != -1)
             return true;
         else
             return false;
@@ -37,7 +37,7 @@ public class POV {
      * @return True if the DPad is pushed right, False if it is not pressed
      */
     public boolean DPadRight() {
-        if (m_joystick.getPOV(0) >= 45 && m_joystick.getPOV(0) <= 135)
+        if (m_gamepad.getPOV(0) >= 45 && m_gamepad.getPOV(0) <= 135)
             return true;
         else
             return false;
@@ -47,7 +47,7 @@ public class POV {
      * @return True if the DPad is pushed down, False if it is not pressed
      */
     public boolean DPadDown() {
-        if (m_joystick.getPOV(0) >= 135 && m_joystick.getPOV(0) <= 225)
+        if (m_gamepad.getPOV(0) >= 135 && m_gamepad.getPOV(0) <= 225)
             return true;
         else
             return false;
@@ -57,7 +57,7 @@ public class POV {
      * @return True if the DPad is pushed left, False if it is not pressed
      */
     public boolean DPadLeft() {
-        if (m_joystick.getPOV(0) >= 225 && m_joystick.getPOV(0) <= 315)
+        if (m_gamepad.getPOV(0) >= 225 && m_gamepad.getPOV(0) <= 315)
             return true;
         else
             return false;

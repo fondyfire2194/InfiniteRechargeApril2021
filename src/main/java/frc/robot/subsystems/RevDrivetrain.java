@@ -135,6 +135,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
                     PDPConstants.DRIVETRAIN_RIGHT_MOTOR_B_PDP);
             // the Field2d class lets us visualize our robot in the simulation GUI.
             fieldSim = new Field2d();
+
             SmartDashboard.putData("Field", fieldSim);
         }
 
@@ -252,6 +253,12 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public void driveDistance(double leftPosition, double rightPosition) {
         mLeftPidController.setReference(leftPosition, ControlType.kPosition, SMART_MOTION_SLOT);
         mRightPidController.setReference(rightPosition, ControlType.kPosition, SMART_MOTION_SLOT);
+        mDrive.feed();
+    }
+
+    public void positionDistance(double leftPosition, double rightPosition) {
+        mLeftPidController.setReference(leftPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
+        mRightPidController.setReference(rightPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
         mDrive.feed();
     }
 

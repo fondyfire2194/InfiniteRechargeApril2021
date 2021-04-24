@@ -103,6 +103,8 @@ public class CalculateTargetDistance extends CommandBase {
 
       m_shooter.cameraCalculatedSpeed = baseSpeed + speedAdder;
 
+      m_shooter.useCameraSpeed=true;
+
     } else {
       m_shooter.cameraCalculatedSpeed = 0;
     }

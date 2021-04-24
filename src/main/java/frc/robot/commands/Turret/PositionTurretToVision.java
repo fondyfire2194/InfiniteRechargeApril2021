@@ -92,7 +92,8 @@ public class PositionTurretToVision extends CommandBase {
 
     m_turret.goToPositionMotionMagic(m_endpoint);
 
-    endit = (m_turret.atTargetAngle() && Math.abs(m_turret.getSpeed()) < .1) && loopCtr > 4;
+    endit = (m_limelight.getVertOnTarget() && m_limelight.getHorOnTarget() && Math.abs(m_turret.getSpeed()) < .1)
+        && loopCtr > 4;
   }
 
   // Called once the command ends or is interrupted.

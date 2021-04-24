@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.RevTiltSubsystem;
 
-public class PositionTiltToVision extends CommandBase {
+public class PositionTiltWhenVision extends CommandBase {
   /** Creates a new PositionTilt. */
 
   private final RevTiltSubsystem m_tilt;
@@ -24,10 +24,10 @@ public class PositionTiltToVision extends CommandBase {
   private double visionFoundAngle;
   private boolean endIt;
 
-  public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double position) {
+  public PositionTiltWhenVision(RevTiltSubsystem tilt, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
-    m_originalTarget = position;
+    m_originalTarget = m_tilt.getAngle();
     m_limelight = limelight;
     addRequirements(m_tilt);
   }

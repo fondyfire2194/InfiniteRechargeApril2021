@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
@@ -26,6 +27,7 @@ import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.JogShooter;
+import frc.robot.commands.Shooter.ReturnTiltTurret;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.TiltJog;
@@ -54,9 +56,8 @@ public class RobotContainer {
 
       // The driver's controller
       public final Joystick m_driverController = new Joystick(OIConstants.kDriverControllerPort);
-      public final XboxController gamepad = new XboxController(OIConstants.kCoDriverControllerPort);
+      public final XboxController m_gamepad = new XboxController(OIConstants.kCoDriverControllerPort);
       public final XboxController setupGamepad = new XboxController(OIConstants.kSetupControllerPort);
-      public final XboxController shootBox = new XboxController(OIConstants.kShootBoxControllerPort);
 
       public final RevDrivetrain m_robotDrive;
 
@@ -73,7 +74,7 @@ public class RobotContainer {
       public final RevTiltSubsystem m_tilt;
 
       public final RevShooterSubsystem m_shooter;
-      //
+      
       public static Preferences prefs;
 
       public static boolean autoSelected;
@@ -91,8 +92,6 @@ public class RobotContainer {
       public boolean isMatch = false;
 
       public boolean clickUp;
-
-  
 
       // AutoCommands ac;// = new AutoCommands(m_robotDrive);
       public int shootPosition;
@@ -181,6 +180,11 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 2)
                         .whileHeld(new ShootCells(m_shooter, m_transport, m_compressor, 3000, 100));
             // .whenReleased(new StopShoot(m_shooter, m_transport));
+            // Set turret tilt mid trench
+            new JoystickButton(m_driverController, 6).whenPressed(new ReturnTiltTurret(m_turret, -5, m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE +4));
+            // Set turret tilt straight on
+            new JoystickButton(m_driverController, 4)
+                        .whenPressed(new ReturnTiltTurret(m_turret, 0, m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE));
 
             new JoystickButton(m_driverController, 5).whenPressed(new ChangeShooterSpeed(m_shooter, +250));
             new JoystickButton(m_driverController, 3).whenPressed(new ChangeShooterSpeed(m_shooter, -250));
