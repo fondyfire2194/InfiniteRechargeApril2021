@@ -386,8 +386,8 @@ public class SetupShuffleboard {
                         robotCommands.add("Reset Enc", new ResetEncoders(m_robotDrive));
                         robotCommands.add("Reset Gyro", new ResetGyro(m_robotDrive));
                         robotCommands.add("Reset Pose", new ResetPose(m_robotDrive));
-                        robotCommands.add("Pos to 3M", new PositionRobot(m_robotDrive, 3.));
-                        robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0));
+                        robotCommands.add("Pos to 30M", new PositionRobot(m_robotDrive, 30., 3));
+                        robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0, 1));
                         robotCommands.add("Rot to 90", new TurnToAngleProfiled(m_robotDrive, 90));
                         robotCommands.add("Rot to 0", new TurnToAngleProfiled(m_robotDrive, 0));
                         robotCommands.add("Rot to -90", new TurnToAngleProfiled(m_robotDrive, -90));
@@ -409,6 +409,7 @@ public class SetupShuffleboard {
                         robotValues.addNumber("RightAmps", () -> m_robotDrive.getRightAmps());
                         robotValues.addNumber("Gyro Yaw", () -> m_robotDrive.getYaw());
                         robotValues.addNumber("Faults", () -> m_robotDrive.getFaults());
+                        robotValues.addNumber("Target", () -> m_robotDrive.leftTargetPosition);
                         robotValues.add("Cmd", m_robotDrive);
 
                 }

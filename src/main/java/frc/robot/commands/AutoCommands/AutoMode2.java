@@ -44,11 +44,13 @@ public class AutoMode2 extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
 
-                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
+                super(new ParallelCommandGroup(
+                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber),
+                                                ShootData.getPositionRate()),
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)))
 
-                                                .deadlineWith(new StartIntake(intake,limelight),
+                                                .deadlineWith(new StartIntake(intake, limelight),
                                                                 new StartShooterWheels(shooter,
                                                                                 ShootData.getShootSpeed(shootNumber)),
                                                                 new CalculateTargetDistance(limelight, tilt, shooter)),
@@ -61,13 +63,15 @@ public class AutoMode2 extends SequentialCommandGroup {
                                                                 ShootData.getShootTime(shootNumber))),
                                 // pick up 1
                                 new ParallelCommandGroup(
-                                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber + 1)),
+                                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber + 1),
+                                                                ShootData.getPositionRate()),
                                                 new PositionTurretToVision(turret, limelight,
                                                                 ShootData.getTurretAngle(shootNumber + 1)),
                                                 new PositionTiltToVision(tilt, limelight,
                                                                 ShootData.getTiltAngle(shootNumber + 1)))
 
-                                                                                .deadlineWith(new StartIntake(intake,limelight),
+                                                                                .deadlineWith(new StartIntake(intake,
+                                                                                                limelight),
                                                                                                 new StartShooterWheels(
                                                                                                                 shooter,
                                                                                                                 ShootData.getShootSpeed(

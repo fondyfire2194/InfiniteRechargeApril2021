@@ -193,7 +193,7 @@ public class Robot extends TimedRobot {
 
       setStartingPose(
           new Pose2d(FieldMap.startLineX - FieldMap.robotLength, FieldMap.fieldWidth - 2, new Rotation2d(0)));
-      m_autonomousCommand = new PositionRobot(m_robotContainer.m_robotDrive, -1);
+      m_autonomousCommand = new PositionRobot(m_robotContainer.m_robotDrive, -1, 5);
 
       break;
 

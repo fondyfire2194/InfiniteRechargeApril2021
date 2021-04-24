@@ -60,8 +60,10 @@ public class Pref {
     prefDict.put("sHKiz", .0);
 
     // Drive
-    prefDict.put("DrStKp", .01);// right side proportional gain
-    prefDict.put("DrVKp", .01);// right side proportional gain
+    prefDict.put("drkP", .2);
+    prefDict.put("drkI", .0);
+    prefDict.put("drkD", .0);
+    prefDict.put("drKiz", .0);
 
   }
 

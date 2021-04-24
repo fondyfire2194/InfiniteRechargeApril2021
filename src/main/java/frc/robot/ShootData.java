@@ -35,8 +35,13 @@ public class ShootData {
 
                     { 0, -4, -3, 30, 4500, 5, -9, 63.5 } // 7 move to pick up 3rd trench ball and shoot
             };
+    private static double positionRate = 3;
 
     public ShootData() {
+    }
+
+    public static double getPositionRate() {
+        return positionRate;
     }
 
     public static int getPipeline(int pointer) {

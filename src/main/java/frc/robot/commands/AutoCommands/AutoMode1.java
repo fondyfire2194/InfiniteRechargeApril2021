@@ -43,7 +43,7 @@ public class AutoMode1 extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
-                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
+                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber),ShootData.getPositionRate()),
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)))
 

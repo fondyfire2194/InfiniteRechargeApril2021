@@ -46,11 +46,11 @@ public class AutoMode3 extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
 
-                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
+                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber), 5),
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)))
 
-                                                .deadlineWith(new StartIntake(intake,limelight),
+                                                .deadlineWith(new StartIntake(intake, limelight),
                                                                 new StartShooterWheels(shooter,
                                                                                 ShootData.getShootSpeed(shootNumber)),
                                                                 new CalculateTargetDistance(limelight, tilt, shooter)),
@@ -65,7 +65,7 @@ public class AutoMode3 extends SequentialCommandGroup {
                                 // pick up 3 move back under control panel
                                 new ParallelCommandGroup(
                                                 new PositionRobot(drive,
-                                                                ShootData.getFirstDistance(shootNumber + 1) - 2),
+                                                                ShootData.getFirstDistance(shootNumber + 1) - 2, 5),
                                                 new ReturnTiltTurret(turret, 0, tilt, 60))
 
                                                                 .deadlineWith(new StartIntake(intake, limelight),
@@ -73,8 +73,8 @@ public class AutoMode3 extends SequentialCommandGroup {
 
                                 // // move under control panel again
 
-                                new SequentialCommandGroup(
-                                                new PositionRobot(drive, ShootData.getSecondDistance(shootNumber + 1)),
+                                new SequentialCommandGroup(new PositionRobot(drive,
+                                                ShootData.getSecondDistance(shootNumber + 1), 5),
                                                 new StopIntake(intake)),
 
                                 new ParallelCommandGroup(

@@ -65,9 +65,11 @@ public class AutoMode0 extends SequentialCommandGroup {
                                                                 ShootData.getTiltAngle(shootNumber)),
                                                 new PositionTurretToVision(turret, limelight,
                                                                 ShootData.getTurretAngle(shootNumber)),
-                                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber))
-                                                                .deadlineWith(new StartShooterWheels(shooter,
-                                                                                ShootData.getShootSpeed(shootNumber)),
+                                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber),
+                                                                ShootData.getPositionRate()).deadlineWith(
+                                                                                new StartShooterWheels(shooter,
+                                                                                                ShootData.getShootSpeed(
+                                                                                                                shootNumber)),
                                                                                 new CalculateTargetDistance(limelight,
                                                                                                 tilt, shooter))),
 
@@ -77,7 +79,8 @@ public class AutoMode0 extends SequentialCommandGroup {
                                                                 ShootData.getShootTime(shootNumber))),
 
                                 new ParallelCommandGroup(new MessageCommand("GroupStarted"),
-                                                new PositionRobot(drive, ShootData.getSecondDistance(shootNumber)),
+                                                new PositionRobot(drive, ShootData.getSecondDistance(shootNumber),
+                                                                ShootData.getPositionRate()),
                                                 new PositionTilt(tilt, 60), new PositionTurret(turret, 0)));
 
         }
