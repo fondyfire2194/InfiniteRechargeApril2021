@@ -30,6 +30,7 @@ import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Shooter.ReturnTiltTurret;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Tilt.PositionHoldTilt;
+import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.TurretJog;
@@ -74,7 +75,7 @@ public class RobotContainer {
       public final RevTiltSubsystem m_tilt;
 
       public final RevShooterSubsystem m_shooter;
-      
+
       public static Preferences prefs;
 
       public static boolean autoSelected;
@@ -129,9 +130,9 @@ public class RobotContainer {
 
             m_trajectory = new FondyFireTrajectory(m_robotDrive);
 
-            m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt));
+            m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_limelight));
 
-            m_turret.setDefaultCommand(new PositionHoldTurret(m_turret));
+            m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
 
             m_shooter.setDefaultCommand(getJogShooterCommand());
 
@@ -181,10 +182,14 @@ public class RobotContainer {
                         .whileHeld(new ShootCells(m_shooter, m_transport, m_compressor, 3000, 100));
             // .whenReleased(new StopShoot(m_shooter, m_transport));
             // Set turret tilt mid trench
-            new JoystickButton(m_driverController, 6).whenPressed(new ReturnTiltTurret(m_turret, -5, m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE +4));
+            new JoystickButton(m_driverController, 6).whenPressed(
+                        new ReturnTiltTurret(m_turret, -5, m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE + 4));
             // Set turret tilt straight on
             new JoystickButton(m_driverController, 4)
                         .whenPressed(new ReturnTiltTurret(m_turret, 0, m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE));
+
+            new JoystickButton(m_driverController, 7).whenPressed(
+                        new PositionTiltToVision(m_tilt, m_limelight, HoodedShooterConstants.TILT_MAX_ANGLE));
 
             new JoystickButton(m_driverController, 5).whenPressed(new ChangeShooterSpeed(m_shooter, +250));
             new JoystickButton(m_driverController, 3).whenPressed(new ChangeShooterSpeed(m_shooter, -250));

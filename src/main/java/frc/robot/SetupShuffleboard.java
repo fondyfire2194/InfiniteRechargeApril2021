@@ -31,23 +31,19 @@ import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.RobotDrive.ResetPose;
 import frc.robot.commands.RobotDrive.StopRobot;
 import frc.robot.commands.RobotDrive.TurnToAngleProfiled;
-import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.ChangeShooterSpeed;
+import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.StopShooterWheels;
 import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.PositionTilt;
-import frc.robot.commands.Tilt.PositionTiltToVision;
-import frc.robot.commands.Tilt.PositionTiltWhenVision;
 import frc.robot.commands.Tilt.ResetTiltAngle;
 import frc.robot.commands.Tilt.StopTilt;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.ClearTurFaults;
 import frc.robot.commands.Turret.PositionTurret;
-import frc.robot.commands.Turret.PositionTurretToVision;
-import frc.robot.commands.Turret.PositionTurretWhenVision;
 import frc.robot.commands.Turret.ResetTurretAngle;
 import frc.robot.commands.Turret.StopTurret;
 import frc.robot.commands.Vision.LimelightCamMode;
@@ -243,7 +239,6 @@ public class SetupShuffleboard {
                         turretCommands.add("Position To 0", new PositionTurret(m_turret, 0));// degrees
                         turretCommands.add("Position To 20", new PositionTurret(m_turret, 20));// degrees
                         turretCommands.add("Position To 50", new PositionTurret(m_turret, 50));
-                        turretCommands.add("When Vision", new PositionTurretWhenVision(m_turret, m_limelight));
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
 
@@ -279,12 +274,11 @@ public class SetupShuffleboard {
                                         .getLayout("Tilt", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "LEFT")); //
 
-                        tiltCommands.add("Reset To 0", new ResetTiltAngle(m_tilt));
+                        tiltCommands.add("Reset To 0", new ResetTiltAngle(m_tilt,m_limelight));
                         tiltCommands.add("Position To 61", new PositionTilt(m_tilt, 61));
                         tiltCommands.add("Position To 69", new PositionTilt(m_tilt, 69));
 
                         tiltCommands.add("To Bottom Switch", new TiltMoveToReverseLimit(m_tilt));
-                        tiltCommands.add("When Vision", new PositionTiltWhenVision(m_tilt, m_limelight));
                         tiltCommands.add("StopTilt", new StopTilt(m_tilt));
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
 

@@ -44,8 +44,7 @@ public class TiltMoveToReverseLimit extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_tilt.targetAngle= HoodedShooterConstants.TILT_MIN_ANGLE;
-    m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt));
+    m_tilt.targetAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
   }
 
   // Returns true when the command should end.

@@ -172,8 +172,9 @@ public final class Constants {
 
       public static final double TILT_DEG_PER_ENCODER_REV = .00029;// 100:1 gear box added
       public static final double TILT_MIN_ANGLE = 59;
-      public static final double TILT_MAX_ANGLE = 70;
 
+      public static final double TILT_MAX_ANGLE = 70;
+      public static final double TILT_MID_ANGLE = (TILT_MAX_ANGLE - TILT_MIN_ANGLE) / 2;
       // turret
 
       public static final double TURRET_MAX_ANGLE = 100;
@@ -187,7 +188,6 @@ public final class Constants {
        */
       public static final double TURRET_DEG_PER_MOTOR_REV = .295;
 
-      
    }
 
    public static final class IntakeConstants {
@@ -237,7 +237,6 @@ public final class Constants {
 
       public static final double robotLength = 1.5;
       public static final double robotWidth = 0;
-
 
       public static final double powerPortTargetCenterHeight = Units.inchesToMeters(84);
       public static final double TARGET_HEIGHT = Units.inchesToMeters(94);

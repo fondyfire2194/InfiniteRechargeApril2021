@@ -99,8 +99,8 @@ public class Robot extends TimedRobot {
    */
 
   public void autonomousInit() {
+  
     new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
-    m_robotContainer.m_turret.setDefaultCommand(new PositionHoldTurret(m_robotContainer.m_turret));
 
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 

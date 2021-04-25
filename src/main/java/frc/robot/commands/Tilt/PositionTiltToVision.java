@@ -2,6 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+/**
+ * Used in auto to find vision target then end and the default Hold command will take over and lock onto vision
+ * 
+ * 
+ */
+
 package frc.robot.commands.Tilt;
 
 import edu.wpi.first.wpilibj.RobotBase;
@@ -20,9 +26,14 @@ public class PositionTiltToVision extends CommandBase {
   private boolean targetSeen;
   private double m_endpoint;
   private int visionFoundCounter;
-  private int loopCtr;
   private double visionFoundAngle;
   private boolean endIt;
+
+  private boolean targetWasSeen;
+
+  private double limelightVerticalAngle;
+
+  private final int filterCount = 5;
 
   public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -38,46 +49,42 @@ public class PositionTiltToVision extends CommandBase {
     m_endpoint = m_originalTarget;
     m_tilt.visionCorrection = 0;
     m_tilt.targetAngle = m_endpoint;
-    loopCtr = 0;
-    if (RobotBase.isSimulation()) {
-      targetSeen = true;
-      m_endpoint += Math.random();
-      m_tilt.targetAngle = m_endpoint;
-    }
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    loopCtr++;
-
-    if (RobotBase.isReal())
+    if (RobotBase.isReal()) {
       targetSeen = m_limelight.getIsTargetFound();
+      if (targetSeen && targetWasSeen)
+        limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
+    }
 
-    if (targetSeen && visionFoundCounter < 5) {
+    if (targetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
     }
-    if (visionFoundCounter >= 5)
-      targetSeen = true;
 
-    if (!targetSeen && targetSeen) {
+    if (visionFoundCounter >= filterCount)
+      targetWasSeen = true;
+
+    if (!targetSeen && targetWasSeen) {
       visionFoundCounter--;
     }
 
-    if (targetSeen && visionFoundCounter <= 0) {
-      targetSeen = false;
+    if (!targetSeen && visionFoundCounter <= 0) {
+      targetWasSeen = false;
+      visionFoundCounter = 0;
+      limelightVerticalAngle = 0;
     }
 
     if (RobotBase.isReal() && targetSeen) {
-      visionFoundAngle = m_tilt.getAngle() + m_limelight.getdegVerticalToTarget() + m_tilt.targetVerticalOffset;
+      visionFoundAngle = m_tilt.getAngle() + limelightVerticalAngle + m_tilt.targetVerticalOffset;
       m_endpoint = visionFoundAngle;
       m_tilt.targetAngle = m_endpoint;
     }
-
     m_tilt.goToPositionMotionMagic(m_endpoint);
-
-    endIt = (m_limelight.getVertOnTarget() && m_limelight.getHorOnTarget() && Math.abs(m_tilt.getSpeed()) < .1)
-        && loopCtr > 4;
+    endIt = targetSeen && visionFoundCounter > 5;
 
   }
 
