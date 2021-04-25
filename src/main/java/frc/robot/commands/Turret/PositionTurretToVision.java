@@ -21,14 +21,13 @@ public class PositionTurretToVision extends CommandBase {
   private final RevTurretSubsystem m_turret;
   private final LimeLight m_limelight;
   private double m_originalTarget;
-
+  private int loopCtr;
   private double m_endpoint;
   private double visionFoundAngle;
   private final int filterCount = 3;
   private double limelightHorizontalAngle;
   private int visionFoundCounter;
   private boolean targetSeen;
-  private boolean targetWasSeen;
   boolean endIt;
 
   public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double position) {
@@ -47,11 +46,7 @@ public class PositionTurretToVision extends CommandBase {
     m_turret.visionCorrection = 0;
     targetSeen = false;
     visionFoundCounter = 0;
-    if (RobotBase.isSimulation()) {
-      targetSeen = true;
-      m_endpoint += Math.random();
-      m_turret.targetAngle = m_endpoint;
-    }
+    loopCtr = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -67,35 +62,35 @@ public class PositionTurretToVision extends CommandBase {
    */
   @Override
   public void execute() {
-    if (RobotBase.isReal()) {
-      targetSeen = m_limelight.getIsTargetFound();
-      if (targetSeen && targetWasSeen)
-        limelightHorizontalAngle = m_limelight.getdegVerticalToTarget();
-    }
+    loopCtr++;
+    targetSeen = m_limelight.getIsTargetFound();
+
+    if (targetSeen && m_turret.validTargetSeen)
+      limelightHorizontalAngle = m_limelight.getdegVerticalToTarget();
 
     if (targetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
     }
 
     if (visionFoundCounter >= filterCount)
-      targetWasSeen = true;
+      m_turret.validTargetSeen = true;
 
-    if (!targetSeen && targetWasSeen) {
+    if (!targetSeen && m_turret.validTargetSeen) {
       visionFoundCounter--;
     }
 
-    if (!targetSeen && visionFoundCounter <= 0) {
-      targetWasSeen = false;
+    if (!targetSeen && visionFoundCounter < 0) {
       visionFoundCounter = 0;
+      m_turret.validTargetSeen = false;
       limelightHorizontalAngle = 0;
     }
 
-    if (RobotBase.isReal() && targetSeen) {
+    if (RobotBase.isReal() && m_turret.validTargetSeen) {
       visionFoundAngle = m_turret.getAngle() + limelightHorizontalAngle + m_turret.targetHorizontalOffset;
       m_endpoint = visionFoundAngle;
       m_turret.targetAngle = m_endpoint;
     }
-    endIt = targetSeen && visionFoundCounter > 5;
+    endIt = targetSeen && visionFoundCounter > 5 || m_turret.atTargetAngle() && loopCtr > 5;
   }
 
   // Called once the command ends or is interrupted.

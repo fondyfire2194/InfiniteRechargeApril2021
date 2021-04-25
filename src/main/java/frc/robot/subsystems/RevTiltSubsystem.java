@@ -42,6 +42,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private double inPositionBandwidth = 1;
     public boolean tuneOn = false;
     public double targetVerticalOffset;
+    public boolean validTargetSeen;
 
     public RevTiltSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TILT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);

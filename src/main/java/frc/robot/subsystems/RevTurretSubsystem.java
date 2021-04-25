@@ -39,7 +39,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private double inPositionBandwidth = 1;
     public boolean tuneOn = false;
     public double targetHorizontalOffset;
-    private int ctr;
+    public boolean validTargetSeen;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);

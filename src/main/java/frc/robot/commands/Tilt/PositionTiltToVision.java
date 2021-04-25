@@ -28,8 +28,7 @@ public class PositionTiltToVision extends CommandBase {
   private int visionFoundCounter;
   private double visionFoundAngle;
   private boolean endIt;
-
-  private boolean targetWasSeen;
+  private int loopCtr;
 
   private double limelightVerticalAngle;
 
@@ -49,42 +48,44 @@ public class PositionTiltToVision extends CommandBase {
     m_endpoint = m_originalTarget;
     m_tilt.visionCorrection = 0;
     m_tilt.targetAngle = m_endpoint;
-
+    loopCtr = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (RobotBase.isReal()) {
-      targetSeen = m_limelight.getIsTargetFound();
-      if (targetSeen && targetWasSeen)
-        limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
-    }
+    loopCtr++;
+    targetSeen = m_limelight.getIsTargetFound();
 
     if (targetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
     }
 
-    if (visionFoundCounter >= filterCount)
-      targetWasSeen = true;
+    if (!m_tilt.validTargetSeen && visionFoundCounter >= filterCount)
+      m_tilt.validTargetSeen = true;
 
-    if (!targetSeen && targetWasSeen) {
+    if (!targetSeen && m_tilt.validTargetSeen) {
       visionFoundCounter--;
     }
 
-    if (!targetSeen && visionFoundCounter <= 0) {
-      targetWasSeen = false;
+    if (!targetSeen && visionFoundCounter < 0) {
+      m_tilt.validTargetSeen = false;
       visionFoundCounter = 0;
-      limelightVerticalAngle = 0;
     }
 
-    if (RobotBase.isReal() && targetSeen) {
+    if (targetSeen && m_tilt.validTargetSeen) {
+      limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
+
       visionFoundAngle = m_tilt.getAngle() + limelightVerticalAngle + m_tilt.targetVerticalOffset;
+
       m_endpoint = visionFoundAngle;
+
       m_tilt.targetAngle = m_endpoint;
     }
+
     m_tilt.goToPositionMotionMagic(m_endpoint);
-    endIt = targetSeen && visionFoundCounter > 5;
+
+    endIt = m_tilt.validTargetSeen && visionFoundCounter > 5 || m_tilt.atTargetAngle() && loopCtr > 5;
 
   }
 

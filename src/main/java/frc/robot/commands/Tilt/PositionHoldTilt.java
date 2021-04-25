@@ -19,7 +19,6 @@ public class PositionHoldTilt extends CommandBase {
   private double m_endpoint;
   private int visionFoundCounter;
   private double visionFoundAngle;
-  private boolean targetWasSeen;
   private double limelightVerticalAngle;
   private final int filterCount = 3;
 
@@ -35,32 +34,34 @@ public class PositionHoldTilt extends CommandBase {
   @Override
   public void initialize() {
     m_endpoint = m_tilt.targetAngle;
-    visionFoundCounter = 0;
-    targetWasSeen = false;
+    if (m_tilt.validTargetSeen)
+      visionFoundCounter = filterCount;
+    else
+      visionFoundCounter = 0;
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (RobotBase.isReal()) {
-      targetSeen = m_limelight.getIsTargetFound();
-      if (targetSeen && targetWasSeen)
-        limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
-    }
+
+    targetSeen = m_limelight.getIsTargetFound();
+    if (targetSeen && m_tilt.validTargetSeen)
+      limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
 
     if (targetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
     }
 
     if (visionFoundCounter >= filterCount)
-      targetWasSeen = true;
+      m_tilt.validTargetSeen = true;
 
-    if (!targetSeen && targetWasSeen) {
+    if (!targetSeen && m_tilt.validTargetSeen) {
       visionFoundCounter--;
     }
 
-    if (!targetSeen && visionFoundCounter <= 0) {
-      targetWasSeen = false;
+    if (!targetSeen && visionFoundCounter < 0) {
+      m_tilt.validTargetSeen = false;
       visionFoundCounter = 0;
       limelightVerticalAngle = 0;
     }

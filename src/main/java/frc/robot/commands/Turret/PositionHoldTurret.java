@@ -3,7 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 /**
- * This s the default command. It will lock onto the vision target if seen otherwise it will hold where it is
+ * This is the default command. It will lock onto the vision target if seen otherwise it will hold where it is
  * 
  * It teleop the turret can be set by the driver to either straight ahead or slightly left.
  * 
@@ -28,7 +28,6 @@ public class PositionHoldTurret extends CommandBase {
   private final RevTurretSubsystem m_turret;
   private final LimeLight m_limelight;
   private boolean targetSeen;
-  private boolean targetWasSeen;
   private double limelightHorizontalAngle;
   private int visionFoundCounter;
   private final int filterCount = 3;
@@ -46,31 +45,35 @@ public class PositionHoldTurret extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+ 
+    if (m_turret.validTargetSeen)
+      visionFoundCounter = 3;
+    else
+      visionFoundCounter = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (RobotBase.isReal()) {
-      targetSeen = m_limelight.getIsTargetFound();
-      if (targetSeen && targetWasSeen)
-        limelightHorizontalAngle = m_limelight.getdegVerticalToTarget();
-    }
+ 
+    targetSeen = m_limelight.getIsTargetFound();
+
+    if (targetSeen && m_turret.validTargetSeen)
+      limelightHorizontalAngle = m_limelight.getdegVerticalToTarget();
 
     if (targetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
     }
 
     if (visionFoundCounter >= filterCount)
-      targetWasSeen = true;
+      m_turret.validTargetSeen = true;
 
-    if (!targetSeen && targetWasSeen) {
+    if (!targetSeen && m_turret.validTargetSeen) {
       visionFoundCounter--;
     }
 
     if (!targetSeen && visionFoundCounter <= 0) {
-      targetWasSeen = false;
+      m_turret.validTargetSeen = false;
       visionFoundCounter = 0;
       limelightHorizontalAngle = 0;
     }
@@ -80,6 +83,7 @@ public class PositionHoldTurret extends CommandBase {
       m_endpoint = visionFoundAngle;
       m_turret.targetAngle = m_endpoint;
     }
+    m_turret.goToPositionMotionMagic(m_endpoint);
   }
 
   // Called once the command ends or is interrupted.
