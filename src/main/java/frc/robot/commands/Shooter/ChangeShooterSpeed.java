@@ -21,14 +21,14 @@ public class ChangeShooterSpeed extends InstantCommand {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
     m_rpmChange = rpmChange;
-   // addRequirements(m_shooter);
+    // addRequirements(m_shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     double currentSpeed = m_shooter.requiredSpeed;
-    double newSpeed = currentSpeed+=m_rpmChange;
+    double newSpeed = currentSpeed += m_rpmChange;
     m_shooter.requiredSpeed = newSpeed;
     m_shooter.spinAtRpm(newSpeed);
 

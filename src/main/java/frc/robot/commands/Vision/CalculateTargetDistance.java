@@ -4,11 +4,9 @@
 
 package frc.robot.commands.Vision;
 
-import java.math.BigDecimal;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
@@ -21,9 +19,14 @@ public class CalculateTargetDistance extends CommandBase {
 
   private double baseCameraHeight = FieldConstants.BASE_CAMERA_HEIGHT;
   private double targetHeight = FieldConstants.TARGET_HEIGHT;
-  private double magicNumber = .05;
+  private double baseCameraAngle = FieldConstants.CAMERA_BASE_ANGLE;
+  private double cameraHeightSlope = FieldConstants.cameraHeightSlope;
+  private double cameraAngleSlope = FieldConstants.cameraAngleSlope;
+
   private double calculatedCameraDistance;
   private double baseDistance = 3;
+  private double m_limelightVerticalAngle;
+  private double cameraAngle;
 
   public CalculateTargetDistance(LimeLight limelight, RevTiltSubsystem tilt, RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -51,7 +54,7 @@ public class CalculateTargetDistance extends CommandBase {
    * The camera height varies as the tilt axis moves to lock on to the target so
    * it consists of a base height and a varying height.
    * 
-   * 
+   * Assume base camera angle = base tilt angle
    * 
    */
 
@@ -61,16 +64,23 @@ public class CalculateTargetDistance extends CommandBase {
 
     if (m_limelight.getIsTargetFound()) {
 
-      double heightDifference = baseCameraHeight - +m_tilt.getAngle() * (1 + magicNumber);
+      m_limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
 
-      double angleDifference = m_limelight.getdegVerticalToTarget() - m_tilt.getAngle();
+      double cameraHeight = baseCameraHeight
+          + cameraHeightSlope * (m_tilt.getAngle() - HoodedShooterConstants.TILT_MIN_ANGLE);
 
-      double tanAngleDiff = Math.tan((Math.toRadians(angleDifference)));
+      cameraAngle = baseCameraAngle + cameraAngleSlope * (m_tilt.getAngle() - HoodedShooterConstants.TILT_MIN_ANGLE);
 
-      calculatedCameraDistance = heightDifference / tanAngleDiff;
+      double tanAngleSum = Math.tan((Math.toRadians(m_limelightVerticalAngle + cameraAngle)));
 
-    } else {
+      calculatedCameraDistance = (targetHeight - cameraHeight) / tanAngleSum;
+
+    } else
+
+    {
+
       calculatedCameraDistance = 0;
+
     }
 
     /**
@@ -103,12 +113,11 @@ public class CalculateTargetDistance extends CommandBase {
 
       m_shooter.cameraCalculatedSpeed = baseSpeed + speedAdder;
 
-      m_shooter.useCameraSpeed=true;
+      m_shooter.useCameraSpeed = true;
 
     } else {
       m_shooter.cameraCalculatedSpeed = 0;
     }
-
   }
 
   // Called once the command ends or is interrupted.

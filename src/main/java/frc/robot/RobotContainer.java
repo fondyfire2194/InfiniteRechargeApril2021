@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.POVButton;
+//import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -29,6 +30,7 @@ import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Shooter.ReturnTiltTurret;
 import frc.robot.commands.Shooter.ShootCells;
+import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.TiltJog;
@@ -59,6 +61,7 @@ public class RobotContainer {
       public final Joystick m_driverController = new Joystick(OIConstants.kDriverControllerPort);
       public final XboxController m_gamepad = new XboxController(OIConstants.kCoDriverControllerPort);
       public final XboxController setupGamepad = new XboxController(OIConstants.kSetupControllerPort);
+      public final ButtonBox buttonBox = new ButtonBox(OIConstants.kShootBoxControllerPort);
 
       public final RevDrivetrain m_robotDrive;
 
@@ -82,7 +85,7 @@ public class RobotContainer {
 
       public SetupShuffleboard m_setup;
 
-      private LimeLight m_limelight;
+      LimeLight m_limelight;
 
       private Compressor m_compressor;
 
@@ -93,6 +96,19 @@ public class RobotContainer {
       public boolean isMatch = false;
 
       public boolean clickUp;
+
+      public JoystickButton row4Right;
+      public JoystickButton row4Left;
+      public JoystickButton row3Right;
+      public JoystickButton row3Left;
+      public JoystickButton row2Right;
+      public JoystickButton row2Left;
+      public JoystickButton row1Right;
+      public JoystickButton row1Left;
+      public JoystickButton optionsButton;
+      public JoystickButton shareButton;
+      public JoystickButton L3Button;
+      public JoystickButton R3Button;
 
       // AutoCommands ac;// = new AutoCommands(m_robotDrive);
       public int shootPosition;
@@ -203,7 +219,7 @@ public class RobotContainer {
             JoystickButton setupRightTrigger = new JoystickButton(setupGamepad, 6);
 
             JoystickButton setupBack = new JoystickButton(setupGamepad, 7);
-            JoystickButton setupStart = new JoystickButton(setupGamepad, 0);
+            JoystickButton setupStart = new JoystickButton(setupGamepad, 8);
 
             setupStart
 
@@ -225,6 +241,43 @@ public class RobotContainer {
             setupA.whileHeld(getJogTurretCommand());
 
             setupB.whileHeld(getJogTurretVelocityCommand());
+
+            /**
+             * 
+             * Button box pzroduces boolean result
+             */
+
+            row4Left = buttonBox.getButtonLT();
+            row4Right = buttonBox.getButtonL1();
+
+            row3Left = buttonBox.getButtonA();
+            row3Right = buttonBox.getButtonX();
+
+            row2Left = buttonBox.getButtonB();
+            row2Right = buttonBox.getButtonY();
+
+            row1Left = buttonBox.getButtonRT();
+            row1Right = buttonBox.getButtonR1();
+
+            shareButton = buttonBox.getShareButton();
+            optionsButton = buttonBox.getOptionsButton();
+
+            L3Button = buttonBox.getL3Button();
+            R3Button = buttonBox.getR3Button();
+
+            double baseSpeed = 1500;
+
+            row1Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed));
+            row1Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 250));
+
+            row2Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 500));
+            row2Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 750));
+
+            row3Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1000));
+            row3Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1250));
+
+            row4Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1500));
+            row4Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1750));
 
             // LiveWindow.disableAllTelemetry();
 

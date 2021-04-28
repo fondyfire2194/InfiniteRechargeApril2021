@@ -43,17 +43,18 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private boolean doneOnce;
     public double cameraCalculatedSpeed;
     public boolean useCameraSpeed;
-/**
- * 
- * 
- * following is array representing shoot speeds for distances from 3 to 13 meters or 10 meters
-*
- * 10 meters with steps of 1 meter is 10 steps or 40 inches.
- * 
- * we can measure every meter and out results in array and then interpolate.
-*/
-    public double[] speedFromCamera = new double[]{1500,2000,2500,3000,3500,4000,4500,5000,5500,6000,6500};
-      
+    /**
+     * 
+     * 
+     * following is array representing shoot speeds for distances from 3 to 13
+     * meters or 10 meters
+     *
+     * 10 meters with steps of 1 meter is 10 steps or 40 inches.
+     * 
+     * we can measure every meter and out results in array and then interpolate.
+     */
+    public double[] speedFromCamera = new double[] { 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500 };
+
     public String[] shootColor = { "red", "yellow", "green" };
     public int shootColorNumber;
     private int shootColorNumberLast = 1;
@@ -108,7 +109,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     @Override
     public void close() {
         mLeftMotor.close();
-        // mRightMotor.close();
+        mRightMotor.close();
     }
 
     @Override
@@ -128,7 +129,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         if (tuneOn)
             tuneGains();
 
-        
         if (shootColorNumber > 2)
             shootColorNumber = 2;
         if (shootColorNumber != shootColorNumberLast) {

@@ -90,7 +90,7 @@ public class PositionTurretToVision extends CommandBase {
       m_endpoint = visionFoundAngle;
       m_turret.targetAngle = m_endpoint;
     }
-    endIt = targetSeen && visionFoundCounter > 5 || m_turret.atTargetAngle() && loopCtr > 5;
+    endIt = targetSeen && visionFoundCounter > 5 || m_turret.atTargetAngle() && loopCtr > 5 || loopCtr > 250;
   }
 
   // Called once the command ends or is interrupted.

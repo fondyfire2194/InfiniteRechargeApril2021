@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import org.snobotv2.coordinate_gui.CameraRayPublisher;
+
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.system.LinearSystem;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
@@ -171,14 +173,18 @@ public final class Constants {
        */
 
       public static final double TILT_DEG_PER_ENCODER_REV = .00029;// 100:1 gear box added
-      public static final double TILT_MIN_ANGLE = 59;
 
+      public static final double TILT_MIN_ANGLE = 59;
       public static final double TILT_MAX_ANGLE = 70;
+
       public static final double TILT_MID_ANGLE = (TILT_MAX_ANGLE - TILT_MIN_ANGLE) / 2;
+      public static double tiltRange = TILT_MAX_ANGLE - TILT_MIN_ANGLE;
+
       // turret
 
       public static final double TURRET_MAX_ANGLE = 100;
-      public static final double TURRET_MIN_ANGLE = -100;
+      public static final double TURRET_MIN_ANGLE = -100;;
+
       public static final double TurretSpeed = 0.025;
 
       /**
@@ -242,7 +248,11 @@ public final class Constants {
       public static final double TARGET_HEIGHT = Units.inchesToMeters(94);
       public static final double BASE_CAMERA_HEIGHT = Units.inchesToMeters(26);
       public static final double MAX_CAMERA_HEIGHT = Units.inchesToMeters(27);
-      public static final double CAMERA_RADIUS_OF_TURN = Units.inchesToMeters(8);
       public static final double CAMERA_BASE_ANGLE = 51.;
+      public static final double CAMERA_MAX_ANGLE = 60;
+      public static double cameraAngleRange = CAMERA_MAX_ANGLE - CAMERA_BASE_ANGLE;
+      public static final double cameraHeightRange = MAX_CAMERA_HEIGHT - BASE_CAMERA_HEIGHT;
+      public static double cameraHeightSlope = cameraHeightRange / HoodedShooterConstants.tiltRange;
+      public static double cameraAngleSlope = cameraAngleRange / HoodedShooterConstants.tiltRange;
    }
 }

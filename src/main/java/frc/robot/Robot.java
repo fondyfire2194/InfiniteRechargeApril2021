@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -19,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
-import frc.robot.commands.Turret.PositionHoldTurret;
+import frc.robot.commands.Vision.CalculateTargetDistance;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -37,8 +38,9 @@ public class Robot extends TimedRobot {
   private double m_startDelay;
   private double startTime;
   public double timeToStart;
-  public POV driverStick;
+  public POV driverPOV;
   public POVXBox gamepadPOV;
+  public POVBBox boxPOV;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -49,8 +51,9 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings.
 
     m_robotContainer = new RobotContainer();
-    driverStick = new POV(m_robotContainer.m_driverController);
+    driverPOV = new POV(m_robotContainer.m_driverController);
     gamepadPOV = new POVXBox(m_robotContainer.m_gamepad);
+    boxPOV = new POVBBox(m_robotContainer.buttonBox);
     Shuffleboard.selectTab("Pre-Round");
 
   }
@@ -99,7 +102,7 @@ public class Robot extends TimedRobot {
    */
 
   public void autonomousInit() {
-  
+
     new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
 
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
@@ -243,6 +246,9 @@ public class Robot extends TimedRobot {
     new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
     // CommandScheduler.getInstance().cancelAll();
 
+    new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)
+        .schedule(true);
+
   }
 
   /**
@@ -252,14 +258,14 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
 
-    if (driverStick.DPadUp())
+    if (driverPOV.DPadUp() || boxPOV.DPadUp())
       m_robotContainer.m_tilt.aimHigher();
-    if (driverStick.DPadDown())
+    if (driverPOV.DPadDown() || boxPOV.DPadDown())
       m_robotContainer.m_tilt.aimLower();
 
-    if (driverStick.DPadLeft())
+    if (driverPOV.DPadLeft() || boxPOV.DPadLeft())
       m_robotContainer.m_turret.aimFurtherLeft();
-    if (driverStick.DPadRight())
+    if (driverPOV.DPadRight() || boxPOV.DPadRight())
       m_robotContainer.m_turret.aimFurtherRight();
 
   }
