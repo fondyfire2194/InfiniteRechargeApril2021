@@ -43,22 +43,21 @@ public class AutoMode1 extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
-                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber),ShootData.getPositionRate()),
+                super(new ParallelCommandGroup(
+                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber),
+                                                ShootData.getPositionRate()),
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)))
 
-                                                .deadlineWith(new StartIntake(intake,limelight),
+                                                .deadlineWith(new StartIntake(intake, limelight),
                                                                 new StartShooterWheels(shooter,
                                                                                 ShootData.getShootSpeed(shootNumber)),
                                                                 new CalculateTargetDistance(limelight, tilt, shooter)),
 
                                 // shoot 5
 
-                                new ParallelCommandGroup(new StopIntake(intake),
-                                                new ShootCells(shooter, transport, compressor,
-                                                                ShootData.getShootSpeed(shootNumber),
-                                                                ShootData.getShootTime(shootNumber))));
-
+                                new ParallelCommandGroup(new StopIntake(intake), new ShootCells(shooter, transport,
+                                                compressor, ShootData.getShootTime(shootNumber))));
 
         }
 }

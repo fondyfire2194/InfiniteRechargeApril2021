@@ -40,6 +40,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public boolean tuneOn = false;
     public double targetHorizontalOffset;
     public boolean validTargetSeen;
+    public double adjustedTargetAngle;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -60,7 +61,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
             // mPidController.setFF(0.000005, SMART_MOTION_SLOT);
         }
 
-        m_motor.setOpenLoopRampRate(5);
+        m_motor.setIdleMode(IdleMode.kBrake);
 
         // if (RobotBase.isSimulation())
         // mPidController.setP(0.16);
@@ -108,6 +109,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     @Override
     public void goToPositionMotionMagic(double angle) {
+        SmartDashboard.putNumber("TANG", angle);
 
         mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
 
@@ -115,6 +117,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public void resetAngle(double angle) {
         mEncoder.setPosition(angle);
+        mPidController.setIAccum(0);
+        targetAngle = angle;
     }
 
     public double getOut() {
@@ -142,6 +146,10 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public boolean getSoftwareLimitsEnabled() {
         return m_motor.isSoftLimitEnabled(SoftLimitDirection.kForward)
                 || m_motor.isSoftLimitEnabled(SoftLimitDirection.kReverse);
+    }
+
+    public boolean isBrake() {
+        return m_motor.getIdleMode() == IdleMode.kBrake;
     }
 
     public boolean onPlusSoftwareLimit() {
@@ -193,11 +201,16 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     }
 
     private void setGains() {
-        // PID coefficients
+        /**
+         * PID coefficients//max rpm = 11000 and degrees per rev = .295 11000 rpm =
+         * 11000 * .295 degrees per rev = 3245 deg per minute 100% FF = 1/3245 = 3.08
+         * e-4 90% FF = .9 * 3.08 e-4 = 2.77 e-4 3245 deg per min = 54 degrees per
+         * second = 4 seconds full travel +100 to -100 degrees
+         */
 
-        kFF = 8.5e-5;// 95%
+        kFF = 2.77e-4;
 
-        kP = 5e-4;
+        kP = 0;// 1e-4;
         kI = 0;// 1e-5;
         kD = 0;
         kIz = 1;
@@ -207,8 +220,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         maxRPM = 11000;// not used
         allowedErr = 1;
         // Smart Motion Coefficients
-        maxVel = 5000; // rpm
-        maxAcc = 200;
+        maxVel = 20000; //
+        maxAcc = 1000;
 
         // set PID coefficients
         calibratePID(kP, kI, kD, kFF, kIz, SMART_MOTION_SLOT);
@@ -236,12 +249,12 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         return m_motor.getFaults();
     }
 
-    public void aimFurtherLeft() {
-        targetHorizontalOffset += 1;
+    public void aimFurtherLeft(double angle) {
+        targetHorizontalOffset -= angle;
     }
 
-    public void aimFurtherRight() {
-        targetHorizontalOffset -= 1;
+    public void aimFurtherRight(double angle) {
+        targetHorizontalOffset += angle;
     }
 
     public void aimCenter() {

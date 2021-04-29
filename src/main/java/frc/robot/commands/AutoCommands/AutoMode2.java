@@ -59,7 +59,6 @@ public class AutoMode2 extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new StopIntake(intake),
                                                 new ShootCells(shooter, transport, compressor,
-                                                                ShootData.getShootSpeed(shootNumber),
                                                                 ShootData.getShootTime(shootNumber))),
                                 // pick up 1
                                 new ParallelCommandGroup(
@@ -83,7 +82,7 @@ public class AutoMode2 extends SequentialCommandGroup {
 
                                 // shoot 1
 
-                                new ShootCells(shooter, transport, compressor, ShootData.getShootSpeed(shootNumber + 1),
+                                new ShootCells(shooter, transport, compressor,
                                                 ShootData.getShootTime(shootNumber + 1)));
         }
 

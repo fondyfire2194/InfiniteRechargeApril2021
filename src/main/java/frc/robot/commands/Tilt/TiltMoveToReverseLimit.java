@@ -18,6 +18,8 @@ public class TiltMoveToReverseLimit extends CommandBase {
    */
   private int simCtr;
   private final RevTiltSubsystem m_tilt;
+  private double m_startAngle;
+  private boolean endIt;
 
   public TiltMoveToReverseLimit(RevTiltSubsystem tilt) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -29,27 +31,37 @@ public class TiltMoveToReverseLimit extends CommandBase {
   @Override
   public void initialize() {
     simCtr = 0;
+    m_startAngle = m_tilt.getAngle();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!m_tilt.positionResetDone) {
+    simCtr++;
+    if (!endIt) {
+      // if (!m_tilt.positionResetDone) {
       m_tilt.moveManually(-.2);
-      if (Robot.isSimulation())
-        simCtr++;
+      // if (Robot.isSimulation())
+      // simCtr++;
+      // }
     }
+    endIt = m_tilt.m_reverseLimit.get() || m_tilt.getAngle() < m_startAngle - 1 || simCtr > 2500;
+
+    if (endIt)
+      m_tilt.stop();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_tilt.targetAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
+    m_tilt.resetAngle(HoodedShooterConstants.TILT_MIN_ANGLE);
+    m_tilt.positionResetDone = true;
+    m_tilt.setSoftwareLimits();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_tilt.m_reverseLimit.get() || simCtr > 2500;
+    return endIt && Math.abs(m_tilt.getSpeed()) < .01;
   }
 }

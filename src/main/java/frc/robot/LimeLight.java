@@ -24,6 +24,8 @@ public class LimeLight {
     private double _hearBeatPeriod = 0.1;
     final Double[] defVal = new Double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     final Double[] defValRGB = new Double[] { 0.0, 0.0, 0.0 };
+    public double horizontalOffset = 0;
+    public double verticalOffset = 0;
 
     class PeriodicRunnable implements java.lang.Runnable {
         public void run() {
@@ -109,7 +111,7 @@ public class LimeLight {
      * @return
      */
     public boolean getHorOnTarget() {
-        return getIsTargetFound() && Math.abs(getdegRotationToTarget()) < .5;
+        return getIsTargetFound() && Math.abs(getdegRotationToTarget() + horizontalOffset) < .5;
     }
 
     /**
@@ -123,6 +125,13 @@ public class LimeLight {
         return y;
     }
 
+    public void setVerticalOffset(double offset) {
+        verticalOffset = offset;
+    }
+
+    public void setHorizontalOffset(double offset) {
+        horizontalOffset = offset;
+    }
 
     /**
      * once inside .5 degrees, camera is considered on target
@@ -130,7 +139,7 @@ public class LimeLight {
      * @return
      */
     public boolean getVertOnTarget() {
-        return getIsTargetFound() && Math.abs(getdegVerticalToTarget()) < .5;
+        return getIsTargetFound() && Math.abs(getdegVerticalToTarget() - verticalOffset) < .5;
     }
 
     /**
@@ -443,7 +452,6 @@ public class LimeLight {
     }
 
     public void periodic() {
-   
 
         SmartDashboard.putNumber("DegHToTarget", getdegRotationToTarget());
         SmartDashboard.putNumber("DegVertToTarget", getdegVerticalToTarget());
@@ -460,8 +468,7 @@ public class LimeLight {
     }
 
     // public int getFilterddegRotationToTarget() {
-    //     return 0;
+    // return 0;
     // }
-
 
 }

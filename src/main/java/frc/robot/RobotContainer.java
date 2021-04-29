@@ -34,9 +34,11 @@ import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.TiltJog;
+import frc.robot.commands.Tilt.TiltWaitForStop;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretJogVelocity;
+import frc.robot.commands.Turret.TurretWaitForStop;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ControlPanelSubsystem;
@@ -195,7 +197,7 @@ public class RobotContainer {
             // .whenReleased(new StopIntake(m_intake));
 
             new JoystickButton(m_driverController, 2)
-                        .whileHeld(new ShootCells(m_shooter, m_transport, m_compressor, 3000, 100));
+                        .whileHeld(new ShootCells(m_shooter, m_transport, m_compressor, 100));
             // .whenReleased(new StopShoot(m_shooter, m_transport));
             // Set turret tilt mid trench
             new JoystickButton(m_driverController, 6).whenPressed(
@@ -236,11 +238,11 @@ public class RobotContainer {
 
             setupX.whileHeld(getJogShooterCommand());
 
-            setupY.whileHeld(getJogTiltCommand());
+            setupY.whileHeld(getJogTiltCommand()).whenReleased(new TiltWaitForStop(m_tilt));
 
-            setupA.whileHeld(getJogTurretCommand());
+            setupA.whileHeld(getJogTurretCommand()).whenReleased(new TurretWaitForStop(m_turret));
 
-            setupB.whileHeld(getJogTurretVelocityCommand());
+            setupB.whileHeld(getJogTurretVelocityCommand()).whenReleased(new TurretWaitForStop(m_turret));
 
             /**
              * 
@@ -267,17 +269,15 @@ public class RobotContainer {
 
             double baseSpeed = 1500;
 
-            row1Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed));
-            row1Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 250));
+            row1Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed));//front of trench
+            row2Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 500));//1/4 trench
+            row3Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1000));//mid trench
+            row4Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1500));//3/4 trench
 
-            row2Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 500));
-            row2Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 750));
-
-            row3Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1000));
-            row3Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1250));
-
-            row4Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1500));
-            row4Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1750));
+            row1Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 250));//
+            row2Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 750));//
+            row3Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1250));//
+            row4Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1750));//
 
             // LiveWindow.disableAllTelemetry();
 

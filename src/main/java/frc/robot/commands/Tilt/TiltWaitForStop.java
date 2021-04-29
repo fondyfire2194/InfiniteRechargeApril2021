@@ -2,23 +2,19 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Turret;
-
-import java.util.function.Supplier;
+package frc.robot.commands.Tilt;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.RevTurretSubsystem;
+import frc.robot.subsystems.RevTiltSubsystem;
 
-public class TurretJog extends CommandBase {
-  /** Creates a new TurretJog. */
-  private final RevTurretSubsystem m_turret;
-  private final Supplier<Double> m_xaxisSpeedSupplier;
+public class TiltWaitForStop extends CommandBase {
+  /** Creates a new TiltWaitForStop. */
+  private final RevTiltSubsystem m_tilt;
 
-  public TurretJog(RevTurretSubsystem turret, Supplier<Double> xaxisSpeedSupplier) {
+  public TiltWaitForStop(RevTiltSubsystem tilt) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_turret = turret;
-    m_xaxisSpeedSupplier = xaxisSpeedSupplier;
-    addRequirements(m_turret);
+    m_tilt = tilt;
+    addRequirements(m_tilt);
   }
 
   // Called when the command is initially scheduled.
@@ -29,23 +25,18 @@ public class TurretJog extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    if (Math.abs(m_xaxisSpeedSupplier.get()) < .1)
-      m_turret.moveManually(0);
-    else
-      m_turret.moveManually(m_xaxisSpeedSupplier.get());
+    m_tilt.stop();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_turret.stop();
-    m_turret.targetAngle = m_turret.getAngle();
+    m_tilt.targetAngle = m_tilt.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Math.abs(m_tilt.getSpeed()) < .01;
   }
 }

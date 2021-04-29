@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -243,7 +242,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     autoHasRun = false;
-    new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
+    if (!m_robotContainer.m_tilt.positionResetDone)
+      new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
     // CommandScheduler.getInstance().cancelAll();
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)
@@ -259,14 +259,14 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     if (driverPOV.DPadUp() || boxPOV.DPadUp())
-      m_robotContainer.m_tilt.aimHigher();
+      m_robotContainer.m_tilt.aimHigher(.25);
     if (driverPOV.DPadDown() || boxPOV.DPadDown())
-      m_robotContainer.m_tilt.aimLower();
+      m_robotContainer.m_tilt.aimLower(.25);
 
     if (driverPOV.DPadLeft() || boxPOV.DPadLeft())
-      m_robotContainer.m_turret.aimFurtherLeft();
+      m_robotContainer.m_turret.aimFurtherLeft(.25);
     if (driverPOV.DPadRight() || boxPOV.DPadRight())
-      m_robotContainer.m_turret.aimFurtherRight();
+      m_robotContainer.m_turret.aimFurtherRight(.25);
 
   }
 

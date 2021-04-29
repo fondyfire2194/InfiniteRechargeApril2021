@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import org.snobotv2.coordinate_gui.CameraRayPublisher;
-
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.system.LinearSystem;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
@@ -169,15 +167,20 @@ public final class Constants {
 
       /**
        * 
-       * Tilt
+       * Tilt 2020 had a belt drive ? 3:1 and code used .29 degrees per rev So 3 revs
+       * of motor were one rev of lead screw 2021 uses 100:1 gearbox so 33 *
+       * difference so 1 motor rev will be .29/33 or .0087
+       * 
+       * Need to confirm on robot
+       * 
        */
 
-      public static final double TILT_DEG_PER_ENCODER_REV = .00029;// 100:1 gear box added
+      public static final double TILT_DEG_PER_ENCODER_REV = .0087;// 100:1 gear box added 3:1 belt pulley removed
 
       public static final double TILT_MIN_ANGLE = 59;
       public static final double TILT_MAX_ANGLE = 70;
 
-      public static final double TILT_MID_ANGLE = (TILT_MAX_ANGLE - TILT_MIN_ANGLE) / 2;
+      public static final double TILT_MID_ANGLE = TILT_MIN_ANGLE + ((TILT_MAX_ANGLE - TILT_MIN_ANGLE) / 2);
       public static double tiltRange = TILT_MAX_ANGLE - TILT_MIN_ANGLE;
 
       // turret

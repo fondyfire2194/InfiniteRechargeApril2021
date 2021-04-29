@@ -75,7 +75,6 @@ public class AutoMode0 extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new MessageCommand("Group2Started"),
                                                 new ShootCells(shooter, transport, compressor,
-                                                                ShootData.getShootSpeed(shootNumber),
                                                                 ShootData.getShootTime(shootNumber))),
 
                                 new ParallelCommandGroup(new MessageCommand("GroupStarted"),

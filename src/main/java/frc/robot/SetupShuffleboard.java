@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
@@ -231,16 +232,18 @@ public class SetupShuffleboard {
                  */
                 if (m_showTurret & !liveMatch) {
                         ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurretTilt")
-                                        .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 3)
+                                        .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
                                                                                            // commands
 
                         turretCommands.add("Reset to 0", new ResetTurretAngle(m_turret));
                         turretCommands.add("Position To 0", new PositionTurret(m_turret, 0));// degrees
-                        turretCommands.add("Position To 20", new PositionTurret(m_turret, 20));// degrees
-                        turretCommands.add("Position To 50", new PositionTurret(m_turret, 50));
+                        turretCommands.add("Position To 100", new PositionTurret(m_turret, 100));// degrees
+                        turretCommands.add("Position To -100", new PositionTurret(m_turret, -100));
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
+                        turretCommands.add("Cmd", m_turret);
+                        turretCommands.addNumber("Faults", () -> m_turret.getFaults());
 
                         ShuffleboardLayout turretValues = Shuffleboard.getTab("SetupTurretTilt")
                                         .getLayout("TurretValues", BuiltInLayouts.kList).withPosition(2, 0)
@@ -252,7 +255,6 @@ public class SetupShuffleboard {
                         turretValues.addNumber("Pct", () -> m_turret.getOut());
                         turretValues.addNumber("Amps", () -> m_turret.getAmps());
                         turretValues.addNumber("Speed", () -> m_turret.getSpeed());
-                        turretValues.addNumber("Faults", () -> m_turret.getFaults());
                         turretValues.addBoolean("PlusLimit", () -> m_turret.onPlusSoftwareLimit())
                                         .withWidget(BuiltInWidgets.kTextView);
                         turretValues.addBoolean("MinusLimit", () -> m_turret.onMinusSoftwareLimit())
@@ -261,7 +263,11 @@ public class SetupShuffleboard {
                                         .withWidget(BuiltInWidgets.kTextView);
                         turretValues.addBoolean("InPosition", () -> m_turret.atTargetAngle())
                                         .withWidget(BuiltInWidgets.kTextView);
-                        turretValues.add("Cmd", m_turret);
+                        turretValues.addNumber("Vision Offset", () -> m_turret.targetHorizontalOffset);
+                        turretValues.addNumber("AdjTarget", () -> m_turret.adjustedTargetAngle);                       
+                        turretValues.addNumber("Vision Error", () -> m_limelight.getdegRotationToTarget());
+                        turretValues.addBoolean("BrakeMode", () -> m_turret.isBrake())
+                                        .withWidget(BuiltInWidgets.kTextView);
 
                 }
                 /**
@@ -271,16 +277,22 @@ public class SetupShuffleboard {
                  */
                 if (m_showTilt & !liveMatch) {
                         ShuffleboardLayout tiltCommands = Shuffleboard.getTab("SetupTurretTilt")
-                                        .getLayout("Tilt", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 3)
+                                        .getLayout("Tilt", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); //
 
-                        tiltCommands.add("Reset To 0", new ResetTiltAngle(m_tilt,m_limelight));
-                        tiltCommands.add("Position To 61", new PositionTilt(m_tilt, 61));
-                        tiltCommands.add("Position To 69", new PositionTilt(m_tilt, 69));
+                        // tiltCommands.add("Reset To Min", new ResetTiltAngle(m_tilt, m_limelight));
+                        tiltCommands.add("Position To Min",
+                                        new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE));
+                        tiltCommands.add("Position To Max",
+                                        new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MAX_ANGLE));
+                        tiltCommands.add("Position To Mid",
+                                        new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MID_ANGLE));
 
                         tiltCommands.add("To Bottom Switch", new TiltMoveToReverseLimit(m_tilt));
                         tiltCommands.add("StopTilt", new StopTilt(m_tilt));
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
+                        tiltCommands.add("Cmd", m_tilt);
+                        tiltCommands.addNumber("Faults", () -> m_tilt.getFaults());
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTurretTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)
@@ -291,17 +303,23 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("PCT", () -> m_tilt.getOut());
                         tiltValues.addNumber("Amps", () -> m_tilt.getAmps());
                         tiltValues.addNumber("Speed", () -> m_tilt.getSpeed());
-                        tiltValues.addNumber("Faults", () -> m_tilt.getFaults());
                         tiltValues.addBoolean("PlusSWLimit", () -> m_tilt.onPlusSoftwareLimit())
                                         .withWidget(BuiltInWidgets.kTextView);
                         tiltValues.addBoolean("MinusSWLimit", () -> m_tilt.onMinusSoftwareLimit())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        tiltValues.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled())
                                         .withWidget(BuiltInWidgets.kTextView);
                         tiltValues.addBoolean("InPosition", () -> m_tilt.atTargetAngle())
                                         .withWidget(BuiltInWidgets.kTextView);
                         tiltValues.addBoolean("OnBottomLS", () -> m_tilt.m_reverseLimit.get())
                                         .withWidget(BuiltInWidgets.kTextView);
+                        tiltValues.addNumber("Vision Offset", () -> m_tilt.targetVerticalOffset);
+                        tiltValues.addNumber("AdjTarget", () -> m_tilt.adjustedTargetAngle);   
+                        tiltValues.addNumber("Vision Error", () -> m_limelight.getdegVerticalToTarget());
+                        tiltValues.addBoolean("BrakeMode", () -> m_tilt.isBrake()).withWidget(BuiltInWidgets.kTextView);
+                        tiltValues.addBoolean("PosResetDone", () -> m_tilt.positionResetDone)
+                                        .withWidget(BuiltInWidgets.kTextView);
 
-                        tiltValues.add("Cmd", m_tilt);
                 }
                 /**
                  * 
@@ -319,7 +337,7 @@ public class SetupShuffleboard {
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
                         shooterCommands.add("Inc 250", new ChangeShooterSpeed(m_shooter, 250));
                         shooterCommands.add("Dec 250 ", new ChangeShooterSpeed(m_shooter, -250));
-                        shooterCommands.add("Shoot", new ShootCells(m_shooter, m_transport, m_compressor, 3000, 0));
+                        shooterCommands.add("Shoot", new ShootCells(m_shooter, m_transport, m_compressor, 0));
                         shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
@@ -489,8 +507,8 @@ public class SetupShuffleboard {
                                         .getLayout("Data", BuiltInLayouts.kList).withPosition(3, 0).withSize(2, 6)
                                         .withProperties(Map.of("Label position", "LEFT")); //
                         visionData.addBoolean("Connected", () -> m_limelight.isConnected());
-                        visionData.addBoolean("TargetVertOK", () -> m_limelight.getHorOnTarget());
-                        visionData.addBoolean("TargetHorOK", () -> m_limelight.getVertOnTarget());
+                        visionData.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget());
+                        visionData.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget());
                         visionData.addBoolean("TargetFound", () -> m_limelight.getIsTargetFound());
                         visionData.addNumber("DegHToTarget", () -> m_limelight.getdegRotationToTarget());
                         visionData.addNumber("DegVertToTarget", () -> m_limelight.getdegVerticalToTarget());

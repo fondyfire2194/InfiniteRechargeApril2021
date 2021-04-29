@@ -4,20 +4,16 @@
 
 package frc.robot.commands.Turret;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTurretSubsystem;
 
-public class TurretJog extends CommandBase {
-  /** Creates a new TurretJog. */
+public class TurretWaitForStop extends CommandBase {
+  /** Creates a new TurretWaitForStop. */
   private final RevTurretSubsystem m_turret;
-  private final Supplier<Double> m_xaxisSpeedSupplier;
 
-  public TurretJog(RevTurretSubsystem turret, Supplier<Double> xaxisSpeedSupplier) {
+  public TurretWaitForStop(RevTurretSubsystem turret) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
-    m_xaxisSpeedSupplier = xaxisSpeedSupplier;
     addRequirements(m_turret);
   }
 
@@ -29,23 +25,18 @@ public class TurretJog extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    if (Math.abs(m_xaxisSpeedSupplier.get()) < .1)
-      m_turret.moveManually(0);
-    else
-      m_turret.moveManually(m_xaxisSpeedSupplier.get());
+    m_turret.stop();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_turret.stop();
     m_turret.targetAngle = m_turret.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Math.abs(m_turret.getSpeed()) < .01;
   }
 }

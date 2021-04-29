@@ -26,7 +26,7 @@ import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem {
     private static final double GRAVITY_COMPENSATION_VOLTS = .001;
-    private static final double DEG_PER_ENCODER_REV = .00029;
+    private static final double DEG_PER_ENCODER_REV = HoodedShooterConstants.TILT_DEG_PER_ENCODER_REV;
     private static final int POSITION_SLOT = 0;
     private static final int SMART_MOTION_SLOT = 1;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
@@ -43,6 +43,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public boolean tuneOn = false;
     public double targetVerticalOffset;
     public boolean validTargetSeen;
+    public double adjustedTargetAngle;
 
     public RevTiltSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TILT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -61,11 +62,11 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
             mPidController.setFF(0.000008, SMART_MOTION_SLOT);
         }
         mEncoder.setPosition(0);
-
-        m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
-        m_reverseLimit.enableLimitSwitch(RobotBase.isReal());
+        m_motor.setIdleMode(IdleMode.kBrake);
+        m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+        m_reverseLimit.enableLimitSwitch(true);
         if (m_reverseLimit.get()) {
-            resetAngle(0);
+            resetAngle(HoodedShooterConstants.TILT_MIN_ANGLE);
         }
 
         targetAngle = getAngle();
@@ -121,8 +122,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
     }
 
-    public void resetAngle(double position) {
-        mEncoder.setPosition(position);
+    public void resetAngle(double angle) {
+        mEncoder.setPosition(angle);
+        targetAngle = angle;
+        mPidController.setIAccum(0);
     }
 
     @Override
@@ -173,10 +176,14 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kForward,
                 (float) HoodedShooterConstants.TILT_MAX_ANGLE);
         m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kReverse,
-                (float) HoodedShooterConstants.TURRET_MIN_ANGLE);
+                (float) HoodedShooterConstants.TILT_MIN_ANGLE);
         m_motor.enableSoftLimit(SoftLimitDirection.kForward, true);
         m_motor.enableSoftLimit(SoftLimitDirection.kReverse, true);
         m_motor.setIdleMode(IdleMode.kBrake);
+    }
+
+    public boolean isBrake() {
+        return m_motor.getIdleMode() == IdleMode.kBrake;
     }
 
     public boolean getSoftwareLimitsEnabled() {
@@ -192,17 +199,16 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         return m_motor.getFaults();
     }
 
-    public void aimHigher() {
-        targetVerticalOffset += 1;
+    public void aimHigher(double angle) {
+        targetVerticalOffset += angle;
     }
 
-    public void aimLower() {
-        targetVerticalOffset -= 1;
+    public void aimLower(double angle) {
+        targetVerticalOffset -= angle;
     }
 
     public void aimCenter() {
         targetVerticalOffset = 0;
-        ;
     }
 
     public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
@@ -216,10 +222,18 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     private void setGains() {
-        // PID coefficients
-        kFF = 8.5e-5;// 95%
 
-        kP = 5e-4;
+        /**
+         * PID coefficients//max rpm = 11000 and degrees per rev = .0087 11000 rpm =
+         * 11000 * .0087 degrees per rev = 95.7 deg per minute 100% FF = 1/95.7 = .01
+         * 
+         * 90 % FF = .9 * .01 or .009 95.7 deg per min = 1.5 degrees per second = 7
+         * seconds full travel ~10 degrees
+         */
+
+        kFF = .009;// 95%
+
+        kP = 0;// 5e-4;
         kI = 0;// 1e-5;
         kD = 0;
         kIz = 1;
@@ -229,8 +243,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         maxRPM = 11000;// not used
         allowedErr = 1;
         // Smart Motion Coefficients
-        maxVel = 5000; // rpm
-        maxAcc = 2000;
+        maxVel = 30; // degpermin
+        maxAcc = 20;
 
         // set PID coefficients
 
