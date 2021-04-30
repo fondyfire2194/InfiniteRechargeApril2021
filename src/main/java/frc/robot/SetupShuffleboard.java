@@ -264,7 +264,7 @@ public class SetupShuffleboard {
                         turretValues.addBoolean("InPosition", () -> m_turret.atTargetAngle())
                                         .withWidget(BuiltInWidgets.kTextView);
                         turretValues.addNumber("Vision Offset", () -> m_turret.targetHorizontalOffset);
-                        turretValues.addNumber("AdjTarget", () -> m_turret.adjustedTargetAngle);                       
+                        turretValues.addNumber("AdjTarget", () -> m_turret.adjustedTargetAngle);
                         turretValues.addNumber("Vision Error", () -> m_limelight.getdegRotationToTarget());
                         turretValues.addBoolean("BrakeMode", () -> m_turret.isBrake())
                                         .withWidget(BuiltInWidgets.kTextView);
@@ -314,7 +314,7 @@ public class SetupShuffleboard {
                         tiltValues.addBoolean("OnBottomLS", () -> m_tilt.m_reverseLimit.get())
                                         .withWidget(BuiltInWidgets.kTextView);
                         tiltValues.addNumber("Vision Offset", () -> m_tilt.targetVerticalOffset);
-                        tiltValues.addNumber("AdjTarget", () -> m_tilt.adjustedTargetAngle);   
+                        tiltValues.addNumber("AdjTarget", () -> m_tilt.adjustedTargetAngle);
                         tiltValues.addNumber("Vision Error", () -> m_limelight.getdegVerticalToTarget());
                         tiltValues.addBoolean("BrakeMode", () -> m_tilt.isBrake()).withWidget(BuiltInWidgets.kTextView);
                         tiltValues.addBoolean("PosResetDone", () -> m_tilt.positionResetDone)
@@ -382,8 +382,10 @@ public class SetupShuffleboard {
 
                         intakeValues.addNumber("Motor Amps", () -> m_intake.getMotorAmps());
                         intakeValues.addNumber("Motor CMD", () -> m_intake.getMotor());
-                        intakeValues.addBoolean("Arm Up", () -> m_intake.getArmUp());
-                        intakeValues.addBoolean("Arm Down", () -> m_intake.getArmDown());
+                        intakeValues.addBoolean("Arm Up", () -> m_intake.getArmUp())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        intakeValues.addBoolean("Arm Down", () -> m_intake.getArmDown())
+                                        .withWidget(BuiltInWidgets.kTextView);
                 }
                 /**
                  * 
@@ -545,10 +547,10 @@ public class SetupShuffleboard {
                                         .withSize(1, 4).withProperties(Map.of("Label position", "Top")); //
                                                                                                          // labels
 
-                        controlPanelCommands.add("ArmRaise", new ControlPanelArm(m_controlPanel, true));
+                        controlPanelCommands.add("ArmRaise", new ControlPanelArm(m_controlPanel, false));
                         controlPanelCommands.add("LookForRevs", new PositionNumberRevs(m_controlPanel, 30, .25));
 
-                        controlPanelCommands.add("ArmLower", new ControlPanelArm(m_controlPanel, false));
+                        controlPanelCommands.add("ArmLower", new ControlPanelArm(m_controlPanel, true));
                         controlPanelCommands.add("ToggleLookForColor", new ToggleLookForColor(m_controlPanel));
 
                         controlPanelCommands.add("PositionToColor", new PositionToColor(m_controlPanel, .25));
@@ -564,6 +566,10 @@ public class SetupShuffleboard {
                         cpValues.addNumber("SensorDistance", () -> m_controlPanel.getSensorDistance());
                         cpValues.addNumber("IR", () -> m_controlPanel.getSensorIR());
                         cpValues.addNumber("Revs Done", () -> m_controlPanel.revsDone);
+                        cpValues.addBoolean("Arm Up", () -> m_controlPanel.getArmRaised())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        cpValues.addBoolean("Arm Down", () -> m_controlPanel.getArmLowered())
+                                        .withWidget(BuiltInWidgets.kTextView);
                         cpValues.add(m_controlPanel);
 
                 }

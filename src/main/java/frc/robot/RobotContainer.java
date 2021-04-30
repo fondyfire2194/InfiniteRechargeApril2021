@@ -25,6 +25,7 @@ import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.StartIntake;
+import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.JogShooter;
@@ -234,7 +235,7 @@ public class RobotContainer {
                         .whenReleased(() -> m_transport.runRearRollerMotor(0))
                         .whenReleased(() -> m_transport.runLeftBeltMotor(0));
 
-            setupBack.whenPressed(new StartIntake(m_intake, m_limelight));
+            setupBack.whenPressed(new StartIntake(m_intake, m_limelight)).whenReleased(new StopIntake(m_intake));
 
             setupX.whileHeld(getJogShooterCommand());
 
@@ -269,10 +270,10 @@ public class RobotContainer {
 
             double baseSpeed = 1500;
 
-            row1Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed));//front of trench
-            row2Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 500));//1/4 trench
-            row3Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1000));//mid trench
-            row4Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1500));//3/4 trench
+            row1Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed));// front of trench
+            row2Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 500));// 1/4 trench
+            row3Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1000));// mid trench
+            row4Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1500));// 3/4 trench
 
             row1Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 250));//
             row2Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 750));//

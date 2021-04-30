@@ -114,7 +114,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
    public void turnWheelMotor(double speed) {
       m_controlPanelMotor.set(ControlMode.PercentOutput, speed);
- 
+
    }
 
    public double getMotorSet() {
@@ -142,6 +142,14 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
    public void lowerArm() {
       m_colorWheelArm.set(DoubleSolenoid.Value.kForward);
+   }
+
+   public boolean getArmLowered() {
+      return m_colorWheelArm.get() == DoubleSolenoid.Value.kForward;
+   }
+
+   public boolean getArmRaised() {
+      return m_colorWheelArm.get() == DoubleSolenoid.Value.kReverse;
    }
 
    public double getSensorDistance() {
@@ -186,7 +194,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
          // This method will be called once per scheduler run
          if (!Robot.isSimulation()) {
             detectedColor = m_colorSensor.getColor();
-// "grey", "blue", "green", "red", "yellow"
+            // "grey", "blue", "green", "red", "yellow"
             ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
             if (match.color == kBlueTarget) {
@@ -206,7 +214,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
          }
          String temp = seenColor[colorNumber];
- 
+
          int ourTargetColor = gameColorNumber + 2;
          if (ourTargetColor > 4)
             ourTargetColor -= 4;
@@ -291,27 +299,27 @@ public class ControlPanelSubsystem extends SubsystemBase {
       if (gameData.length() > 0) {
 
          switch (gameData.charAt(0)) {
-            case 'B':
-               // Blue case code
-               gameColorNumber = 1;
+         case 'B':
+            // Blue case code
+            gameColorNumber = 1;
 
-               break;
-            case 'G':
-               // Green case code
-               gameColorNumber = 2;
-               break;
-            case 'R':
-               // Red case code
-               gameColorNumber = 3;
-               break;
-            case 'Y':
-               // Yellow case code
-               gameColorNumber = 4;
-               break;
-            default:
-               // This is corrupt data
-               gameColorNumber = 0;
-               break;
+            break;
+         case 'G':
+            // Green case code
+            gameColorNumber = 2;
+            break;
+         case 'R':
+            // Red case code
+            gameColorNumber = 3;
+            break;
+         case 'Y':
+            // Yellow case code
+            gameColorNumber = 4;
+            break;
+         default:
+            // This is corrupt data
+            gameColorNumber = 0;
+            break;
          }
       } else {
          // Code for no data received yet
