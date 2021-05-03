@@ -57,9 +57,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         int stallLimit = 5;
         int freeLimit = 5;
         int limitRPM = 0;
-
-        m_motor.setSmartCurrentLimit(stallLimit, freeLimit, limitRPM);
         if (RobotBase.isReal()) {
+            m_motor.setSmartCurrentLimit(stallLimit, freeLimit, limitRPM);
+
             mEncoder.setPositionConversionFactor(DEG_PER_MOTOR_REV);// 1 /
             mEncoder.setVelocityConversionFactor(DEG_PER_MOTOR_REV / 60);
         } else

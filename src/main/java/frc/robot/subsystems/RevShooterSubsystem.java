@@ -78,7 +78,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mLeftMotor.setClosedLoopRampRate(5.);
         mLeftMotor.setIdleMode(IdleMode.kBrake);
 
-        mRightMotor = new SimableCANSparkMax(CANConstants.RIGHT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
         mRightMotor.restoreFactoryDefaults();
         mRightMotor.follow(mLeftMotor);
         mRightMotor.setIdleMode(IdleMode.kBrake);
