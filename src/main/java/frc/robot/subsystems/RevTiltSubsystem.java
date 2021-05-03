@@ -78,6 +78,12 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
+
+        int stallLimit = 5;
+        int freeLimit = 5;
+        int limitRPM = 0;
+
+        m_motor.setSmartCurrentLimit(stallLimit, freeLimit, limitRPM);
         m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
         m_reverseLimit.enableLimitSwitch(true);
         if (m_reverseLimit.get()) {
@@ -132,18 +138,18 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     @Override
     public void goToPositionMotionMagic(double angle) {
-        SmartDashboard.putNumber("TISMMA", mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
-        SmartDashboard.putNumber("TISMMV", mPidController.getSmartMotionMaxVelocity(SMART_MOTION_SLOT));
-        SmartDashboard.putNumber("TISMMP", mPidController.getP(SMART_MOTION_SLOT));
-        SmartDashboard.putNumber("TISMMF", mPidController.getFF(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("TISMMA", mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("TISMMV", mPidController.getSmartMotionMaxVelocity(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("TISMMP", mPidController.getP(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("TISMMF", mPidController.getFF(SMART_MOTION_SLOT));
 
-        SmartDashboard.putNumber("TISMMI", mPidController.getI(SMART_MOTION_SLOT));
-        SmartDashboard.putNumber("TISMIZ", mPidController.getIZone(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("TISMMI", mPidController.getI(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("TISMIZ", mPidController.getIZone(SMART_MOTION_SLOT));
 
         // convert angle to motor turns
         double motorTurns = (angle - tiltMinAngle) / motorAngleSlope;// deg /deg per turn
 
-        SmartDashboard.putNumber("MotorTurns", motorTurns);
+        // SmartDashboard.putNumber("MotorTurns", motorTurns);
 
         mPidController.setReference(motorTurns, ControlType.kSmartMotion, SMART_MOTION_SLOT);
     }

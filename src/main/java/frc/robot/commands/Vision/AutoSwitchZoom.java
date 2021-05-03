@@ -52,11 +52,6 @@ public class AutoSwitchZoom extends CommandBase {
    */
   public void execute() {
 
-    SmartDashboard.putNumber("CZ1", changeToZoom1Counter);
-    SmartDashboard.putNumber("CZ2", changeToZoom2Counter);
-    SmartDashboard.putNumber("CL", changeLockedCounter);
-    SmartDashboard.putBoolean("CLKD", changeLocked);
-
     // check if too far away for pipeline 0 - no zoom
 
     if (m_limelight.getIsTargetFound()) {

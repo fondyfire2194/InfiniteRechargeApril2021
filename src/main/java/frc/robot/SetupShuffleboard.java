@@ -8,7 +8,6 @@ import java.util.Map;
 
 import edu.wpi.cscore.HttpCamera;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -455,7 +454,18 @@ public class SetupShuffleboard {
                         robotValues.addNumber("Gyro Yaw", () -> m_robotDrive.getYaw());
                         robotValues.addNumber("Faults", () -> m_robotDrive.getFaults());
                         robotValues.addNumber("Target", () -> m_robotDrive.leftTargetPosition);
+                        robotValues.addBoolean("TuneOn", () -> m_robotDrive.tuneOn).withWidget(BuiltInWidgets.kTextView);
+
                         robotValues.add("Cmd", m_robotDrive);
+
+                        ShuffleboardLayout robotValues1 = Shuffleboard.getTab("SetupRobot")
+                                        .getLayout("RobotValues1", BuiltInLayouts.kList).withPosition(4, 0)
+                                        .withSize(4, 4).withProperties(Map.of("Label position", "LEFT"));
+
+                        robotValues1.addNumber("LeftSpeed", () -> m_robotDrive.getLeftRate())
+                                        .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
+                        robotValues1.addNumber("Position", () -> m_robotDrive.getAverageDistance())
+                                        .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
 
                 }
                 /**

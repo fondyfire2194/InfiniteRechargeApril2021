@@ -167,7 +167,7 @@ public class RobotContainer {
 
             // LiveWindow.disableAllTelemetry();
 
-            SmartDashboard.putData(CommandScheduler.getInstance());
+//            SmartDashboard.putData(CommandScheduler.getInstance());
 
             CommandScheduler.getInstance()
                         .onCommandInitialize(command -> System.out.println(command.getName() + " is starting"));

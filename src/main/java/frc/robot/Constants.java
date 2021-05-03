@@ -37,10 +37,10 @@ public final class Constants {
       public static final int DRIVETRAIN_RIGHT_MASTER = 4;
       public static final int DRIVETRAIN_RIGHT_FOLLOWER = 5;
 
-      public static final int LEFT_MOTOR = 8;
+      public static final int LEFT_MOTOR = 6;
       public static final int RIGHT_MOTOR = 7;
 
-      public static final int TURRET_ROTATE_MOTOR = 6;// turret
+      public static final int TURRET_ROTATE_MOTOR = 8;// turret
 
       public static final int TILT_MOTOR = 9;
 
@@ -156,7 +156,6 @@ public final class Constants {
 
    public static class HoodedShooterConstants {
 
-
       /**
        * Tilt axis is a leadscrew driven through a 14T to 28T or 2:1 belt and a 10:1
        * gearbox = 20:1
@@ -196,7 +195,6 @@ public final class Constants {
       public static final double TILT_MID_ANGLE = TILT_MIN_ANGLE + ((TILT_MAX_ANGLE - TILT_MIN_ANGLE) / 2);
       public static double tiltRange = TILT_MAX_ANGLE - TILT_MIN_ANGLE;
 
- 
       /**
        * 20 revs of turret motor turns an 18 tooth pinion one time There are 228 teeth
        * in 360 degrees, so 1 tooth = 360/228 = 1.579 degrees So 18 teeth = 18 * 1.579

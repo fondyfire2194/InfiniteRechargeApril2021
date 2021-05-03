@@ -54,6 +54,11 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         if (!tuneOn)
             setGains();
 
+        int stallLimit = 5;
+        int freeLimit = 5;
+        int limitRPM = 0;
+
+        m_motor.setSmartCurrentLimit(stallLimit, freeLimit, limitRPM);
         if (RobotBase.isReal()) {
             mEncoder.setPositionConversionFactor(DEG_PER_MOTOR_REV);// 1 /
             mEncoder.setVelocityConversionFactor(DEG_PER_MOTOR_REV / 60);
@@ -118,7 +123,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     @Override
     public void goToPositionMotionMagic(double angle) {
-        SmartDashboard.putNumber("TANG", angle);
 
         mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
 
@@ -195,8 +199,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public void moveManuallyVelocity(double speed) {
         targetAngle = getAngle();
         mPidController.setReference(speed, ControlType.kVelocity, POSITION_SLOT);
-        SmartDashboard.putNumber("PSGetP", mPidController.getP(POSITION_SLOT));
-        SmartDashboard.putNumber("PS1FF", mPidController.getFF(POSITION_SLOT));
+        // SmartDashboard.putNumber("PSGetP", mPidController.getP(POSITION_SLOT));
+        // SmartDashboard.putNumber("PS1FF", mPidController.getFF(POSITION_SLOT));
     }
 
     public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,

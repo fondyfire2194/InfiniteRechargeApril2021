@@ -36,7 +36,7 @@ public class PositionRobot extends CommandBase {
   @Override
   public void execute() {
     m_drive.positionDistance(m_position, m_position, m_speed);
-    SmartDashboard.putNumber("TRFP", Timer.getFPGATimestamp());
+   // SmartDashboard.putNumber("TRFP", Timer.getFPGATimestamp());
   }
 
   // Called once the command ends or is interrupted.

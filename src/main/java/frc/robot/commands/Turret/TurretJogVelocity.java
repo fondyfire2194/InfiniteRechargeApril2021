@@ -37,7 +37,7 @@ public class TurretJogVelocity extends CommandBase {
       m_turret.moveManually(0);
     else
       m_turret.moveManuallyVelocity(m_xaxisSpeedSupplier.get() * maxSpeed);
-    SmartDashboard.putNumber("TUSP", m_xaxisSpeedSupplier.get() * maxSpeed);
+  //  SmartDashboard.putNumber("TUSP", m_xaxisSpeedSupplier.get() * maxSpeed);
   }
 
   // Called once the command ends or is interrupted.

@@ -68,15 +68,14 @@ public class Pref {
     prefDict.put("sHKiz", .0);
     prefDict.put("sHTune", 0.);
 
-
-
-
     // Drive
-    prefDict.put("drkP", .2);
-    prefDict.put("drkI", .0);
-    prefDict.put("drkD", .0);
-    prefDict.put("drKiz", .0);
-
+    prefDict.put("dRKp", .2);
+    prefDict.put("dRKi", .0);
+    prefDict.put("dRKd", .0);
+    prefDict.put("dRKiz", .0);
+    prefDict.put("dRMaxV", 5000.);// rpm motor
+    prefDict.put("dRMaxA", 7500.);// rpm/sec motor
+    prefDict.put("dRTune", 0.);
   }
 
   public static void ensureRioPrefs() {

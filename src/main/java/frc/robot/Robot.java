@@ -115,7 +115,7 @@ public class Robot extends TimedRobot {
 
     m_startDelay = (double) m_robotContainer.m_setup.startDelayChooser.getSelected();
 
-    SmartDashboard.putNumber("Delay", m_startDelay);
+   // SmartDashboard.putNumber("Delay", m_startDelay);
 
     autoChoice = m_robotContainer.m_setup.autoChooser.getSelected();
 

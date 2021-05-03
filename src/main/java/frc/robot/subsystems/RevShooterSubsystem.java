@@ -83,6 +83,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mRightMotor.follow(mLeftMotor);
         mRightMotor.setIdleMode(IdleMode.kBrake);
 
+        int stallLimit = 45;
+        int freeLimit = 55;
+        int limitRPM = 0;
+
+        mLeftMotor.setSmartCurrentLimit(stallLimit, freeLimit, limitRPM);
+
         if (RobotBase.isSimulation()) {
             mSimulator = new FlywheelSimWrapper(FlywheelSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(mLeftMotor), RevEncoderSimWrapper.create(mLeftMotor));
@@ -121,14 +127,14 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     @Override
     public void spinAtRpm(double rpm) {
         requiredSpeed = rpm;
-        SmartDashboard.putNumber("SHMXO", mPidController.getOutputMax(VELOCITY_SLOT));
-        SmartDashboard.putNumber("SHMINO", mPidController.getOutputMin(VELOCITY_SLOT));
-        SmartDashboard.putNumber("SHVP", mPidController.getP(VELOCITY_SLOT));
-        SmartDashboard.putNumber("SHVFF", mPidController.getFF(VELOCITY_SLOT));
+        // SmartDashboard.putNumber("SHMXO", mPidController.getOutputMax(VELOCITY_SLOT));
+        // SmartDashboard.putNumber("SHMINO", mPidController.getOutputMin(VELOCITY_SLOT));
+        // SmartDashboard.putNumber("SHVP", mPidController.getP(VELOCITY_SLOT));
+        // SmartDashboard.putNumber("SHVFF", mPidController.getFF(VELOCITY_SLOT));
 
-        SmartDashboard.putNumber("SHVI", mPidController.getI(VELOCITY_SLOT));
-        SmartDashboard.putNumber("SHVIZ", mPidController.getIZone(VELOCITY_SLOT));
-        SmartDashboard.putNumber("SHVEL", rpm);
+        // SmartDashboard.putNumber("SHVI", mPidController.getI(VELOCITY_SLOT));
+        // SmartDashboard.putNumber("SHVIZ", mPidController.getIZone(VELOCITY_SLOT));
+        // SmartDashboard.putNumber("SHVEL", rpm);
 
         mPidController.setReference(rpm, ControlType.kVelocity, VELOCITY_SLOT);
     }
