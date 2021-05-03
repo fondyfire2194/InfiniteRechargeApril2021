@@ -454,7 +454,8 @@ public class SetupShuffleboard {
                         robotValues.addNumber("Gyro Yaw", () -> m_robotDrive.getYaw());
                         robotValues.addNumber("Faults", () -> m_robotDrive.getFaults());
                         robotValues.addNumber("Target", () -> m_robotDrive.leftTargetPosition);
-                        robotValues.addBoolean("TuneOn", () -> m_robotDrive.tuneOn).withWidget(BuiltInWidgets.kTextView);
+                        robotValues.addBoolean("TuneOn", () -> m_robotDrive.tuneOn)
+                                        .withWidget(BuiltInWidgets.kTextView);
 
                         robotValues.add("Cmd", m_robotDrive);
 
@@ -514,6 +515,7 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "TOP")); //
 
                         scheduler.add("Scheduler", CommandScheduler.getInstance());
+
                 }
                 /**
                  * 
