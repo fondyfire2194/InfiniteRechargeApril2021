@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import org.photonvision.LEDMode;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -43,6 +45,7 @@ import frc.robot.commands.Turret.TurretWaitForStop;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ControlPanelSubsystem;
+import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -121,10 +124,10 @@ public class RobotContainer {
        */
       public RobotContainer() {
 
-            // prefs = Preferences.getInstance();
+            prefs = Preferences.getInstance();
             // Pref.deleteAllPrefs();
-            // Pref.deleteUnused();
-            // Pref.addMissing();
+             Pref.deleteUnused();
+             Pref.addMissing();
             m_robotDrive = new RevDrivetrain();
 
             m_climber = new ClimberSubsystem();
@@ -140,7 +143,7 @@ public class RobotContainer {
             m_limelight.setLEDMode(LedMode.kpipeLine);
             m_limelight.setStream((StreamType.kStandard));
             m_limelight.setCamMode(CamMode.kvision);
-            m_limelight.setPipeline(0);
+            m_limelight.setPipeline(1);
 
             m_compressor = new Compressor();
 
@@ -149,11 +152,11 @@ public class RobotContainer {
 
             m_trajectory = new FondyFireTrajectory(m_robotDrive);
 
-            m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_limelight));
+            // m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_limelight));
 
-            m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
+            // m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
 
-            m_shooter.setDefaultCommand(getJogShooterCommand());
+            // m_shooter.setDefaultCommand(getJogShooterCommand());
 
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
                         m_limelight, m_controlPanel, m_intake, m_trajectory, m_climber, isMatch);
@@ -304,15 +307,15 @@ public class RobotContainer {
       }
 
       public Command getJogTurretCommand() {
-            return new TurretJog(m_turret, () -> setupGamepad.getRawAxis(0) / 2);
+            return new TurretJog(m_turret, () -> setupGamepad.getRawAxis(0) / 5);
       }
 
       public Command getJogTiltCommand() {
-            return new TiltJog(m_tilt, () -> -setupGamepad.getRawAxis(1) / 2);
+            return new TiltJog(m_tilt, () -> -setupGamepad.getRawAxis(1) / 5);
       }
 
       public Command getJogShooterCommand() {
-            return new JogShooter(m_shooter, () -> setupGamepad.getRawAxis(2) / 2);
+            return new JogShooter(m_shooter, () -> setupGamepad.getRawAxis(2) / 5);
 
       }
 

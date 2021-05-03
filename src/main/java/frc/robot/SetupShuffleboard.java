@@ -8,6 +8,7 @@ import java.util.Map;
 
 import edu.wpi.cscore.HttpCamera;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
@@ -231,21 +233,21 @@ public class SetupShuffleboard {
                  * 
                  */
                 if (m_showTurret & !liveMatch) {
-                        ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurretTilt")
+                        ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
                                                                                            // commands
 
                         turretCommands.add("Reset to 0", new ResetTurretAngle(m_turret));
                         turretCommands.add("Position To 0", new PositionTurret(m_turret, 0));// degrees
-                        turretCommands.add("Position To 100", new PositionTurret(m_turret, 100));// degrees
-                        turretCommands.add("Position To -100", new PositionTurret(m_turret, -100));
+                        turretCommands.add("Position To -100", new PositionTurret(m_turret, -100));// degrees
+                        turretCommands.add("Position To -50", new PositionTurret(m_turret, -50));
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
                         turretCommands.add("Cmd", m_turret);
                         turretCommands.addNumber("Faults", () -> m_turret.getFaults());
 
-                        ShuffleboardLayout turretValues = Shuffleboard.getTab("SetupTurretTilt")
+                        ShuffleboardLayout turretValues = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("TurretValues", BuiltInLayouts.kList).withPosition(2, 0)
                                         .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels
                                                                                                           // for
@@ -268,6 +270,16 @@ public class SetupShuffleboard {
                         turretValues.addNumber("Vision Error", () -> m_limelight.getdegRotationToTarget());
                         turretValues.addBoolean("BrakeMode", () -> m_turret.isBrake())
                                         .withWidget(BuiltInWidgets.kTextView);
+                        turretValues.addBoolean("TuneOn", () -> m_turret.tuneOn).withWidget(BuiltInWidgets.kTextView);
+
+                        ShuffleboardLayout turretValues1 = Shuffleboard.getTab("SetupTurret")
+                                        .getLayout("TurretValues1", BuiltInLayouts.kList).withPosition(4, 0)
+                                        .withSize(4, 4).withProperties(Map.of("Label position", "LEFT")); // labels
+
+                        turretValues1.addNumber("Speed", () -> m_turret.getSpeed()).withWidget(BuiltInWidgets.kGraph)
+                                        .withSize(4, 2);
+                        turretValues1.addNumber("Position", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kGraph)
+                                        .withSize(4, 2); // for
 
                 }
                 /**
@@ -276,11 +288,11 @@ public class SetupShuffleboard {
                  * 
                  */
                 if (m_showTilt & !liveMatch) {
-                        ShuffleboardLayout tiltCommands = Shuffleboard.getTab("SetupTurretTilt")
-                                        .getLayout("Tilt", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 4)
+                        ShuffleboardLayout tiltCommands = Shuffleboard.getTab("SetupTilt")
+                                        .getLayout("Tilt", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); //
 
-                        // tiltCommands.add("Reset To Min", new ResetTiltAngle(m_tilt, m_limelight));
+                        tiltCommands.add("Reset To Min", new ResetTiltAngle(m_tilt, m_limelight));
                         tiltCommands.add("Position To Min",
                                         new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE));
                         tiltCommands.add("Position To Max",
@@ -293,9 +305,15 @@ public class SetupShuffleboard {
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
                         tiltCommands.add("Cmd", m_tilt);
                         tiltCommands.addNumber("Faults", () -> m_tilt.getFaults());
+                        tiltCommands.addBoolean("PlusSWLimit", () -> m_tilt.onPlusSoftwareLimit())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        tiltCommands.addBoolean("MinusSWLimit", () -> m_tilt.onMinusSoftwareLimit())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        tiltCommands.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled())
+                                        .withWidget(BuiltInWidgets.kTextView);
 
-                        ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTurretTilt")
-                                        .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)
+                        ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTilt")
+                                        .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(2, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
 
                         tiltValues.addNumber("TIAngle", () -> m_tilt.getAngle());
@@ -303,12 +321,6 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("PCT", () -> m_tilt.getOut());
                         tiltValues.addNumber("Amps", () -> m_tilt.getAmps());
                         tiltValues.addNumber("Speed", () -> m_tilt.getSpeed());
-                        tiltValues.addBoolean("PlusSWLimit", () -> m_tilt.onPlusSoftwareLimit())
-                                        .withWidget(BuiltInWidgets.kTextView);
-                        tiltValues.addBoolean("MinusSWLimit", () -> m_tilt.onMinusSoftwareLimit())
-                                        .withWidget(BuiltInWidgets.kTextView);
-                        tiltValues.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled())
-                                        .withWidget(BuiltInWidgets.kTextView);
                         tiltValues.addBoolean("InPosition", () -> m_tilt.atTargetAngle())
                                         .withWidget(BuiltInWidgets.kTextView);
                         tiltValues.addBoolean("OnBottomLS", () -> m_tilt.m_reverseLimit.get())
@@ -316,9 +328,18 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("Vision Offset", () -> m_tilt.targetVerticalOffset);
                         tiltValues.addNumber("AdjTarget", () -> m_tilt.adjustedTargetAngle);
                         tiltValues.addNumber("Vision Error", () -> m_limelight.getdegVerticalToTarget());
-                        tiltValues.addBoolean("BrakeMode", () -> m_tilt.isBrake()).withWidget(BuiltInWidgets.kTextView);
+                        tiltValues.addNumber("LeadscrewTurns", () -> m_tilt.getLeadscrewTurns());
                         tiltValues.addBoolean("PosResetDone", () -> m_tilt.positionResetDone)
                                         .withWidget(BuiltInWidgets.kTextView);
+                        tiltValues.addBoolean("TuneOn", () -> m_tilt.tuneOn).withWidget(BuiltInWidgets.kTextView);
+
+                        ShuffleboardLayout tiltValues1 = Shuffleboard.getTab("SetupTilt")
+                                        .getLayout("TiltValues1", BuiltInLayouts.kList).withPosition(4, 0)
+                                        .withSize(4, 4).withProperties(Map.of("Label position", "TOP")); // labels for
+                        tiltValues1.addNumber("Speed", () -> m_tilt.getSpeed()).withWidget(BuiltInWidgets.kGraph)
+                                        .withSize(4, 2);
+                        tiltValues1.addNumber("Position", () -> m_tilt.getSpeed()).withWidget(BuiltInWidgets.kGraph)
+                                        .withSize(4, 2);
 
                 }
                 /**
@@ -342,26 +363,36 @@ public class SetupShuffleboard {
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
                                         .getLayout("ShooterValues", BuiltInLayouts.kList).withPosition(2, 0)
-                                        .withSize(3, 5).withProperties(Map.of("Label position", "LEFT")); // labels
+                                        .withSize(2, 5).withProperties(Map.of("Label position", "LEFT")); // labels
                                                                                                           // for
 
                         shooterValues.addNumber("LeftRPM", () -> m_shooter.getRPM());
                         shooterValues.addNumber("LeftAmps", () -> m_shooter.getLeftAmps());
                         shooterValues.addNumber("RightAmps", () -> m_shooter.getRightAmps());
                         shooterValues.addNumber("SpeedCommand", () -> m_shooter.requiredSpeed);
-                        shooterValues.addNumber("Faults", () -> m_shooter.getFaults());
+                        shooterValues.addNumber("LeftFaults", () -> m_shooter.getLeftFaults());
+                        shooterValues.addNumber("RightFaults", () -> m_shooter.getRightFaults());
                         shooterValues.addBoolean("AtSpeed", () -> m_shooter.atSpeed())
                                         .withWidget(BuiltInWidgets.kTextView);
-                        shooterValues.add(m_shooter);
+                        shooterValues.addBoolean("TuneOn", () -> m_shooter.tuneOn).withWidget(BuiltInWidgets.kTextView);
+                        shooterValues.add("Cmd", m_shooter);
                         shooterValues.addNumber("VertOffset", () -> m_tilt.targetVerticalOffset);
                         shooterValues.addNumber("HorOffset", () -> m_turret.targetHorizontalOffset);
+
+                        ShuffleboardLayout shooterValues1 = Shuffleboard.getTab("SetupShooter")
+                                        .getLayout("ShooterValues1", BuiltInLayouts.kList).withPosition(4, 0)
+                                        .withSize(4, 5).withProperties(Map.of("Label position", "LEFT")); // labels
+                        shooterValues1.addNumber("Speed", () -> m_shooter.getRPM()).withWidget(BuiltInWidgets.kGraph)
+                                        .withSize(4, 2);
+                        shooterValues1.addNumber("Amps", () -> m_shooter.getLeftAmps())
+                                        .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
 
                 }
 
                 if (m_showTransport & !liveMatch) {
 
-                        ShuffleboardLayout transportValues = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("TransportValues", BuiltInLayouts.kList).withPosition(5, 0)
+                        ShuffleboardLayout transportValues = Shuffleboard.getTab("SetupCellHandle")
+                                        .getLayout("TransportValues", BuiltInLayouts.kList).withPosition(0, 0)
                                         .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels
                                                                                                           // for
 
@@ -376,8 +407,8 @@ public class SetupShuffleboard {
 
                         transportValues.add("Cmd", m_transport);
 
-                        ShuffleboardLayout intakeValues = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("IntakeValues", BuiltInLayouts.kList).withPosition(7, 0)
+                        ShuffleboardLayout intakeValues = Shuffleboard.getTab("SetupCellHandle")
+                                        .getLayout("IntakeValues", BuiltInLayouts.kList).withPosition(4, 0)
                                         .withSize(2, 4).withProperties(Map.of("Label position", "TOP"));
 
                         intakeValues.addNumber("Motor Amps", () -> m_intake.getMotorAmps());
@@ -467,6 +498,12 @@ public class SetupShuffleboard {
                         subSystems.add("Control Panel", m_controlPanel);
                         subSystems.add("Intake", m_intake);
                         subSystems.add("Climber", m_climber);
+
+                        ShuffleboardLayout scheduler = Shuffleboard.getTab("Subsystems")
+                                        .getLayout("Scheduler", BuiltInLayouts.kList).withPosition(3, 0).withSize(6, 2)
+                                        .withProperties(Map.of("Label position", "TOP")); //
+
+                        scheduler.add("Scheduler", CommandScheduler.getInstance());
                 }
                 /**
                  * 
@@ -508,10 +545,14 @@ public class SetupShuffleboard {
                         ShuffleboardLayout visionData = Shuffleboard.getTab("Vision")
                                         .getLayout("Data", BuiltInLayouts.kList).withPosition(3, 0).withSize(2, 6)
                                         .withProperties(Map.of("Label position", "LEFT")); //
-                        visionData.addBoolean("Connected", () -> m_limelight.isConnected());
-                        visionData.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget());
-                        visionData.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget());
-                        visionData.addBoolean("TargetFound", () -> m_limelight.getIsTargetFound());
+                        visionData.addBoolean("Connected", () -> m_limelight.isConnected())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        visionData.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        visionData.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        visionData.addBoolean("TargetFound", () -> m_limelight.getIsTargetFound())
+                                        .withWidget(BuiltInWidgets.kTextView);
                         visionData.addNumber("DegHToTarget", () -> m_limelight.getdegRotationToTarget());
                         visionData.addNumber("DegVertToTarget", () -> m_limelight.getdegVerticalToTarget());
                         visionData.addNumber("Pipeline #", () -> m_limelight.getPipeline());
@@ -519,7 +560,7 @@ public class SetupShuffleboard {
                         visionData.addNumber("TargetArea", () -> m_limelight.getTargetArea());
                         visionData.addNumber("BNDBoxWidth", () -> m_limelight.getBoundingBoxWidth());
                         visionData.addNumber("BndBoxHeight", () -> m_limelight.getBoundingBoxHeight());
-
+                        visionData.addNumber("CameraAngle", () -> m_tilt.getAngle());
                         visionData.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
                         visionData.addNumber("CameraCalculatedRPM", () -> m_shooter.cameraCalculatedSpeed);
 

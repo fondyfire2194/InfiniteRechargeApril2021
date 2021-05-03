@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
+import frc.robot.commands.Vision.AutoSwitchZoom;
 import frc.robot.commands.Vision.CalculateTargetDistance;
 
 /**
@@ -54,6 +55,7 @@ public class Robot extends TimedRobot {
     gamepadPOV = new POVXBox(m_robotContainer.m_gamepad);
     boxPOV = new POVBBox(m_robotContainer.buttonBox);
     Shuffleboard.selectTab("Pre-Round");
+  
 
   }
 
@@ -76,6 +78,7 @@ public class Robot extends TimedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    
 
   }
 
@@ -102,7 +105,7 @@ public class Robot extends TimedRobot {
 
   public void autonomousInit() {
 
-    new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
+ //   new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
 
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 
@@ -242,13 +245,13 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     autoHasRun = false;
-    if (!m_robotContainer.m_tilt.positionResetDone)
-      new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
+    // if (!m_robotContainer.m_tilt.positionResetDone)
+    //   new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
     // CommandScheduler.getInstance().cancelAll();
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)
         .schedule(true);
-
+    new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
   }
 
   /**

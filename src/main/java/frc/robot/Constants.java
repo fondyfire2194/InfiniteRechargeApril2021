@@ -37,10 +37,10 @@ public final class Constants {
       public static final int DRIVETRAIN_RIGHT_MASTER = 4;
       public static final int DRIVETRAIN_RIGHT_FOLLOWER = 5;
 
-      public static final int LEFT_MOTOR = 6;
+      public static final int LEFT_MOTOR = 8;
       public static final int RIGHT_MOTOR = 7;
 
-      public static final int TURRET_ROTATE_MOTOR = 8;// turret
+      public static final int TURRET_ROTATE_MOTOR = 6;// turret
 
       public static final int TILT_MOTOR = 9;
 
@@ -156,46 +156,63 @@ public final class Constants {
 
    public static class HoodedShooterConstants {
 
-      /**
-       * Turret
-       */
-      public static final double TURRET_POSITION_RATE = 1;
-      public static final double TILT_POSITION_RATE = 1;
-      public static final double MAX_SPEED = 5500.;
-      public static final double MIN_SPEED = 1500.;
-      public static final double SPEED_INCREMENT = 250.;
 
       /**
+       * Tilt axis is a leadscrew driven through a 14T to 28T or 2:1 belt and a 10:1
+       * gearbox = 20:1
        * 
-       * Tilt 2020 had a belt drive ? 3:1 and code used .29 degrees per rev So 3 revs
-       * of motor were one rev of lead screw 2021 uses 100:1 gearbox so 33 *
-       * difference so 1 motor rev will be .29/33 or .0087
+       * The tilt has a mechanical base angle of around 60 degrees and a max angle of
+       * around 90
        * 
-       * Need to confirm on robot
+       * Accurate angle calculations for target distance purposes are done base on the
+       * tilt mechanical design
+       * 
+       * These are dependent on lead screw revolutions so track will be kept of those.
+       * No encoder scaling used.
+       * 
+       * The calculated angle will be used for position display and closed loop
+       * purposed
+       * 
+       * It is pretty much linear with turns.
+       * 
+       * Leadscrew has 122/20 or 6.1 turns from bottom limit switch
+       * 
        * 
        */
 
-      public static final double TILT_DEG_PER_ENCODER_REV = .0087;// 100:1 gear box added 3:1 belt pulley removed
+      public static double maxLeadscrewTurns = 6.1;
+
+      public static double maxMotorTurns = maxLeadscrewTurns * 20;
+
+      public static double maxLeadscrewAngle = 30;
+
+      public static double leadscrewAngleSlope = maxLeadscrewAngle / maxLeadscrewTurns;
+
+      public static double motorAngleSlope = maxLeadscrewAngle / maxMotorTurns;
 
       public static final double TILT_MIN_ANGLE = 59;
-      public static final double TILT_MAX_ANGLE = 70;
+      public static final double TILT_MAX_ANGLE = 90;
 
       public static final double TILT_MID_ANGLE = TILT_MIN_ANGLE + ((TILT_MAX_ANGLE - TILT_MIN_ANGLE) / 2);
       public static double tiltRange = TILT_MAX_ANGLE - TILT_MIN_ANGLE;
 
-      // turret
+ 
+      /**
+       * 20 revs of turret motor turns an 18 tooth pinion one time There are 228 teeth
+       * in 360 degrees, so 1 tooth = 360/228 = 1.579 degrees So 18 teeth = 18 * 1.579
+       * = 28.42 degrees and one motor rev is 1.421 degrees
+       * 
+       * At 6000 motor rpm = 100 rps the turret rotates at 1.421 * 100 = 142 deg per
+       * With end to end travel of 200 degrees = 200/142 = 1.4 second
+       * 
+       * 
+       * 
+       */
 
-      public static final double TURRET_MAX_ANGLE = 100;
+      public static final double TURRET_MAX_ANGLE = 1;// 100;
       public static final double TURRET_MIN_ANGLE = -100;;
 
-      public static final double TurretSpeed = 0.025;
-
-      /**
-       * 100 revs of turret motor turns an 18 tooth pinion one time There are 222
-       * teeth in 360 degrees, so 1 tooth = 360/220 = 1.64 degrees So 18 teeth (100
-       * revs) = 18 * 1.64 = 29.5 degrees and one motor rev is .295 degrees
-       */
-      public static final double TURRET_DEG_PER_MOTOR_REV = .295;
+      public static final double TURRET_DEG_PER_MOTOR_REV = 1.421;
 
    }
 
@@ -251,8 +268,8 @@ public final class Constants {
       public static final double TARGET_HEIGHT = Units.inchesToMeters(94);
       public static final double BASE_CAMERA_HEIGHT = Units.inchesToMeters(26);
       public static final double MAX_CAMERA_HEIGHT = Units.inchesToMeters(27);
-      public static final double CAMERA_BASE_ANGLE = 51.;
-      public static final double CAMERA_MAX_ANGLE = 60;
+      public static final double CAMERA_BASE_ANGLE = 60.;
+      public static final double CAMERA_MAX_ANGLE = 90;
       public static double cameraAngleRange = CAMERA_MAX_ANGLE - CAMERA_BASE_ANGLE;
       public static final double cameraHeightRange = MAX_CAMERA_HEIGHT - BASE_CAMERA_HEIGHT;
       public static double cameraHeightSlope = cameraHeightRange / HoodedShooterConstants.tiltRange;

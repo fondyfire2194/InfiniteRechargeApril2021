@@ -66,14 +66,11 @@ public class CalculateTargetDistance extends CommandBase {
 
       m_limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
 
-      double cameraHeight = baseCameraHeight
-          + cameraHeightSlope * (m_tilt.getAngle() - HoodedShooterConstants.TILT_MIN_ANGLE);
-
-      cameraAngle = baseCameraAngle + cameraAngleSlope * (m_tilt.getAngle() - HoodedShooterConstants.TILT_MIN_ANGLE);
+      cameraAngle = m_tilt.getAngle();
 
       double tanAngleSum = Math.tan((Math.toRadians(m_limelightVerticalAngle + cameraAngle)));
 
-      calculatedCameraDistance = (targetHeight - cameraHeight) / tanAngleSum;
+      calculatedCameraDistance = (targetHeight - baseCameraHeight) / tanAngleSum;
 
     } else
 

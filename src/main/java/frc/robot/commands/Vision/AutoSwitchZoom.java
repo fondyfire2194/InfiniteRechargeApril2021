@@ -20,7 +20,6 @@ public class AutoSwitchZoom extends CommandBase {
 
   private final double minUseableTargetHeight = 40;
   private final double maxUseableTargetHeight = 120;
-  private final double maxUseableTargetWidth = 160;
   private boolean changeLocked;
   private int changeToZoom2Counter;
   private int changeToZoom1Counter;
@@ -53,16 +52,16 @@ public class AutoSwitchZoom extends CommandBase {
    */
   public void execute() {
 
-    // SmartDashboard.putNumber("CZ1", changeToZoom1Counter);
-    // SmartDashboard.putNumber("CZ2", changeToZoom2Counter);
-    // SmartDashboard.putNumber("CL", changeLockedCounter);
-    // SmartDashboard.putBoolean("CLKD", changeLocked);
+    SmartDashboard.putNumber("CZ1", changeToZoom1Counter);
+    SmartDashboard.putNumber("CZ2", changeToZoom2Counter);
+    SmartDashboard.putNumber("CL", changeLockedCounter);
+    SmartDashboard.putBoolean("CLKD", changeLocked);
 
     // check if too far away for pipeline 0 - no zoom
 
     if (m_limelight.getIsTargetFound()) {
 
-      if (m_limelight.getPipeline() == 0 && m_limelight.getBoundingBoxHeight() < minUseableTargetHeight
+      if (m_limelight.getPipeline() == 1 && m_limelight.getBoundingBoxHeight() < minUseableTargetHeight
           && !changeLocked) {
 
         changeToZoom2Counter++;
@@ -75,7 +74,7 @@ public class AutoSwitchZoom extends CommandBase {
 
       if (changeToZoom2Counter >= counterLimit) {
 
-        m_limelight.setPipeline(1);
+        m_limelight.setPipeline(2);
 
         changeLocked = true;
 
@@ -85,8 +84,8 @@ public class AutoSwitchZoom extends CommandBase {
       }
 
       // check if too close for 2 x zoom
-      if (m_limelight.getPipeline() == 1 && (m_limelight.getBoundingBoxHeight() > maxUseableTargetHeight
-          || m_limelight.getBoundingBoxWidth() > maxUseableTargetWidth) && !changeLocked) {
+      if (m_limelight.getPipeline() == 2 && (m_limelight.getBoundingBoxHeight() > maxUseableTargetHeight)
+          && !changeLocked) {
 
         changeToZoom1Counter++;
 
@@ -97,7 +96,7 @@ public class AutoSwitchZoom extends CommandBase {
 
       if (changeToZoom1Counter >= counterLimit) {
 
-        m_limelight.setPipeline(0);
+        m_limelight.setPipeline(1);
 
         changeLocked = true;
 

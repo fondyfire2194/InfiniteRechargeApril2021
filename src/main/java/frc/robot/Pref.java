@@ -41,23 +41,35 @@ public class Pref {
   static {
 
     // Tilt smart motion
-    prefDict.put("tIkP", .0001);
-    prefDict.put("tIkI", .0);
-    prefDict.put("tIkD", .0);
+
+    prefDict.put("tIKp", .00001);
+    prefDict.put("tIKi", 0.);
+    prefDict.put("tIKd", .0005);
     prefDict.put("tIKiz", .0);
+    prefDict.put("tIMaxV", 5000.);// rpm motor
+    prefDict.put("tIMaxA", 7500.);// rpm/sec motor
+    prefDict.put("tITune", 0.);
 
     // Turret smart motion
-    prefDict.put("tUkP", .0001);
-    prefDict.put("tUkI", .0);
-    prefDict.put("tukD", .0);
-    prefDict.put("tuKiz", .0);
+    prefDict.put("tUKp", .00001);
+    prefDict.put("tUKi", .0);
+    prefDict.put("tUKd", .0005);
+    prefDict.put("tUKiz", .0);
+    prefDict.put("tUMaxV", 5000.);// rpm motor
+    prefDict.put("tUMaxA", 7500.);// rpm/sec motor
+    prefDict.put("tUTune", 0.);
 
     // shooter velocity
 
-    prefDict.put("sHkP", .0001);
+    prefDict.put("sHFf", .000085);
+    prefDict.put("sHKp", .000);
     prefDict.put("sHkI", .0);
-    prefDict.put("sHkD", .0);
+    prefDict.put("sHKd", .0);
     prefDict.put("sHKiz", .0);
+    prefDict.put("sHTune", 0.);
+
+
+
 
     // Drive
     prefDict.put("drkP", .2);

@@ -41,12 +41,12 @@ public class PositionTilt extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // m_tilt.targetAngle = m_tilt.getAngle();
+    m_tilt.targetAngle = m_tilt.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !m_tilt.positionResetDone || !m_tilt.atTargetAngle() && loopCtr > 10;
+    return m_tilt.atTargetAngle() && loopCtr > 10 && Math.abs(m_tilt.getSpeed()) < 1;// !m_tilt.positionResetDone ||
   }
 }

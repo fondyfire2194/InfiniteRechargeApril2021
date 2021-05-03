@@ -25,8 +25,7 @@ import frc.robot.Pref;
 import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem {
-    private static final double GRAVITY_COMPENSATION_VOLTS = .001;
-    private static final double DEG_PER_ENCODER_REV = HoodedShooterConstants.TILT_DEG_PER_ENCODER_REV;
+
     private static final int POSITION_SLOT = 0;
     private static final int SMART_MOTION_SLOT = 1;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
@@ -40,10 +39,26 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public boolean positionResetDone;
     public double targetAngle;
     private double inPositionBandwidth = 1;
-    public boolean tuneOn = false;
+
     public double targetVerticalOffset;
     public boolean validTargetSeen;
     public double adjustedTargetAngle;
+    private final static double pivotDistance = 10.5;// inches
+    private final double[] pinDistances = { 2.1, 3.0842519685, 4.068503937, 5.0527559055, 6.037007874, 7.0212598425,
+            8.005511811 };
+    private final double cameraBaseAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
+    private final double leadscrewAngleSlope = HoodedShooterConstants.leadscrewAngleSlope;
+    private final double motorAngleSlope = HoodedShooterConstants.motorAngleSlope;// degrees per motor turn
+    private final static double tiltMinAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
+    public boolean tuneOn = false;
+
+    /**
+     * 
+     * 
+     * 
+     * 
+     * 
+     */
 
     public RevTiltSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TILT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -52,24 +67,23 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         m_motor.restoreFactoryDefaults();
         m_motor.setOpenLoopRampRate(5);
         aimCenter();
+
         if (!tuneOn)
             setGains();
-        if (RobotBase.isReal())
-            mEncoder.setPositionConversionFactor(DEG_PER_ENCODER_REV); // HoodedShooterConstants.TILT_DEG_PER_ENCODER_REV);
-        else {
-            mEncoder.setPositionConversionFactor(1);
+        if (RobotBase.isSimulation()) {
             mPidController.setP(.1, SMART_MOTION_SLOT);
             mPidController.setFF(0.000008, SMART_MOTION_SLOT);
+            setSoftwareLimits();
         }
-        mEncoder.setPosition(0);
+
+        resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
         m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
         m_reverseLimit.enableLimitSwitch(true);
         if (m_reverseLimit.get()) {
-            resetAngle(HoodedShooterConstants.TILT_MIN_ANGLE);
+            resetAngle();
         }
-
-        targetAngle = getAngle();
+        setSoftwareLimits();
         if (RobotBase.isSimulation()) {
             ElevatorSimConstants.kCarriageMass = .001;
             ElevatorSimConstants.kElevatorGearing = 1;
@@ -86,6 +100,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        tuneOn = Pref.getPref("tITune") != 0.;
+
         if (tuneOn)
             tuneGains();
 
@@ -109,7 +125,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     @Override
     public void goToPosition(double angle) {
-        mPidController.setReference(angle, ControlType.kPosition, POSITION_SLOT);
+        // convert angle to motor turns
+        double motorTurns = angle / motorAngleSlope;// deg /deg per turn
+        mPidController.setReference(motorTurns, ControlType.kPosition, POSITION_SLOT);
     }
 
     @Override
@@ -119,12 +137,20 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         SmartDashboard.putNumber("TISMMP", mPidController.getP(SMART_MOTION_SLOT));
         SmartDashboard.putNumber("TISMMF", mPidController.getFF(SMART_MOTION_SLOT));
 
-        mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
+        SmartDashboard.putNumber("TISMMI", mPidController.getI(SMART_MOTION_SLOT));
+        SmartDashboard.putNumber("TISMIZ", mPidController.getIZone(SMART_MOTION_SLOT));
+
+        // convert angle to motor turns
+        double motorTurns = (angle - tiltMinAngle) / motorAngleSlope;// deg /deg per turn
+
+        SmartDashboard.putNumber("MotorTurns", motorTurns);
+
+        mPidController.setReference(motorTurns, ControlType.kSmartMotion, SMART_MOTION_SLOT);
     }
 
-    public void resetAngle(double angle) {
-        mEncoder.setPosition(angle);
-        targetAngle = angle;
+    public void resetAngle() {
+        mEncoder.setPosition(0);
+        targetAngle = tiltMinAngle;
         mPidController.setIAccum(0);
     }
 
@@ -137,8 +163,20 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         return Math.abs(targetAngle - getAngle()) < inPositionBandwidth;
     }
 
-    public double getAngle() {
+    public double getMotorTurns() {
         return mEncoder.getPosition();
+    }
+
+    public double getLeadscrewTurns() {
+        return mEncoder.getPosition() / 20;
+    }
+
+    public double getLeadscrewAngle() {
+        return getLeadscrewTurns() * leadscrewAngleSlope;
+    }
+
+    public double getAngle() {
+        return tiltMinAngle + getLeadscrewAngle();
     }
 
     public double getOut() {
@@ -174,9 +212,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public void setSoftwareLimits() {
         m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kForward,
-                (float) HoodedShooterConstants.TILT_MAX_ANGLE);
-        m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kReverse,
-                (float) HoodedShooterConstants.TILT_MIN_ANGLE);
+                (float) HoodedShooterConstants.maxMotorTurns);
+        m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kReverse, (float) 0);
         m_motor.enableSoftLimit(SoftLimitDirection.kForward, true);
         m_motor.enableSoftLimit(SoftLimitDirection.kReverse, true);
         m_motor.setIdleMode(IdleMode.kBrake);
@@ -211,6 +248,26 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         targetVerticalOffset = 0;
     }
 
+    /**
+     * The angle should be goverened by angle =(2*(ASIN(distance between
+     * pins/2)/10.5)) this will be in radians.
+     * 
+     * 
+     * @return
+     */
+    public double calculateTiltAngle() {
+        // separate angle into integer and remainder
+
+        int lsTurns = (int) getLeadscrewTurns();
+        double rem = getLeadscrewTurns() / 2 - (double) lsTurns;
+
+        // get angle from looking up pin distance table and interpolating for remainder
+        double pinDistance = pinDistances[lsTurns] + (pinDistances[lsTurns + 1] - pinDistances[lsTurns]) * rem;
+        SmartDashboard.putNumber("PInDist", pinDistance);
+        double valRads = 2 * Math.asin(pinDistance / (2 * pivotDistance));
+        return cameraBaseAngle + Math.toDegrees(valRads);
+    }
+
     public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
             int slotNumber) {
         mPidController.setIAccum(0);
@@ -219,55 +276,50 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         mPidController.setD(d, slotNumber);
         mPidController.setFF(f, slotNumber);
         mPidController.setIZone(kIz);
+        mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
+        mPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
+        mPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
+        mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, SMART_MOTION_SLOT);
+
     }
 
     private void setGains() {
 
-        /**
-         * PID coefficients//max rpm = 11000 and degrees per rev = .0087 11000 rpm =
-         * 11000 * .0087 degrees per rev = 95.7 deg per minute 100% FF = 1/95.7 = .01
-         * 
-         * 90 % FF = .9 * .01 or .009 95.7 deg per min = 1.5 degrees per second = 7
-         * seconds full travel ~10 degrees
-         */
-
-        kFF = .009;// 95%
-
-        kP = 0;// 5e-4;
-        kI = 0;// 1e-5;
-        kD = 0;
-        kIz = 1;
-
-        kMaxOutput = 1;
-        kMinOutput = -1;
-        maxRPM = 11000;// not used
-        allowedErr = 1;
-        // Smart Motion Coefficients
-        maxVel = 30; // degpermin
-        maxAcc = 20;
+        fixedSettings();
+        kP = .000001;
+        kI = 0;
+        kD = .0005;
+        kIz = 0;
+        maxVel = 5000; // motor rev per min
+        maxAcc = 7500;
 
         // set PID coefficients
 
         calibratePID(kP, kI, kD, kFF, kIz, SMART_MOTION_SLOT);
 
-        mPidController.setP(kP, SMART_MOTION_SLOT);
-        mPidController.setI(kI, SMART_MOTION_SLOT);
-        mPidController.setD(kD, SMART_MOTION_SLOT);
-        mPidController.setIZone(kIz, SMART_MOTION_SLOT);
-        mPidController.setFF(kFF, SMART_MOTION_SLOT);
-        mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
-        mPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
-        mPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
     }
 
     private void tuneGains() {
 
+        fixedSettings();
+
         double p = Pref.getPref("tIKp");
-        double i = Pref.getPref("tIkI");
+        double i = Pref.getPref("tIKi");
         double d = Pref.getPref("tIKd");
         double iz = Pref.getPref("tIKiz");
+        maxVel = Pref.getPref("tIMaxV");
+        maxAcc = Pref.getPref("tIMaxA");
 
         calibratePID(p, i, d, kFF, iz, SMART_MOTION_SLOT);
+    }
+
+    private void fixedSettings() {
+        kFF = .000078;//
+        kMaxOutput = .5;
+        kMinOutput = -.5;
+        maxRPM = 11000;// not used
+        allowedErr = 1;
+
     }
 
 }
