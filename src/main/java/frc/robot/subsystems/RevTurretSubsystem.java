@@ -42,6 +42,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double adjustedTargetAngle;
 
     public boolean tuneOn = false;
+    private int loopCtr;
+
+    public boolean turretMotorConnected;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -54,11 +57,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         if (!tuneOn)
             setGains();
 
-        int stallLimit = 5;
-        int freeLimit = 5;
-        int limitRPM = 0;
+        
         if (RobotBase.isReal()) {
-            m_motor.setSmartCurrentLimit(stallLimit, freeLimit, limitRPM);
+            m_motor.setSmartCurrentLimit(5);
 
             mEncoder.setPositionConversionFactor(DEG_PER_MOTOR_REV);// 1 /
             mEncoder.setVelocityConversionFactor(DEG_PER_MOTOR_REV / 60);
@@ -99,10 +100,16 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        tuneOn = Pref.getPref("tUTune") != 0.;
-        if (tuneOn)
-            tuneGains();
+        loopCtr++;
+        if (loopCtr > 25) {
+            
+            tuneOn = Pref.getPref("tUTune") != 0.;
+            if (tuneOn)
+                tuneGains();
 
+            turretMotorConnected = m_motor.getFirmwareVersion() != 0;
+            loopCtr = 0;
+        }
     }
 
     @Override

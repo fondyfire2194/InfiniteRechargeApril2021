@@ -91,7 +91,7 @@ public class RobotContainer {
 
       public SetupShuffleboard m_setup;
 
-      LimeLight m_limelight;
+      public LimeLight m_limelight;
 
       private Compressor m_compressor;
 

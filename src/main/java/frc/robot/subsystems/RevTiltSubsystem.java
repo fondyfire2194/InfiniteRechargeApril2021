@@ -51,12 +51,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private final double motorAngleSlope = HoodedShooterConstants.motorAngleSlope;// degrees per motor turn
     private final static double tiltMinAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
     public boolean tuneOn = false;
+    private int loopCtr;
+    public boolean tiltMotorConnected;
 
     /**
-     * 
-     * 
-     * 
-     * 
      * 
      */
 
@@ -79,11 +77,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
 
-        int stallLimit = 5;
-        int freeLimit = 5;
-        int limitRPM = 0;
+       
 
-        m_motor.setSmartCurrentLimit(stallLimit, freeLimit, limitRPM);
+        m_motor.setSmartCurrentLimit(5);
         m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
         m_reverseLimit.enableLimitSwitch(true);
         if (m_reverseLimit.get()) {
@@ -106,10 +102,16 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        tuneOn = Pref.getPref("tITune") != 0.;
+        loopCtr++;
+        if (loopCtr > 24) {
 
-        if (tuneOn)
-            tuneGains();
+            tuneOn = Pref.getPref("tITune") != 0.;
+            if (tuneOn)
+                tuneGains();
+
+            tiltMotorConnected = m_motor.getFirmwareVersion() != 0;
+            loopCtr = 0;
+        }
 
     }
 
@@ -138,13 +140,16 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     @Override
     public void goToPositionMotionMagic(double angle) {
-        // SmartDashboard.putNumber("TISMMA", mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("TISMMV", mPidController.getSmartMotionMaxVelocity(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("TISMMA",
+        // mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("TISMMV",
+        // mPidController.getSmartMotionMaxVelocity(SMART_MOTION_SLOT));
         // SmartDashboard.putNumber("TISMMP", mPidController.getP(SMART_MOTION_SLOT));
         // SmartDashboard.putNumber("TISMMF", mPidController.getFF(SMART_MOTION_SLOT));
 
         // SmartDashboard.putNumber("TISMMI", mPidController.getI(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("TISMIZ", mPidController.getIZone(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("TISMIZ",
+        // mPidController.getIZone(SMART_MOTION_SLOT));
 
         // convert angle to motor turns
         double motorTurns = (angle - tiltMinAngle) / motorAngleSlope;// deg /deg per turn

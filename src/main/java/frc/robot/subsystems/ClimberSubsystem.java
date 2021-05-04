@@ -19,6 +19,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
   final WPI_TalonSRX m_climberMotor = new TalonSRXWrapper(CANConstants.CLIMB_MOTOR);
   final DoubleSolenoid m_climberArm = new DoubleSolenoid(4, 5);
+  private int loopCtr;
+  public boolean climberMotorConnected;
 
   public ClimberSubsystem() {
 
@@ -42,7 +44,6 @@ public class ClimberSubsystem extends SubsystemBase {
     return m_climberMotor.getMotorOutputPercent();
   }
 
-
   public void setBrakeOn(boolean on) {
     if (on) {
       m_climberMotor.setNeutralMode(NeutralMode.Brake);
@@ -62,6 +63,14 @@ public class ClimberSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    loopCtr++;
+
+    if (loopCtr > 33) {
+
+      climberMotorConnected = m_climberMotor.getFirmwareVersion() != -1;
+    }
+
   }
 
   public void simulationInit() {

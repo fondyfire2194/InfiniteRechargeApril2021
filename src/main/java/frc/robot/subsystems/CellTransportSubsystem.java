@@ -34,7 +34,13 @@ public class CellTransportSubsystem extends SubsystemBase {
   public List<BaseTalon> transportTalons;
 
   private double beltPulseStartTime;
+  public boolean leftBeltMotorConnected;
+  public boolean rightBeltMotorConnected;
+  public boolean frontRollerMotorConnected;
+  public boolean rearRollerMotorConnected;
+  private int loopCtr;
 
+  
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
     m_rightBeltMotor = new TalonSRXWrapper(CANConstants.RIGHT_BELT_MOTOR);
@@ -61,7 +67,19 @@ public class CellTransportSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-  
+
+    loopCtr++;
+
+    if (loopCtr > 31) {
+
+      leftBeltMotorConnected = m_leftBeltMotor.getFirmwareVersion() != -1;
+      rightBeltMotorConnected = m_rightBeltMotor.getFirmwareVersion() != -1;
+      frontRollerMotorConnected = m_frontRollerMotor.getFirmwareVersion() != -1;
+      rearRollerMotorConnected = m_rearRollerMotor.getFirmwareVersion() != -1;
+
+      loopCtr = 0;
+
+    }
 
   }
 

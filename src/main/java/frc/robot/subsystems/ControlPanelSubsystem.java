@@ -90,6 +90,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
    private boolean gameDoneOnce;
    private int gameColorNumberLast;
    public int revsDone;
+   public boolean controlPanelMotorConnected;
 
    public ControlPanelSubsystem() {
 
@@ -219,6 +220,9 @@ public class ControlPanelSubsystem extends SubsystemBase {
          if (ourTargetColor > 4)
             ourTargetColor -= 4;
 
+         loopCount = 0;
+
+         controlPanelMotorConnected = m_controlPanelMotor.getFirmwareVersion() != -1;
       }
       filterColors();
 

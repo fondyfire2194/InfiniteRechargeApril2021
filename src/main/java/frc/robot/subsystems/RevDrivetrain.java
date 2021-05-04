@@ -76,6 +76,13 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public boolean tuneOn = false;
 
+    private int loopCtr;
+
+    public boolean leftLeadConnected;
+    public boolean rightLeadConnected;
+    public boolean leftFollowerConnected;
+    public boolean rightFollowerConnected;
+
     @Override
     public void close() {
         mLeadLeft.close();
@@ -258,11 +265,15 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public void positionDistance(double leftPosition, double rightPosition, double velocity) {
 
-        // SmartDashboard.putNumber("DRMV", mLeftPidController.getSmartMotionMaxVelocity(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("DRMA", mLeftPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("DRMV",
+        // mLeftPidController.getSmartMotionMaxVelocity(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("DRMA",
+        // mLeftPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
         // SmartDashboard.putNumber("DRMP", mLeftPidController.getP(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("DRMFF", mLeftPidController.getFF(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("DRMD", mLeftPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("DRMFF",
+        // mLeftPidController.getFF(SMART_MOTION_SLOT));
+        // SmartDashboard.putNumber("DRMD",
+        // mLeftPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
 
         mLeftPidController.setReference(leftPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
         mRightPidController.setReference(rightPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
@@ -295,10 +306,21 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         robotY.setDouble(Units.metersToFeet(getPose().getTranslation().getY()));
         robotHeading.setDouble(getPose().getRotation().getDegrees());
 
-        tuneOn = Pref.getPref("dRTune") != 0.;
+        loopCtr++;
+        if (loopCtr > 28) {
+            tuneOn = Pref.getPref("dRTune") != 0.;
 
-        if (tuneOn)
-            tuneGains();
+            if (tuneOn)
+                tuneGains();
+
+            leftLeadConnected = mLeadLeft.getFirmwareVersion() != 0;
+            rightLeadConnected = mLeadRight.getFirmwareVersion() != 0;
+            leftFollowerConnected = mFollowerLeft.getFirmwareVersion() != 0;
+            rightFollowerConnected = mFollowerRight.getFirmwareVersion() != 0;
+
+            loopCtr = 0;
+
+        }
     }
 
     public void resetAll() {

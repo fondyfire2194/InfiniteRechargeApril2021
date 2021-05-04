@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -51,10 +52,12 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings.
 
     m_robotContainer = new RobotContainer();
+    
     driverPOV = new POV(m_robotContainer.m_driverController);
     gamepadPOV = new POVXBox(m_robotContainer.m_gamepad);
     boxPOV = new POVBBox(m_robotContainer.buttonBox);
     Shuffleboard.selectTab("Pre-Round");
+
   
 
   }

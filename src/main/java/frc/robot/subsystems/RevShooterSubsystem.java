@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import com.revrobotics.CANEncoder;
@@ -65,7 +66,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double calculatedCameraDistance;
 
     public boolean tuneOn = false;
-    
+    private int loopCtr;
+    public boolean leftMotorConnected;
+    public boolean rightMotorConnected;
 
     public RevShooterSubsystem() {
         mLeftMotor = new SimableCANSparkMax(CANConstants.LEFT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -76,17 +79,16 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mLeftMotor.restoreFactoryDefaults();
         mLeftMotor.setOpenLoopRampRate(5.);
         mLeftMotor.setClosedLoopRampRate(5.);
-        mLeftMotor.setIdleMode(IdleMode.kBrake);
+        
 
         mRightMotor.restoreFactoryDefaults();
         mRightMotor.follow(mLeftMotor);
-        mRightMotor.setIdleMode(IdleMode.kBrake);
 
-        int stallLimit = 45;
-        int freeLimit = 55;
-        int limitRPM = 0;
+        Arrays.asList(mLeftMotor, mRightMotor).forEach((SimableCANSparkMax spark) -> spark.setSmartCurrentLimit(35));
 
-        mLeftMotor.setSmartCurrentLimit(stallLimit, freeLimit, limitRPM);
+        // Set motors to brake when idle. We don't want the drive train to coast.
+        Arrays.asList(mLeftMotor, mRightMotor)
+                .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kBrake));
 
         if (RobotBase.isSimulation()) {
             mSimulator = new FlywheelSimWrapper(FlywheelSimConstants.createSim(),
@@ -126,8 +128,10 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     @Override
     public void spinAtRpm(double rpm) {
         requiredSpeed = rpm;
-        // SmartDashboard.putNumber("SHMXO", mPidController.getOutputMax(VELOCITY_SLOT));
-        // SmartDashboard.putNumber("SHMINO", mPidController.getOutputMin(VELOCITY_SLOT));
+        // SmartDashboard.putNumber("SHMXO",
+        // mPidController.getOutputMax(VELOCITY_SLOT));
+        // SmartDashboard.putNumber("SHMINO",
+        // mPidController.getOutputMin(VELOCITY_SLOT));
         // SmartDashboard.putNumber("SHVP", mPidController.getP(VELOCITY_SLOT));
         // SmartDashboard.putNumber("SHVFF", mPidController.getFF(VELOCITY_SLOT));
 
@@ -145,10 +149,17 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        tuneOn = Pref.getPref("sHTune") != 0.;
+        loopCtr++;
+        if (loopCtr > 26) {
+            tuneOn = Pref.getPref("sHTune") != 0.;
 
-        if (tuneOn)
-            tuneGains();
+            if (tuneOn)
+                tuneGains();
+            leftMotorConnected = mLeftMotor.getFirmwareVersion() != 0;
+            rightMotorConnected = mRightMotor.getFirmwareVersion() != 0;
+            loopCtr = 0;
+
+        }
 
         if (shootColorNumber > 2)
             shootColorNumber = 2;
