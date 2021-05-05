@@ -66,10 +66,10 @@ public class ClimberSubsystem extends SubsystemBase {
 
     loopCtr++;
 
-    if (loopCtr > 33) {
+  }
 
-      climberMotorConnected = m_climberMotor.getFirmwareVersion() != -1;
-    }
+  public boolean checkCAN() {
+    return climberMotorConnected = m_climberMotor.getFirmwareVersion() != -1;
 
   }
 

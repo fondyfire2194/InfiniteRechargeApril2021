@@ -29,6 +29,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private static final int POSITION_SLOT = 0;
     private static final int SMART_MOTION_SLOT = 1;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
+    public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastmaxRPM, lastmaxVel,
+            lastminVel, lastmaxAcc, lastallowedErr;;
 
     private final SimableCANSparkMax m_motor; // NOPMD
     private final CANEncoder mEncoder;
@@ -36,7 +38,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private ISimWrapper mElevatorSim;
     public double visionCorrection;
     public double targetAngle;
-    private double inPositionBandwidth = 1;
+    private double inPositionBandwidth = .25;
     public double targetHorizontalOffset;
     public boolean validTargetSeen;
     public double adjustedTargetAngle;
@@ -51,13 +53,14 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mEncoder = m_motor.getEncoder();
         mPidController = m_motor.getPIDController();
         m_motor.restoreFactoryDefaults();
+        m_motor.setInverted(true);
         m_motor.setOpenLoopRampRate(5);
+        m_motor.setClosedLoopRampRate(1);
         mEncoder.setPosition(0);
         aimCenter();
         if (!tuneOn)
             setGains();
 
-        
         if (RobotBase.isReal()) {
             m_motor.setSmartCurrentLimit(5);
 
@@ -101,15 +104,18 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public void periodic() {
         // This method will be called once per scheduler run
         loopCtr++;
-        if (loopCtr > 25) {
-            
-            tuneOn = Pref.getPref("tUTune") != 0.;
-            if (tuneOn)
-                tuneGains();
 
-            turretMotorConnected = m_motor.getFirmwareVersion() != 0;
-            loopCtr = 0;
-        }
+        tuneOn = Pref.getPref("tUTune") != 0.;
+        if (tuneOn)
+            tuneGains();
+
+        SmartDashboard.putNumber("TUIACC", mPidController.getIAccum());
+        SmartDashboard.putNumber("TUIMACC", mPidController.getIMaxAccum(SMART_MOTION_SLOT));
+
+    }
+
+    public boolean checkCAN() {
+        return turretMotorConnected = m_motor.getFirmwareVersion() != 0;
     }
 
     @Override
@@ -130,7 +136,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     @Override
     public void goToPositionMotionMagic(double angle) {
-
+        // mPidController.setReference(angle, ControlType.kPosition, SMART_MOTION_SLOT);
         mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
 
     }
@@ -210,18 +216,51 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         // SmartDashboard.putNumber("PS1FF", mPidController.getFF(POSITION_SLOT));
     }
 
-    public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
-            int slotNumber) {
-        mPidController.setIAccum(0);
-        mPidController.setP(p, slotNumber);
-        mPidController.setI(i, slotNumber);
-        mPidController.setD(d, slotNumber);
-        mPidController.setFF(f, slotNumber);
-        mPidController.setIZone(kIz);
-        mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
-        mPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
-        mPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
-        mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, SMART_MOTION_SLOT);
+    public void calibratePID(double p, double i, double d, double f, double kIz, int slotNumber) {
+
+        if (p != lastkP) {
+            mPidController.setP(p, slotNumber);
+            lastkP = p;
+        }
+        if (i != lastkI) {
+            mPidController.setI(i, slotNumber);
+            lastkI = i;
+        }
+
+        if (d != lastkD) {
+            mPidController.setD(d, slotNumber);
+            lastkD = d;
+        }
+        if (f != lastkFF) {
+            mPidController.setFF(f, slotNumber);
+            lastkFF = f;
+        }
+        if (kIz != lastkIz) {
+            mPidController.setIZone(kIz, slotNumber);
+            lastkIz = kIz;
+        }
+        if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
+            mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
+            lastkMinOutput = kMinOutput;
+            lastkMaxOutput = kMaxOutput;
+        }
+        if (lastmaxAcc != maxAcc) {
+            mPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
+            lastmaxAcc = maxAcc;
+        }
+        if (lastmaxVel != maxVel) {
+            mPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
+            lastmaxVel = maxVel;
+        }
+
+        if (allowedErr != lastallowedErr) {
+            mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, SMART_MOTION_SLOT);
+            lastallowedErr = allowedErr;
+        }
+
+        SmartDashboard.putNumber("TUI", i);
+        SmartDashboard.putNumber("TUIZ", mPidController.getIZone(SMART_MOTION_SLOT));
+
     }
 
     private void setGains() {
@@ -233,12 +272,12 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
          */
         fixedSettings();
 
-        kP = .000001;
+        kP = .0002;
         kI = 0;
-        kD = .0005;
-        kIz = 0;
+        kD = .000001;
+        kIz = 2;
         maxVel = 5000; // motor rev per min
-        maxAcc = 7500;
+        maxAcc = 750;
 
         // set PID coefficients
         calibratePID(kP, kI, kD, kFF, kIz, SMART_MOTION_SLOT);
@@ -248,19 +287,20 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private void tuneGains() {
         fixedSettings();
         double p = Pref.getPref("tUKp");
-        double i = Pref.getPref("tUki");
+        double i = Pref.getPref("tUKi");
         double d = Pref.getPref("tUKd");
         double iz = Pref.getPref("tUKiz");
         maxVel = Pref.getPref("tUMaxV");
         maxAcc = Pref.getPref("tUMaxA");
-
+        SmartDashboard.putNumber("TULC", loopCtr);
+        SmartDashboard.putNumber("TUNEIz", iz);
         calibratePID(p, i, d, kFF, iz, SMART_MOTION_SLOT);
     }
 
     private void fixedSettings() {
         kFF = .000078;//
-        kMaxOutput = .5;
-        kMinOutput = -.5;
+        kMaxOutput = .75;
+        kMinOutput = -.75;
         maxRPM = 11000;// not used
         allowedErr = 1;
 

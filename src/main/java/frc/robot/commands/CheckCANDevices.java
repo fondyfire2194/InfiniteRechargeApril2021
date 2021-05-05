@@ -2,48 +2,43 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Turret;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.RevTurretSubsystem;
+import frc.robot.SetupShuffleboard;
 
-public class PositionTurret extends CommandBase {
-  /** Creates a new PositionTilt. */
+public class CheckCANDevices extends CommandBase {
+  /** Creates a new CheckCANDevices. */
+  private final SetupShuffleboard m_setup;
+  private boolean allOK;
+  private int i;
 
-  private final RevTurretSubsystem m_turret;
-  private double m_endpoint;
-
-  public PositionTurret(RevTurretSubsystem turret, double endpoint) {
+  public CheckCANDevices(SetupShuffleboard setup) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_turret = turret;
-    m_endpoint = endpoint;
-
-    addRequirements(m_turret);
-
+    m_setup = setup;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_turret.targetAngle = m_endpoint;
+    i = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_turret.goToPositionMotionMagic(m_turret.targetAngle);
-  
+    i++;
+    allOK = m_setup.checkCANDevices();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    //m_turret.targetAngle = m_turret.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_turret.atTargetAngle();
+    return allOK || i > 10;
   }
 }

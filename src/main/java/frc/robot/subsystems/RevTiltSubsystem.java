@@ -29,6 +29,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private static final int POSITION_SLOT = 0;
     private static final int SMART_MOTION_SLOT = 1;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
+    public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastmaxRPM, lastmaxVel,
+            lastminVel, lastmaxAcc, lastallowedErr;
 
     private final SimableCANSparkMax m_motor; // NOPMD
     private final CANEncoder mEncoder;
@@ -71,21 +73,19 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         if (RobotBase.isSimulation()) {
             mPidController.setP(.1, SMART_MOTION_SLOT);
             mPidController.setFF(0.000008, SMART_MOTION_SLOT);
-            setSoftwareLimits();
+            // setSoftwareLimits();
         }
 
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
 
-       
-
         m_motor.setSmartCurrentLimit(5);
-        m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+        m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
         m_reverseLimit.enableLimitSwitch(true);
         if (m_reverseLimit.get()) {
             resetAngle();
         }
-        setSoftwareLimits();
+
         if (RobotBase.isSimulation()) {
             ElevatorSimConstants.kCarriageMass = .001;
             ElevatorSimConstants.kElevatorGearing = 1;
@@ -103,16 +103,14 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public void periodic() {
         // This method will be called once per scheduler run
         loopCtr++;
-        if (loopCtr > 24) {
 
-            tuneOn = Pref.getPref("tITune") != 0.;
-            if (tuneOn)
-                tuneGains();
+        tuneOn = Pref.getPref("tITune") != 0.;
+        if (tuneOn)
+            tuneGains();
+    }
 
-            tiltMotorConnected = m_motor.getFirmwareVersion() != 0;
-            loopCtr = 0;
-        }
-
+    public boolean checkCAN() {
+        return tiltMotorConnected = m_motor.getFirmwareVersion() != 0;
     }
 
     @Override
@@ -281,16 +279,44 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
             int slotNumber) {
-        mPidController.setIAccum(0);
-        mPidController.setP(p, slotNumber);
-        mPidController.setI(i, slotNumber);
-        mPidController.setD(d, slotNumber);
-        mPidController.setFF(f, slotNumber);
-        mPidController.setIZone(kIz);
-        mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
-        mPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
-        mPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
-        mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, SMART_MOTION_SLOT);
+        if (p != lastkP) {
+            mPidController.setP(p, slotNumber);
+            lastkP = p;
+        }
+        if (i != lastkI) {
+            mPidController.setI(i, slotNumber);
+            lastkI = i;
+        }
+        if (d != lastkD) {
+            mPidController.setD(d, slotNumber);
+            lastkD = d;
+        }
+        if (f != lastkFF) {
+            mPidController.setFF(f, slotNumber);
+            lastkFF = f;
+        }
+        if (kIz != lastkIz) {
+            mPidController.setIZone(kIz, slotNumber);
+            lastkIz = kIz;
+        }
+        if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
+            mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
+            lastkMinOutput = kMinOutput;
+            lastkMaxOutput = kMaxOutput;
+        }
+        if (lastmaxAcc != maxAcc) {
+            mPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
+            lastmaxAcc = maxAcc;
+        }
+        if (lastmaxVel != maxVel) {
+            mPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
+            lastmaxVel = maxVel;
+        }
+
+        if (allowedErr != lastallowedErr) {
+            mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, SMART_MOTION_SLOT);
+            lastallowedErr = allowedErr;
+        }
 
     }
 

@@ -45,10 +45,11 @@ public class RearIntakeSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     loopCtr++;
-    if (loopCtr > 33) {
-      intakeMotorConnected = m_intakeMotor.getFirmwareVersion() != -1;
-    }
 
+  }
+
+  public boolean checkCAN() {
+    return intakeMotorConnected = m_intakeMotor.getFirmwareVersion() != -1;
   }
 
   public void runIntakeMotor(double speed) {

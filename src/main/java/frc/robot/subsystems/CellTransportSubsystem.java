@@ -40,7 +40,6 @@ public class CellTransportSubsystem extends SubsystemBase {
   public boolean rearRollerMotorConnected;
   private int loopCtr;
 
-  
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
     m_rightBeltMotor = new TalonSRXWrapper(CANConstants.RIGHT_BELT_MOTOR);
@@ -70,16 +69,16 @@ public class CellTransportSubsystem extends SubsystemBase {
 
     loopCtr++;
 
-    if (loopCtr > 31) {
+  }
 
-      leftBeltMotorConnected = m_leftBeltMotor.getFirmwareVersion() != -1;
-      rightBeltMotorConnected = m_rightBeltMotor.getFirmwareVersion() != -1;
-      frontRollerMotorConnected = m_frontRollerMotor.getFirmwareVersion() != -1;
-      rearRollerMotorConnected = m_rearRollerMotor.getFirmwareVersion() != -1;
+  public boolean checkCAN() {
 
-      loopCtr = 0;
+    leftBeltMotorConnected = m_leftBeltMotor.getFirmwareVersion() != -1;
+    rightBeltMotorConnected = m_rightBeltMotor.getFirmwareVersion() != -1;
+    frontRollerMotorConnected = m_frontRollerMotor.getFirmwareVersion() != -1;
+    rearRollerMotorConnected = m_rearRollerMotor.getFirmwareVersion() != -1;
 
-    }
+    return leftBeltMotorConnected && rightBeltMotorConnected && frontRollerMotorConnected && rearRollerMotorConnected;
 
   }
 

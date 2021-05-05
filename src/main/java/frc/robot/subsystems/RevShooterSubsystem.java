@@ -19,7 +19,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
@@ -40,6 +39,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public static double kGearing = 1;
     public static double kInertia = 0.008;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
+    public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, mlastaxRPM, lastmaxVel,
+            lastminVel, lastmaxAcc, lastallowedErr;
     private SimpleWidget shootColorWidget;
     private NetworkTableEntry shootColorWidgetEntry;
     private boolean doneOnce;
@@ -79,10 +80,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mLeftMotor.restoreFactoryDefaults();
         mLeftMotor.setOpenLoopRampRate(5.);
         mLeftMotor.setClosedLoopRampRate(5.);
-        
 
         mRightMotor.restoreFactoryDefaults();
-        mRightMotor.follow(mLeftMotor);
+        mRightMotor.follow(mLeftMotor, true);
 
         Arrays.asList(mLeftMotor, mRightMotor).forEach((SimableCANSparkMax spark) -> spark.setSmartCurrentLimit(35));
 
@@ -108,15 +108,37 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
             int slotNumber) {
-        mPidController.setIAccum(0);
-        mPidController.setP(p, slotNumber);
-        mPidController.setI(i, slotNumber);
-        mPidController.setD(d, slotNumber);
-        mPidController.setFF(f, slotNumber);
-        mPidController.setIZone(kIz, slotNumber);
-        mPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
-        mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, slotNumber);
+        if (p != lastkP) {
+            mPidController.setP(p, slotNumber);
+            lastkP = p;
+        }
+        if (i != lastkI) {
+            mPidController.setI(i, slotNumber);
+            lastkI = i;
+        }
+        if (d != lastkD) {
+            mPidController.setD(d, slotNumber);
+            lastkD = d;
+        }
 
+        if (f != lastkFF) {
+            mPidController.setFF(f, slotNumber);
+            lastkFF = f;
+        }
+        if (kIz != lastkIz) {
+            mPidController.setIZone(kIz, slotNumber);
+            lastkIz = kIz;
+        }
+        if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
+            mPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
+
+            lastkMinOutput = kMinOutput;
+            lastkMaxOutput = kMaxOutput;
+        }
+        if (allowedErr != lastallowedErr) {
+            mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, slotNumber);
+            lastallowedErr = allowedErr;
+        }
     }
 
     @Override
@@ -128,17 +150,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     @Override
     public void spinAtRpm(double rpm) {
         requiredSpeed = rpm;
-        // SmartDashboard.putNumber("SHMXO",
-        // mPidController.getOutputMax(VELOCITY_SLOT));
-        // SmartDashboard.putNumber("SHMINO",
-        // mPidController.getOutputMin(VELOCITY_SLOT));
-        // SmartDashboard.putNumber("SHVP", mPidController.getP(VELOCITY_SLOT));
-        // SmartDashboard.putNumber("SHVFF", mPidController.getFF(VELOCITY_SLOT));
-
-        // SmartDashboard.putNumber("SHVI", mPidController.getI(VELOCITY_SLOT));
-        // SmartDashboard.putNumber("SHVIZ", mPidController.getIZone(VELOCITY_SLOT));
-        // SmartDashboard.putNumber("SHVEL", rpm);
-
         mPidController.setReference(rpm, ControlType.kVelocity, VELOCITY_SLOT);
     }
 
@@ -150,16 +161,11 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public void periodic() {
         // This method will be called once per scheduler run
         loopCtr++;
-        if (loopCtr > 26) {
-            tuneOn = Pref.getPref("sHTune") != 0.;
 
-            if (tuneOn)
-                tuneGains();
-            leftMotorConnected = mLeftMotor.getFirmwareVersion() != 0;
-            rightMotorConnected = mRightMotor.getFirmwareVersion() != 0;
-            loopCtr = 0;
+        tuneOn = Pref.getPref("sHTune") != 0.;
 
-        }
+        if (tuneOn)
+            tuneGains();
 
         if (shootColorNumber > 2)
             shootColorNumber = 2;
@@ -176,6 +182,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             shootColorNumberLast = shootColorNumber;
             doneOnce = true;
         }
+    }
+
+    public boolean checkCAN() {
+        leftMotorConnected = mLeftMotor.getFirmwareVersion() != 0;
+        rightMotorConnected = mRightMotor.getFirmwareVersion() != 0;
+        return leftMotorConnected && rightMotorConnected;
     }
 
     @Override
@@ -241,12 +253,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     private void setGains() {
         fixedSettings();
-        maxRPM = 5700;
-        kFF = .000085;
-        kP = .000;
+        maxRPM = 5700;//not used
+        kFF = .00017;
+        kP = 3e-4;
         kI = 0.0;
         kD = 0;
-        kIz = 2;
+        kIz = 100;
 
         calibratePID(kP, kI, kD, kFF, kIz, VELOCITY_SLOT);
     }

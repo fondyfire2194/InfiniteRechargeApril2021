@@ -52,13 +52,11 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings.
 
     m_robotContainer = new RobotContainer();
-    
+
     driverPOV = new POV(m_robotContainer.m_driverController);
     gamepadPOV = new POVXBox(m_robotContainer.m_gamepad);
     boxPOV = new POVBBox(m_robotContainer.buttonBox);
     Shuffleboard.selectTab("Pre-Round");
-
-  
 
   }
 
@@ -81,7 +79,6 @@ public class Robot extends TimedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    
 
   }
 
@@ -93,7 +90,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.updateValues();
     // CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().run();
-
+    boolean canCheckOK = m_robotContainer.m_setup.checkCANDevices();
   }
 
   @Override
@@ -101,14 +98,11 @@ public class Robot extends TimedRobot {
 
   }
 
-  /**
-   * This autonomous runs the autonomous command selected by your
-   * {@link RobotContainer} class.
-   */
+  }
 
   public void autonomousInit() {
 
- //   new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
+     new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
 
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 
@@ -118,7 +112,7 @@ public class Robot extends TimedRobot {
 
     m_startDelay = (double) m_robotContainer.m_setup.startDelayChooser.getSelected();
 
-   // SmartDashboard.putNumber("Delay", m_startDelay);
+    // SmartDashboard.putNumber("Delay", m_startDelay);
 
     autoChoice = m_robotContainer.m_setup.autoChooser.getSelected();
 
@@ -249,7 +243,7 @@ public class Robot extends TimedRobot {
     }
     autoHasRun = false;
     // if (!m_robotContainer.m_tilt.positionResetDone)
-    //   new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
+    // new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
     // CommandScheduler.getInstance().cancelAll();
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)

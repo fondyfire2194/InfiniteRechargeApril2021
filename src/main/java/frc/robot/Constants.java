@@ -179,7 +179,7 @@ public final class Constants {
        * 
        */
 
-      public static double maxLeadscrewTurns = 6.1;
+      public static double maxLeadscrewTurns = 4.1;
 
       public static double maxMotorTurns = maxLeadscrewTurns * 20;
 
@@ -190,7 +190,7 @@ public final class Constants {
       public static double motorAngleSlope = maxLeadscrewAngle / maxMotorTurns;
 
       public static final double TILT_MIN_ANGLE = 59;
-      public static final double TILT_MAX_ANGLE = 90;
+      public static final double TILT_MAX_ANGLE = 73;
 
       public static final double TILT_MID_ANGLE = TILT_MIN_ANGLE + ((TILT_MAX_ANGLE - TILT_MIN_ANGLE) / 2);
       public static double tiltRange = TILT_MAX_ANGLE - TILT_MIN_ANGLE;
@@ -207,8 +207,8 @@ public final class Constants {
        * 
        */
 
-      public static final double TURRET_MAX_ANGLE = 1;// 100;
-      public static final double TURRET_MIN_ANGLE = -100;;
+      public static final double TURRET_MAX_ANGLE = 0;// 100;
+      public static final double TURRET_MIN_ANGLE = -70;//-100;;
 
       public static final double TURRET_DEG_PER_MOTOR_REV = 1.421;
 

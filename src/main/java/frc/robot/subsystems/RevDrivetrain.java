@@ -313,14 +313,16 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
             if (tuneOn)
                 tuneGains();
 
-            leftLeadConnected = mLeadLeft.getFirmwareVersion() != 0;
-            rightLeadConnected = mLeadRight.getFirmwareVersion() != 0;
-            leftFollowerConnected = mFollowerLeft.getFirmwareVersion() != 0;
-            rightFollowerConnected = mFollowerRight.getFirmwareVersion() != 0;
-
-            loopCtr = 0;
-
         }
+    }
+
+    public boolean checkCAN() {
+        leftLeadConnected = mLeadLeft.getFirmwareVersion() != 0;
+        rightLeadConnected = mLeadRight.getFirmwareVersion() != 0;
+        leftFollowerConnected = mFollowerLeft.getFirmwareVersion() != 0;
+        rightFollowerConnected = mFollowerRight.getFirmwareVersion() != 0;
+
+        return leftLeadConnected && rightLeadConnected && leftFollowerConnected && rightFollowerConnected;
     }
 
     public void resetAll() {

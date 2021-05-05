@@ -222,7 +222,6 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
          loopCount = 0;
 
-         controlPanelMotorConnected = m_controlPanelMotor.getFirmwareVersion() != -1;
       }
       filterColors();
 
@@ -251,6 +250,11 @@ public class ControlPanelSubsystem extends SubsystemBase {
          gameColorWidgetEntry.setBoolean(true);
          gameDoneOnce = true;
       }
+
+   }
+
+   public boolean checkCAN() {
+      return controlPanelMotorConnected = m_controlPanelMotor.getFirmwareVersion() != -1;
 
    }
 

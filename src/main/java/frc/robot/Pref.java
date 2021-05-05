@@ -51,21 +51,21 @@ public class Pref {
     prefDict.put("tITune", 0.);
 
     // Turret smart motion
-    prefDict.put("tUKp", .00001);
+    prefDict.put("tUKp", .0002);
     prefDict.put("tUKi", .0);
-    prefDict.put("tUKd", .0005);
-    prefDict.put("tUKiz", .0);
+    prefDict.put("tUKd", .000001);
+    prefDict.put("tUKiz", 2.);
     prefDict.put("tUMaxV", 5000.);// rpm motor
-    prefDict.put("tUMaxA", 7500.);// rpm/sec motor
+    prefDict.put("tUMaxA", 750.);// rpm/sec motor
     prefDict.put("tUTune", 0.);
 
     // shooter velocity
 
-    prefDict.put("sHFf", .000085);
-    prefDict.put("sHKp", .000);
+    prefDict.put("sHFf", .00017);
+    prefDict.put("sHKp", 3e-4);
     prefDict.put("sHkI", .0);
     prefDict.put("sHKd", .0);
-    prefDict.put("sHKiz", .0);
+    prefDict.put("sHKiz", 100.);
     prefDict.put("sHTune", 0.);
 
     // Drive

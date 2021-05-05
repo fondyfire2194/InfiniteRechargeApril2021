@@ -26,6 +26,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
+import frc.robot.commands.CheckCANDevices;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
@@ -126,8 +127,8 @@ public class RobotContainer {
 
             prefs = Preferences.getInstance();
             // Pref.deleteAllPrefs();
-             Pref.deleteUnused();
-             Pref.addMissing();
+            Pref.deleteUnused();
+            Pref.addMissing();
             m_robotDrive = new RevDrivetrain();
 
             m_climber = new ClimberSubsystem();
@@ -154,7 +155,7 @@ public class RobotContainer {
 
             // m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_limelight));
 
-            // m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
+            m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
 
             // m_shooter.setDefaultCommand(getJogShooterCommand());
 
@@ -167,7 +168,7 @@ public class RobotContainer {
 
             // LiveWindow.disableAllTelemetry();
 
-//            SmartDashboard.putData(CommandScheduler.getInstance());
+            SmartDashboard.putData(new CheckCANDevices(m_setup));
 
             CommandScheduler.getInstance()
                         .onCommandInitialize(command -> System.out.println(command.getName() + " is starting"));
@@ -246,7 +247,8 @@ public class RobotContainer {
 
             setupA.whileHeld(getJogTurretCommand()).whenReleased(new TurretWaitForStop(m_turret));
 
-            setupB.whileHeld(getJogTurretVelocityCommand()).whenReleased(new TurretWaitForStop(m_turret));
+            // setupB.whileHeld(getJogTurretVelocityCommand()).whenReleased(new
+            // TurretWaitForStop(m_turret));
 
             /**
              * 
@@ -315,7 +317,7 @@ public class RobotContainer {
       }
 
       public Command getJogShooterCommand() {
-            return new JogShooter(m_shooter, () -> setupGamepad.getRawAxis(2) / 5);
+            return new JogShooter(m_shooter, () -> -setupGamepad.getRawAxis(5) / 2);
 
       }
 

@@ -45,7 +45,7 @@ public class TiltMoveToReverseLimit extends CommandBase {
       // simCtr++;
       // }
     }
-    endIt = m_tilt.m_reverseLimit.get() || m_tilt.getAngle() < m_startAngle - 1 || simCtr > 2500;
+    endIt = m_tilt.m_reverseLimit.get() || m_tilt.getAngle() < m_startAngle - 10 || simCtr > 2500;
 
     if (endIt)
       m_tilt.stop();
