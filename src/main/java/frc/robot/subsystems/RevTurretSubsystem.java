@@ -65,7 +65,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
             m_motor.setSmartCurrentLimit(5);
 
             mEncoder.setPositionConversionFactor(DEG_PER_MOTOR_REV);// 1 /
-            mEncoder.setVelocityConversionFactor(DEG_PER_MOTOR_REV / 60);
+            mEncoder.setVelocityConversionFactor(DEG_PER_MOTOR_REV);
         } else
 
         {
@@ -82,7 +82,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mEncoder.setPosition(0);
         targetAngle = 0;
 
-        setSoftwareLimits();
+        // setSoftwareLimits();
 
         if (RobotBase.isSimulation())
 
@@ -132,6 +132,14 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void goToPosition(double angle) {
         mPidController.setReference(angle, ControlType.kPosition, POSITION_SLOT);
+
+        SmartDashboard.putNumber("TUFF", mPidController.getFF(POSITION_SLOT));
+        SmartDashboard.putNumber("TUKP", mPidController.getP(POSITION_SLOT));
+        SmartDashboard.putNumber("TUFMAx", mPidController.getOutputMax(POSITION_SLOT));
+        SmartDashboard.putNumber("TUFMIN", mPidController.getOutputMin(POSITION_SLOT));
+        SmartDashboard.putNumber("TUA",angle);
+
+
     }
 
     @Override
@@ -220,16 +228,17 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
         if (p != lastkP) {
             mPidController.setP(p, slotNumber);
-            lastkP = p;
+            lastkP = mPidController.getP(slotNumber);
+
         }
         if (i != lastkI) {
             mPidController.setI(i, slotNumber);
-            lastkI = i;
+            lastkI = mPidController.getI(slotNumber);
         }
 
         if (d != lastkD) {
             mPidController.setD(d, slotNumber);
-            lastkD = d;
+            lastkD = mPidController.getD(slotNumber);
         }
         if (f != lastkFF) {
             mPidController.setFF(f, slotNumber);
@@ -237,38 +246,43 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         }
         if (kIz != lastkIz) {
             mPidController.setIZone(kIz, slotNumber);
-            lastkIz = kIz;
+            lastkIz = mPidController.getIZone(slotNumber);
         }
         if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
-            mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
+            mPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
             lastkMinOutput = kMinOutput;
             lastkMaxOutput = kMaxOutput;
         }
-        if (lastmaxAcc != maxAcc) {
-            mPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
-            lastmaxAcc = maxAcc;
-        }
-        if (lastmaxVel != maxVel) {
-            mPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
-            lastmaxVel = maxVel;
-        }
+        if (slotNumber == SMART_MOTION_SLOT) {
+            if (lastmaxAcc != maxAcc) {
+                mPidController.setSmartMotionMaxAccel(maxAcc, slotNumber);
+                lastmaxAcc = maxAcc;
+            }
 
-        if (allowedErr != lastallowedErr) {
-            mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, SMART_MOTION_SLOT);
-            lastallowedErr = allowedErr;
+            if (lastmaxVel != maxVel) {
+                mPidController.setSmartMotionMaxVelocity(maxVel, slotNumber);
+                lastmaxVel = maxVel;
+            }
+
+            if (allowedErr != lastallowedErr) {
+                mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, slotNumber);
+                lastallowedErr = allowedErr;
+            }
+
         }
-
-        SmartDashboard.putNumber("TUI", i);
-        SmartDashboard.putNumber("TUIZ", mPidController.getIZone(SMART_MOTION_SLOT));
-
     }
 
     private void setGains() {
         /**
-         * PID coefficients//max rpm = 11000 and degrees per rev = .295 11000 rpm =
-         * 11000 * .295 degrees per rev = 3245 deg per minute 100% FF = 1/3245 = 3.08
-         * e-4 90% FF = .9 * 3.08 e-4 = 2.77 e-4 3245 deg per min = 54 degrees per
-         * second = 4 seconds full travel +100 to -100 degrees
+         * PID coefficients//max rpm = 11000 and degrees per rev = 1.421
+         * 
+         *  
+         * 11000 * 1.421 degrees per rev = 15631 deg per minute 
+         * 
+         * 100% FF = 1/15631 = 6.9 e-5
+         * 
+         * 90% FF = 5.8 e-5  15631 deg per min = 250 degrees per
+         * second = .8 seconds full travel +100 to -100 degrees
          */
         fixedSettings();
 
@@ -280,7 +294,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         maxAcc = 750;
 
         // set PID coefficients
-        calibratePID(kP, kI, kD, kFF, kIz, SMART_MOTION_SLOT);
+        calibratePID(kP, kI, kD, kFF, kIz, POSITION_SLOT);
 
     }
 
@@ -290,17 +304,15 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         double i = Pref.getPref("tUKi");
         double d = Pref.getPref("tUKd");
         double iz = Pref.getPref("tUKiz");
-        maxVel = Pref.getPref("tUMaxV");
-        maxAcc = Pref.getPref("tUMaxA");
-        SmartDashboard.putNumber("TULC", loopCtr);
-        SmartDashboard.putNumber("TUNEIz", iz);
-        calibratePID(p, i, d, kFF, iz, SMART_MOTION_SLOT);
+        maxVel = Pref.getPref("tUSMMaxV");
+        maxAcc = Pref.getPref("tUSMMaxA");
+        calibratePID(p, i, d, kFF, iz, POSITION_SLOT);
     }
 
     private void fixedSettings() {
-        kFF = .000078;//
-        kMaxOutput = .75;
-        kMinOutput = -.75;
+        kFF = .0000;//
+        kMaxOutput = 1;
+        kMinOutput = -1;
         maxRPM = 11000;// not used
         allowedErr = 1;
 

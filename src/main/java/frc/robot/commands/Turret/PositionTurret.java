@@ -12,6 +12,7 @@ public class PositionTurret extends CommandBase {
 
   private final RevTurretSubsystem m_turret;
   private double m_endpoint;
+  private int loopCtr;
 
   public PositionTurret(RevTurretSubsystem turret, double endpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -26,24 +27,27 @@ public class PositionTurret extends CommandBase {
   @Override
   public void initialize() {
     m_turret.targetAngle = m_endpoint;
+    loopCtr = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_turret.goToPositionMotionMagic(m_turret.targetAngle);
-  
+    // m_turret.goToPositionMotionMagic(m_turret.targetAngle);
+    m_turret.goToPosition(m_turret.targetAngle);
+    loopCtr++;
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    //m_turret.targetAngle = m_turret.getAngle();
+    // m_turret.targetAngle = m_turret.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_turret.atTargetAngle();
+    return m_turret.atTargetAngle() && loopCtr > 10 && Math.abs(m_turret.getSpeed()) < .1;
   }
 }

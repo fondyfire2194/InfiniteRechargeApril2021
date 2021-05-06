@@ -17,9 +17,6 @@ import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
 import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -27,11 +24,10 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Units;
-import frc.robot.Pref;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PDPConstants;
+import frc.robot.Pref;
 import frc.robot.sim.BaseDrivetrainSubsystem;
 
 public class RevDrivetrain extends BaseDrivetrainSubsystem {
@@ -62,17 +58,13 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public double startDistance;
 
+    private int POSITION_SLOT = 0;
     private int SMART_MOTION_SLOT = 1;
 
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
-
+    public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastmaxRPM, lastmaxVel,
+            lastminVel, lastmaxAcc, lastallowedErr;
     // start NetworkTables
-    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
-
-    NetworkTable falconTable;
-    public static NetworkTableEntry robotX;
-    public static NetworkTableEntry robotY;
-    public static NetworkTableEntry robotHeading;
 
     public boolean tuneOn = false;
 
@@ -166,11 +158,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
                 .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kBrake));
 
-        falconTable = ntinst.getTable("Live_Dashboard");
-        robotX = falconTable.getEntry("robotX");
-        robotY = falconTable.getEntry("robotY");
-        robotHeading = falconTable.getEntry("robotHeading");
-
     }
 
     /////////////////////////////////////
@@ -258,22 +245,12 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     @Override
     public void driveDistance(double leftPosition, double rightPosition) {
-        mLeftPidController.setReference(leftPosition, ControlType.kPosition, SMART_MOTION_SLOT);
-        mRightPidController.setReference(rightPosition, ControlType.kPosition, SMART_MOTION_SLOT);
+        mLeftPidController.setReference(leftPosition, ControlType.kPosition, POSITION_SLOT);
+        mRightPidController.setReference(rightPosition, ControlType.kPosition, POSITION_SLOT);
         mDrive.feed();
     }
 
     public void positionDistance(double leftPosition, double rightPosition, double velocity) {
-
-        // SmartDashboard.putNumber("DRMV",
-        // mLeftPidController.getSmartMotionMaxVelocity(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("DRMA",
-        // mLeftPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("DRMP", mLeftPidController.getP(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("DRMFF",
-        // mLeftPidController.getFF(SMART_MOTION_SLOT));
-        // SmartDashboard.putNumber("DRMD",
-        // mLeftPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT));
 
         mLeftPidController.setReference(leftPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
         mRightPidController.setReference(rightPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
@@ -302,9 +279,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     @Override
     public void periodic() {
         updateOdometry();
-        robotX.setDouble(Units.metersToFeet(getPose().getTranslation().getX()));
-        robotY.setDouble(Units.metersToFeet(getPose().getTranslation().getY()));
-        robotHeading.setDouble(getPose().getRotation().getDegrees());
 
         loopCtr++;
         if (loopCtr > 28) {
@@ -394,31 +368,95 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public void calibrateLeftPID(final double p, final double i, final double d, final double f, final double kIz,
             int slotNumber) {
-        mLeftPidController.setIAccum(0);
-        mLeftPidController.setP(p, slotNumber);
-        mLeftPidController.setI(i, slotNumber);
-        mLeftPidController.setD(d, slotNumber);
-        mLeftPidController.setFF(f, slotNumber);
-        mLeftPidController.setIZone(kIz);
-        mLeftPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
-        mLeftPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
-        mLeftPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
-        mLeftPidController.setSmartMotionAllowedClosedLoopError(allowedErr, SMART_MOTION_SLOT);
+        if (p != lastkP) {
+            mLeftPidController.setP(p, slotNumber);
+            lastkP = p;
+        }
+        if (i != lastkI) {
+            mLeftPidController.setI(i, slotNumber);
+            lastkI = i;
+        }
 
+        if (d != lastkD) {
+            mLeftPidController.setD(d, slotNumber);
+            lastkD = d;
+        }
+        if (f != lastkFF) {
+            mLeftPidController.setFF(f, slotNumber);
+            lastkFF = f;
+        }
+        if (kIz != lastkIz) {
+            mLeftPidController.setIZone(kIz, slotNumber);
+            lastkIz = kIz;
+        }
+        if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
+            mLeftPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
+            lastkMinOutput = kMinOutput;
+            lastkMaxOutput = kMaxOutput;
+        }
+        if (slotNumber == SMART_MOTION_SLOT) {
+            if (lastmaxAcc != maxAcc) {
+                mLeftPidController.setSmartMotionMaxAccel(maxAcc, slotNumber);
+                lastmaxAcc = maxAcc;
+            }
+
+            if (lastmaxVel != maxVel) {
+                mLeftPidController.setSmartMotionMaxVelocity(maxVel, slotNumber);
+                lastmaxVel = maxVel;
+            }
+
+            if (allowedErr != lastallowedErr) {
+                mLeftPidController.setSmartMotionAllowedClosedLoopError(allowedErr, slotNumber);
+                lastallowedErr = allowedErr;
+            }
+
+        }
     }
 
     public void calibrateRightPID(final double p, final double i, final double d, final double f, final double kIz,
             int slotNumber) {
-        mRightPidController.setIAccum(0);
-        mRightPidController.setP(p, slotNumber);
-        mRightPidController.setI(i, slotNumber);
-        mRightPidController.setD(d, slotNumber);
-        mRightPidController.setFF(f, slotNumber);
-        mRightPidController.setIZone(kIz);
-        mRightPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
-        mRightPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
-        mRightPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
-        mRightPidController.setSmartMotionAllowedClosedLoopError(allowedErr, SMART_MOTION_SLOT);
+        if (p != lastkP) {
+            mRightPidController.setP(p, slotNumber);
+            lastkP = p;
+        }
+        if (i != lastkI) {
+            mRightPidController.setI(i, slotNumber);
+            lastkI = i;
+        }
+
+        if (d != lastkD) {
+            mRightPidController.setD(d, slotNumber);
+            lastkD = d;
+        }
+        if (f != lastkFF) {
+            mRightPidController.setFF(f, slotNumber);
+            lastkFF = f;
+        }
+        if (kIz != lastkIz) {
+            mRightPidController.setIZone(kIz, slotNumber);
+            lastkIz = kIz;
+        }
+        if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
+            mRightPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
+            lastkMinOutput = kMinOutput;
+            lastkMaxOutput = kMaxOutput;
+        }
+        if (slotNumber == SMART_MOTION_SLOT) {
+            if (lastmaxAcc != maxAcc) {
+                mRightPidController.setSmartMotionMaxAccel(maxAcc, slotNumber);
+                lastmaxAcc = maxAcc;
+            }
+
+            if (lastmaxVel != maxVel) {
+                mRightPidController.setSmartMotionMaxVelocity(maxVel, slotNumber);
+                lastmaxVel = maxVel;
+            }
+
+            if (allowedErr != lastallowedErr) {
+                mRightPidController.setSmartMotionAllowedClosedLoopError(allowedErr, slotNumber);
+                lastallowedErr = allowedErr;
+            }
+        }
 
     }
 
@@ -434,8 +472,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         // set PID coefficients
 
-        calibrateLeftPID(kP, kI, kD, kFF, kIz, SMART_MOTION_SLOT);
-        calibrateRightPID(kP, kI, kD, kFF, kIz, SMART_MOTION_SLOT);
+        calibrateLeftPID(kP, kI, kD, kFF, kIz, POSITION_SLOT);
+        calibrateRightPID(kP, kI, kD, kFF, kIz, POSITION_SLOT);
     }
 
     private void tuneGains() {
@@ -449,8 +487,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         maxVel = Pref.getPref("dRMaxV");
         maxAcc = Pref.getPref("dRMaxA");
 
-        calibrateLeftPID(p, i, d, kFF, iz, SMART_MOTION_SLOT);
-        calibrateRightPID(p, i, d, kFF, iz, SMART_MOTION_SLOT);
+        calibrateLeftPID(p, i, d, kFF, iz, POSITION_SLOT);
+        calibrateRightPID(p, i, d, kFF, iz, POSITION_SLOT);
     }
 
     private void fixedSettings() {

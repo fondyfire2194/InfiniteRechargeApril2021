@@ -179,6 +179,7 @@ public class SetupShuffleboard {
                 preMatch1.addBoolean("RDr1Connected", () -> m_robotDrive.rightLeadConnected);
                 preMatch1.addBoolean("RDr2Connected", () -> m_robotDrive.rightFollowerConnected);
                 preMatch1.addBoolean("CPConnected", () -> m_controlPanel.controlPanelMotorConnected);
+                preMatch1.addBoolean(("IntakeConnected"), () -> m_intake.intakeMotorConnected);
 
                 if (RobotBase.isReal()) {
 

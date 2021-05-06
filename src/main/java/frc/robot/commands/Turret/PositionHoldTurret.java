@@ -35,7 +35,6 @@ public class PositionHoldTurret extends CommandBase {
   private double visionFoundAngle;
   private double m_endpoint;
   private double deadband = .1;
- 
 
   public PositionHoldTurret(RevTurretSubsystem turret, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -96,8 +95,9 @@ public class PositionHoldTurret extends CommandBase {
       m_endpoint = visionFoundAngle;
       m_turret.targetAngle = m_endpoint;
     }
-SmartDashboard.putNumber("TUHEP", m_endpoint);
-    m_turret.goToPositionMotionMagic(m_endpoint);
+  
+    // m_turret.goToPositionMotionMagic(m_endpoint);
+    m_turret.goToPosition(m_endpoint);
   }
 
   // Called once the command ends or is interrupted.

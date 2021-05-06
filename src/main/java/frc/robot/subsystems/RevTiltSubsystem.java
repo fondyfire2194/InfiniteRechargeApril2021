@@ -279,31 +279,39 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
             int slotNumber) {
-        if (p != lastkP) {
-            mPidController.setP(p, slotNumber);
-            lastkP = p;
-        }
-        if (i != lastkI) {
-            mPidController.setI(i, slotNumber);
-            lastkI = i;
-        }
-        if (d != lastkD) {
-            mPidController.setD(d, slotNumber);
-            lastkD = d;
-        }
-        if (f != lastkFF) {
-            mPidController.setFF(f, slotNumber);
-            lastkFF = f;
-        }
-        if (kIz != lastkIz) {
-            mPidController.setIZone(kIz, slotNumber);
-            lastkIz = kIz;
-        }
-        if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
-            mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
-            lastkMinOutput = kMinOutput;
-            lastkMaxOutput = kMaxOutput;
-        }
+                if (p != lastkP) {
+                    mPidController.setP(p, slotNumber);
+                    lastkP = mPidController.getP(slotNumber);
+        
+                }
+                if (i != lastkI) {
+                    mPidController.setI(i, slotNumber);
+                    lastkI = mPidController.getI(slotNumber);
+                }
+        
+                if (d != lastkD) {
+                    mPidController.setD(d, slotNumber);
+                    lastkD = mPidController.getD(slotNumber);
+                }
+                if (f != lastkFF) {
+                    mPidController.setFF(f, slotNumber);
+                    lastkFF = f;
+                }
+                if (kIz != lastkIz) {
+                    mPidController.setIZone(kIz, slotNumber);
+                    lastkIz = mPidController.getIZone(slotNumber);
+                }
+                if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
+                    mPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
+                    lastkMinOutput = kMinOutput;
+                    lastkMaxOutput = kMaxOutput;
+                }
+                if (slotNumber == SMART_MOTION_SLOT) {
+                    if (lastmaxAcc != maxAcc) {
+                        mPidController.setSmartMotionMaxAccel(maxAcc, slotNumber);
+                        lastmaxAcc = maxAcc;
+                    }
+        
         if (lastmaxAcc != maxAcc) {
             mPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
             lastmaxAcc = maxAcc;

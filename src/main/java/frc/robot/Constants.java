@@ -207,8 +207,8 @@ public final class Constants {
        * 
        */
 
-      public static final double TURRET_MAX_ANGLE = 0;// 100;
-      public static final double TURRET_MIN_ANGLE = -70;//-100;;
+      public static final double TURRET_MAX_ANGLE =  100;
+      public static final double TURRET_MIN_ANGLE = -100;;
 
       public static final double TURRET_DEG_PER_MOTOR_REV = 1.421;
 

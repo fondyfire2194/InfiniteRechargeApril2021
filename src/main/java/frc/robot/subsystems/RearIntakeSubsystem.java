@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.sim.PhysicsSim;
@@ -45,11 +46,14 @@ public class RearIntakeSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     loopCtr++;
+    SmartDashboard.putBoolean("IMC", intakeMotorConnected);
 
   }
 
   public boolean checkCAN() {
+    SmartDashboard.putNumber("M19FV1",m_intakeMotor.getFirmwareVersion()); 
     return intakeMotorConnected = m_intakeMotor.getFirmwareVersion() != -1;
+
   }
 
   public void runIntakeMotor(double speed) {
