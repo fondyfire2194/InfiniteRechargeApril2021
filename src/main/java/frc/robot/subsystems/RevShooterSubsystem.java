@@ -38,9 +38,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public static DCMotor kGearbox = DCMotor.getNeo550(2);
     public static double kGearing = 1;
     public static double kInertia = 0.008;
-    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
-    public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, mlastaxRPM, lastmaxVel,
-            lastminVel, lastmaxAcc, lastallowedErr;
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, acc;
+    public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastAcc;
     private SimpleWidget shootColorWidget;
     private NetworkTableEntry shootColorWidgetEntry;
     private boolean doneOnce;
@@ -67,6 +66,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double calculatedCameraDistance;
 
     public boolean tuneOn = false;
+    public boolean lastTuneOn;
     private int loopCtr;
     public boolean leftMotorConnected;
     public boolean rightMotorConnected;
@@ -101,45 +101,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         shootColorWidgetEntry = shootColorWidget.getEntry();
         shootColorWidgetEntry.getBoolean(false);
 
-        if (!tuneOn) {
-            setGains();
-        }
+        setGains();
 
-    }
-
-    public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
-            int slotNumber) {
-        if (p != lastkP) {
-            mPidController.setP(p, slotNumber);
-            lastkP = p;
-        }
-        if (i != lastkI) {
-            mPidController.setI(i, slotNumber);
-            lastkI = i;
-        }
-        if (d != lastkD) {
-            mPidController.setD(d, slotNumber);
-            lastkD = d;
-        }
-
-        if (f != lastkFF) {
-            mPidController.setFF(f, slotNumber);
-            lastkFF = f;
-        }
-        if (kIz != lastkIz) {
-            mPidController.setIZone(kIz, slotNumber);
-            lastkIz = kIz;
-        }
-        if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
-            mPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
-
-            lastkMinOutput = kMinOutput;
-            lastkMaxOutput = kMaxOutput;
-        }
-        if (allowedErr != lastallowedErr) {
-            mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, slotNumber);
-            lastallowedErr = allowedErr;
-        }
     }
 
     @Override
@@ -165,8 +128,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
         tuneOn = Pref.getPref("sHTune") != 0.;
 
-        if (tuneOn)
+        if (tuneOn && !lastTuneOn) {
             tuneGains();
+            lastTuneOn = true;
+        }
+        if (lastTuneOn)
+            lastTuneOn = tuneOn;
 
         if (shootColorNumber > 2)
             shootColorNumber = 2;
@@ -253,16 +220,53 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         return mLeftMotor.getFaults() + mRightMotor.getFaults();
     }
 
+    public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
+            double acc, int slotNumber) {
+
+        if (p != lastkP) {
+            mPidController.setP(p, slotNumber);
+            lastkP = p;
+        }
+        if (i != lastkI) {
+            mPidController.setI(i, slotNumber);
+            lastkI = i;
+        }
+        if (d != lastkD) {
+            mPidController.setD(d, slotNumber);
+            lastkD = d;
+        }
+
+        if (f != lastkFF) {
+            mPidController.setFF(f, slotNumber);
+            lastkFF = f;
+        }
+        if (kIz != lastkIz) {
+            mPidController.setIZone(kIz, slotNumber);
+            lastkIz = kIz;
+        }
+        if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
+            mPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
+            lastkMinOutput = kMinOutput;
+            lastkMaxOutput = kMaxOutput;
+        }
+        if (acc != lastAcc) {
+            mLeftMotor.setClosedLoopRampRate(acc);
+            lastAcc = acc;
+        }
+
+    }
+
     private void setGains() {
         fixedSettings();
-        maxRPM = 5700;// not used
+
         kFF = .00017;
         kP = 3e-4;
         kI = 0.0;
         kD = 0;
         kIz = 100;
+        acc = 500;
 
-        calibratePID(kP, kI, kD, kFF, kIz, VELOCITY_SLOT);
+        calibratePID(kP, kI, kD, kFF, kIz, acc, VELOCITY_SLOT);
     }
 
     private void tuneGains() {
@@ -272,16 +276,15 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         double i = Pref.getPref("sHKi");
         double d = Pref.getPref("sHKd");
         double iz = Pref.getPref("sHKiz");
+        double acc = Pref.getPref("sHKacc");
 
-        calibratePID(p, i, d, f, iz, VELOCITY_SLOT);
+        calibratePID(p, i, d, f, iz, acc, VELOCITY_SLOT);
     }
 
     private void fixedSettings() {
+
         kMaxOutput = 1;
         kMinOutput = -1;
-
-        maxRPM = 11000;// not used
-        allowedErr = 1000;
 
     }
 }

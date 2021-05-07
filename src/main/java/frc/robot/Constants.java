@@ -40,9 +40,9 @@ public final class Constants {
       public static final int LEFT_MOTOR = 6;
       public static final int RIGHT_MOTOR = 7;
 
-      public static final int TURRET_ROTATE_MOTOR =9;// turret
+      public static final int TURRET_ROTATE_MOTOR = 8;// turret
 
-      public static final int TILT_MOTOR = 8;
+      public static final int TILT_MOTOR = 9;
 
       // talons
 
@@ -187,7 +187,6 @@ public final class Constants {
       public static double maxLeadscrewTurns = 6.0;
 
       public static double maxMotorTurns = 120;
-
 
       public static double tiltDegreesPerRev = maxAngleChange / maxMotorTurns;// 30/120 = .25 degrees per rev
 

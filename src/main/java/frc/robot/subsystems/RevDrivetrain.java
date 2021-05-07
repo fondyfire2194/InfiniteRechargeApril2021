@@ -18,6 +18,7 @@ import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -61,12 +62,12 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private int POSITION_SLOT = 0;
     private int SMART_MOTION_SLOT = 1;
 
-    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
-    public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastmaxRPM, lastmaxVel,
-            lastminVel, lastmaxAcc, lastallowedErr;
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, acc;
+    public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastAcc;
     // start NetworkTables
 
     public boolean tuneOn = false;
+    public boolean lastTuneOn;
 
     private int loopCtr;
 
@@ -111,8 +112,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mLeftPidController = mLeadLeft.getPIDController();
         mRightPidController = mLeadRight.getPIDController();
 
-        if (!tuneOn)
-            setGains();
+        setGains();
 
         mLeftEncoder.setPosition(0);
         mRightEncoder.setPosition(0);
@@ -246,15 +246,15 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     @Override
     public void driveDistance(double leftPosition, double rightPosition) {
-        mLeftPidController.setReference(leftPosition, ControlType.kPosition, POSITION_SLOT);
-        mRightPidController.setReference(rightPosition, ControlType.kPosition, POSITION_SLOT);
+        mLeftPidController.setReference(leftPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
+        mRightPidController.setReference(rightPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
         mDrive.feed();
     }
 
     public void positionDistance(double leftPosition, double rightPosition, double velocity) {
 
-        mLeftPidController.setReference(leftPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
-        mRightPidController.setReference(rightPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
+        mLeftPidController.setReference(leftPosition, ControlType.kPosition, POSITION_SLOT);
+        mRightPidController.setReference(rightPosition, ControlType.kPosition, POSITION_SLOT);
 
         mDrive.feed();
     }
@@ -282,13 +282,19 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         updateOdometry();
 
         loopCtr++;
-        if (loopCtr > 28) {
-            tuneOn = Pref.getPref("dRTune") != 0.;
 
-            if (tuneOn)
-                tuneGains();
+        tuneOn = Pref.getPref("dRTune") != 0.;
+
+        if (tuneOn && !lastTuneOn) {
+
+            tuneGains();
+            lastTuneOn = true;
 
         }
+
+        if (lastTuneOn)
+            lastTuneOn = tuneOn;
+
     }
 
     public boolean checkCAN() {
@@ -368,96 +374,38 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         return Math.abs(leftTargetPosition - getAverageDistance()) < .25;
     }
 
-    public void calibrateLeftPID(final double p, final double i, final double d, final double f, final double kIz,
-            int slotNumber) {
+    public void calibratePID(CANPIDController controller, final double p, final double i, final double d, double kIz,
+            double acc, int slotNumber) {
         if (p != lastkP) {
-            mLeftPidController.setP(p, slotNumber);
-            lastkP = p;
+            controller.setP(p, slotNumber);
+            lastkP = p;// mPidController.getP(slotNumber);
+
         }
         if (i != lastkI) {
-            mLeftPidController.setI(i, slotNumber);
-            lastkI = i;
+            controller.setI(i, slotNumber);
+            lastkI = i;// mPidController.getI(slotNumber);
         }
 
         if (d != lastkD) {
-            mLeftPidController.setD(d, slotNumber);
-            lastkD = d;
+            controller.setD(d, slotNumber);
+            lastkD = d;// mPidController.getD(slotNumber);
         }
-        if (f != lastkFF) {
-            mLeftPidController.setFF(f, slotNumber);
-            lastkFF = f;
-        }
+
         if (kIz != lastkIz) {
-            mLeftPidController.setIZone(kIz, slotNumber);
-            lastkIz = kIz;
+            controller.setIZone(kIz, slotNumber);
+
+            lastkIz = kIz;// mPidController.getIZone(slotNumber);
         }
         if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
-            mLeftPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
+            controller.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
             lastkMinOutput = kMinOutput;
             lastkMaxOutput = kMaxOutput;
         }
-        if (slotNumber == SMART_MOTION_SLOT) {
-            if (lastmaxAcc != maxAcc) {
-                mLeftPidController.setSmartMotionMaxAccel(maxAcc, slotNumber);
-                lastmaxAcc = maxAcc;
-            }
 
-            if (lastmaxVel != maxVel) {
-                mLeftPidController.setSmartMotionMaxVelocity(maxVel, slotNumber);
-                lastmaxVel = maxVel;
-            }
-
-            if (allowedErr != lastallowedErr) {
-                mLeftPidController.setSmartMotionAllowedClosedLoopError(allowedErr, slotNumber);
-                lastallowedErr = allowedErr;
-            }
-
-        }
-    }
-
-    public void calibrateRightPID(final double p, final double i, final double d, final double f, final double kIz,
-            int slotNumber) {
-        if (p != lastkP) {
-            mRightPidController.setP(p, slotNumber);
-            lastkP = p;
-        }
-        if (i != lastkI) {
-            mRightPidController.setI(i, slotNumber);
-            lastkI = i;
-        }
-
-        if (d != lastkD) {
-            mRightPidController.setD(d, slotNumber);
-            lastkD = d;
-        }
-        if (f != lastkFF) {
-            mRightPidController.setFF(f, slotNumber);
-            lastkFF = f;
-        }
-        if (kIz != lastkIz) {
-            mRightPidController.setIZone(kIz, slotNumber);
-            lastkIz = kIz;
-        }
-        if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
-            mRightPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
-            lastkMinOutput = kMinOutput;
-            lastkMaxOutput = kMaxOutput;
-        }
-        if (slotNumber == SMART_MOTION_SLOT) {
-            if (lastmaxAcc != maxAcc) {
-                mRightPidController.setSmartMotionMaxAccel(maxAcc, slotNumber);
-                lastmaxAcc = maxAcc;
-            }
-
-            if (lastmaxVel != maxVel) {
-                mRightPidController.setSmartMotionMaxVelocity(maxVel, slotNumber);
-                lastmaxVel = maxVel;
-            }
-
-            if (allowedErr != lastallowedErr) {
-                mRightPidController.setSmartMotionAllowedClosedLoopError(allowedErr, slotNumber);
-                lastallowedErr = allowedErr;
-            }
+        if (acc != lastAcc) {
+            mLeadLeft.setClosedLoopRampRate(acc);
+            mLeadRight.setClosedLoopRampRate(acc);
+            lastAcc = acc;// m_motor.getClosedLoopRampRate();
         }
 
     }
@@ -465,17 +413,19 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private void setGains() {
 
         fixedSettings();
+
         kP = .000001;
         kI = 0;
         kD = .0005;
         kIz = 0;
-        maxVel = 5000; // motor rev per min
-        maxAcc = 7500;
+
+        acc = 7500;
 
         // set PID coefficients
 
-        calibrateLeftPID(kP, kI, kD, kFF, kIz, POSITION_SLOT);
-        calibrateRightPID(kP, kI, kD, kFF, kIz, POSITION_SLOT);
+        calibratePID(mLeftPidController, kP, kI, kD, kIz, acc, POSITION_SLOT);
+
+        calibratePID(mRightPidController, kP, kI, kD, kIz, acc, POSITION_SLOT);
     }
 
     private void tuneGains() {
@@ -486,19 +436,16 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         double i = Pref.getPref("dRKi");
         double d = Pref.getPref("dRKd");
         double iz = Pref.getPref("dRKiz");
-        maxVel = Pref.getPref("dRMaxV");
-        maxAcc = Pref.getPref("dRMaxA");
+        double acc = Pref.getPref("dRKacc");
 
-        calibrateLeftPID(p, i, d, kFF, iz, POSITION_SLOT);
-        calibrateRightPID(p, i, d, kFF, iz, POSITION_SLOT);
+        calibratePID(mLeftPidController, p, i, d, iz, acc, POSITION_SLOT);
+        calibratePID(mRightPidController, p, i, d, iz, acc, POSITION_SLOT);
     }
 
     private void fixedSettings() {
-        kFF = .000078;//
+        kFF = .0000;//
         kMaxOutput = 1;
         kMinOutput = -1;
-        maxRPM = 11000;// not used
-        allowedErr = 1;
 
     }
 }

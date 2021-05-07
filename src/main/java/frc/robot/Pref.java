@@ -71,8 +71,7 @@ public class Pref {
     prefDict.put("dRKi", .0);
     prefDict.put("dRKd", .0);
     prefDict.put("dRKiz", .0);
-    prefDict.put("dRMaxV", 5000.);// rpm motor
-    prefDict.put("dRMaxA", 7500.);// rpm/sec motor
+    prefDict.put("dRKacc", 500.);// rpm/sec motor
     prefDict.put("dRTune", 0.);
   }
 

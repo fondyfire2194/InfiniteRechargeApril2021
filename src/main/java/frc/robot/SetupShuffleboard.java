@@ -77,7 +77,7 @@ public class SetupShuffleboard {
         private final ClimberSubsystem m_climber;
         private boolean m_showTurret = false;
         private boolean m_showTilt = false;
-        private boolean m_showShooter = false;
+        private boolean m_showShooter = true;
         private boolean m_showRobot = false;
         private boolean m_showClimbeControlPanel = false;
 
@@ -413,7 +413,7 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         shooterValues2.addBoolean("AtSpeed", () -> m_shooter.atSpeed());
-                        shooterValues2.addBoolean("TuneOn", () -> m_shooter.tuneOn);
+                        shooterValues2.addBoolean("TuneOn", () -> (m_shooter.tuneOn && m_shooter.lastTuneOn));
                         shooterValues2.addBoolean("LeftConnected", () -> m_shooter.leftMotorConnected);
                         shooterValues2.addBoolean("RightConnected", () -> m_shooter.rightMotorConnected);
 
@@ -488,6 +488,7 @@ public class SetupShuffleboard {
                         robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
                         robotCommands.add("Stop Robot", new StopRobot(m_robotDrive));
                         robotCommands.add("Cmd", m_robotDrive);
+
                         ShuffleboardLayout robotValues = Shuffleboard.getTab("SetupRobot")
                                         .getLayout("RobotValues", BuiltInLayouts.kList).withPosition(2, 0)
                                         .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels
@@ -509,7 +510,7 @@ public class SetupShuffleboard {
                                         .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(8, 3).withSize(2, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
-                        robotValues2.addBoolean("TuneOn", () -> m_robotDrive.tuneOn);
+                        robotValues2.addBoolean("TuneOn", () -> (!m_robotDrive.tuneOn && !m_robotDrive.lastTuneOn));
                         robotValues2.addBoolean("Left1Connected", () -> m_robotDrive.leftLeadConnected);
                         robotValues2.addBoolean("Left2Connected", () -> m_robotDrive.leftFollowerConnected);
                         robotValues2.addBoolean("Right1Connected", () -> m_robotDrive.rightLeadConnected);
@@ -677,7 +678,7 @@ public class SetupShuffleboard {
                  * Control Panel
                  * 
                  */
-                if (m_showClimbeControlPanel ) {
+                if (m_showClimbeControlPanel) {
 
                         ShuffleboardLayout controlPanelCommands = Shuffleboard.getTab("SetupClimber_CP")
                                         .getLayout("ControlPanel", BuiltInLayouts.kList).withPosition(4, 0)
