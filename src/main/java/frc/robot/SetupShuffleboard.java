@@ -45,6 +45,7 @@ import frc.robot.commands.Tilt.StopTilt;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.ClearTurFaults;
 import frc.robot.commands.Turret.PositionTurret;
+import frc.robot.commands.Turret.PositionTurretInc;
 import frc.robot.commands.Turret.ResetTurretAngle;
 import frc.robot.commands.Turret.StopTurret;
 import frc.robot.commands.Vision.LimelightCamMode;
@@ -74,12 +75,12 @@ public class SetupShuffleboard {
         private final RearIntakeSubsystem m_intake;
         private final FondyFireTrajectory m_traj;
         private final ClimberSubsystem m_climber;
-        private boolean m_showTurret = true;
-        private boolean m_showTilt = true;
-        private boolean m_showShooter = true;
+        private boolean m_showTurret = false;
+        private boolean m_showTilt = false;
+        private boolean m_showShooter = false;
         private boolean m_showRobot = false;
-        private boolean m_showClimber = false;
-        private boolean m_showControlPanel = false;
+        private boolean m_showClimbeControlPanel = false;
+
         private boolean m_showTransport = false;
         private boolean m_showVision = false;
         private boolean m_showTrajectory = false;
@@ -110,136 +111,134 @@ public class SetupShuffleboard {
                  * Pre round
                  */
 
-                // Put
-                // autonomous chooser on the dashboard.
-                // The first argument is the root container
-                // The second argument is whether logging and config should be given separate
-                // tabs
-                Shuffleboard.getTab("Pre-Round").add("Auto Commands", autoChooser).withSize(2, 1) // make the widget
-                                // 2x1
-                                .withPosition(0, 0); // place it in the top-left corner
+                if (true) {
+                        // Put
+                        // autonomous chooser on the dashboard.
+                        // The first argument is the root container
+                        // The second argument is whether logging and config should be given separate
+                        // tabs
+                        Shuffleboard.getTab("Pre-Round").add("Auto Commands", autoChooser).withSize(2, 1) // make the
+                                                                                                          // widget
+                                        // 2x1
+                                        .withPosition(0, 0); // place it in the top-left corner
 
-                int place = 0;
-                autoChooser.setDefaultOption("Center Start Shoot", place);
-                place = 1;
-                autoChooser.setDefaultOption("Center Start Retract Shoot", place);
-                place = 2;
-                autoChooser.addOption("Left Start Shoot", place);
-                place = 3;
-                autoChooser.addOption("Left Start Retract Shoot", place);
-                place = 4;
-                autoChooser.addOption("Right Start Shoot", place);
-                place = 5;
-                autoChooser.addOption("Right Start Retract Shoot", place);
-                place = 6;
-                autoChooser.addOption("Trench Start Two Pickup Shoot", place);
-                place = 7;
-                autoChooser.addOption("Trench Start One More Pickup Shoot", place);
-                place = 8;
-                autoChooser.addOption("Trench Start Three More Pickup Shoot", place);
-                place = 9;
-                autoChooser.addOption("Cross Line", place);
+                        int place = 0;
+                        autoChooser.setDefaultOption("Center Start Shoot", place);
+                        place = 1;
+                        autoChooser.setDefaultOption("Center Start Retract Shoot", place);
+                        place = 2;
+                        autoChooser.addOption("Left Start Shoot", place);
+                        place = 3;
+                        autoChooser.addOption("Left Start Retract Shoot", place);
+                        place = 4;
+                        autoChooser.addOption("Right Start Shoot", place);
+                        place = 5;
+                        autoChooser.addOption("Right Start Retract Shoot", place);
+                        place = 6;
+                        autoChooser.addOption("Trench Start Two Pickup Shoot", place);
+                        place = 7;
+                        autoChooser.addOption("Trench Start One More Pickup Shoot", place);
+                        place = 8;
+                        autoChooser.addOption("Trench Start Three More Pickup Shoot", place);
+                        place = 9;
+                        autoChooser.addOption("Cross Line", place);
 
-                Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1) // make the widget
-                                // 2x1
-                                .withPosition(2, 0); //
+                        Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1) // make the
+                                                                                                             // widget
+                                        // 2x1
+                                        .withPosition(2, 0); //
 
-                startDelayChooser.setDefaultOption("No Delay", 0);
-                startDelayChooser.addOption("One Second", 1);
-                startDelayChooser.addOption("Two Seconds", 2);
-                startDelayChooser.addOption("Three Seconds", 3);
-                startDelayChooser.addOption("Four Seconds", 4);
-                startDelayChooser.addOption("Five Seconds", 5);
+                        startDelayChooser.setDefaultOption("No Delay", 0);
+                        startDelayChooser.addOption("One Second", 1);
+                        startDelayChooser.addOption("Two Seconds", 2);
+                        startDelayChooser.addOption("Three Seconds", 3);
+                        startDelayChooser.addOption("Four Seconds", 4);
+                        startDelayChooser.addOption("Five Seconds", 5);
 
-                ShuffleboardLayout preMatch = Shuffleboard.getTab("Pre-Round").getLayout("Info", BuiltInLayouts.kList)
-                                .withPosition(0, 1).withSize(2, 4).withProperties(Map.of("Label position", "TOP"));
+                        ShuffleboardLayout preMatch = Shuffleboard.getTab("Pre-Round")
+                                        .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(2, 4)
+                                        .withProperties(Map.of("Label position", "TOP"));
 
-                preMatch.addNumber("TiltView", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kDial)
-                                .withProperties(Map.of("Min", 55, "Max", 72, "Show Text", true)).withSize(2, 2);
+                        preMatch.addNumber("TiltView", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
+                                        .withProperties(Map.of("Min", 55, "Max", 90, "Show Text", true)).withSize(2, 2);
 
-                preMatch.addNumber("TurretView", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
-                                .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", true)).withSize(2, 1);
+                        preMatch.addNumber("TurretView", () -> m_turret.getAngle())
+                                        .withWidget(BuiltInWidgets.kNumberBar)
+                                        .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", true))
+                                        .withSize(2, 1);
+                        preMatch.addBoolean("Tilt Down OK", () -> m_tilt.m_reverseLimit.get());
+                        preMatch.addBoolean("CANConnected",
+                                        () -> m_tilt.tiltMotorConnected && m_turret.turretMotorConnected
+                                                        && m_transport.allConnected && m_shooter.allConnected
+                                                        && m_robotDrive.allConnected && m_climber.climberMotorConnected
+                                                        && m_intake.intakeMotorConnected
+                                                        && m_controlPanel.controlPanelMotorConnected);
 
-                ShuffleboardLayout preMatch1 = Shuffleboard.getTab("Pre-Round")
-                                .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(2, 2).withSize(2, 3)
-                                .withProperties(Map.of("Label position", "TOP")); // labels
+                        if (RobotBase.isReal()) {
 
-                preMatch1.addBoolean("Tilt Down OK", () -> m_tilt.m_reverseLimit.get());
-                preMatch1.addBoolean("TurretConnected", () -> m_turret.turretMotorConnected);
-                preMatch1.addBoolean("TiltConnected", () -> m_tilt.tiltMotorConnected);
-                preMatch1.addBoolean("LeftShooterConnected", () -> m_shooter.leftMotorConnected);
-                preMatch1.addBoolean("RightShooterConnected", () -> m_shooter.rightMotorConnected);
-                preMatch1.addBoolean("LeftBeltConnected", () -> m_transport.leftBeltMotorConnected);
-                preMatch1.addBoolean("RightBeltConnected", () -> m_transport.rightBeltMotorConnected);
-                preMatch1.addBoolean("RearRollerConnected", () -> m_transport.rearRollerMotorConnected);
-                preMatch1.addBoolean("FrontRollerConnected", () -> m_transport.frontRollerMotorConnected);
-                preMatch1.addBoolean("CLConected", () -> m_climber.climberMotorConnected);
-                preMatch1.addBoolean("LDR1Connected", () -> m_robotDrive.leftLeadConnected);
-                preMatch1.addBoolean("LDr2Connected", () -> m_robotDrive.leftFollowerConnected);
-                preMatch1.addBoolean("RDr1Connected", () -> m_robotDrive.rightLeadConnected);
-                preMatch1.addBoolean("RDr2Connected", () -> m_robotDrive.rightFollowerConnected);
-                preMatch1.addBoolean("CPConnected", () -> m_controlPanel.controlPanelMotorConnected);
-                preMatch1.addBoolean(("IntakeConnected"), () -> m_intake.intakeMotorConnected);
+                                LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
 
-                if (RobotBase.isReal()) {
+                                Shuffleboard.getTab("Pre-Round").add("Limelight", LLFeed)
+                                                .withWidget(BuiltInWidgets.kCameraStream).withPosition(4, 0)
+                                                .withSize(3, 2)
+                                                .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
+                        }
 
-                        LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
+                        /**
+                         * 
+                         * Competition Driver Tab
+                         * 
+                         */
 
-                        Shuffleboard.getTab("Pre-Round").add("Limelight", LLFeed)
-                                        .withWidget(BuiltInWidgets.kCameraStream).withPosition(4, 0).withSize(3, 2)
-                                        .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
-                }
+                        ShuffleboardLayout competition = Shuffleboard.getTab("Competition")
+                                        .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(1, 6)
+                                        .withProperties(Map.of("Label position", "TOP"));
 
-                /**
-                 * 
-                 * Competition Driver Tab
-                 * 
-                 */
+                        competition.addNumber("TiltPosn", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
+                                        .withProperties(Map.of("Min", 57, "Max", 70, "Show Text", false))
+                                        .withSize(1, 2);
 
-                ShuffleboardLayout competition = Shuffleboard.getTab("Competition")
-                                .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(2, 6)
-                                .withProperties(Map.of("Label position", "TOP"));
+                        competition.addNumber("TurretPosn", () -> m_turret.getAngle())
+                                        .withWidget(BuiltInWidgets.kNumberBar)
+                                        .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", false))
+                                        .withSize(1, 1);
 
-                competition.addNumber("TiltPosn", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
-                                .withProperties(Map.of("Min", 57, "Max", 70, "Show Text", false)).withSize(2, 2);
+                        competition.addNumber("RobotPosn", () -> m_robotDrive.getAverageDistance())
+                                        .withWidget(BuiltInWidgets.kNumberBar)
+                                        .withProperties(Map.of("Min", -5, "Max", 0, "Show Text", false)).withSize(1, 1);
 
-                competition.addNumber("TurretPosn", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
-                                .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", false)).withSize(2, 1);
+                        competition.addNumber("ShooterSpeed", () -> m_shooter.getRPM())
+                                        .withWidget(BuiltInWidgets.kNumberBar)
+                                        .withProperties(Map.of("Min", 0, "Max", 5000, "Show Text", false))
+                                        .withSize(1, 1);
 
-                competition.addNumber("RobotPosn", () -> m_robotDrive.getAverageDistance())
-                                .withWidget(BuiltInWidgets.kNumberBar)
-                                .withProperties(Map.of("Min", -5, "Max", 0, "Show Text", false)).withSize(2, 1);
+                        // if (RobotBase.isSimulation()) {
 
-                competition.addNumber("ShooterSpeed", () -> m_shooter.getRPM()).withWidget(BuiltInWidgets.kNumberBar)
-                                .withProperties(Map.of("Min", 0, "Max", 5000, "Show Text", false)).withSize(2, 1);
+                        // ShuffleboardLayout active = Shuffleboard.getTab("Competition")
+                        // .getLayout("Active", BuiltInLayouts.kList).withPosition(2, 1)
+                        // .withSize(2, 6).withProperties(Map.of("Label position", "LEFT"));
+                        // active.addNumber("Pipeline", () -> m_limelight.getPipeline());
+                        // active.addNumber("ShooterSetpoint", () -> m_shooter.requiredSpeed);
+                        // active.addNumber("TiltTarget", () -> m_tilt.targetAngle);
+                        // active.addNumber("TurretTarget", () -> m_turret.targetAngle);
+                        // active.addNumber("TimeToStart", () -> timeToStart);
+                        // active.addNumber("FrontRoller", () -> m_transport.getFrontRoller());
+                        // active.addNumber("RearRoller", () -> m_transport.getRearRoller());
+                        // active.addNumber(("Shoot Time"), () -> m_shooter.shootTime);
+                        // active.addNumber(("Rmng Shoot Time"), () -> m_shooter.shootTimeRemaining);
+                        // active.addNumber(("Robot Target"), () -> m_robotDrive.leftTargetPosition);
+                        // active.addNumber(("Intake"), () -> m_intake.getMotor());
+                        // }
+                        if (RobotBase.isReal()) {
 
-                if (RobotBase.isSimulation()) {
-
-                        ShuffleboardLayout active = Shuffleboard.getTab("Competition")
-                                        .getLayout("Active", BuiltInLayouts.kList).withPosition(2, 1).withSize(2, 6)
-                                        .withProperties(Map.of("Label position", "LEFT"));
-                        active.addNumber("Pipeline", () -> m_limelight.getPipeline());
-                        active.addNumber("ShooterSetpoint", () -> m_shooter.requiredSpeed);
-                        active.addNumber("TiltTarget", () -> m_tilt.targetAngle);
-                        active.addNumber("TurretTarget", () -> m_turret.targetAngle);
-                        active.addNumber("TimeToStart", () -> timeToStart);
-                        active.addNumber("FrontRoller", () -> m_transport.getFrontRoller());
-                        active.addNumber("RearRoller", () -> m_transport.getRearRoller());
-                        active.addNumber(("Shoot Time"), () -> m_shooter.shootTime);
-                        active.addNumber(("Rmng Shoot Time"), () -> m_shooter.shootTimeRemaining);
-                        active.addNumber(("Robot Target"), () -> m_robotDrive.leftTargetPosition);
-                        active.addNumber(("Intake"), () -> m_intake.getMotor());
-                }
-                if (RobotBase.isReal()) {
-
-                        LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
-                        ShuffleboardTab driverDisplayTab = Shuffleboard.getTab("Competition");
-                        driverDisplayTab.add("Limelight", LLFeed).withWidget(BuiltInWidgets.kCameraStream)
-                                        .withPosition(3, 0).withSize(6, 5)
-                                        .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));// specify
-                                                                                                                // widget
-                                                                                                                // properties
-                                                                                                                // here
+                                LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
+                                ShuffleboardTab driverDisplayTab = Shuffleboard.getTab("Competition");
+                                driverDisplayTab.add("Limelight", LLFeed).withWidget(BuiltInWidgets.kCameraStream)
+                                                .withPosition(3, 0).withSize(6, 5)
+                                                .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));// specify
+                                                                                                                        // widget
+                                                                                                                        // properties
+                        } // here
                 }
 
                 /**
@@ -247,7 +246,9 @@ public class SetupShuffleboard {
                  * Shooter Turret
                  * 
                  */
-                if (m_showTurret & !liveMatch) {
+                if (m_showTurret & !liveMatch)
+
+                {
                         ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
@@ -255,8 +256,9 @@ public class SetupShuffleboard {
 
                         turretCommands.add("Reset to 0", new ResetTurretAngle(m_turret));
                         turretCommands.add("Position To 0", new PositionTurret(m_turret, 0));// degrees
-                        turretCommands.add("Position To -20", new PositionTurret(m_turret, -20));// degrees
-                        turretCommands.add("Position To -40", new PositionTurret(m_turret, -40));
+                        turretCommands.add("Position To -90", new PositionTurret(m_turret, -90));// degrees
+                        turretCommands.add("Position To 90", new PositionTurret(m_turret, 90));
+                        turretCommands.add("Position + 2", new PositionTurretInc(m_turret, 2));
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
                         turretCommands.add("Cmd", m_turret);
@@ -275,6 +277,7 @@ public class SetupShuffleboard {
                         turretValues.addNumber("Vision Offset", () -> m_turret.targetHorizontalOffset);
                         turretValues.addNumber("AdjTarget", () -> m_turret.adjustedTargetAngle);
                         turretValues.addNumber("Vision Error", () -> m_limelight.getdegRotationToTarget());
+                        turretValues.addNumber("IAccum", () -> m_turret.getIaccum());
 
                         ShuffleboardLayout turretValues2 = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(2, 3).withSize(2, 3)
@@ -291,7 +294,7 @@ public class SetupShuffleboard {
 
                         turretValues2.addBoolean("BrakeMode", () -> m_turret.isBrake());
 
-                        turretValues2.addBoolean("TuneOn", () -> m_turret.tuneOn);
+                        turretValues2.addBoolean("OKTune", () -> (!m_turret.tuneOn && !m_turret.lastTuneOn));
 
                         ShuffleboardLayout turretValues1 = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("Charts", BuiltInLayouts.kList).withPosition(4, 0).withSize(4, 5)
@@ -300,6 +303,8 @@ public class SetupShuffleboard {
                         turretValues1.addNumber("Speed", () -> m_turret.getSpeed()).withWidget(BuiltInWidgets.kGraph)
                                         .withSize(4, 2);
                         turretValues1.addNumber("Position", () -> m_turret.getAngle()).withWidget(BuiltInWidgets.kGraph)
+                                        .withSize(4, 2); //
+                        turretValues1.addNumber("Amps", () -> m_turret.getAmps()).withWidget(BuiltInWidgets.kGraph)
                                         .withSize(4, 2); //
 
                 }
@@ -316,12 +321,12 @@ public class SetupShuffleboard {
                         tiltCommands.add("Reset To Min", new ResetTiltAngle(m_tilt, m_limelight));
                         tiltCommands.add("Position To Min",
                                         new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE));
-                        tiltCommands.add("Position To Max",
-                                        new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MAX_ANGLE));
                         tiltCommands.add("Position To Mid",
                                         new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MID_ANGLE));
+                        tiltCommands.add("Position To Max",
+                                        new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MAX_ANGLE));
 
-                        tiltCommands.add("To Bottom Switch", new TiltMoveToReverseLimit(m_tilt));
+                        tiltCommands.add("PositionToSwitch", new TiltMoveToReverseLimit(m_tilt));
                         tiltCommands.add("StopTilt", new StopTilt(m_tilt));
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
                         tiltCommands.add("Cmd", m_tilt);
@@ -339,8 +344,8 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("Vision Offset", () -> m_tilt.targetVerticalOffset);
                         tiltValues.addNumber("AdjTarget", () -> m_tilt.adjustedTargetAngle);
                         tiltValues.addNumber("Vision Error", () -> m_limelight.getdegVerticalToTarget());
-                        tiltValues.addNumber("LeadscrewTurns", () -> m_tilt.getLeadscrewTurns());
-                        tiltValues.addNumber("MotorTurns", () -> m_tilt.getMotorTurns());
+                        tiltValues.addNumber("MotorDeg", () -> m_tilt.getMotorDegrees());
+                        tiltValues.addNumber("IAccum", () -> m_tilt.getIaccum());
 
                         ShuffleboardLayout tiltValues2 = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(2, 3).withSize(2, 3)
@@ -352,10 +357,10 @@ public class SetupShuffleboard {
 
                         tiltValues2.addBoolean("PosResetDone", () -> m_tilt.positionResetDone);
                         tiltValues2.addBoolean("BrakeMode", () -> m_tilt.isBrake());
-                        tiltValues2.addBoolean("TuneOn", () -> m_tilt.tuneOn);
+                        tiltValues2.addBoolean("OKTune", () -> (!m_tilt.tuneOn && !m_tilt.lastTuneOn));
                         tiltValues2.addBoolean("Connected", () -> m_tilt.tiltMotorConnected);
-                        tiltValues2.addBoolean("PlusSWLimit", () -> m_tilt.onPlusSoftwareLimit());
-                        tiltValues2.addBoolean("MinusSWLimit", () -> m_tilt.onMinusSoftwareLimit());
+                        tiltValues2.addBoolean("+SWLimit", () -> m_tilt.onPlusSoftwareLimit());
+                        tiltValues2.addBoolean("-SWLimit", () -> m_tilt.onMinusSoftwareLimit());
                         tiltValues2.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled());
 
                         ShuffleboardLayout tiltValues1 = Shuffleboard.getTab("SetupTilt")
@@ -363,7 +368,9 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "TOP")); // labels for
                         tiltValues1.addNumber("Speed", () -> m_tilt.getSpeed()).withWidget(BuiltInWidgets.kGraph)
                                         .withSize(4, 2);
-                        tiltValues1.addNumber("Position", () -> m_tilt.getSpeed()).withWidget(BuiltInWidgets.kGraph)
+                        tiltValues1.addNumber("Position", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kGraph)
+                                        .withSize(4, 2);
+                        tiltValues1.addNumber("Amps", () -> m_tilt.getAmps()).withWidget(BuiltInWidgets.kGraph)
                                         .withSize(4, 2);
 
                 }
@@ -516,6 +523,8 @@ public class SetupShuffleboard {
                                         .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
                         robotValues1.addNumber("Position", () -> m_robotDrive.getAverageDistance())
                                         .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
+                        robotValues1.addNumber("Amps", () -> m_robotDrive.getLeftAmps())
+                                        .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
 
                 }
                 /**
@@ -544,7 +553,7 @@ public class SetupShuffleboard {
                          */
                 }
 
-                if (m_showSubsystems & !liveMatch) {
+                if (m_showSubsystems) {
                         ShuffleboardLayout subSystems = Shuffleboard.getTab("Subsystems")
                                         .getLayout("All", BuiltInLayouts.kList).withPosition(0, 0).withSize(3, 7)
                                         .withProperties(Map.of("Label position", "LEFT")); //
@@ -564,6 +573,26 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "TOP")); //
 
                         scheduler.add("Scheduler", CommandScheduler.getInstance());
+
+                        ShuffleboardLayout canBus = Shuffleboard.getTab("Subsystems")
+                                        .getLayout("Canbus", BuiltInLayouts.kGrid).withPosition(3, 2).withSize(6, 2)
+                                        .withProperties(Map.of("Label position", "TOP")); // labels
+
+                        canBus.addBoolean("TurretConnected", () -> m_turret.turretMotorConnected);
+                        canBus.addBoolean("TiltConnected", () -> m_tilt.tiltMotorConnected);
+                        canBus.addBoolean("LeftShooterConnected", () -> m_shooter.leftMotorConnected);
+                        canBus.addBoolean("RightShooterConnected", () -> m_shooter.rightMotorConnected);
+                        canBus.addBoolean("LeftBeltConnected", () -> m_transport.leftBeltMotorConnected);
+                        canBus.addBoolean("RightBeltConnected", () -> m_transport.rightBeltMotorConnected);
+                        canBus.addBoolean("RearRollerConnected", () -> m_transport.rearRollerMotorConnected);
+                        canBus.addBoolean("FrontRollerConnected", () -> m_transport.frontRollerMotorConnected);
+                        canBus.addBoolean("CLConected", () -> m_climber.climberMotorConnected);
+                        canBus.addBoolean("LDR1Connected", () -> m_robotDrive.leftLeadConnected);
+                        canBus.addBoolean("LDr2Connected", () -> m_robotDrive.leftFollowerConnected);
+                        canBus.addBoolean("RDr1Connected", () -> m_robotDrive.rightLeadConnected);
+                        canBus.addBoolean("RDr2Connected", () -> m_robotDrive.rightFollowerConnected);
+                        canBus.addBoolean("CPConnected", () -> m_controlPanel.controlPanelMotorConnected);
+                        canBus.addBoolean(("IntakeConnected"), () -> m_intake.intakeMotorConnected);
 
                 }
                 /**
@@ -648,7 +677,8 @@ public class SetupShuffleboard {
                  * Control Panel
                  * 
                  */
-                if (m_showControlPanel & !liveMatch) {
+                if (m_showClimbeControlPanel ) {
+
                         ShuffleboardLayout controlPanelCommands = Shuffleboard.getTab("SetupClimber_CP")
                                         .getLayout("ControlPanel", BuiltInLayouts.kList).withPosition(4, 0)
                                         .withSize(2, 4).withProperties(Map.of("Label position", "Top")); //
@@ -664,7 +694,7 @@ public class SetupShuffleboard {
                         controlPanelCommands.add("CP", m_controlPanel);
 
                         ShuffleboardLayout cpValues = Shuffleboard.getTab("SetupClimber_CP")
-                                        .getLayout("CPValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 2)
+                                        .getLayout("CPValues", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "Left")); //
                                                                                            // labels
 
@@ -674,9 +704,11 @@ public class SetupShuffleboard {
                         cpValues.addNumber("SensorDistance", () -> m_controlPanel.getSensorDistance());
                         cpValues.addNumber("IR", () -> m_controlPanel.getSensorIR());
                         cpValues.addNumber("Revs Done", () -> m_controlPanel.revsDone);
+                        cpValues.addString("GameColor", () -> m_controlPanel.gameData);
+                        cpValues.addString("SensorColor", () -> m_controlPanel.colorSeen);
 
                         ShuffleboardLayout cpValues2 = Shuffleboard.getTab("SetupClimber_CP")
-                                        .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(6, 2).withSize(2, 2)
+                                        .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(6, 3).withSize(2, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         cpValues2.addBoolean("Arm Up", () -> m_controlPanel.getArmRaised());
@@ -685,16 +717,12 @@ public class SetupShuffleboard {
 
                         cpValues2.addBoolean("Connected", () -> m_controlPanel.controlPanelMotorConnected);
 
-                }
+                        /**
+                         * 
+                         * Climber
+                         * 
+                         */
 
-                /**
-                 * 
-                 * Climber
-                 * 
-                 */
-                if (m_showClimber & !liveMatch)
-
-                {
                         ShuffleboardLayout climberCommands = Shuffleboard.getTab("SetupClimber_CP")
                                         .getLayout("Climber", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "TOP"));
@@ -714,18 +742,16 @@ public class SetupShuffleboard {
 
                 }
 
-                // ShuffleboardLayout config = Shuffleboard.getTab("Configuration")
-                // .getLayout("Config", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 3)
-                // .withProperties(Map.of("Label position", "TOP"));
-                // config.addBoolean("Try", () -> RobotBase.isReal());
-
         }
 
-        public boolean checkCANDevices() {
-                return m_turret.checkCAN()
-
-                                && m_tilt.checkCAN() && m_shooter.checkCAN() && m_robotDrive.checkCAN()
-                                && m_transport.checkCAN() && m_controlPanel.checkCAN() && m_climber.checkCAN()
-                                && m_intake.checkCAN();
+        public void checkCANDevices() {
+                m_turret.checkCAN();
+                m_tilt.checkCAN();
+                m_intake.checkCAN();
+                m_shooter.checkCAN();
+                m_robotDrive.checkCAN();
+                m_transport.checkCAN();
+                m_controlPanel.checkCAN();
+                m_climber.checkCAN();
         }
 }

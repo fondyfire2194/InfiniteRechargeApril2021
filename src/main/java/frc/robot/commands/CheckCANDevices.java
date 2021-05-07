@@ -10,7 +10,7 @@ import frc.robot.SetupShuffleboard;
 public class CheckCANDevices extends CommandBase {
   /** Creates a new CheckCANDevices. */
   private final SetupShuffleboard m_setup;
-  private boolean allOK;
+
   private int i;
 
   public CheckCANDevices(SetupShuffleboard setup) {
@@ -28,7 +28,7 @@ public class CheckCANDevices extends CommandBase {
   @Override
   public void execute() {
     i++;
-    allOK = m_setup.checkCANDevices();
+    m_setup.checkCANDevices();
   }
 
   // Called once the command ends or is interrupted.
@@ -39,6 +39,6 @@ public class CheckCANDevices extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return allOK || i > 10;
+    return i > 1;
   }
 }

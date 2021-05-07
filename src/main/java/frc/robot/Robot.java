@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -39,9 +40,6 @@ public class Robot extends TimedRobot {
   private double m_startDelay;
   private double startTime;
   public double timeToStart;
-  public POV driverPOV;
-  public POVXBox gamepadPOV;
-  public POVBBox boxPOV;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -53,9 +51,6 @@ public class Robot extends TimedRobot {
 
     m_robotContainer = new RobotContainer();
 
-    driverPOV = new POV(m_robotContainer.m_driverController);
-    gamepadPOV = new POVXBox(m_robotContainer.m_gamepad);
-    boxPOV = new POVBBox(m_robotContainer.buttonBox);
     Shuffleboard.selectTab("Pre-Round");
 
   }
@@ -90,7 +85,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.updateValues();
     // CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().run();
-    boolean canCheckOK = m_robotContainer.m_setup.checkCANDevices();
+    m_robotContainer.m_setup.checkCANDevices();
   }
 
   @Override
@@ -98,11 +93,9 @@ public class Robot extends TimedRobot {
 
   }
 
-  
-
   public void autonomousInit() {
 
-     new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
+    new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
 
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 
@@ -258,15 +251,10 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
 
-    if (driverPOV.DPadUp() || boxPOV.DPadUp())
-      m_robotContainer.m_tilt.aimHigher(.25);
-    if (driverPOV.DPadDown() || boxPOV.DPadDown())
-      m_robotContainer.m_tilt.aimLower(.25);
-
-    if (driverPOV.DPadLeft() || boxPOV.DPadLeft())
-      m_robotContainer.m_turret.aimFurtherLeft(.25);
-    if (driverPOV.DPadRight() || boxPOV.DPadRight())
-      m_robotContainer.m_turret.aimFurtherRight(.25);
+    SmartDashboard.putBoolean("DP)", m_robotContainer.driverUpButton.get());
+    SmartDashboard.putBoolean("DR)", m_robotContainer.driverRightButton.get());
+    SmartDashboard.putBoolean("DD)", m_robotContainer.driverDownButton.get());
+    SmartDashboard.putBoolean("DL)", m_robotContainer.driverLeftButton.get());
 
   }
 

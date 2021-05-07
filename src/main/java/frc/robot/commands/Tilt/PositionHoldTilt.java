@@ -22,6 +22,7 @@ public class PositionHoldTilt extends CommandBase {
   private double limelightVerticalAngle;
   private final int filterCount = 3;
   private double deadband = .1;
+  private int activeGainSlot;
 
   public PositionHoldTilt(RevTiltSubsystem tilt, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -39,7 +40,7 @@ public class PositionHoldTilt extends CommandBase {
       visionFoundCounter = filterCount;
     else
       visionFoundCounter = 0;
-
+    activeGainSlot = m_tilt.POSITION_SLOT;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -79,8 +80,11 @@ public class PositionHoldTilt extends CommandBase {
       visionFoundAngle = m_tilt.getAngle() + m_tilt.adjustedTargetAngle;
       m_endpoint = visionFoundAngle;
       m_tilt.targetAngle = m_endpoint;
+      activeGainSlot = m_tilt.VISION_SLOT;
     }
-    m_tilt.goToPositionMotionMagic(m_endpoint);
+
+    double motorTurns = m_endpoint - m_tilt.tiltMinAngle;
+    m_tilt.positionTilt(motorTurns, activeGainSlot);
   }
 
   // Called once the command ends or is interrupted.

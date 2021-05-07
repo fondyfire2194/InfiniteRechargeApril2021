@@ -40,9 +40,9 @@ public final class Constants {
       public static final int LEFT_MOTOR = 6;
       public static final int RIGHT_MOTOR = 7;
 
-      public static final int TURRET_ROTATE_MOTOR = 8;// turret
+      public static final int TURRET_ROTATE_MOTOR =9;// turret
 
-      public static final int TILT_MOTOR = 9;
+      public static final int TILT_MOTOR = 8;
 
       // talons
 
@@ -179,18 +179,17 @@ public final class Constants {
        * 
        */
 
-      public static double maxLeadscrewTurns = 4.1;
-
-      public static double maxMotorTurns = maxLeadscrewTurns * 20;
-
-      public static double maxLeadscrewAngle = 30;
-
-      public static double leadscrewAngleSlope = maxLeadscrewAngle / maxLeadscrewTurns;
-
-      public static double motorAngleSlope = maxLeadscrewAngle / maxMotorTurns;
-
       public static final double TILT_MIN_ANGLE = 59;
-      public static final double TILT_MAX_ANGLE = 73;
+      public static final double TILT_MAX_ANGLE = 89;
+
+      public static double maxAngleChange = TILT_MAX_ANGLE - TILT_MIN_ANGLE;
+
+      public static double maxLeadscrewTurns = 6.0;
+
+      public static double maxMotorTurns = 120;
+
+
+      public static double tiltDegreesPerRev = maxAngleChange / maxMotorTurns;// 30/120 = .25 degrees per rev
 
       public static final double TILT_MID_ANGLE = TILT_MIN_ANGLE + ((TILT_MAX_ANGLE - TILT_MIN_ANGLE) / 2);
       public static double tiltRange = TILT_MAX_ANGLE - TILT_MIN_ANGLE;
@@ -207,7 +206,7 @@ public final class Constants {
        * 
        */
 
-      public static final double TURRET_MAX_ANGLE =  100;
+      public static final double TURRET_MAX_ANGLE = 100;
       public static final double TURRET_MIN_ANGLE = -100;;
 
       public static final double TURRET_DEG_PER_MOTOR_REV = 1.421;

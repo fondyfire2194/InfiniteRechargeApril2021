@@ -74,6 +74,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public boolean rightLeadConnected;
     public boolean leftFollowerConnected;
     public boolean rightFollowerConnected;
+    public boolean allConnected;
 
     @Override
     public void close() {
@@ -295,8 +296,9 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         rightLeadConnected = mLeadRight.getFirmwareVersion() != 0;
         leftFollowerConnected = mFollowerLeft.getFirmwareVersion() != 0;
         rightFollowerConnected = mFollowerRight.getFirmwareVersion() != 0;
+        allConnected = leftLeadConnected && leftFollowerConnected && rightLeadConnected && rightFollowerConnected;
 
-        return leftLeadConnected && rightLeadConnected && leftFollowerConnected && rightFollowerConnected;
+        return allConnected;
     }
 
     public void resetAll() {

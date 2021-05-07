@@ -7,11 +7,10 @@
 
 package frc.robot;
 
-
-import frc.robot.AxisJoystickButton;
-
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+
 //import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
 /**
@@ -76,10 +75,10 @@ public class ButtonBox extends Joystick {
     return getRawAxis(AXIS_LT);
   }
 
-
   public JoystickButton getButtonLT() {
     return new AxisJoystickButton(this, AXIS_LT);
   }
+
   public JoystickButton getButtonRT() {
     return new AxisJoystickButton(this, AXIS_RT);
   }
@@ -169,25 +168,11 @@ public class ButtonBox extends Joystick {
   }
 
   /**
-   * DPad Left and Right only
-   * WPILIB cannot access the vertical axis of the Logitech Game Controller Dpad
-   */
-
-  public boolean getDPadLeft() {
-    double x = getDPadX();
-    return (x < -0.5);
-  }
-
-  public boolean getDPadRight() {
-    double x = getDPadX();
-    return (x > 0.5);
-  }
-
-  /**
    * Gets the state of the Start button
+   * 
    * @return the state of the Start button
    */
-  public JoystickButton getR3Button(){
+  public JoystickButton getR3Button() {
     return new JoystickButton(this, BUTTON_R3);
   }
 
@@ -197,6 +182,7 @@ public class ButtonBox extends Joystick {
 
   /**
    * Gets the state of the left shoulder
+   * 
    * @return the state of the left shoulder
    */
   public JoystickButton getButtonL1() {
@@ -205,6 +191,7 @@ public class ButtonBox extends Joystick {
 
   /**
    * Gets the state of the right shoulder
+   * 
    * @return the state of the right shoulder
    */
   public JoystickButton getButtonR1() {
@@ -226,4 +213,5 @@ public class ButtonBox extends Joystick {
   public JoystickButton getOptionsButton() {
     return new JoystickButton(this, BUTTON_OPTS);
   }
+
 }

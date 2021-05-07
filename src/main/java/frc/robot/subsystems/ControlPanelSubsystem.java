@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Robot;
+import frc.robot.SetupShuffleboard;
 import frc.robot.sim.PhysicsSim;
 import frc.robot.sim.TalonSRXWrapper;
 
@@ -91,6 +92,10 @@ public class ControlPanelSubsystem extends SubsystemBase {
    private int gameColorNumberLast;
    public int revsDone;
    public boolean controlPanelMotorConnected;
+   public boolean showShuffleboardTab;
+   public String colorSeen = "None";
+   public String gameData = "None";
+   private int ctr;
 
    public ControlPanelSubsystem() {
 
@@ -102,15 +107,16 @@ public class ControlPanelSubsystem extends SubsystemBase {
       m_colorMatcher.addColorMatch(kRedTarget);
       m_colorMatcher.addColorMatch(kYellowTarget);
 
-      colorWidget = Shuffleboard.getTab("SetupClimber_CP").add("SensorColor", false).withWidget("Boolean Box")
-            .withPosition(8, 0).withProperties(Map.of("colorWhenFalse", "maroon"));
+      colorWidget = Shuffleboard.getTab("Competition").add("SensorColor", false).withWidget("Boolean Box")
+            .withPosition(1, 0).withSize(1, 1).withProperties(Map.of("colorWhenFalse", "maroon"));
       colorWidgetEntry = colorWidget.getEntry();
       colorWidgetEntry.getBoolean(false);
 
-      gameColorWidget = Shuffleboard.getTab("SetupClimber_CP").add("Game Color", false).withWidget("Boolean Box")
-            .withPosition(8, 1).withProperties(Map.of("colorWhenFalse", "maroon"));
+      gameColorWidget = Shuffleboard.getTab("Competition").add("Game Color", false).withWidget("Boolean Box")
+            .withPosition(1, 1).withSize(1, 1).withProperties(Map.of("colorWhenFalse", "maroon"));
       gameColorWidgetEntry = gameColorWidget.getEntry();
       gameColorWidgetEntry.getBoolean(false);
+
    }
 
    public void turnWheelMotor(double speed) {
@@ -214,7 +220,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
          if (colorNumber != lastColorNumber) {
 
          }
-         String temp = seenColor[colorNumber];
+         colorSeen = seenColor[colorNumber];
 
          int ourTargetColor = gameColorNumber + 2;
          if (ourTargetColor > 4)
@@ -301,9 +307,10 @@ public class ControlPanelSubsystem extends SubsystemBase {
    }
 
    public int getGameData() {
-      String gameData;
-
+       ctr++;
+SmartDashboard.putNumber("CHH", ctr);
       gameData = DriverStation.getInstance().getGameSpecificMessage();
+      SmartDashboard.putString("GSM", gameData);
       if (gameData.length() > 0) {
 
          switch (gameData.charAt(0)) {

@@ -5,6 +5,7 @@
 package frc.robot.commands.Tilt;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.subsystems.RevTiltSubsystem;
 
 public class PositionTilt extends CommandBase {
@@ -16,6 +17,10 @@ public class PositionTilt extends CommandBase {
 
   private double m_endpoint;
 
+  private double motorDegrees;
+
+  private boolean endIt;
+
   public PositionTilt(RevTiltSubsystem tilt, double endpoint) {
     m_tilt = tilt;
     m_endpoint = endpoint;
@@ -25,7 +30,12 @@ public class PositionTilt extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    m_tilt.targetAngle = m_endpoint;
+    if (m_endpoint < HoodedShooterConstants.TILT_MIN_ANGLE)
+      m_endpoint = HoodedShooterConstants.TILT_MIN_ANGLE;
+    if (m_endpoint > HoodedShooterConstants.TILT_MAX_ANGLE)
+      m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE;
+    motorDegrees = (m_endpoint - m_tilt.tiltMinAngle);
     loopCtr = 0;
 
   }
@@ -34,19 +44,22 @@ public class PositionTilt extends CommandBase {
   @Override
   public void execute() {
     loopCtr++;
-    m_tilt.targetAngle = m_endpoint;
-    m_tilt.goToPositionMotionMagic(m_tilt.targetAngle);
+
+    m_tilt.goToPosition(motorDegrees);
+
+    endIt = m_tilt.atTargetAngle() && loopCtr > 10 && Math.abs(m_tilt.getSpeed()) < 1;// || !m_tilt.positionResetDone;
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_tilt.targetAngle = m_tilt.getAngle();
+    if (loopCtr > 10 && !endIt)
+      m_tilt.targetAngle = m_tilt.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_tilt.atTargetAngle() && loopCtr > 10 && Math.abs(m_tilt.getSpeed()) < 1;// !m_tilt.positionResetDone ||
+    return endIt;
   }
 }

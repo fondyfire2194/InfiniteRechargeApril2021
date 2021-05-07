@@ -38,6 +38,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   public boolean rightBeltMotorConnected;
   public boolean frontRollerMotorConnected;
   public boolean rearRollerMotorConnected;
+  public boolean allConnected;
   private int loopCtr;
 
   public CellTransportSubsystem() {
@@ -77,6 +78,8 @@ public class CellTransportSubsystem extends SubsystemBase {
     rightBeltMotorConnected = m_rightBeltMotor.getFirmwareVersion() != -1;
     frontRollerMotorConnected = m_frontRollerMotor.getFirmwareVersion() != -1;
     rearRollerMotorConnected = m_rearRollerMotor.getFirmwareVersion() != -1;
+    allConnected = leftBeltMotorConnected && rightBeltMotorConnected && frontRollerMotorConnected
+        && rearRollerMotorConnected;
 
     return leftBeltMotorConnected && rightBeltMotorConnected && frontRollerMotorConnected && rearRollerMotorConnected;
 

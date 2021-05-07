@@ -7,16 +7,14 @@
 
 package frc.robot;
 
-import org.photonvision.LEDMode;
-
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.buttons.POVButton;
-//import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -46,7 +44,6 @@ import frc.robot.commands.Turret.TurretWaitForStop;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ControlPanelSubsystem;
-import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -117,6 +114,25 @@ public class RobotContainer {
       public JoystickButton L3Button;
       public JoystickButton R3Button;
 
+      public POVButton setupUpButton = new POVButton(setupGamepad, 0);
+      public POVButton setupRightButton = new POVButton(setupGamepad, 90);
+      public POVButton setupDownButton = new POVButton(setupGamepad, 180);
+      public POVButton setupLeftButton = new POVButton(setupGamepad, 270);
+
+      public POVButton driverUpButton = new POVButton(m_driverController, 0);
+      public POVButton driverRightButton = new POVButton(m_driverController, 90);
+      public POVButton driverDownButton = new POVButton(m_driverController, 180);
+      public POVButton driverLeftButton = new POVButton(m_driverController, 270);
+
+      public POVButton buttonBoxUpButton = new POVButton(buttonBox, 0);
+      public POVButton buttonBoxRightButton = new POVButton(buttonBox, 90);
+      public POVButton buttonBoxDownButton = new POVButton(buttonBox, 180);
+      public POVButton buttonBoxLeftButton = new POVButton(buttonBox, 270);
+
+
+
+
+
       // AutoCommands ac;// = new AutoCommands(m_robotDrive);
       public int shootPosition;
 
@@ -153,7 +169,7 @@ public class RobotContainer {
 
             m_trajectory = new FondyFireTrajectory(m_robotDrive);
 
-            // m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_limelight));
+            m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_limelight));
 
             m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
 
@@ -166,7 +182,7 @@ public class RobotContainer {
 
             configureButtonBindings();
 
-            // LiveWindow.disableAllTelemetry();
+            LiveWindow.disableAllTelemetry();
 
             SmartDashboard.putData(new CheckCANDevices(m_setup));
 
@@ -227,6 +243,9 @@ public class RobotContainer {
 
             JoystickButton setupBack = new JoystickButton(setupGamepad, 7);
             JoystickButton setupStart = new JoystickButton(setupGamepad, 8);
+
+
+    
 
             setupStart
 

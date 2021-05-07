@@ -70,6 +70,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private int loopCtr;
     public boolean leftMotorConnected;
     public boolean rightMotorConnected;
+    public boolean allConnected;
 
     public RevShooterSubsystem() {
         mLeftMotor = new SimableCANSparkMax(CANConstants.LEFT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -96,7 +97,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         }
 
         shootColorWidget = Shuffleboard.getTab("Competition").add("ShootColor", false).withWidget("Boolean Box")
-                .withPosition(0, 0).withSize(2, 1).withProperties(Map.of("colorWhenFalse", "black"));
+                .withPosition(0, 0).withSize(1, 1).withProperties(Map.of("colorWhenFalse", "black"));
         shootColorWidgetEntry = shootColorWidget.getEntry();
         shootColorWidgetEntry.getBoolean(false);
 
@@ -187,7 +188,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean checkCAN() {
         leftMotorConnected = mLeftMotor.getFirmwareVersion() != 0;
         rightMotorConnected = mRightMotor.getFirmwareVersion() != 0;
-        return leftMotorConnected && rightMotorConnected;
+        allConnected = leftMotorConnected && rightMotorConnected;
+        return allConnected;
     }
 
     @Override
@@ -253,7 +255,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     private void setGains() {
         fixedSettings();
-        maxRPM = 5700;//not used
+        maxRPM = 5700;// not used
         kFF = .00017;
         kP = 3e-4;
         kI = 0.0;
