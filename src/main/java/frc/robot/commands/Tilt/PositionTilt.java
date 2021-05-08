@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Tilt;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.subsystems.RevTiltSubsystem;
@@ -37,7 +38,7 @@ public class PositionTilt extends CommandBase {
       m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE;
     motorDegrees = (m_endpoint - m_tilt.tiltMinAngle);
     loopCtr = 0;
-
+   
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -3,9 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANEncoder;
-import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -75,34 +73,43 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         aimCenter();
         mEncoder.setPosition(0);
         targetAngle = tiltMinAngle;
-        mEncoder.setPositionConversionFactor(degreesPerRev);
-        mEncoder.setVelocityConversionFactor(degreesPerRev / 60);
-        setGains();
-        if (RobotBase.isSimulation()) {
-            mPidController.setP(.1, POSITION_SLOT);
-            mPidController.setFF(0.000008, POSITION_SLOT);
-            // setSoftwareLimits();
+
+        if (RobotBase.isReal()) {
+
+            mEncoder.setPositionConversionFactor(degreesPerRev);
+            mEncoder.setVelocityConversionFactor(degreesPerRev / 60);
+
         }
 
-        resetAngle();
+        else {
+            mEncoder.setPositionConversionFactor(degreesPerRev * 3);
+            mEncoder.setVelocityConversionFactor(degreesPerRev * 3 / 60);
+
+        }
+
+        setGains();
+        mEncoder.setPosition(0);
+        resetAngle(0);
         m_motor.setIdleMode(IdleMode.kBrake);
 
         m_motor.setSmartCurrentLimit(10, 10);
         m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
         m_reverseLimit.enableLimitSwitch(false);
         if (m_reverseLimit.get()) {
-            resetAngle();
+            resetAngle(0);
         }
 
         if (RobotBase.isSimulation()) {
             ElevatorSimConstants.kCarriageMass = .001;
             ElevatorSimConstants.kElevatorGearing = 1;
-            ElevatorSimConstants.kMaxElevatorHeight = HoodedShooterConstants.TILT_MAX_ANGLE;
-            ElevatorSimConstants.kMinElevatorHeight = HoodedShooterConstants.TILT_MIN_ANGLE;
+            ElevatorSimConstants.kMaxElevatorHeight = 30;// HoodedShooterConstants.TILT_MAX_ANGLE;
+            ElevatorSimConstants.kMinElevatorHeight = 0;// HoodedShooterConstants.TILT_MIN_ANGLE;
             ElevatorSimConstants.kElevatorGearbox = DCMotor.getNeo550(1);
 
             mElevatorSim = new ElevatorSimWrapper(ElevatorSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
+
+            mPidController.setP(.1);
         }
 
     }
@@ -127,7 +134,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         if (lastTuneOn)
             lastTuneOn = tuneOn;
 
-        if (DriverStation.getInstance().isDisabled())
+        if (RobotBase.isReal() && DriverStation.getInstance().isDisabled())
             targetAngle = getAngle();
 
     }
@@ -165,7 +172,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     public void positionTilt(double motorDegrees, int slotNumber) {
-
+        SmartDashboard.putNumber("TMD", motorDegrees);
         mPidController.setReference(motorDegrees, ControlType.kPosition, slotNumber);
 
     }
@@ -178,8 +185,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         mPidController.setReference(motorDegrees, ControlType.kSmartMotion, POSITION_SLOT);
     }
 
-    public void resetAngle() {
-        mEncoder.setPosition(0);
+    public void resetAngle(double angle) {
+        mEncoder.setPosition(angle);
         targetAngle = tiltMinAngle;
         mPidController.setIAccum(0);
     }

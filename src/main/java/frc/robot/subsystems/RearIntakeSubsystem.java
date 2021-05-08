@@ -51,7 +51,6 @@ public class RearIntakeSubsystem extends SubsystemBase {
   }
 
   public boolean checkCAN() {
-    SmartDashboard.putNumber("M19FV1",m_intakeMotor.getFirmwareVersion()); 
     return intakeMotorConnected = m_intakeMotor.getFirmwareVersion() != -1;
 
   }

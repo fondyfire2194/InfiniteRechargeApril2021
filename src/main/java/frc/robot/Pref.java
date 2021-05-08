@@ -67,7 +67,8 @@ public class Pref {
     prefDict.put("sHTune", 0.);
 
     // Drive
-    prefDict.put("dRKp", .2);
+    prefDict.put("dRRKp", .2);
+    prefDict.put("dRLKp", .2);   
     prefDict.put("dRKi", .0);
     prefDict.put("dRKd", .0);
     prefDict.put("dRKiz", .0);

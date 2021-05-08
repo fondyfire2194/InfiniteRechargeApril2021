@@ -17,7 +17,9 @@ import org.snobotv2.sim_wrappers.ISimWrapper;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -95,9 +97,11 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             mSimulator = new FlywheelSimWrapper(FlywheelSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(mLeftMotor), RevEncoderSimWrapper.create(mLeftMotor));
         }
+        ShuffleboardLayout competition = Shuffleboard.getTab("Competition").getLayout("Bools", BuiltInLayouts.kList)
+                .withPosition(1, 0).withSize(1, 3).withProperties(Map.of("Label position", "TOP"));
 
-        shootColorWidget = Shuffleboard.getTab("Competition").add("ShootColor", false).withWidget("Boolean Box")
-                .withPosition(0, 0).withSize(1, 1).withProperties(Map.of("colorWhenFalse", "black"));
+        shootColorWidget = competition.add("ShootColor", false).withWidget("Boolean Box")
+                .withProperties(Map.of("colorWhenFalse", "black"));
         shootColorWidgetEntry = shootColorWidget.getEntry();
         shootColorWidgetEntry.getBoolean(false);
 

@@ -73,7 +73,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         } else
 
         {
-            mEncoder.setPositionConversionFactor(1); // // HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
+            mEncoder.setPositionConversionFactor(1.421); // // HoodedShooterConstants.TURRET_ENCODER_DEG_PER_REV);
             mPidController.setP(.1, 0);
 
         }

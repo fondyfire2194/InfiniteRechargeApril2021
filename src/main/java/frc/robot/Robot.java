@@ -110,6 +110,7 @@ public class Robot extends TimedRobot {
     switch (autoChoice) {
 
     case 0:// in front of power port use 0 shooter data index use pipeline 0 - no zoom
+           // shoot then retract
       setStartingPose(
           new Pose2d(FieldMap.startLineX - FieldMap.robotLength, FieldMap.targetCenterPointY, new Rotation2d(0)));
       m_autoFactory.shootNumber = 0;
@@ -117,7 +118,8 @@ public class Robot extends TimedRobot {
       break;
     case 1:// in front of power port, move back use 1 shooter data index use pipeline 0 -
            // no zoom
-
+      setStartingPose(
+          new Pose2d(FieldMap.startLineX - FieldMap.robotLength, FieldMap.targetCenterPointY, new Rotation2d(0)));
       m_autoFactory.shootNumber = 1;
       m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
       break;
@@ -259,7 +261,7 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
-     CommandScheduler.getInstance().cancelAll();
+    CommandScheduler.getInstance().cancelAll();
   }
 
   /**

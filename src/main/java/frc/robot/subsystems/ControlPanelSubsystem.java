@@ -20,7 +20,9 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -107,13 +109,16 @@ public class ControlPanelSubsystem extends SubsystemBase {
       m_colorMatcher.addColorMatch(kRedTarget);
       m_colorMatcher.addColorMatch(kYellowTarget);
 
-      colorWidget = Shuffleboard.getTab("Competition").add("SensorColor", false).withWidget("Boolean Box")
-            .withPosition(1, 0).withSize(1, 1).withProperties(Map.of("colorWhenFalse", "maroon"));
+      ShuffleboardLayout competition = Shuffleboard.getTab("Competition").getLayout("Bools", BuiltInLayouts.kList)
+            .withPosition(1, 0).withSize(1, 3).withProperties(Map.of("Label position", "TOP"));
+
+      colorWidget = competition.add("SensorColor", false).withWidget("Boolean Box")
+            .withProperties(Map.of("colorWhenFalse", "maroon"));
       colorWidgetEntry = colorWidget.getEntry();
       colorWidgetEntry.getBoolean(false);
 
-      gameColorWidget = Shuffleboard.getTab("Competition").add("Game Color", false).withWidget("Boolean Box")
-            .withPosition(1, 1).withSize(1, 1).withProperties(Map.of("colorWhenFalse", "maroon"));
+      gameColorWidget = competition.add("Game Color", false).withWidget("Boolean Box")
+            .withProperties(Map.of("colorWhenFalse", "maroon"));
       gameColorWidgetEntry = gameColorWidget.getEntry();
       gameColorWidgetEntry.getBoolean(false);
 
@@ -307,8 +312,8 @@ public class ControlPanelSubsystem extends SubsystemBase {
    }
 
    public int getGameData() {
-       ctr++;
-SmartDashboard.putNumber("CHH", ctr);
+      ctr++;
+      SmartDashboard.putNumber("CHH", ctr);
       gameData = DriverStation.getInstance().getGameSpecificMessage();
       SmartDashboard.putString("GSM", gameData);
       if (gameData.length() > 0) {

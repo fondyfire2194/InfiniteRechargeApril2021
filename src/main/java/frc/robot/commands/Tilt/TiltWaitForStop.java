@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Tilt;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTiltSubsystem;
 
@@ -37,6 +38,6 @@ public class TiltWaitForStop extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(m_tilt.getSpeed()) < .01;
+    return RobotBase.isSimulation() || Math.abs(m_tilt.getSpeed()) < .01;
   }
 }

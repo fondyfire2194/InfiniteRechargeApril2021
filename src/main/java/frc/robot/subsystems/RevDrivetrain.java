@@ -62,8 +62,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private int POSITION_SLOT = 0;
     private int SMART_MOTION_SLOT = 1;
 
-    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, acc;
-    public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastAcc;
+    public double lkP, rkP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, acc;
+    public double lastLkP, lastRkp, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastAcc;
     // start NetworkTables
 
     public boolean tuneOn = false;
@@ -130,10 +130,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mDrive = new DifferentialDrive(mLeadLeft, mLeadRight);
         mDrive.setRightSideInverted(false);
 
-        // for (CANPIDController pidController : new CANPIDController[] {
-        // mLeftPidController, mRightPidController }) {
-        // setupPidController(pidController, .2, 0, 0, .21, 3.5, 3);
-        // }
         mDrive.setSafetyEnabled(false);
         if (RobotBase.isSimulation()) {
             mSimulator = new DifferentialDrivetrainSimWrapper(DRIVETRAIN_CONSTANTS.createSim(),
@@ -249,12 +245,16 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mLeftPidController.setReference(leftPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
         mRightPidController.setReference(rightPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
         mDrive.feed();
+
     }
 
     public void positionDistance(double leftPosition, double rightPosition, double velocity) {
 
         mLeftPidController.setReference(leftPosition, ControlType.kPosition, POSITION_SLOT);
         mRightPidController.setReference(rightPosition, ControlType.kPosition, POSITION_SLOT);
+
+        SmartDashboard.putNumber("LKPM", mLeftPidController.getP(POSITION_SLOT));
+        SmartDashboard.putNumber("TKPM", mRightPidController.getP(POSITION_SLOT));
 
         mDrive.feed();
     }
@@ -374,47 +374,58 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         return Math.abs(leftTargetPosition - getAverageDistance()) < .25;
     }
 
-    public void calibratePID(CANPIDController controller, final double p, final double i, final double d, double kIz,
-            double acc, int slotNumber) {
-        if (p != lastkP) {
-            controller.setP(p, slotNumber);
-            lastkP = p;// mPidController.getP(slotNumber);
+    public void calibratePID(final double p, double rp, final double i, final double d, double kIz, double acc,
+            int slotNumber) {
+        if (p != lastLkP) {
+            mLeftPidController.setP(p, slotNumber);
+            lastLkP = p;
 
         }
+        if (rp != lastRkp) {
+
+            mRightPidController.setP(rp, slotNumber);
+            lastRkp = rp;
+
+        }
+
         if (i != lastkI) {
-            controller.setI(i, slotNumber);
-            lastkI = i;// mPidController.getI(slotNumber);
+            mLeftPidController.setI(i, slotNumber);
+            mRightPidController.setI(i, slotNumber);
+            lastkI = i;
         }
 
         if (d != lastkD) {
-            controller.setD(d, slotNumber);
-            lastkD = d;// mPidController.getD(slotNumber);
-        }
+            mLeftPidController.setI(d, slotNumber);
+            mRightPidController.setD(d, slotNumber);
+            lastkD = d;
 
-        if (kIz != lastkIz) {
-            controller.setIZone(kIz, slotNumber);
+            if (kIz != lastkIz) {
+                mLeftPidController.setIZone(kIz, slotNumber);
+                mRightPidController.setIZone(kIz, slotNumber);
+                lastkIz = kIz;
+            }
+            if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
+                mLeftPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
+                mRightPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
+                lastkMinOutput = kMinOutput;
+                lastkMaxOutput = kMaxOutput;
+            }
 
-            lastkIz = kIz;// mPidController.getIZone(slotNumber);
-        }
-        if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
-            controller.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
-            lastkMinOutput = kMinOutput;
-            lastkMaxOutput = kMaxOutput;
-        }
+            if (acc != lastAcc) {
+                mLeadLeft.setClosedLoopRampRate(acc);
+                mLeadRight.setClosedLoopRampRate(acc);
+                lastAcc = acc;
 
-        if (acc != lastAcc) {
-            mLeadLeft.setClosedLoopRampRate(acc);
-            mLeadRight.setClosedLoopRampRate(acc);
-            lastAcc = acc;// m_motor.getClosedLoopRampRate();
+            }
         }
-
     }
 
     private void setGains() {
 
         fixedSettings();
 
-        kP = .000001;
+        lkP = .08;
+        rkP = .08;
         kI = 0;
         kD = .0005;
         kIz = 0;
@@ -423,23 +434,23 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         // set PID coefficients
 
-        calibratePID(mLeftPidController, kP, kI, kD, kIz, acc, POSITION_SLOT);
+        calibratePID(lkP, rkP, kI, kD, kIz, acc, POSITION_SLOT);
 
-        calibratePID(mRightPidController, kP, kI, kD, kIz, acc, POSITION_SLOT);
     }
 
     private void tuneGains() {
 
         fixedSettings();
 
-        double p = Pref.getPref("dRKp");
+        double lp = Pref.getPref("dRRKp");
+        double rp = Pref.getPref("dRLKp");
         double i = Pref.getPref("dRKi");
         double d = Pref.getPref("dRKd");
         double iz = Pref.getPref("dRKiz");
         double acc = Pref.getPref("dRKacc");
 
-        calibratePID(mLeftPidController, p, i, d, iz, acc, POSITION_SLOT);
-        calibratePID(mRightPidController, p, i, d, iz, acc, POSITION_SLOT);
+        calibratePID(lp, rp, i, d, iz, acc, POSITION_SLOT);
+
     }
 
     private void fixedSettings() {

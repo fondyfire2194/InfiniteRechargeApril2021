@@ -11,7 +11,7 @@ public class FieldMap {
     public static final double fieldWidth = 323  * Constants.inchToMetersConversionFactor;
     public static final double fieldLength = 629.25 * Constants.inchToMetersConversionFactor;//16 meters
     // Distance to the center of the white tape line
-    public static final double startLineX = fieldLength - (12 * 10 + 1) * Constants.inchToMetersConversionFactor;
+    public static final double startLineX = fieldLength - ((12 * 10 + 1) * Constants.inchToMetersConversionFactor);
 
     // Robot dimensions with bumpers
     public static final double robotWidth = 34.75 * Constants.inchToMetersConversionFactor;

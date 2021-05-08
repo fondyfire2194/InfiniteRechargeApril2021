@@ -85,7 +85,7 @@ public class PositionTiltToVision extends CommandBase {
 
     m_tilt.goToPositionMotionMagic(m_endpoint);
 
-    endIt = !m_tilt.positionResetDone || m_tilt.validTargetSeen && visionFoundCounter > 5
+    endIt = m_tilt.validTargetSeen && visionFoundCounter > 5
         || m_tilt.atTargetAngle() && loopCtr > 5 || loopCtr > 250;
 
   }

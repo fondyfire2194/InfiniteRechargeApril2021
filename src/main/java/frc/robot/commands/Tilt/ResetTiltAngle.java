@@ -33,7 +33,7 @@ public class ResetTiltAngle extends CommandBase {
     @Override
     public void execute() {
         loopCtr++;
-        m_tilt.resetAngle();
+        m_tilt.resetAngle(0);
         m_tilt.targetAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
   //      m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_limelight));
         if (RobotBase.isReal())
