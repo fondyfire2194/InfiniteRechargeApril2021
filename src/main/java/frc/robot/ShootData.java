@@ -19,7 +19,7 @@ public class ShootData {
             // shootdistance, shoot speed, shoot
             // time, turret angle, tilt angle.
             // front of power port at initiation line 0
-            { { 0, 0, -1, 30, 4500, 5, 0, 69.0 }, // 0 center start shoot retract
+            { { 0, 0, -1, 30, 4500, 5, 0, 74. }, // 0 center start shoot retract
 
                     { 0, -1, -1, 30, 3500, 5, 0, 63.5 }, // 1 center start retract shoot
 

@@ -29,6 +29,7 @@ public class PositionTiltToVision extends CommandBase {
   private double visionFoundAngle;
   private boolean endIt;
   private int loopCtr;
+  private double motorDegrees;
 
   private double limelightVerticalAngle;
 
@@ -48,6 +49,7 @@ public class PositionTiltToVision extends CommandBase {
     m_endpoint = m_originalTarget;
     m_tilt.visionCorrection = 0;
     m_tilt.targetAngle = m_endpoint;
+    motorDegrees = (m_endpoint - m_tilt.tiltMinAngle);
     loopCtr = 0;
   }
 
@@ -83,7 +85,7 @@ public class PositionTiltToVision extends CommandBase {
       m_tilt.targetAngle = m_endpoint;
     }
 
-    m_tilt.goToPositionMotionMagic(m_endpoint);
+    m_tilt.goToPosition(motorDegrees);
 
     endIt = m_tilt.validTargetSeen && visionFoundCounter > 5
         || m_tilt.atTargetAngle() && loopCtr > 5 || loopCtr > 250;

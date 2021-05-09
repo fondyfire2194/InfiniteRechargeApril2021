@@ -97,13 +97,16 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             mSimulator = new FlywheelSimWrapper(FlywheelSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(mLeftMotor), RevEncoderSimWrapper.create(mLeftMotor));
         }
-        ShuffleboardLayout competition = Shuffleboard.getTab("Competition").getLayout("Bools", BuiltInLayouts.kList)
-                .withPosition(1, 0).withSize(1, 3).withProperties(Map.of("Label position", "TOP"));
+        // ShuffleboardLayout competition =
+        // Shuffleboard.getTab("Competition").getLayout("Bools", BuiltInLayouts.kList)
+        // .withPosition(1, 0).withSize(1, 3).withProperties(Map.of("Label position",
+        // "TOP"));
 
-        shootColorWidget = competition.add("ShootColor", false).withWidget("Boolean Box")
-                .withProperties(Map.of("colorWhenFalse", "black"));
-        shootColorWidgetEntry = shootColorWidget.getEntry();
-        shootColorWidgetEntry.getBoolean(false);
+        // shootColorWidget = competition.add("ShootColor", false).withWidget("Boolean
+        // Box")
+        // .withProperties(Map.of("colorWhenFalse", "black"));
+        // shootColorWidgetEntry = shootColorWidget.getEntry();
+        // shootColorWidgetEntry.getBoolean(false);
 
         setGains();
 
@@ -139,21 +142,22 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         if (lastTuneOn)
             lastTuneOn = tuneOn;
 
-        if (shootColorNumber > 2)
-            shootColorNumber = 2;
-        if (shootColorNumber != shootColorNumberLast) {
-            if (shootColorNumber == 0) {
-                shootColorWidgetEntry.setBoolean(false);
-                shootColorNumberLast = shootColorNumber;
-            } else
-                doneOnce = false;
-        }
-        if (!doneOnce) {
-            shootColorWidget.withProperties(Map.of("colorWhenTrue", shootColor[shootColorNumber]));
-            shootColorWidgetEntry.setBoolean(true);
-            shootColorNumberLast = shootColorNumber;
-            doneOnce = true;
-        }
+        // if (shootColorNumber > 2)
+        // shootColorNumber = 2;
+        // if (shootColorNumber != shootColorNumberLast) {
+        // if (shootColorNumber == 0) {
+        // shootColorWidgetEntry.setBoolean(false);
+        // shootColorNumberLast = shootColorNumber;
+        // } else
+        // doneOnce = false;
+        // }
+        // if (!doneOnce) {
+        // shootColorWidget.withProperties(Map.of("colorWhenTrue",
+        // shootColor[shootColorNumber]));
+        // shootColorWidgetEntry.setBoolean(true);
+        // shootColorNumberLast = shootColorNumber;
+        // doneOnce = true;
+        // }
     }
 
     public boolean checkCAN() {
@@ -169,7 +173,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     }
 
     public boolean atSpeed() {
-        return Math.abs(requiredSpeed - getRPM()) < 50;
+        return requiredSpeed > 0 && Math.abs(requiredSpeed - getRPM()) < requiredSpeed * .1;
 
     }
 

@@ -19,7 +19,7 @@ public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new Climber. */
 
   final WPI_TalonSRX m_climberMotor = new TalonSRXWrapper(CANConstants.CLIMB_MOTOR);
-  final DoubleSolenoidSim m_climberArm = new DoubleSolenoidSim(4, 5);
+  final DoubleSolenoid m_climberArm = new DoubleSolenoid(4, 5);
   private int loopCtr;
   public boolean climberMotorConnected;
 

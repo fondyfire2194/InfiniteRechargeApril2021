@@ -85,11 +85,12 @@ public class Robot extends TimedRobot {
     // CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().run();
     m_robotContainer.m_setup.checkCANDevices();
+    
   }
 
   @Override
   public void disabledPeriodic() {
-
+    
   }
 
   public void autonomousInit() {
@@ -243,6 +244,7 @@ public class Robot extends TimedRobot {
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)
         .schedule(true);
     new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
+ 
   }
 
   /**
@@ -251,7 +253,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
-
   }
 
   @Override

@@ -228,8 +228,18 @@ public class SetupShuffleboard {
                                         .withWidget(BuiltInWidgets.kNumberBar)
                                         .withProperties(Map.of("Min", 0, "Max", 1, "Show Text", false));
 
+                        ShuffleboardLayout shoot = Shuffleboard.getTab("Competition")
+                                        .getLayout("Shoot", BuiltInLayouts.kList).withPosition(1, 0).withSize(2,1)
+                                        .withProperties(Map.of("Label position", "HIDDEN"));
+
+                        shoot.addBoolean("SHOOT",
+                                        () -> (m_shooter.atSpeed() && (m_turret.atTargetAngle()
+                                                        && (m_limelight.getHorOnTarget() || RobotBase.isSimulation()))
+                                                        && (m_tilt.atTargetAngle() && (m_limelight.getVertOnTarget()
+                                                                        || RobotBase.isSimulation()))));
+
                         ShuffleboardLayout competition = Shuffleboard.getTab("Competition")
-                                        .getLayout("Bools", BuiltInLayouts.kList).withPosition(1, 0).withSize(1, 3)
+                                        .getLayout("Values", BuiltInLayouts.kList).withPosition(1, 1).withSize(1, 3)
                                         .withProperties(Map.of("Label position", "TOP"));
 
                         competition.addBoolean("IntakeArm Up", () -> m_intake.getArmRaised()).withWidget("Boolean Box");
@@ -479,13 +489,12 @@ public class SetupShuffleboard {
                                         .getLayout("IntakeValues", BuiltInLayouts.kList).withPosition(4, 0)
                                         .withSize(2, 4).withProperties(Map.of("Label position", "TOP"));
 
-                        intakeValues.addBoolean("Arm Up", () -> m_climber.getArmRaised());
-                        intakeValues.addBoolean("Arm Down", () -> m_climber.getArmLowered());
+                        intakeValues.addBoolean("Arm Up", () -> m_intake.getArmRaised());
+                        intakeValues.addBoolean("Arm Down", () -> m_intake.getArmLowered());
                         intakeValues.addNumber("Motor Amps", () -> m_intake.getMotorAmps());
                         intakeValues.addNumber("Motor CMD", () -> m_intake.getMotor());
                         intakeValues.add("ArmRaise", new IntakeArm(m_intake, false));
                         intakeValues.add("ArmLower", new IntakeArm(m_intake, true));
-                        
 
                 }
                 /**
@@ -735,15 +744,9 @@ public class SetupShuffleboard {
                         cpValues.addString("GameColor", () -> m_controlPanel.gameData);
                         cpValues.addString("SensorColor", () -> m_controlPanel.colorSeen);
 
-                        ShuffleboardLayout cpValues2 = Shuffleboard.getTab("SetupClimber_CP")
-                                        .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(6, 3).withSize(2, 2)
-                                        .withProperties(Map.of("Label position", "TOP")); // labels
-
-                        cpValues2.addBoolean("Arm Up", () -> m_controlPanel.getArmRaised());
-
-                        cpValues2.addBoolean("Arm Down", () -> m_controlPanel.getArmLowered());
-
-                        cpValues2.addBoolean("Connected", () -> m_controlPanel.controlPanelMotorConnected);
+                        cpValues.addBoolean("CP Arm Up", () -> m_controlPanel.getArmRaised());
+                        cpValues.addBoolean("CP Arm Down", () -> m_controlPanel.getArmLowered());
+                        cpValues.addBoolean("Connected", () -> m_controlPanel.controlPanelMotorConnected);
 
                         /**
                          * 
@@ -761,14 +764,13 @@ public class SetupShuffleboard {
 
                         ShuffleboardLayout climberValues = Shuffleboard.getTab("SetupClimber_CP")
                                         .getLayout("ClimberValues", BuiltInLayouts.kList).withPosition(2, 0)
-                                        .withSize(2, 3).withProperties(Map.of("Label position", "TOP")); //
+                                        .withSize(2, 4).withProperties(Map.of("Label position", "TOP")); //
                                                                                                          // labels
-
+                        climberValues.addBoolean("Climber Arm Down", () -> m_climber.getArmLowered());
                         climberValues.addNumber("Motor Amps", () -> m_climber.getMotorAmps());
                         climberValues.addNumber("Motor Out", () -> m_climber.getMotorOut());
                         climberValues.addBoolean("Conected", () -> m_climber.climberMotorConnected);
-                        climberValues.addBoolean("Arm Up", () -> m_climber.getArmRaised());
-                        climberValues.addBoolean("Arm Down", () -> m_climber.getArmLowered());
+                        climberValues.addBoolean("Climber Arm Up", () -> m_climber.getArmRaised());
 
                 }
 

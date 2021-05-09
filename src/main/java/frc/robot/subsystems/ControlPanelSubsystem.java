@@ -82,7 +82,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
    public boolean lookForColor;
 
    private WPI_TalonSRX m_controlPanelMotor = new TalonSRXWrapper(CANConstants.CP_TURN_MOTOR);
-   private final DoubleSolenoidSim m_colorWheelArm = new DoubleSolenoidSim(0, 1);
+   private final DoubleSolenoid m_colorWheelArm = new DoubleSolenoid(0, 1);
    private int simColorCount;
    SimpleWidget colorWidget;
    NetworkTableEntry colorWidgetEntry;
@@ -110,7 +110,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
       m_colorMatcher.addColorMatch(kRedTarget);
       m_colorMatcher.addColorMatch(kYellowTarget);
 
-      ShuffleboardLayout competition = Shuffleboard.getTab("Competition").getLayout("Bools", BuiltInLayouts.kList)
+      ShuffleboardLayout competition = Shuffleboard.getTab("Competition").getLayout("Values", BuiltInLayouts.kList)
             .withPosition(1, 0).withSize(1, 3).withProperties(Map.of("Label position", "TOP"));
 
       colorWidget = competition.add("SensorColor", false).withWidget("Boolean Box")
