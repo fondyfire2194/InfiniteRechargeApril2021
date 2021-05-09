@@ -173,6 +173,7 @@ public class RobotContainer {
 
             m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
 
+
             // m_shooter.setDefaultCommand(getJogShooterCommand());
 
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
@@ -184,7 +185,6 @@ public class RobotContainer {
 
             LiveWindow.disableAllTelemetry();
 
-            SmartDashboard.putData(new CheckCANDevices(m_setup));
 
             CommandScheduler.getInstance()
                         .onCommandInitialize(command -> System.out.println(command.getName() + " is starting"));

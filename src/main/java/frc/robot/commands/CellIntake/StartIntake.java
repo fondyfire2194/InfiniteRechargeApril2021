@@ -38,7 +38,7 @@ public class StartIntake extends CommandBase {
   @Override
   public void execute() {
     m_rearIntake.runIntakeMotor(IntakeConstants.REAR_SPEED);
-    m_rearIntake.lowerIntakeArm();
+    m_rearIntake.lowerArm();
 
   }
 
@@ -46,7 +46,7 @@ public class StartIntake extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_rearIntake.runIntakeMotor(0);
-    m_rearIntake.raiseIntakeArm();
+    m_rearIntake.raiseArm();
     m_limelight.setStream(StreamType.kStandard);
 
 

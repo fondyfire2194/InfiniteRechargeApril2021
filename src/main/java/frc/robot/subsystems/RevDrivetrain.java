@@ -18,7 +18,6 @@ import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -111,6 +110,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         mLeftPidController = mLeadLeft.getPIDController();
         mRightPidController = mLeadRight.getPIDController();
+
+        mLeftPidController.setOutputRange(-.5, .5, POSITION_SLOT);
 
         setGains();
 
@@ -242,20 +243,18 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     @Override
     public void driveDistance(double leftPosition, double rightPosition) {
+        SmartDashboard.putNumber("Min", mLeftPidController.getOutputMin());
+        SmartDashboard.putNumber("Max", mLeftPidController.getOutputMax());      
         mLeftPidController.setReference(leftPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
         mRightPidController.setReference(rightPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
         mDrive.feed();
 
     }
 
-    public void positionDistance(double leftPosition, double rightPosition, double velocity) {
+    public void positionDistance(double leftPosition, double rightPosition) {
 
         mLeftPidController.setReference(leftPosition, ControlType.kPosition, POSITION_SLOT);
         mRightPidController.setReference(rightPosition, ControlType.kPosition, POSITION_SLOT);
-
-        SmartDashboard.putNumber("LKPM", mLeftPidController.getP(POSITION_SLOT));
-        SmartDashboard.putNumber("TKPM", mRightPidController.getP(POSITION_SLOT));
-
         mDrive.feed();
     }
 
@@ -316,7 +315,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public void simulationPeriodic() {
         mSimulator.update();
         fieldSim.setRobotPose(getPose());
-        SmartDashboard.putString("Pose", getPose().toString());
     }
 
     @Override
@@ -370,8 +368,12 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         return mLeadLeft.getFaults() + mLeadRight.getFaults() + mFollowerLeft.getFaults() + mFollowerRight.getFaults();
     }
 
-    public boolean getInPosition() {
-        return Math.abs(leftTargetPosition - getAverageDistance()) < .25;
+    public boolean getInPositionLeft() {
+        return Math.abs(leftTargetPosition - getLeftDistance()) < .1;
+    }
+
+    public boolean getInPositionRight() {
+        return Math.abs(rightTargetPosition - getRightDistance()) < .1;
     }
 
     public void calibratePID(final double p, double rp, final double i, final double d, double kIz, double acc,
@@ -455,8 +457,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     private void fixedSettings() {
         kFF = .0000;//
-        kMaxOutput = 1;
-        kMinOutput = -1;
+        kMaxOutput = .5;
+        kMinOutput = -.5;
 
     }
 }

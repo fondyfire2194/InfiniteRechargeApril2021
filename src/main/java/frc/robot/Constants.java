@@ -116,9 +116,9 @@ public final class Constants {
       public static double kPositionRateToleranceMetersPerS = 0.1;
       public static double kPositionToleranceMeters = 0.1;
       public static double kPositionI = 0.;
-      public static double kPositionP = .01;
-      public static double kPositionD = .0;
-      public static double kMaxPositionAccelerationMetersPerSSquared = 0.;
+      public static double kPositionP = .1;
+      public static double kPositionD = .5;
+      public static double kMaxPositionAccelerationMetersPerSSquared = 100;
 
       /**
        * 

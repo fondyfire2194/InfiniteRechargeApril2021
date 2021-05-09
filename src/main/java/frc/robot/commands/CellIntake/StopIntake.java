@@ -33,7 +33,7 @@ public class StopIntake extends CommandBase {
   @Override
   public void execute() {
     m_rearIntake.runIntakeMotor(0);
-    m_rearIntake.raiseIntakeArm();
+    m_rearIntake.raiseArm();
 
   }
 

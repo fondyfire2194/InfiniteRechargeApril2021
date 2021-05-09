@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import edu.wpi.first.wpilibj.simulation.DoubleSolenoidSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -81,7 +82,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
    public boolean lookForColor;
 
    private WPI_TalonSRX m_controlPanelMotor = new TalonSRXWrapper(CANConstants.CP_TURN_MOTOR);
-   private final DoubleSolenoid m_colorWheelArm = new DoubleSolenoid(0, 1);
+   private final DoubleSolenoidSim m_colorWheelArm = new DoubleSolenoidSim(0, 1);
    private int simColorCount;
    SimpleWidget colorWidget;
    NetworkTableEntry colorWidgetEntry;
@@ -121,6 +122,8 @@ public class ControlPanelSubsystem extends SubsystemBase {
             .withProperties(Map.of("colorWhenFalse", "maroon"));
       gameColorWidgetEntry = gameColorWidget.getEntry();
       gameColorWidgetEntry.getBoolean(false);
+
+      raiseArm();
 
    }
 
@@ -313,9 +316,8 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
    public int getGameData() {
       ctr++;
-      SmartDashboard.putNumber("CHH", ctr);
       gameData = DriverStation.getInstance().getGameSpecificMessage();
-      SmartDashboard.putString("GSM", gameData);
+      
       if (gameData.length() > 0) {
 
          switch (gameData.charAt(0)) {

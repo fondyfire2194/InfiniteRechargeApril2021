@@ -166,13 +166,11 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     @Override
     public void goToPosition(double motorTurns) {
-        SmartDashboard.putNumber("TILTURNS", motorTurns);
         mPidController.setReference(motorTurns, ControlType.kPosition, POSITION_SLOT);
 
     }
 
     public void positionTilt(double motorDegrees, int slotNumber) {
-        SmartDashboard.putNumber("TMD", motorDegrees);
         mPidController.setReference(motorDegrees, ControlType.kPosition, slotNumber);
 
     }

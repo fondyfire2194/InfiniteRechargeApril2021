@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.Map;
 
 import edu.wpi.cscore.HttpCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.command.InstantCommand;
@@ -22,6 +23,9 @@ import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
+import frc.robot.commands.CheckCANDevices;
+import frc.robot.commands.CellIntake.IntakeArm;
+import frc.robot.commands.Climber.ClimberArm;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
 import frc.robot.commands.ControlPanel.PositionNumberRevs;
 import frc.robot.commands.ControlPanel.PositionToColor;
@@ -160,16 +164,15 @@ public class SetupShuffleboard {
                         startDelayChooser.addOption("Five Seconds", 5);
 
                         ShuffleboardLayout preMatch = Shuffleboard.getTab("Pre-Round")
-                                        .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(2, 4)
+                                        .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(2, 5)
                                         .withProperties(Map.of("Label position", "TOP"));
 
                         preMatch.addNumber("TiltView", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
-                                        .withProperties(Map.of("Min", 55, "Max", 90, "Show Text", true)).withSize(2, 2);
-
+                                        .withProperties(Map.of("Min", 55, "Max", 90, "Show Text", false));
+                        preMatch.add("CANCheck", new CheckCANDevices(this));
                         preMatch.addNumber("TurretView", () -> m_turret.getAngle())
                                         .withWidget(BuiltInWidgets.kNumberBar)
-                                        .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", true))
-                                        .withSize(2, 1);
+                                        .withProperties(Map.of("Min", -120, "Max", 120, "Show Text", false));
                         preMatch.addBoolean("Tilt Down OK", () -> m_tilt.m_reverseLimit.get());
                         preMatch.addBoolean("CANConnected",
                                         () -> m_tilt.tiltMotorConnected && m_turret.turretMotorConnected
@@ -229,8 +232,9 @@ public class SetupShuffleboard {
                                         .getLayout("Bools", BuiltInLayouts.kList).withPosition(1, 0).withSize(1, 3)
                                         .withProperties(Map.of("Label position", "TOP"));
 
-                        competition.addBoolean("IntakeArm Up", () -> m_intake.getArmUp()).withWidget("Boolean Box");
-                        competition.addBoolean("IntakeArm Down", () -> m_intake.getArmDown()).withWidget("Boolean Box");
+                        competition.addBoolean("IntakeArm Up", () -> m_intake.getArmRaised()).withWidget("Boolean Box");
+                        competition.addBoolean("IntakeArm Down", () -> m_intake.getArmLowered())
+                                        .withWidget("Boolean Box");
 
                         if (RobotBase.isReal()) {
 
@@ -242,6 +246,7 @@ public class SetupShuffleboard {
                                                                                                                         // widget
                                                                                                                         // properties
                         } // here
+
                 }
 
                 /**
@@ -297,7 +302,7 @@ public class SetupShuffleboard {
 
                         turretValues2.addBoolean("BrakeMode", () -> m_turret.isBrake());
 
-                        turretValues2.addBoolean("OKTune", () -> (!m_turret.tuneOn && !m_turret.lastTuneOn));
+                        turretValues2.addBoolean("OKTune", () -> (m_turret.tuneOn && m_turret.lastTuneOn));
 
                         if (m_turretTune) {
 
@@ -362,7 +367,7 @@ public class SetupShuffleboard {
 
                         tiltValues2.addBoolean("PosResetDone", () -> m_tilt.positionResetDone);
                         tiltValues2.addBoolean("BrakeMode", () -> m_tilt.isBrake());
-                        tiltValues2.addBoolean("OKTune", () -> (!m_tilt.tuneOn && !m_tilt.lastTuneOn));
+                        tiltValues2.addBoolean("OKTune", () -> (m_tilt.tuneOn && m_tilt.lastTuneOn));
                         tiltValues2.addBoolean("Connected", () -> m_tilt.tiltMotorConnected);
                         tiltValues2.addBoolean("+SWLimit", () -> m_tilt.onPlusSoftwareLimit());
                         tiltValues2.addBoolean("-SWLimit", () -> m_tilt.onMinusSoftwareLimit());
@@ -460,8 +465,8 @@ public class SetupShuffleboard {
                                         .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(2, 0).withSize(2, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // label
 
-                        transportValues1.addBoolean("Arm Up", () -> m_intake.getArmUp());
-                        transportValues1.addBoolean("Arm Down", () -> m_intake.getArmDown());
+                        transportValues1.addBoolean("Arm Up", () -> m_intake.getArmRaised());
+                        transportValues1.addBoolean("Arm Down", () -> m_intake.getArmLowered());
                         transportValues1.addBoolean("IntakeConnected", () -> m_intake.intakeMotorConnected);
 
                         transportValues1.addBoolean("LeftBeltConnected", () -> m_transport.leftBeltMotorConnected);
@@ -472,10 +477,15 @@ public class SetupShuffleboard {
 
                         ShuffleboardLayout intakeValues = Shuffleboard.getTab("SetupCellHandle")
                                         .getLayout("IntakeValues", BuiltInLayouts.kList).withPosition(4, 0)
-                                        .withSize(2, 2).withProperties(Map.of("Label position", "TOP"));
+                                        .withSize(2, 4).withProperties(Map.of("Label position", "TOP"));
 
+                        intakeValues.addBoolean("Arm Up", () -> m_climber.getArmRaised());
+                        intakeValues.addBoolean("Arm Down", () -> m_climber.getArmLowered());
                         intakeValues.addNumber("Motor Amps", () -> m_intake.getMotorAmps());
                         intakeValues.addNumber("Motor CMD", () -> m_intake.getMotor());
+                        intakeValues.add("ArmRaise", new IntakeArm(m_intake, false));
+                        intakeValues.add("ArmLower", new IntakeArm(m_intake, true));
+                        
 
                 }
                 /**
@@ -521,12 +531,13 @@ public class SetupShuffleboard {
                                         .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(8, 3).withSize(2, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
-                        robotValues2.addBoolean("TuneOn", () -> (!m_robotDrive.tuneOn && !m_robotDrive.lastTuneOn));
+                        robotValues2.addBoolean("TuneOn", () -> (m_robotDrive.tuneOn && m_robotDrive.lastTuneOn));
                         robotValues2.addBoolean("Left1Connected", () -> m_robotDrive.leftLeadConnected);
                         robotValues2.addBoolean("Left2Connected", () -> m_robotDrive.leftFollowerConnected);
                         robotValues2.addBoolean("Right1Connected", () -> m_robotDrive.rightLeadConnected);
                         robotValues2.addBoolean("Right2Connected", () -> m_robotDrive.rightFollowerConnected);
-                        robotValues2.addBoolean("InPosition", () -> m_robotDrive.getInPosition());
+                        robotValues2.addBoolean("LInPosition", () -> m_robotDrive.getInPositionLeft());
+                        robotValues2.addBoolean("RInPosition", () -> m_robotDrive.getInPositionRight());
 
                         if (m_robotTune) {
 
@@ -707,6 +718,7 @@ public class SetupShuffleboard {
                         controlPanelCommands.add("ToggleLookForColor", new ToggleLookForColor(m_controlPanel));
 
                         controlPanelCommands.add("PositionToColor", new PositionToColor(m_controlPanel, .25));
+
                         controlPanelCommands.add("CP", m_controlPanel);
 
                         ShuffleboardLayout cpValues = Shuffleboard.getTab("SetupClimber_CP")
@@ -743,8 +755,8 @@ public class SetupShuffleboard {
                                         .getLayout("Climber", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "TOP"));
 
-                        climberCommands.add("ArmRaise", new InstantCommand(() -> m_climber.raiseArm()));
-                        climberCommands.add("ArmLower", new InstantCommand(() -> m_climber.lowerArm()));
+                        climberCommands.add("ArmRaise", new ClimberArm(m_climber, false));
+                        climberCommands.add("ArmLower", new ClimberArm(m_climber, true));
                         climberCommands.add("Climber", m_climber);
 
                         ShuffleboardLayout climberValues = Shuffleboard.getTab("SetupClimber_CP")
@@ -755,6 +767,8 @@ public class SetupShuffleboard {
                         climberValues.addNumber("Motor Amps", () -> m_climber.getMotorAmps());
                         climberValues.addNumber("Motor Out", () -> m_climber.getMotorOut());
                         climberValues.addBoolean("Conected", () -> m_climber.climberMotorConnected);
+                        climberValues.addBoolean("Arm Up", () -> m_climber.getArmRaised());
+                        climberValues.addBoolean("Arm Down", () -> m_climber.getArmLowered());
 
                 }
 

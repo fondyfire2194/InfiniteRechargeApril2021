@@ -5,7 +5,6 @@
 package frc.robot.commands.RobotDrive;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevDrivetrain;
 
@@ -35,8 +34,8 @@ public class PositionRobot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.positionDistance(m_position, m_position, m_speed);
-   // SmartDashboard.putNumber("TRFP", Timer.getFPGATimestamp());
+    m_drive.positionDistance(m_position, m_position);
+    // SmartDashboard.putNumber("TRFP", Timer.getFPGATimestamp());
   }
 
   // Called once the command ends or is interrupted.
@@ -48,7 +47,8 @@ public class PositionRobot extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Timer.getFPGATimestamp() > m_startTime + .05 && m_drive.getInPosition()
-        && Math.abs(m_drive.getLeftRate()) < .1;
+    return Timer.getFPGATimestamp() > m_startTime + .05
+        && (m_drive.getInPositionLeft() && Math.abs(m_drive.getLeftRate()) < .1)
+        && (m_drive.getInPositionRight() && Math.abs(m_drive.getRightRate()) < .1);
   }
 }

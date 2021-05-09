@@ -39,6 +39,7 @@ public class Robot extends TimedRobot {
   private double startTime;
   public double timeToStart;
 
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -51,7 +52,7 @@ public class Robot extends TimedRobot {
 
     Shuffleboard.selectTab("Pre-Round");
 
-  }
+     }
 
   /**
    * This function is called every robot packet, no matter the mode. Use this for
@@ -250,11 +251,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
-
-    SmartDashboard.putBoolean("DP)", m_robotContainer.driverUpButton.get());
-    SmartDashboard.putBoolean("DR)", m_robotContainer.driverRightButton.get());
-    SmartDashboard.putBoolean("DD)", m_robotContainer.driverDownButton.get());
-    SmartDashboard.putBoolean("DL)", m_robotContainer.driverLeftButton.get());
 
   }
 
