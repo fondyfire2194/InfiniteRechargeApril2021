@@ -23,6 +23,7 @@ public class StopShooterWheels extends CommandBase {
     m_shooter.stop();
     m_shooter.requiredSpeed = 0;
     m_shooter.requiredSpeedLast = 0;
+    m_shooter.cameraSpeedBypassed = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

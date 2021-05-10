@@ -28,12 +28,15 @@ import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CheckCANDevices;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
+import frc.robot.commands.CellTransport.CellBeltPulseSelect;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Shooter.ReturnTiltTurret;
+import frc.robot.commands.Shooter.RunShooterWheels;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
+import frc.robot.commands.Shooter.StopShooterWheels;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.TiltJog;
@@ -115,6 +118,17 @@ public class RobotContainer {
       public JoystickButton L3Button;
       public JoystickButton R3Button;
 
+      // Setup gamepad XBox 3
+      JoystickButton setupA = new JoystickButton(setupGamepad, 1);
+      JoystickButton setupB = new JoystickButton(setupGamepad, 2);
+      JoystickButton setupX = new JoystickButton(setupGamepad, 3);
+      JoystickButton setupY = new JoystickButton(setupGamepad, 4);
+      JoystickButton setupLeftTrigger = new JoystickButton(setupGamepad, 5);
+      JoystickButton setupRightTrigger = new JoystickButton(setupGamepad, 6);
+
+      JoystickButton setupBack = new JoystickButton(setupGamepad, 7);
+      JoystickButton setupStart = new JoystickButton(setupGamepad, 8);
+
       public POVButton setupUpButton = new POVButton(setupGamepad, 0);
       public POVButton setupRightButton = new POVButton(setupGamepad, 90);
       public POVButton setupDownButton = new POVButton(setupGamepad, 180);
@@ -129,10 +143,6 @@ public class RobotContainer {
       public POVButton buttonBoxRightButton = new POVButton(buttonBox, 90);
       public POVButton buttonBoxDownButton = new POVButton(buttonBox, 180);
       public POVButton buttonBoxLeftButton = new POVButton(buttonBox, 270);
-
-
-
-
 
       // AutoCommands ac;// = new AutoCommands(m_robotDrive);
       public int shootPosition;
@@ -174,7 +184,6 @@ public class RobotContainer {
 
             m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
 
-
             // m_shooter.setDefaultCommand(getJogShooterCommand());
 
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
@@ -185,7 +194,6 @@ public class RobotContainer {
             configureButtonBindings();
 
             LiveWindow.disableAllTelemetry();
-
 
             CommandScheduler.getInstance()
                         .onCommandInitialize(command -> System.out.println(command.getName() + " is starting"));
@@ -213,51 +221,64 @@ public class RobotContainer {
                   // for the simulation, silence warnings about missing joysticks
                   DriverStation.getInstance().silenceJoystickConnectionWarning(true);
             }
-            // Driver Joystick
+
+            /**
+             * 
+             * Driver Joystick assignments
+             * 
+             * 
+             * 
+             * 
+             */
 
             new JoystickButton(m_driverController, 1).whileHeld(new StartIntake(m_intake, m_limelight));
-            // .whenReleased(new StopIntake(m_intake));
 
             new JoystickButton(m_driverController, 2)
                         .whileHeld(new ShootCells(m_shooter, m_transport, m_compressor, 100));
-            // .whenReleased(new StopShoot(m_shooter, m_transport));
-            // Set turret tilt mid trench
-            new JoystickButton(m_driverController, 6).whenPressed(
-                        new ReturnTiltTurret(m_turret, -5, m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE + 4));
-            // Set turret tilt straight on
-            new JoystickButton(m_driverController, 4)
-                        .whenPressed(new ReturnTiltTurret(m_turret, 0, m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE));
+
+            new JoystickButton(m_driverController, 5).whenPressed(new RunShooterWheels(m_shooter));
+            new JoystickButton(m_driverController, 3).whenPressed(new StopShooterWheels(m_shooter));
 
             new JoystickButton(m_driverController, 7).whenPressed(
                         new PositionTiltToVision(m_tilt, m_limelight, HoodedShooterConstants.TILT_MAX_ANGLE));
 
-            new JoystickButton(m_driverController, 5).whenPressed(new ChangeShooterSpeed(m_shooter, +250));
-            new JoystickButton(m_driverController, 3).whenPressed(new ChangeShooterSpeed(m_shooter, -250));
+            new JoystickButton(m_driverController, 6).whenPressed(new ChangeShooterSpeed(m_shooter, +250));
+            new JoystickButton(m_driverController, 4).whenPressed(new ChangeShooterSpeed(m_shooter, -250));
 
-            // Setup gamepad XBox 3
-            JoystickButton setupA = new JoystickButton(setupGamepad, 1);
-            JoystickButton setupB = new JoystickButton(setupGamepad, 2);
-            JoystickButton setupX = new JoystickButton(setupGamepad, 3);
-            JoystickButton setupY = new JoystickButton(setupGamepad, 4);
-            JoystickButton setupLeftTrigger = new JoystickButton(setupGamepad, 5);
-            JoystickButton setupRightTrigger = new JoystickButton(setupGamepad, 6);
+            driverUpButton.whenPressed(() -> m_tilt.aimHigher(.05));
+            driverDownButton.whenPressed(() -> m_tilt.aimLower(.05));
 
-            JoystickButton setupBack = new JoystickButton(setupGamepad, 7);
-            JoystickButton setupStart = new JoystickButton(setupGamepad, 8);
+            driverLeftButton.whenPressed(() -> m_turret.aimFurtherLeft(.05));
+            driverRightButton.whenPressed(() -> m_turret.aimFurtherRight(.05));
 
+            /**
+             * 
+             * Setup gamepad is used for testing functions
+             * 
+             * 
+             */
+            setupDownButton
 
-    
-
-            setupStart
-
-                        .whenPressed(() -> m_transport.runFrontRollerMotor(.5))
+                        .whenPressed(() -> m_transport.runFrontRollerMotor(-.5))
                         .whenPressed(() -> m_transport.runRearRollerMotor(.5))
+                        .whenReleased(() -> m_transport.runFrontRollerMotor(0))
+                        .whenReleased(() -> m_transport.runRearRollerMotor(0));
+
+            setupUpButton
+
                         .whenPressed(() -> m_transport.runLeftBeltMotor(.5))
                         .whenPressed(() -> m_transport.runRightBeltMotor(.5))
 
-                        .whenReleased(() -> m_transport.runFrontRollerMotor(0))
-                        .whenReleased(() -> m_transport.runRearRollerMotor(0))
+                        .whenReleased(() -> m_transport.runLeftBeltMotor(0))
                         .whenReleased(() -> m_transport.runLeftBeltMotor(0));
+
+            setupLeftButton
+
+                        .whileHeld(new CellBeltPulseSelect(m_transport, true, 1, .25, 1, -.25));
+
+            setupRightButton
+
+                        .whileHeld(new CellBeltPulseSelect(m_transport, false, 1, .25, 1, -.25));
 
             setupBack.whenPressed(new StartIntake(m_intake, m_limelight)).whenReleased(new StopIntake(m_intake));
 
@@ -267,13 +288,9 @@ public class RobotContainer {
 
             setupA.whileHeld(getJogTurretCommand()).whenReleased(new TurretWaitForStop(m_turret));
 
-            // setupB.whileHeld(getJogTurretVelocityCommand()).whenReleased(new
-            // TurretWaitForStop(m_turret));
-          
-
             /**
              * 
-             * Button box pzroduces boolean result
+             * Button box produces boolean result
              */
 
             row4Left = buttonBox.getButtonLT();

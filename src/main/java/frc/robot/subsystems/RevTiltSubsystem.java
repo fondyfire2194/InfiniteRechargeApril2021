@@ -49,16 +49,19 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private final static double pivotDistance = 10.5;// inches
     private final double[] pinDistances = { 2.1, 3.0842519685, 4.068503937, 5.0527559055, 6.037007874, 7.0212598425,
             8.005511811 };
-    private final double cameraBaseAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
+    public final double cameraBaseAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
+    public final double tiltMaxAngle = HoodedShooterConstants.TILT_MAX_ANGLE;
 
     public final double degreesPerRev = HoodedShooterConstants.tiltDegreesPerRev;// degrees per motor turn
     public final double tiltMinAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
+
     public boolean tuneOn = false;
     private int loopCtr;
     public boolean tiltMotorConnected;
     public boolean lastTuneOn;
     private double startTime;
     private double endTime;
+    private double maxAdjustShoot = .45;
 
     /**
      * 
@@ -264,11 +267,13 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     public void aimHigher(double angle) {
-        targetVerticalOffset += angle;
+        if (targetVerticalOffset < maxAdjustShoot)
+            targetVerticalOffset += angle;
     }
 
     public void aimLower(double angle) {
-        targetVerticalOffset -= angle;
+        if (targetVerticalOffset > -maxAdjustShoot)
+            targetVerticalOffset -= angle;
     }
 
     public void aimCenter() {

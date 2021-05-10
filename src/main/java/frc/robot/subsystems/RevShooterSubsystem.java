@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
@@ -15,12 +14,7 @@ import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.FlywheelSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
@@ -42,9 +36,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public static double kInertia = 0.008;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, acc;
     public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastAcc;
-    private SimpleWidget shootColorWidget;
-    private NetworkTableEntry shootColorWidgetEntry;
-    private boolean doneOnce;
     public double cameraCalculatedSpeed;
     public boolean useCameraSpeed;
     private final int VELOCITY_SLOT = 0;
@@ -73,6 +64,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean leftMotorConnected;
     public boolean rightMotorConnected;
     public boolean allConnected;
+    public boolean cameraSpeedBypassed;
 
     public RevShooterSubsystem() {
         mLeftMotor = new SimableCANSparkMax(CANConstants.LEFT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -97,17 +89,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             mSimulator = new FlywheelSimWrapper(FlywheelSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(mLeftMotor), RevEncoderSimWrapper.create(mLeftMotor));
         }
-        // ShuffleboardLayout competition =
-        // Shuffleboard.getTab("Competition").getLayout("Bools", BuiltInLayouts.kList)
-        // .withPosition(1, 0).withSize(1, 3).withProperties(Map.of("Label position",
-        // "TOP"));
-
-        // shootColorWidget = competition.add("ShootColor", false).withWidget("Boolean
-        // Box")
-        // .withProperties(Map.of("colorWhenFalse", "black"));
-        // shootColorWidgetEntry = shootColorWidget.getEntry();
-        // shootColorWidgetEntry.getBoolean(false);
-
+        requiredSpeed = 2500;
         setGains();
 
     }
@@ -122,6 +104,11 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public void spinAtRpm(double rpm) {
         requiredSpeed = rpm;
         mPidController.setReference(rpm, ControlType.kVelocity, VELOCITY_SLOT);
+    }
+
+    public void runShooter() {
+
+        spinAtRpm(requiredSpeed);
     }
 
     public void moveManually(double speed) {
@@ -142,22 +129,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         if (lastTuneOn)
             lastTuneOn = tuneOn;
 
-        // if (shootColorNumber > 2)
-        // shootColorNumber = 2;
-        // if (shootColorNumber != shootColorNumberLast) {
-        // if (shootColorNumber == 0) {
-        // shootColorWidgetEntry.setBoolean(false);
-        // shootColorNumberLast = shootColorNumber;
-        // } else
-        // doneOnce = false;
-        // }
-        // if (!doneOnce) {
-        // shootColorWidget.withProperties(Map.of("colorWhenTrue",
-        // shootColor[shootColorNumber]));
-        // shootColorWidgetEntry.setBoolean(true);
-        // shootColorNumberLast = shootColorNumber;
-        // doneOnce = true;
-        // }
+        if (useCameraSpeed && !cameraSpeedBypassed)
+            requiredSpeed = cameraCalculatedSpeed;
+
     }
 
     public boolean checkCAN() {
@@ -269,9 +243,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
         kFF = .00017;
         kP = 3e-4;
-        kI = 0.0;
+        kI = 0.0001;
         kD = 0;
-        kIz = 100;
+        kIz = 500;
         acc = 500;
 
         calibratePID(kP, kI, kD, kFF, kIz, acc, VELOCITY_SLOT);

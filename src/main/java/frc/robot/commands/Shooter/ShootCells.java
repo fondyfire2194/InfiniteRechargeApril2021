@@ -25,8 +25,7 @@ public class ShootCells extends CommandBase {
   private double startTime;
   private double time;
 
-  public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor,
-      double time) {
+  public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor, double time) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
     this.transport = transport;
@@ -50,10 +49,10 @@ public class ShootCells extends CommandBase {
   @Override
   public void execute() {
 
-    shooter.spinAtRpm(shooter.requiredSpeed);
+    shooter.runShooter();
+    ;
     if (Timer.getFPGATimestamp() > startTime + 1) {
-      // belts.pulseBelt(-.5, .5, .25);
-      // transport.runBeltMotor(CellTransportConstants.BELT_SPEED);
+
       transport.runFrontRollerMotor(CellTransportConstants.FRONT_SHOOT_SPEED);
       transport.runRearRollerMotor(CellTransportConstants.REAR_SHOOT_SPEED);
       shooter.shootTimeRemaining = startTime + shooter.shootTime - Timer.getFPGATimestamp();

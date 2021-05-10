@@ -15,14 +15,13 @@ import frc.robot.subsystems.RevShooterSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
 public class StopShoot extends InstantCommand {
-  private final RevShooterSubsystem shooter;
-  
-  private final CellTransportSubsystem transport;
+  private final RevShooterSubsystem m_shooter;
 
-  public StopShoot(RevShooterSubsystem shooter, CellTransportSubsystem transport) 
-  {
-    this.shooter = shooter;
-    this.transport = transport;
+  private final CellTransportSubsystem m_transport;
+
+  public StopShoot(RevShooterSubsystem shooter, CellTransportSubsystem transport) {
+    m_shooter = shooter;
+    m_transport = transport;
     addRequirements(shooter, transport);
 
   }
@@ -30,9 +29,10 @@ public class StopShoot extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    transport.runLeftBeltMotor(0.);
-    transport.runFrontRollerMotor(0.);
-    transport.runRearRollerMotor(0.);
-    shooter.spinAtRpm(0);
+    m_transport.runLeftBeltMotor(0.);
+    m_transport.runFrontRollerMotor(0.);
+    m_transport.runRearRollerMotor(0.);
+    m_shooter.spinAtRpm(0);
+    m_shooter.cameraSpeedBypassed = false;
   }
 }

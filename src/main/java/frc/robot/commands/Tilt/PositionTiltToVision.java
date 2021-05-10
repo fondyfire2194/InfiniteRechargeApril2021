@@ -10,9 +10,9 @@
 
 package frc.robot.commands.Tilt;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
+import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.subsystems.RevTiltSubsystem;
 
 public class PositionTiltToVision extends CommandBase {
@@ -49,6 +49,10 @@ public class PositionTiltToVision extends CommandBase {
     m_endpoint = m_originalTarget;
     m_tilt.visionCorrection = 0;
     m_tilt.targetAngle = m_endpoint;
+    if (m_endpoint < HoodedShooterConstants.TILT_MIN_ANGLE)
+      m_endpoint = HoodedShooterConstants.TILT_MIN_ANGLE;
+    if (m_endpoint > HoodedShooterConstants.TILT_MAX_ANGLE)
+      m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE;
     motorDegrees = (m_endpoint - m_tilt.tiltMinAngle);
     loopCtr = 0;
   }
@@ -87,8 +91,7 @@ public class PositionTiltToVision extends CommandBase {
 
     m_tilt.goToPosition(motorDegrees);
 
-    endIt = m_tilt.validTargetSeen && visionFoundCounter > 5
-        || m_tilt.atTargetAngle() && loopCtr > 5 || loopCtr > 250;
+    endIt = m_tilt.validTargetSeen && visionFoundCounter > 5 || m_tilt.atTargetAngle() && loopCtr > 5 || loopCtr > 250;
 
   }
 

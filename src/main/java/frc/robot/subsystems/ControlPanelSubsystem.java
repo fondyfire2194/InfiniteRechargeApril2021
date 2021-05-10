@@ -110,8 +110,8 @@ public class ControlPanelSubsystem extends SubsystemBase {
       m_colorMatcher.addColorMatch(kRedTarget);
       m_colorMatcher.addColorMatch(kYellowTarget);
 
-      ShuffleboardLayout competition = Shuffleboard.getTab("Competition").getLayout("Values", BuiltInLayouts.kList)
-            .withPosition(1, 0).withSize(1, 3).withProperties(Map.of("Label position", "TOP"));
+      ShuffleboardLayout competition = Shuffleboard.getTab("Competition").getLayout("Color", BuiltInLayouts.kList)
+            .withPosition(2, 1).withSize(1, 2).withProperties(Map.of("Label position", "TOP"));
 
       colorWidget = competition.add("SensorColor", false).withWidget("Boolean Box")
             .withProperties(Map.of("colorWhenFalse", "maroon"));

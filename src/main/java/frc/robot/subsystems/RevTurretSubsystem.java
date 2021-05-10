@@ -51,6 +51,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public boolean turretMotorConnected;
     private double startTime;
     private double endTime;
+    private double maxAdjustShoot = .5;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -258,8 +259,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         }
         if (kIz != lastkIz) {
             mPidController.setIZone(kIz, slotNumber);
-    
-                lastkIz = kIz;// mPidController.getIZone(slotNumber);
+
+            lastkIz = kIz;// mPidController.getIZone(slotNumber);
         }
         if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
             mPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
@@ -270,9 +271,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     }
 
     private void setGains() {
- /**
-  * Using the position mode doesn't require feedforward. 
-  */
+        /**
+         * Using the position mode doesn't require feedforward.
+         */
         fixedSettings();
 
         kP = .0176;
@@ -318,11 +319,13 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     }
 
     public void aimFurtherLeft(double angle) {
-        targetHorizontalOffset -= angle;
+        if (targetHorizontalOffset > -maxAdjustShoot)
+            targetHorizontalOffset -= angle;
     }
 
     public void aimFurtherRight(double angle) {
-        targetHorizontalOffset += angle;
+        if (targetHorizontalOffset < maxAdjustShoot)
+            targetHorizontalOffset += angle;
     }
 
     public void aimCenter() {

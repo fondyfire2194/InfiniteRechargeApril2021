@@ -10,24 +10,23 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevShooterSubsystem;
 
-public class StartShooterWheels extends CommandBase {
+public class RunShooterWheels extends CommandBase {
   /**
    * Creates a new StartShooter.
    */
   private RevShooterSubsystem m_shooter;
-  private double m_rpm;
+  
 
-  public StartShooterWheels(RevShooterSubsystem shooter, double rpm) {
+  public RunShooterWheels(RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooter);
     m_shooter = shooter;
-    m_rpm = rpm;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooter.requiredSpeed = m_rpm;
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.

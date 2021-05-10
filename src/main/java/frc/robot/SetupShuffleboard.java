@@ -7,10 +7,8 @@ package frc.robot;
 import java.util.Map;
 
 import edu.wpi.cscore.HttpCamera;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -229,22 +227,21 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Min", 0, "Max", 1, "Show Text", false));
 
                         ShuffleboardLayout shoot = Shuffleboard.getTab("Competition")
-                                        .getLayout("Shoot", BuiltInLayouts.kList).withPosition(1, 0).withSize(2,1)
+                                        .getLayout("Shoot", BuiltInLayouts.kList).withPosition(1, 0).withSize(2, 1)
                                         .withProperties(Map.of("Label position", "HIDDEN"));
 
-                        shoot.addBoolean("SHOOT",
-                                        () -> (m_shooter.atSpeed() && (m_turret.atTargetAngle()
-                                                        && (m_limelight.getHorOnTarget() || RobotBase.isSimulation()))
-                                                        && (m_tilt.atTargetAngle() && (m_limelight.getVertOnTarget()
-                                                                        || RobotBase.isSimulation()))));
+                        shoot.addBoolean("SHOOT", () -> (m_shooter.atSpeed() && m_turret.atTargetAngle()
+                                        && m_tilt.atTargetAngle()));
 
                         ShuffleboardLayout competition = Shuffleboard.getTab("Competition")
-                                        .getLayout("Values", BuiltInLayouts.kList).withPosition(1, 1).withSize(1, 3)
+                                        .getLayout("Values", BuiltInLayouts.kList).withPosition(1, 1).withSize(1, 4)
                                         .withProperties(Map.of("Label position", "TOP"));
 
-                        competition.addBoolean("IntakeArm Up", () -> m_intake.getArmRaised()).withWidget("Boolean Box");
-                        competition.addBoolean("IntakeArm Down", () -> m_intake.getArmLowered())
-                                        .withWidget("Boolean Box");
+                        competition.addBoolean("IntakeArm Up", () -> m_intake.getArmRaised());
+                        competition.addBoolean("IntakeArm Down", () -> m_intake.getArmLowered());
+                        competition.addBoolean("TiltOnTarget", () -> m_tilt.atTargetAngle());
+                        competition.addBoolean("TurretOnTarget", () -> m_turret.atTargetAngle());
+                        competition.addBoolean("ShooterAtSpeed", () -> m_shooter.atSpeed());
 
                         if (RobotBase.isReal()) {
 
@@ -298,7 +295,7 @@ public class SetupShuffleboard {
                         turretValues.addNumber("IAccum", () -> m_turret.getIaccum());
 
                         ShuffleboardLayout turretValues2 = Shuffleboard.getTab("SetupTurret")
-                                        .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(2, 3).withSize(2, 3)
+                                        .getLayout("States", BuiltInLayouts.kGrid).withPosition(2, 3).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
                         turretValues2.addBoolean("Connected", () -> m_turret.turretMotorConnected);
 
@@ -368,7 +365,7 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("IAccum", () -> m_tilt.getIaccum());
 
                         ShuffleboardLayout tiltValues2 = Shuffleboard.getTab("SetupTilt")
-                                        .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(2, 3).withSize(2, 3)
+                                        .getLayout("States", BuiltInLayouts.kGrid).withPosition(2, 3).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         tiltValues2.addBoolean("InPosition", () -> m_tilt.atTargetAngle());
@@ -419,7 +416,7 @@ public class SetupShuffleboard {
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
                                         .getLayout("ShooterValues", BuiltInLayouts.kList).withPosition(2, 0)
-                                        .withSize(2, 3).withProperties(Map.of("Label position", "LEFT")); // labels
+                                        .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels
                                                                                                           // for
 
                         shooterValues.addNumber("LeftRPM", () -> m_shooter.getRPM());
@@ -430,15 +427,21 @@ public class SetupShuffleboard {
                         shooterValues.addNumber("RightFaults", () -> m_shooter.getRightFaults());
                         shooterValues.addNumber("VertOffset", () -> m_tilt.targetVerticalOffset);
                         shooterValues.addNumber("HorOffset", () -> m_turret.targetHorizontalOffset);
+                        shooterValues.addBoolean("CameraHasSpeed", () -> m_shooter.useCameraSpeed);
+                        shooterValues.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
+                        shooterValues.addNumber("CameraAngle", () -> 90 - m_tilt.getAngle());
 
                         ShuffleboardLayout shooterValues2 = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(2, 3).withSize(2, 3)
+                                        .getLayout("States", BuiltInLayouts.kGrid).withPosition(4, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         shooterValues2.addBoolean("AtSpeed", () -> m_shooter.atSpeed());
+                        shooterValues2.addBoolean("CameraBypassed", () -> m_shooter.cameraSpeedBypassed);
                         shooterValues2.addBoolean("TuneOn", () -> (m_shooter.tuneOn && m_shooter.lastTuneOn));
                         shooterValues2.addBoolean("LeftConnected", () -> m_shooter.leftMotorConnected);
                         shooterValues2.addBoolean("RightConnected", () -> m_shooter.rightMotorConnected);
+                        shooterValues2.addBoolean(("RollersTurning"),
+                                        () -> Math.abs(m_transport.getFrontRoller()) > .1);
 
                         if (m_shooterTune) {
 
@@ -472,7 +475,7 @@ public class SetupShuffleboard {
                         transportValues.add("Cmd", m_transport);
 
                         ShuffleboardLayout transportValues1 = Shuffleboard.getTab("SetupCellHandle")
-                                        .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(2, 0).withSize(2, 2)
+                                        .getLayout("States", BuiltInLayouts.kGrid).withPosition(2, 0).withSize(2, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // label
 
                         transportValues1.addBoolean("Arm Up", () -> m_intake.getArmRaised());
@@ -537,7 +540,7 @@ public class SetupShuffleboard {
                         robotValues.addNumber("Target", () -> m_robotDrive.leftTargetPosition);
 
                         ShuffleboardLayout robotValues2 = Shuffleboard.getTab("SetupRobot")
-                                        .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(8, 3).withSize(2, 2)
+                                        .getLayout("States", BuiltInLayouts.kGrid).withPosition(8, 3).withSize(2, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         robotValues2.addBoolean("TuneOn", () -> (m_robotDrive.tuneOn && m_robotDrive.lastTuneOn));
@@ -684,7 +687,7 @@ public class SetupShuffleboard {
                         visionData.addNumber("CameraCalculatedRPM", () -> m_shooter.cameraCalculatedSpeed);
 
                         ShuffleboardLayout visionBools = Shuffleboard.getTab("Vision")
-                                        .getLayout("Booleans", BuiltInLayouts.kGrid).withPosition(3, 3).withSize(2, 2)
+                                        .getLayout("States", BuiltInLayouts.kGrid).withPosition(3, 3).withSize(2, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         visionBools.addBoolean("Connected", () -> m_limelight.isConnected());

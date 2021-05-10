@@ -7,7 +7,9 @@
 
 package frc.robot.commands.Shooter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.subsystems.RevShooterSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -28,9 +30,19 @@ public class ChangeShooterSpeed extends InstantCommand {
   @Override
   public void initialize() {
     double currentSpeed = m_shooter.requiredSpeed;
-    double newSpeed = currentSpeed += m_rpmChange;
-    m_shooter.requiredSpeed = newSpeed;
-    m_shooter.spinAtRpm(newSpeed);
 
+    double newSpeed = currentSpeed += m_rpmChange;
+
+    if (newSpeed > HoodedShooterConstants.MAX_SHOOTER_RPM)
+      newSpeed = HoodedShooterConstants.MAX_SHOOTER_RPM;
+
+    if (newSpeed < 0)
+      newSpeed = 0;
+
+    m_shooter.requiredSpeed = newSpeed;
+    SmartDashboard.putNumber("LL1", m_shooter.requiredSpeed);
+  //  m_shooter.spin
+    m_shooter.useCameraSpeed = false;
+    m_shooter.cameraSpeedBypassed = true;
   }
 }
