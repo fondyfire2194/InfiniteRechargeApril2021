@@ -513,8 +513,8 @@ public class SetupShuffleboard {
                         robotCommands.add("Reset Enc", new ResetEncoders(m_robotDrive));
                         robotCommands.add("Reset Gyro", new ResetGyro(m_robotDrive));
                         robotCommands.add("Reset Pose", new ResetPose(m_robotDrive));
-                        robotCommands.add("Pos to 10M", new PositionRobot(m_robotDrive, 10., 3));
-                        robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0, 1));
+                        robotCommands.add("Pos to 10M", new PositionRobot(m_robotDrive, 10.));
+                        robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0));
                         // robotCommands.add("Rot to 90", new TurnToAngleProfiled(m_robotDrive, 90));
                         // robotCommands.add("Rot to 0", new TurnToAngleProfiled(m_robotDrive, 0));
                         // robotCommands.add("Rot to -90", new TurnToAngleProfiled(m_robotDrive, -90));

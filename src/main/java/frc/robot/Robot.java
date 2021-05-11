@@ -39,7 +39,6 @@ public class Robot extends TimedRobot {
   private double startTime;
   public double timeToStart;
 
-
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -52,7 +51,7 @@ public class Robot extends TimedRobot {
 
     Shuffleboard.selectTab("Pre-Round");
 
-     }
+  }
 
   /**
    * This function is called every robot packet, no matter the mode. Use this for
@@ -85,12 +84,12 @@ public class Robot extends TimedRobot {
     // CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().run();
     m_robotContainer.m_setup.checkCANDevices();
-    
+
   }
 
   @Override
   public void disabledPeriodic() {
-    
+
   }
 
   public void autonomousInit() {
@@ -190,7 +189,7 @@ public class Robot extends TimedRobot {
 
       setStartingPose(
           new Pose2d(FieldMap.startLineX - FieldMap.robotLength, FieldMap.fieldWidth - 2, new Rotation2d(0)));
-      m_autonomousCommand = new PositionRobot(m_robotContainer.m_robotDrive, -1, 5);
+      m_autonomousCommand = new PositionRobot(m_robotContainer.m_robotDrive, -1);
 
       break;
 
@@ -244,7 +243,7 @@ public class Robot extends TimedRobot {
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)
         .schedule(true);
     new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
- 
+
   }
 
   /**

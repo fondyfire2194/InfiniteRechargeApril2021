@@ -9,7 +9,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.simulation.DoubleSolenoidSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.sim.PhysicsSim;
@@ -20,7 +19,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   final WPI_TalonSRX m_climberMotor = new TalonSRXWrapper(CANConstants.CLIMB_MOTOR);
   final DoubleSolenoid m_climberArm = new DoubleSolenoid(4, 5);
-  private int loopCtr;
+
   public boolean climberMotorConnected;
 
   public ClimberSubsystem() {
@@ -73,7 +72,6 @@ public class ClimberSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    loopCtr++;
 
   }
 

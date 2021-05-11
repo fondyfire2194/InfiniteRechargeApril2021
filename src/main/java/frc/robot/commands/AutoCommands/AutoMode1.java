@@ -19,7 +19,6 @@ import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Turret.PositionTurretToVision;
-import frc.robot.commands.Vision.CalculateTargetDistance;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -43,16 +42,17 @@ public class AutoMode1 extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
-                super(new ParallelCommandGroup(
-                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber),
-                                                ShootData.getPositionRate()),
+                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
+
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
+ 
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)))
 
                                                 .deadlineWith(new StartIntake(intake, limelight),
-                                                                new StartShooterWheels(shooter,
-                                                                                ShootData.getShootSpeed(shootNumber)),
-                                                                new CalculateTargetDistance(limelight, tilt, shooter)),
+                                                                new StartShooterWheels(shooter, shooter
+                                                                                .calculateSpeedFromDistance(ShootData
+                                                                                                .getShootDistance(
+                                                                                                                shootNumber)))),
 
                                 // shoot 5
 

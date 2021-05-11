@@ -24,13 +24,10 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
-import edu.wpi.first.wpilibj.simulation.DoubleSolenoidSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Robot;
-import frc.robot.SetupShuffleboard;
 import frc.robot.sim.PhysicsSim;
 import frc.robot.sim.TalonSRXWrapper;
 
@@ -98,7 +95,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
    public boolean showShuffleboardTab;
    public String colorSeen = "None";
    public String gameData = "None";
-   private int ctr;
+
 
    public ControlPanelSubsystem() {
 
@@ -315,7 +312,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
    }
 
    public int getGameData() {
-      ctr++;
+   
       gameData = DriverStation.getInstance().getGameSpecificMessage();
       
       if (gameData.length() > 0) {

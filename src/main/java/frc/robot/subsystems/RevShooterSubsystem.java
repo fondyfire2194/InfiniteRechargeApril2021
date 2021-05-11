@@ -15,6 +15,7 @@ import org.snobotv2.sim_wrappers.FlywheelSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
@@ -54,13 +55,11 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     public String[] shootColor = { "red", "yellow", "green" };
     public int shootColorNumber;
-    private int shootColorNumberLast = 1;
     public double startDistance;
     public double calculatedCameraDistance;
 
     public boolean tuneOn = false;
     public boolean lastTuneOn;
-    private int loopCtr;
     public boolean leftMotorConnected;
     public boolean rightMotorConnected;
     public boolean allConnected;
@@ -118,7 +117,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        loopCtr++;
 
         tuneOn = Pref.getPref("sHTune") != 0.;
 
@@ -235,6 +233,42 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             mLeftMotor.setClosedLoopRampRate(acc);
             lastAcc = acc;
         }
+
+    }
+
+    public double calculateSpeedFromDistance(double distance) {
+        SmartDashboard.putNumber("D", distance);
+        calculatedCameraDistance = distance;
+        if (distance >= 3 && distance <= 13) {
+            // subtract base distance of 3 meters
+            double baseDistance = 3;
+            double tempDistance = distance - baseDistance;
+
+            int baseI = (int) tempDistance;
+            double base = (double) baseI;
+
+            double rem = tempDistance - base;
+
+            SmartDashboard.putNumber("BI", baseI);
+            SmartDashboard.putNumber("B", base);
+            SmartDashboard.putNumber("BR", rem);
+
+            double baseSpeed = speedFromCamera[baseI];
+            double upperSpeed = speedFromCamera[baseI + 1];
+
+            double speedRange = upperSpeed - baseSpeed;
+
+            double speedAdder = speedRange * rem;
+
+            cameraCalculatedSpeed = baseSpeed + speedAdder;
+
+            useCameraSpeed = true;
+
+        } else {
+
+            cameraCalculatedSpeed = 2500;
+        }
+        return cameraCalculatedSpeed;
 
     }
 

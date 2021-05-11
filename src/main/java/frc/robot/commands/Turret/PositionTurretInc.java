@@ -5,7 +5,6 @@
 package frc.robot.commands.Turret;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTurretSubsystem;
 
@@ -14,7 +13,6 @@ public class PositionTurretInc extends CommandBase {
 
   private final RevTurretSubsystem m_turret;
   private double m_increment;
-  private int loopCtr;
   private boolean timedOut;
   private double m_startTime;
 
@@ -31,7 +29,7 @@ public class PositionTurretInc extends CommandBase {
   @Override
   public void initialize() {
     m_turret.targetAngle += m_increment;
-    loopCtr = 0;
+
     m_startTime = Timer.getFPGATimestamp();
   }
 

@@ -24,7 +24,6 @@ public class RearIntakeSubsystem extends SubsystemBase {
    */
   private final WPI_TalonSRX m_intakeMotor = new TalonSRXWrapper(CANConstants.REAR_MOTOR);
   public final DoubleSolenoidSim m_intakeArm = new DoubleSolenoidSim(2, 3);
-  private int loopCtr;
   public boolean intakeMotorConnected;
 
   public RearIntakeSubsystem() {
@@ -45,8 +44,7 @@ public class RearIntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    loopCtr++;
-
+    
   }
 
   public boolean checkCAN() {

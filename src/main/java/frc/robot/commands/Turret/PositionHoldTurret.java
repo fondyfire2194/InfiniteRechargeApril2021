@@ -18,7 +18,6 @@
 package frc.robot.commands.Turret;
 
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.RevTurretSubsystem;

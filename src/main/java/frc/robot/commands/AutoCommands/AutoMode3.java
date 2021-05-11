@@ -21,7 +21,6 @@ import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShooterWheels;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Turret.PositionTurretToVision;
-import frc.robot.commands.Vision.CalculateTargetDistance;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -46,14 +45,15 @@ public class AutoMode3 extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
 
-                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber), 5),
+                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)))
 
                                                 .deadlineWith(new StartIntake(intake, limelight),
-                                                                new StartShooterWheels(shooter,
-                                                                                ShootData.getShootSpeed(shootNumber)),
-                                                                new CalculateTargetDistance(limelight, tilt, shooter)),
+                                                                new StartShooterWheels(shooter, shooter
+                                                                                .calculateSpeedFromDistance(ShootData
+                                                                                                .getShootDistance(
+                                                                                                                shootNumber)))),
 
                                 // shoot 5
 
@@ -64,32 +64,26 @@ public class AutoMode3 extends SequentialCommandGroup {
                                 // pick up 3 move back under control panel
                                 new ParallelCommandGroup(
                                                 new PositionRobot(drive,
-                                                                ShootData.getFirstDistance(shootNumber + 1) - 2, 5),
-                                                new ReturnTiltTurret(turret, 0, tilt, 60))
-
-                                                                .deadlineWith(new StartIntake(intake, limelight),
-                                                                                new StopShooterWheels(shooter)),
+                                                                ShootData.getFirstDistance(shootNumber + 1) - 2),
+                                                new ReturnTiltTurret(turret, 0, tilt, 60)).deadlineWith(
+                                                                new StartIntake(intake, limelight),
+                                                                new StopShooterWheels(shooter)),
 
                                 // // move under control panel again
 
-                                new SequentialCommandGroup(new PositionRobot(drive,
-                                                ShootData.getSecondDistance(shootNumber + 1), 5),
+                                new SequentialCommandGroup(
+                                                new PositionRobot(drive, ShootData.getSecondDistance(shootNumber + 1)),
                                                 new StopIntake(intake)),
 
                                 new ParallelCommandGroup(
                                                 new PositionTurretToVision(turret, limelight,
                                                                 ShootData.getTurretAngle(shootNumber)),
-                                                new PositionTiltToVision(tilt, limelight,
-                                                                ShootData.getTiltAngle(shootNumber)))
-
-                                                                                .deadlineWith(new StartShooterWheels(
-                                                                                                shooter,
-                                                                                                ShootData.getShootSpeed(
-                                                                                                                shootNumber)),
-                                                                                                new CalculateTargetDistance(
-                                                                                                                limelight,
-                                                                                                                tilt,
-                                                                                                                shooter)),
+                                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(
+                                                                shootNumber))).deadlineWith(new StartShooterWheels(
+                                                                                shooter,
+                                                                                shooter.calculateSpeedFromDistance(
+                                                                                                ShootData.getShootDistance(
+                                                                                                                shootNumber)))),
 
                                 // // shoot 3
 

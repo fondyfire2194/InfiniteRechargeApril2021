@@ -46,7 +46,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public boolean tuneOn = false;
     public boolean lastTuneOn;
-    private int loopCtr;
+
 
     public boolean turretMotorConnected;
     private double startTime;
@@ -108,8 +108,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        loopCtr++;
-
+        
         tuneOn = Pref.getPref("tURTune") != 0.;
 
         if (tuneOn && !lastTuneOn) {

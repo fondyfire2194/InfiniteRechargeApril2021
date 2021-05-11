@@ -12,14 +12,12 @@ public class PositionRobot extends CommandBase {
   /** Creates a new PositionRobot. */
   private final RevDrivetrain m_drive;
   private double m_position;
-  private double m_speed;
   private double m_startTime;
 
-  public PositionRobot(RevDrivetrain m_robotDrive, double position, double speed) {
+  public PositionRobot(RevDrivetrain m_robotDrive, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_drive = m_robotDrive;
     m_position = position;
-    m_speed = speed;
     addRequirements(m_drive);
   }
 

@@ -68,7 +68,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public boolean tuneOn = false;
     public boolean lastTuneOn;
 
-    private int loopCtr;
 
     public boolean leftLeadConnected;
     public boolean rightLeadConnected;
@@ -279,8 +278,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     @Override
     public void periodic() {
         updateOdometry();
-
-        loopCtr++;
 
         tuneOn = Pref.getPref("dRTune") != 0.;
 

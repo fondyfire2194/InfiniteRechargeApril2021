@@ -5,10 +5,8 @@
 package frc.robot.commands.Vision;
 
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
@@ -23,12 +21,8 @@ public class CalculateTargetDistance extends CommandBase {
   private double targetHeight = FieldConstants.TARGET_HEIGHT;
   private double heightDifference;
 
-  private double baseDistance = 3;
   private double m_limelightVerticalAngle;
   private double cameraAngle;
-  private double testAngle;
-  private double maxTestAngle = 10;
-  private boolean distanceTest = true;
   private double tiltAngle;
 
   public CalculateTargetDistance(LimeLight limelight, RevTiltSubsystem tilt, RevShooterSubsystem shooter) {
@@ -102,42 +96,7 @@ public class CalculateTargetDistance extends CommandBase {
 
     }
 
-    /**
-     * Check distance calculated is in the acceptable range then interpolate speed
-     * from array
-     * 
-     * Get whole number of meters and fetch speed for it and one above then
-     * interpolate
-     * 
-     * 
-     * 
-     * hooter.
-     * 
-     */
-    if (m_shooter.calculatedCameraDistance >= 3 && m_shooter.calculatedCameraDistance <= 13) {
-      // subtract base distance of 3 meters
-      double distance = m_shooter.calculatedCameraDistance - baseDistance;
-      SmartDashboard.putNumber("CD1", m_shooter.calculatedCameraDistance);
-      int baseI = (int) distance;
-      double base = (double) baseI;
-
-      double rem = distance - base;
-
-      double baseSpeed = m_shooter.speedFromCamera[baseI];
-      double upperSpeed = m_shooter.speedFromCamera[baseI + 1];
-
-      double speedRange = upperSpeed - baseSpeed;
-
-      double speedAdder = speedRange * rem;
-
-      m_shooter.cameraCalculatedSpeed = baseSpeed + speedAdder;
-
-      m_shooter.useCameraSpeed = true;
-
-    } else {
-
-      m_shooter.cameraCalculatedSpeed = 2500;
-    }
+    m_shooter.calculateSpeedFromDistance(m_shooter.calculatedCameraDistance);
   }
 
   // Called once the command ends or is interrupted.

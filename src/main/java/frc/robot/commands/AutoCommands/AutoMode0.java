@@ -20,7 +20,6 @@ import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
-import frc.robot.commands.Vision.CalculateTargetDistance;
 import frc.robot.commands.Vision.LimelightSetPipeline;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -65,21 +64,19 @@ public class AutoMode0 extends SequentialCommandGroup {
                                                                 ShootData.getTiltAngle(shootNumber)),
                                                 new PositionTurretToVision(turret, limelight,
                                                                 ShootData.getTurretAngle(shootNumber)),
-                                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber),
-                                                                ShootData.getPositionRate()).deadlineWith(
-                                                                                new StartShooterWheels(shooter,
-                                                                                                ShootData.getShootSpeed(
-                                                                                                                shootNumber)),
-                                                                                new CalculateTargetDistance(limelight,
-                                                                                                tilt, shooter))),
+                                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)))
+                                                                .deadlineWith(new StartShooterWheels(shooter, shooter
+                                                                                .calculateSpeedFromDistance(ShootData
+                                                                                                .getShootDistance(
+                                                                                                                shootNumber)))),
 
                                 new ParallelCommandGroup(new MessageCommand("Group2Started"),
                                                 new ShootCells(shooter, transport, compressor,
                                                                 ShootData.getShootTime(shootNumber))),
 
                                 new ParallelCommandGroup(new MessageCommand("GroupStarted"),
-                                                new PositionRobot(drive, ShootData.getSecondDistance(shootNumber),
-                                                                ShootData.getPositionRate()),
+                                                new PositionRobot(drive, ShootData.getSecondDistance(shootNumber)),
+
                                                 new PositionTilt(tilt, 60), new PositionTurret(turret, 0)));
 
         }

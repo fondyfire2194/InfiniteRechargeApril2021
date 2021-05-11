@@ -56,7 +56,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public final double tiltMinAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
 
     public boolean tuneOn = false;
-    private int loopCtr;
     public boolean tiltMotorConnected;
     public boolean lastTuneOn;
     private double startTime;
@@ -120,9 +119,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        loopCtr++;
 
-        loopCtr++;
 
         tuneOn = Pref.getPref("tILTune") != 0.;
 

@@ -15,10 +15,9 @@ import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.Constants.CANConstants;
+import frc.robot.Robot;
 import frc.robot.sim.PhysicsSim;
 import frc.robot.sim.TalonSRXWrapper;
 
@@ -39,7 +38,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   public boolean frontRollerMotorConnected;
   public boolean rearRollerMotorConnected;
   public boolean allConnected;
-  private int loopCtr;
+
 
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
@@ -68,7 +67,6 @@ public class CellTransportSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    loopCtr++;
 
   }
 
