@@ -263,8 +263,8 @@ public final class Constants {
       public static final double robotWidth = 0;
 
       public static final double powerPortTargetCenterHeight = Units.inchesToMeters(84);
-      public static final double TARGET_HEIGHT = Units.inchesToMeters(94);
-      public static final double BASE_CAMERA_HEIGHT = Units.inchesToMeters(26);
+      public static final double TARGET_HEIGHT = Units.inchesToMeters(9);
+      public static final double BASE_CAMERA_HEIGHT = Units.inchesToMeters(18);
       public static final double MAX_CAMERA_HEIGHT = Units.inchesToMeters(27);
       public static final double CAMERA_BASE_ANGLE = 60.;
       public static final double CAMERA_MAX_ANGLE = 90;

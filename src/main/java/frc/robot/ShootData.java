@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.util.Units;
 
 /** Add your docs here. */
 public class ShootData {
@@ -35,24 +36,24 @@ public class ShootData {
             // front of power port at initiation line 0
             {
 
-                    { 0, 0, retractDistance, 3, shootTime, 0, 74. }, // 0 center start shoot retract
+                    { 0, 0, retractDistance, 3.5, shootTime, 0, 30.3 }, // 0 center start shoot retract
 
-                    { 0, retractDistance, retractDistance, 4, shootTime, 0, 63.5 }, // 1 center start retract
-                                                                                    // shoot
+                    { 0, retractDistance, retractDistance, 4.4, shootTime, 0, 23.7 }, // 1 center start retract
+                                                                                      // shoot
 
-                    { 0, 0, retractDistance, 3.5, shootTime, 20, 63.5 }, // 2 left start shoot retract
+                    { 0, 0, retractDistance, 3.7, shootTime, 19.6, 28.8 }, // 2 left start shoot retract
 
-                    { 0, retractDistance, retractDistance, 4.5, shootTime, 26, 64.5 }, // 3 left start retract
-                                                                                       // shoot
+                    { 0, retractDistance, retractDistance, 4.6, shootTime, 15, 23 }, // 3 left start retract
+                                                                                     // shoot
 
-                    { 0, 0, retractDistance, 30, shootTime, -20, 63.5 }, // 4 right start shoot retract
+                    { 0, 0, retractDistance, 3.7, shootTime, -19.6, 28.8 }, // 4 right start shoot retract
 
-                    { 0, retractDistance, retractDistance, 30, shootTime, -26, 64.5 }, // 5 right start retract
-                                                                                       // shoot
+                    { 0, retractDistance, retractDistance, 4.6, shootTime, -15, 23 }, // 5 right start retract
+                                                                                      // shoot
 
-                    { 0, twoBallPickup, twoBallPickup, 30, 2, -26, 61.5 }, // 6 trench start pickup 2 and shoot
+                    { 0, twoBallPickup, twoBallPickup, 5.5, shootTime, -26, 19 }, // 6 trench start pickup 2 and shoot
 
-                    { 0, twoBallPickup - 1, twoBallPickup, 30, shootTime, -9, 63.5 } // 7 move to pick up 3rd
+                    { 0, twoBallPickup - 1, twoBallPickup, 5.5, shootTime, -26, 19 } // 7 move to pick up 3rd
                                                                                      // trench ball and shoot
 
             };
@@ -78,7 +79,6 @@ public class ShootData {
     public static double getShootDistance(int pointer) {
         return shootValues[pointer][3];
     }
-
 
     public static double getShootTime(int pointer) {
         return shootValues[pointer][4];

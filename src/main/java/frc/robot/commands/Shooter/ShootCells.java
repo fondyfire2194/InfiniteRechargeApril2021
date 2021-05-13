@@ -73,6 +73,6 @@ public class ShootCells extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Timer.getFPGATimestamp() > startTime + shooter.shootTime;
+    return (Timer.getFPGATimestamp() > startTime + shooter.shootTime) && shooter.shootTime != 0;
   }
 }

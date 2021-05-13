@@ -22,8 +22,7 @@ public class CalculateTargetDistance extends CommandBase {
   private double heightDifference;
 
   private double m_limelightVerticalAngle;
-  private double cameraAngle;
-  private double tiltAngle;
+  
 
   public CalculateTargetDistance(LimeLight limelight, RevTiltSubsystem tilt, RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -42,7 +41,7 @@ public class CalculateTargetDistance extends CommandBase {
    * As the tilt angle to the ground increases, the camera angle to the target
    * falls.
    * 
-   * Low tilt angles mean high camera angles.Camera angle = 90 - tilt angle.
+   * Low tilt angles mean high camera angles.Camera angle = 90 - tilt angle?
    * 
    * Minimum tilt angle measured to the ground is 59 degrees. Max is 89 degrees
    * 
@@ -75,16 +74,14 @@ public class CalculateTargetDistance extends CommandBase {
 
       m_limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
 
-      tiltAngle = m_tilt.getAngle();
 
       if (RobotBase.isSimulation()) {
         m_limelightVerticalAngle = 0;
 
       }
+      // tilt counts up camera angle counts down
 
-      cameraAngle = 90 - tiltAngle;
-
-      double tanAngleSum = Math.tan((Math.toRadians(m_limelightVerticalAngle + cameraAngle)));
+      double tanAngleSum = Math.tan((Math.toRadians(m_limelightVerticalAngle + m_tilt.getCameraAngle())));
 
       m_shooter.calculatedCameraDistance = (heightDifference) / tanAngleSum;
 

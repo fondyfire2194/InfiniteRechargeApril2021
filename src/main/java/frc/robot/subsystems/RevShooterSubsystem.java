@@ -44,14 +44,23 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     /**
      * 
      * 
-     * following is array representing shoot speeds for distances from 3 to 13
+     * following is array representing shoot speeds for distances from 2 to 14
      * meters or 10 meters
      *
-     * 10 meters with steps of 1 meter is 10 steps or 40 inches.
+     * 10 meters with steps of 1 meter is 10 steps or 40 inches per step.
      * 
      * we can measure every meter and out results in array and then interpolate.
      */
-    public double[] speedFromCamera = new double[] { 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500 };
+    private int speedBaseDistance = 2;
+    private int speedMaxDistance = 14;
+    public double[] speedFromCamera = new double[] { 1500, 2000, 2250, 3000, 3500, 4000, 4250, 4750, 5000, 5200, 5500,
+            5600, 5700 };
+
+    // matching calculated tilt lauch angles when on target 2 to 14 m.
+    // 39.01, 28.37, 22.05,17.95,15.11,13.03,11.45,10.20,9.20,8.38,7.69,7.10,6.60
+    // launch velocity mps = shooter rpm * pi * wheel diameter = rpm * 3.14 * 8 /(60 *39.37) = .01 * rpm
+    // rollers feeding shooter are 4" diameter so their velocity is .005 * rpm use bag motors ?1000:1 ratio
+    // free speed 13000
 
     public String[] shootColor = { "red", "yellow", "green" };
     public int shootColorNumber;
@@ -239,10 +248,10 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double calculateSpeedFromDistance(double distance) {
         SmartDashboard.putNumber("D", distance);
         calculatedCameraDistance = distance;
-        if (distance >= 3 && distance <= 13) {
+        if (distance >= speedBaseDistance && distance <= speedMaxDistance) {
             // subtract base distance of 3 meters
-            double baseDistance = 3;
-            double tempDistance = distance - baseDistance;
+
+            double tempDistance = distance - speedBaseDistance;
 
             int baseI = (int) tempDistance;
             double base = (double) baseI;

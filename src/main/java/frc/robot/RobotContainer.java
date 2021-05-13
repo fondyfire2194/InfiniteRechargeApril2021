@@ -39,6 +39,8 @@ import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Tilt.TiltWaitForStop;
 import frc.robot.commands.Turret.PositionHoldTurret;
+import frc.robot.commands.Turret.PositionTurret;
+import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretJogVelocity;
 import frc.robot.commands.Turret.TurretWaitForStop;
@@ -167,7 +169,7 @@ public class RobotContainer {
             m_limelight.setCamMode(CamMode.kvision);
             m_limelight.setLEDMode(LedMode.kpipeLine);
             m_limelight.setStream((StreamType.kStandard));
-            m_limelight.setCamMode(CamMode.kvision);
+
             m_limelight.setPipeline(1);
 
             m_compressor = new Compressor();
@@ -234,12 +236,11 @@ public class RobotContainer {
                         .whileHeld(new ShootCells(m_shooter, m_transport, m_compressor, 100));
 
             new JoystickButton(m_driverController, 5).whenPressed(new RunShooterWheels(m_shooter));
+
             new JoystickButton(m_driverController, 3).whenPressed(new StopShooterWheels(m_shooter));
 
-            new JoystickButton(m_driverController, 7).whenPressed(
-                        new PositionTiltToVision(m_tilt, m_limelight, HoodedShooterConstants.TILT_MAX_ANGLE));
-
             new JoystickButton(m_driverController, 6).whenPressed(new ChangeShooterSpeed(m_shooter, +250));
+ 
             new JoystickButton(m_driverController, 4).whenPressed(new ChangeShooterSpeed(m_shooter, -250));
 
             driverUpButton.whenPressed(() -> m_tilt.aimHigher(.05));
@@ -287,7 +288,7 @@ public class RobotContainer {
 
             /**
              * 
-             * Button box produces boolean result
+             * Button box
              */
 
             row4Left = buttonBox.getButtonLT();
@@ -309,6 +310,10 @@ public class RobotContainer {
             R3Button = buttonBox.getR3Button();
 
             double baseSpeed = 1500;
+
+            row1Left.whenPressed(new PositionTiltToVision(m_tilt, m_limelight, ShootData.getTiltAngle(2)))
+                        .whenPressed(new PositionTurretToVision(m_turret, m_limelight, ShootData.getTiltAngle(2)))
+                        .whenPressed((new StartShooterWheels(m_shooter, m_shooter.cameraCalculatedSpeed)));
 
             row1Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed));// front of trench
             row2Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 500));// 1/4 trench

@@ -120,7 +120,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public void periodic() {
         // This method will be called once per scheduler run
 
-
         tuneOn = Pref.getPref("tILTune") != 0.;
 
         if (tuneOn && !lastTuneOn) {
@@ -128,7 +127,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
             tuneGains();
             lastTuneOn = true;
             endTime = Timer.getFPGATimestamp();
-            SmartDashboard.putNumber("TGT", endTime - startTime);
+    //        SmartDashboard.putNumber("TGT", endTime - startTime);
         }
 
         if (lastTuneOn)
@@ -136,6 +135,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         if (RobotBase.isReal() && DriverStation.getInstance().isDisabled())
             targetAngle = getAngle();
+
+       //     SmartDashboard.putNumber("CTA", calculateTiltAngle());
 
     }
 
@@ -204,6 +205,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public double getAngle() {
         return tiltMinAngle + getMotorDegrees();
+    }
+
+    public double getCameraAngle() {
+        return 90 - getAngle();
     }
 
     public double getOut() {
@@ -293,7 +298,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         // get angle from looking up pin distance table and interpolating for
         // remainder
         double pinDistance = pinDistances[lsTurns] + (pinDistances[lsTurns + 1] - pinDistances[lsTurns]) * rem;
-        SmartDashboard.putNumber("PInDist", pinDistance);
+   //     SmartDashboard.putNumber("PInDist", pinDistance);
         double valRads = 2 * Math.asin(pinDistance / (2 * pivotDistance));
         return cameraBaseAngle + Math.toDegrees(valRads);
     }
