@@ -181,8 +181,8 @@ public final class Constants {
        * 
        */
 
-      public static final double TILT_MIN_ANGLE = 59;
-      public static final double TILT_MAX_ANGLE = 89;
+      public static final double TILT_MIN_ANGLE = 1;
+      public static final double TILT_MAX_ANGLE = 30;
 
       public static double maxAngleChange = TILT_MAX_ANGLE - TILT_MIN_ANGLE;
 

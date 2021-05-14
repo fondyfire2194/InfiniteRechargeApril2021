@@ -90,7 +90,7 @@ public class SetupShuffleboard {
         private boolean m_showTransport = true;
         private boolean m_showVision = true;
         private boolean m_showTrajectory = false;
-        private boolean m_showSubsystems =true;
+        private boolean m_showSubsystems = true;
         private HttpCamera LLFeed;
         public double timeToStart;
 
@@ -165,8 +165,8 @@ public class SetupShuffleboard {
                                         .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(2, 5)
                                         .withProperties(Map.of("Label position", "TOP"));
 
-                        preMatch.addNumber("TiltView", () -> m_tilt.getAngle()).withWidget(BuiltInWidgets.kNumberBar)
-                                        .withProperties(Map.of("Min", 55, "Max", 90, "Show Text", false));
+                        preMatch.addNumber("TiltView", () -> m_tilt.getMotorDegrees()).withWidget(BuiltInWidgets.kDial)
+                                        .withProperties(Map.of("Min", 0, "Max", 60, "Show Text", false));
                         preMatch.add("CANCheck", new CheckCANDevices(this));
                         preMatch.addNumber("TurretView", () -> m_turret.getAngle())
                                         .withWidget(BuiltInWidgets.kNumberBar)
@@ -199,9 +199,9 @@ public class SetupShuffleboard {
                                         .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 0).withSize(1, 4)
                                         .withProperties(Map.of("Label position", "TOP"));
 
-                        competition1.addNumber("TiltPosn", () -> m_tilt.getAngle())
+                        competition1.addNumber("ShootAngle", () -> m_tilt.getAngle())
                                         .withWidget(BuiltInWidgets.kNumberBar)
-                                        .withProperties(Map.of("Min", 57, "Max", 70, "Show Text", false));
+                                        .withProperties(Map.of("Min", 0, "Max", 30, "Show Text", false));
 
                         competition1.addNumber("TurretPosn", () -> m_turret.getAngle())
                                         .withWidget(BuiltInWidgets.kNumberBar)
@@ -336,13 +336,12 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT")); //
 
                         tiltCommands.add("Reset To Min", new ResetTiltAngle(m_tilt, m_limelight));
-                        tiltCommands.add("Position To Min",
-                                        new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE));
-                        tiltCommands.add("Position To Mid",
-                                        new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MID_ANGLE));
                         tiltCommands.add("Position To Max",
                                         new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MAX_ANGLE));
-        
+                        tiltCommands.add("Position To Mid",
+                                        new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MID_ANGLE));
+                        tiltCommands.add("Position To Min",
+                                        new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE));
 
                         tiltCommands.add("PositionToSwitch", new TiltMoveToReverseLimit(m_tilt));
                         tiltCommands.add("StopTilt", new StopTilt(m_tilt));
@@ -363,7 +362,7 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("AdjTarget", () -> m_tilt.adjustedTargetAngle);
                         tiltValues.addNumber("Vision Error", () -> m_limelight.getdegVerticalToTarget());
                         tiltValues.addNumber("MotorDeg", () -> m_tilt.getMotorDegrees());
-                        tiltValues.addNumber("CamerAngle", () -> m_tilt.getCameraAngle());
+                        // tiltValues.addNumber("CamerAngle", () -> m_tilt.getCameraAngle());
 
                         tiltValues.addNumber("IAccum", () -> m_tilt.getIaccum());
 

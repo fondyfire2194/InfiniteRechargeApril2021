@@ -12,12 +12,15 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
+import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
+import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
+import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
@@ -45,7 +48,7 @@ public class AutoMode1 extends SequentialCommandGroup {
                 super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
 
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
- 
+
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)))
 
                                                 .deadlineWith(new StartIntake(intake, limelight),
@@ -56,8 +59,13 @@ public class AutoMode1 extends SequentialCommandGroup {
 
                                 // shoot 5
 
-                                new ParallelCommandGroup(new StopIntake(intake), new ShootCells(shooter, transport,
-                                                compressor, ShootData.getShootTime(shootNumber))));
+                                new ParallelCommandGroup(new StopIntake(intake),
+                                                new ShootCells(shooter, transport, compressor,
+                                                                ShootData.getShootTime(shootNumber))),
+
+                                // return tilt and turret
+                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),
+                                new PositionTurret(turret, 0));
 
         }
 }

@@ -71,10 +71,11 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         mEncoder = m_motor.getEncoder();
         mPidController = m_motor.getPIDController();
         m_motor.restoreFactoryDefaults();
+        m_motor.setInverted(false);
         m_motor.setOpenLoopRampRate(5);
         aimCenter();
         mEncoder.setPosition(0);
-        targetAngle = tiltMinAngle;
+        targetAngle = tiltMaxAngle;
 
         if (RobotBase.isReal()) {
 
@@ -90,15 +91,14 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         }
 
         setGains();
-        mEncoder.setPosition(0);
-        resetAngle(0);
+        resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
 
         m_motor.setSmartCurrentLimit(10, 10);
         m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
         m_reverseLimit.enableLimitSwitch(false);
         if (m_reverseLimit.get()) {
-            resetAngle(0);
+            resetAngle();
         }
 
         if (RobotBase.isSimulation()) {
@@ -127,7 +127,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
             tuneGains();
             lastTuneOn = true;
             endTime = Timer.getFPGATimestamp();
-    //        SmartDashboard.putNumber("TGT", endTime - startTime);
+            // SmartDashboard.putNumber("TGT", endTime - startTime);
         }
 
         if (lastTuneOn)
@@ -136,7 +136,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         if (RobotBase.isReal() && DriverStation.getInstance().isDisabled())
             targetAngle = getAngle();
 
-       //     SmartDashboard.putNumber("CTA", calculateTiltAngle());
+        // SmartDashboard.putNumber("CTA", calculateTiltAngle());
 
     }
 
@@ -162,7 +162,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public void moveManually(double speed) {
         targetAngle = getAngle();
         m_motor.set(speed);
-        SmartDashboard.putNumber("TIGET", m_motor.getAppliedOutput());
+
     }
 
     @Override
@@ -184,9 +184,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         mPidController.setReference(motorDegrees, ControlType.kSmartMotion, POSITION_SLOT);
     }
 
-    public void resetAngle(double angle) {
-        mEncoder.setPosition(angle);
-        targetAngle = tiltMinAngle;
+    public void resetAngle() {
+        mEncoder.setPosition(0);
+        targetAngle = tiltMaxAngle;
         mPidController.setIAccum(0);
     }
 
@@ -204,11 +204,11 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     public double getAngle() {
-        return tiltMinAngle + getMotorDegrees();
+        return tiltMaxAngle - getMotorDegrees();
     }
 
     public double getCameraAngle() {
-        return 90 - getAngle();
+        return getAngle();
     }
 
     public double getOut() {
@@ -224,11 +224,11 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     public boolean onPlusSoftwareLimit() {
-        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kForward);
+        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kReverse);
     }
 
     public boolean onMinusSoftwareLimit() {
-        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kReverse);
+        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kForward);
     }
 
     @Override
@@ -243,9 +243,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     public void setSoftwareLimits() {
+        m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kReverse, (float) 0.);
         m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kForward,
                 (float) HoodedShooterConstants.maxMotorTurns);
-        m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kReverse, (float) 0);
         m_motor.enableSoftLimit(SoftLimitDirection.kForward, true);
         m_motor.enableSoftLimit(SoftLimitDirection.kReverse, true);
         m_motor.setIdleMode(IdleMode.kBrake);
@@ -298,7 +298,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         // get angle from looking up pin distance table and interpolating for
         // remainder
         double pinDistance = pinDistances[lsTurns] + (pinDistances[lsTurns + 1] - pinDistances[lsTurns]) * rem;
-   //     SmartDashboard.putNumber("PInDist", pinDistance);
+        // SmartDashboard.putNumber("PInDist", pinDistance);
         double valRads = 2 * Math.asin(pinDistance / (2 * pivotDistance));
         return cameraBaseAngle + Math.toDegrees(valRads);
     }

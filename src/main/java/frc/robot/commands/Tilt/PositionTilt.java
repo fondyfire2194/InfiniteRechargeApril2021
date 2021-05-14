@@ -35,7 +35,7 @@ public class PositionTilt extends CommandBase {
       m_endpoint = HoodedShooterConstants.TILT_MIN_ANGLE;
     if (m_endpoint > HoodedShooterConstants.TILT_MAX_ANGLE)
       m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE;
-    motorDegrees = (m_endpoint - m_tilt.tiltMinAngle);
+    motorDegrees = ( m_tilt.tiltMaxAngle - m_endpoint);
     loopCtr = 0;
    
   }

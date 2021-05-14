@@ -43,7 +43,7 @@ public class TiltMoveToReverseLimit extends CommandBase {
       // simCtr++;
       // }
     }
-    endIt = m_tilt.m_reverseLimit.get() || m_tilt.getAngle() < m_startAngle - 10 || simCtr > 2500;
+    endIt =m_tilt.m_reverseLimit.get()|| m_tilt.getAngle() < m_startAngle - 10 || simCtr > 2500;
 
     if (endIt)
       m_tilt.stop();
@@ -52,9 +52,9 @@ public class TiltMoveToReverseLimit extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_tilt.resetAngle(0);
+    m_tilt.resetAngle();
     m_tilt.positionResetDone = true;
-    m_tilt.setSoftwareLimits();
+   // m_tilt.setSoftwareLimits();
   }
 
   // Returns true when the command should end.

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
+import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
@@ -19,7 +20,9 @@ import frc.robot.commands.Shooter.ReturnTiltTurret;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShooterWheels;
+import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
+import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
@@ -87,8 +90,11 @@ public class AutoMode3 extends SequentialCommandGroup {
 
                                 // // shoot 3
 
-                                new ShootCells(shooter, transport, compressor,
-                                                ShootData.getShootTime(shootNumber + 1)));
+                                new ShootCells(shooter, transport, compressor, ShootData.getShootTime(shootNumber + 1)),
+
+                                // return tilt and turret
+                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),
+                                new PositionTurret(turret, 0));
         }
 
 }

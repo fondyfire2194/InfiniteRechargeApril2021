@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
+import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.ShootCells;
@@ -77,7 +78,7 @@ public class AutoMode0 extends SequentialCommandGroup {
                                 new ParallelCommandGroup(new MessageCommand("GroupStarted"),
                                                 new PositionRobot(drive, ShootData.getSecondDistance(shootNumber)),
 
-                                                new PositionTilt(tilt, 60), new PositionTurret(turret, 0)));
+                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE), new PositionTurret(turret, 0)));
 
         }
 }

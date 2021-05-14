@@ -83,7 +83,7 @@ public class PositionHoldTilt extends CommandBase {
       activeGainSlot = m_tilt.VISION_SLOT;
     }
 
-    double motorTurns = m_endpoint - m_tilt.tiltMinAngle;
+    double motorTurns = m_tilt.tiltMaxAngle - m_endpoint;
     m_tilt.positionTilt(motorTurns, activeGainSlot);
   }
 

@@ -353,7 +353,7 @@ public class RobotContainer {
       }
 
       public Command getJogTiltCommand() {
-            return new TiltJog(m_tilt, () -> -setupGamepad.getRawAxis(1) / 5);
+            return new TiltJog(m_tilt, () -> setupGamepad.getRawAxis(1) / 5);
       }
 
       public Command getJogShooterCommand() {
