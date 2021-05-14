@@ -7,14 +7,11 @@
 
 package frc.robot;
 
-import javax.swing.text.StyledEditorKit.ItalicAction;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -96,7 +93,8 @@ public class Robot extends TimedRobot {
 
   public void autonomousInit() {
 
-    new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
+    if (RobotBase.isReal())
+      new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
 
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 
@@ -227,8 +225,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     autoHasRun = false;
-    // if (!m_robotContainer.m_tilt.positionResetDone)
-    // new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
+    if (RobotBase.isReal() && !m_robotContainer.m_tilt.positionResetDone)
+      new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
     // CommandScheduler.getInstance().cancelAll();
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)

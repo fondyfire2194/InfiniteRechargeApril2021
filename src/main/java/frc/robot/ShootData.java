@@ -36,24 +36,24 @@ public class ShootData {
             // front of power port at initiation line 0
             {
 
-                    { 0, 0, retractDistance, 3.5, shootTime, 0, 30.3 }, // 0 center start shoot retract
+                    { 0, 0, retractDistance, 3, shootTime, 0, 30.3 }, // 0 center start shoot retract
 
-                    { 0, retractDistance, retractDistance, 4.4, shootTime, 0, 23.7 }, // 1 center start retract
+                    { 0, retractDistance, retractDistance, 4., shootTime, 0, 23.7 }, // 1 center start retract
                                                                                       // shoot
 
-                    { 0, 0, retractDistance, 3.7, shootTime, 19.6, 28.8 }, // 2 left start shoot retract
+                    { 0, 0, retractDistance, 3.2, shootTime, 19.6, 28.8 }, // 2 left start shoot retract
 
-                    { 0, retractDistance, retractDistance, 4.6, shootTime, 15, 23 }, // 3 left start retract
+                    { 0, retractDistance, retractDistance, 4.2, shootTime, 15, 23 }, // 3 left start retract
                                                                                      // shoot
 
-                    { 0, 0, retractDistance, 3.7, shootTime, -19.6, 28.8 }, // 4 right start shoot retract
+                    { 0, 0, retractDistance, 3.2, shootTime, -19.6, 28.8 }, // 4 right start shoot retract
 
-                    { 0, retractDistance, retractDistance, 4.6, shootTime, -15, 23 }, // 5 right start retract
+                    { 0, retractDistance, retractDistance, 4.2, shootTime, -15, 23 }, // 5 right start retract
                                                                                       // shoot
 
-                    { 0, twoBallPickup, twoBallPickup, 5.5, shootTime, -26, 19 }, // 6 trench start pickup 2 and shoot
+                    { 0, twoBallPickup, twoBallPickup, 5.2, shootTime, -26, 19 }, // 6 trench start pickup 2 and shoot
 
-                    { 0, twoBallPickup - 1, twoBallPickup, 5.5, shootTime, -26, 19 } // 7 move to pick up 3rd
+                    { 0, twoBallPickup - 1, twoBallPickup, 5.2, shootTime, -26, 19 } // 7 move to pick up 3rd
                                                                                      // trench ball and shoot
 
             };

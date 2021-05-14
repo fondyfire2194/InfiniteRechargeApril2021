@@ -168,11 +168,12 @@ public final class Constants {
        * Accurate angle calculations for target distance purposes are done base on the
        * tilt mechanical design
        * 
-       * These are dependent on lead screw revolutions so track will be kept of those.
-       * No encoder scaling used.
+       * 
        * 
        * The calculated angle will be used for position display and closed loop
-       * purposed
+       * purposed. The shoot angle counts down as the hood moves up. The angle is
+       * preset to max and the encoder is set to 0 on the bottom switch. Then the
+       * encoder is subtracted from max so as it increases the angle decreases.
        * 
        * It is pretty much linear with turns.
        * 

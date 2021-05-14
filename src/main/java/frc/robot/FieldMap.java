@@ -91,6 +91,9 @@ public class FieldMap {
                         + firstCellFromInitiationLine + 2 * distanceBetweenTrenchCells)
                         * (initiationLine + firstCellFromInitiationLine + 2 * distanceBetweenTrenchCells)));
 
+        public static double oppTrenchFloorDistance = Math.sqrt(
+                        ((trenchCLtoGoalY * trenchCLtoGoalY) + ((fieldLength / 2) + 2) * ((fieldLength / 2) + 2)));
+
         // Shot distances
 
         public static double initLineCenterShotDistance = Math
@@ -118,6 +121,9 @@ public class FieldMap {
         public static double rearTrenchShotDistance = Math
                         .sqrt(heightToShootSquared + rearTrenchFloorDistance * rearTrenchFloorDistance);
 
+        public static double oppTrenchShotDistance = Math
+                        .sqrt(heightToShootSquared + ((fieldLength / 2) + 2) * ((fieldLength / 2) + 2));
+
         // Turret angles
 
         public static final double centerStartTurretAngle = 0;
@@ -143,6 +149,9 @@ public class FieldMap {
                         / (initiationLine + firstCellFromInitiationLine + distanceBetweenTrenchCells * 2))); // Tilt
                                                                                                              // angles
 
+        public static double oppTrenchTurretAngle = -Math
+                        .toDegrees(Math.atan(targetCenterPointY / ((fieldLength / 2) + 2)));
+
         // Tilt angles
 
         public static double centerStartTiltAngle = Math.toDegrees(Math.atan(heightToShoot / initiationLine));
@@ -165,6 +174,8 @@ public class FieldMap {
 
         public static double rearTrenchTiltAngle = Math.toDegrees(Math.atan((heightToShoot) / rearTrenchFloorDistance));
 
+        public static double oppTrenchTiltAngle = Math.toDegrees(Math.atan((heightToShoot) / oppTrenchFloorDistance));
+
         static {
 
                 // start positions are in terms of the robot center (x,y)
@@ -185,7 +196,7 @@ public class FieldMap {
         };
 
         public static void showValues() {
-                SD.putN1("Ht2Sh", heightToShoot);
+               // SD.putN1("Ht2Sh", heightToShoot);
 
                 SD.putN1("FLDCS", initiationLine);
                 SD.putN1("FLDLS", leftStartFloorDistance);
@@ -197,6 +208,7 @@ public class FieldMap {
                 SD.putN1("FLDFT", frontTrenchFloorDistance);
                 SD.putN1("FLDMT", midTrenchFloorDistance);
                 SD.putN1("FLDRT", rearTrenchFloorDistance);
+                SD.putN1("FLDOT", oppTrenchFloorDistance);
 
                 SD.putN1("SHDCS", initLineCenterShotDistance);
                 SD.putN1("SHDLS", initLineLeftShotDistance);
@@ -208,6 +220,7 @@ public class FieldMap {
                 SD.putN1("SHDFT", frontTrenchShotDistance);
                 SD.putN1("SHDMT", midTrenchShotDistance);
                 SD.putN1("SHDRT", rearTrenchShotDistance);
+                SD.putN1("SHDOT", oppTrenchShotDistance);
 
                 SD.putN1("TUACS", centerStartTurretAngle);
                 SD.putN1("TUALS", leftStartTurretAngle);
@@ -219,6 +232,9 @@ public class FieldMap {
                 SD.putN1("TUAFT", frontTrenchTurretAngle);
                 SD.putN1("TUAMT", midTrenchTurretAngle);
                 SD.putN1("TUART", rearTrenchTurretAngle);
+                SD.putN1("TUAOT", oppTrenchTurretAngle);
+
+
 
                 SD.putN1("TIACS", centerStartTiltAngle);
                 SD.putN1("TIALS", leftStartTiltAngle);
@@ -230,6 +246,7 @@ public class FieldMap {
                 SD.putN1("TIAFT", frontTrenchTiltAngle);
                 SD.putN1("TIAMT", midTrenchTiltAngle);
                 SD.putN1("TIART", rearTrenchTiltAngle);
+                SD.putN1("TIAOT", oppTrenchTiltAngle);
 
         }
 

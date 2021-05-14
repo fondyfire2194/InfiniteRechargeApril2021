@@ -18,7 +18,6 @@ import org.snobotv2.sim_wrappers.ISimWrapper;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
@@ -95,9 +94,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         m_motor.setIdleMode(IdleMode.kBrake);
 
         m_motor.setSmartCurrentLimit(10, 10);
-        m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
-        m_reverseLimit.enableLimitSwitch(false);
-        if (m_reverseLimit.get()) {
+        m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+        m_reverseLimit.enableLimitSwitch(RobotBase.isReal());
+        if (RobotBase.isReal() && m_reverseLimit.get()) {
             resetAngle();
         }
 
@@ -111,7 +110,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
             mElevatorSim = new ElevatorSimWrapper(ElevatorSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
 
-            mPidController.setP(.1);
+            mPidController.setP(.12);
+
+            setSoftwareLimits();
         }
 
     }

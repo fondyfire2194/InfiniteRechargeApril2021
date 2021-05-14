@@ -165,12 +165,10 @@ public class SetupShuffleboard {
                                         .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(2, 5)
                                         .withProperties(Map.of("Label position", "TOP"));
 
-                        preMatch.addNumber("TiltView", () -> m_tilt.getMotorDegrees()).withWidget(BuiltInWidgets.kDial)
-                                        .withProperties(Map.of("Min", 0, "Max", 60, "Show Text", false));
+                        preMatch.addNumber("TiltView", () -> m_tilt.getAngle());
                         preMatch.add("CANCheck", new CheckCANDevices(this));
-                        preMatch.addNumber("TurretView", () -> m_turret.getAngle())
-                                        .withWidget(BuiltInWidgets.kNumberBar)
-                                        .withProperties(Map.of("Min", -50, "Max", 50, "Show Text", false));
+                        preMatch.addNumber("TurretView", () -> m_turret.getAngle());
+
                         preMatch.addBoolean("Tilt Down OK", () -> m_tilt.m_reverseLimit.get());
                         preMatch.addBoolean("CANConnected",
                                         () -> m_tilt.tiltMotorConnected && m_turret.turretMotorConnected
@@ -199,32 +197,13 @@ public class SetupShuffleboard {
                                         .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 0).withSize(1, 4)
                                         .withProperties(Map.of("Label position", "TOP"));
 
-                        competition1.addNumber("ShootAngle", () -> m_tilt.getAngle())
-                                        .withWidget(BuiltInWidgets.kNumberBar)
-                                        .withProperties(Map.of("Min", 0, "Max", 30, "Show Text", false));
-
-                        competition1.addNumber("TurretPosn", () -> m_turret.getAngle())
-                                        .withWidget(BuiltInWidgets.kNumberBar)
-                                        .withProperties(Map.of("Min", -60, "Max", 60, "Show Text", false));
-
-                        competition1.addNumber("RobotPosn", () -> m_robotDrive.getAverageDistance())
-                                        .withWidget(BuiltInWidgets.kNumberBar)
-                                        .withProperties(Map.of("Min", -5, "Max", 0, "Show Text", false)).withSize(1, 1);
-
-                        competition1.addNumber("ShooterSpeed", () -> m_shooter.getRPM())
-                                        .withWidget(BuiltInWidgets.kNumberBar)
-                                        .withProperties(Map.of("Min", 0, "Max", 5000, "Show Text", false));
-
-                        competition1.addNumber("Intake", () -> m_intake.getMotor())
-                                        .withWidget(BuiltInWidgets.kNumberBar)
-                                        .withProperties(Map.of("Min", 0, "Max", 1, "Show Text", false));
-
-                        competition1.addNumber("FrontRoller", () -> m_transport.getFrontRoller())
-                                        .withWidget(BuiltInWidgets.kNumberBar)
-                                        .withProperties(Map.of("Min", -1, "Max", 0, "Show Text", false));
-                        competition1.addNumber("RearRoller", () -> m_transport.getRearRoller())
-                                        .withWidget(BuiltInWidgets.kNumberBar)
-                                        .withProperties(Map.of("Min", 0, "Max", 1, "Show Text", false));
+                        competition1.addNumber("ShootAngle", () -> m_tilt.getAngle());
+                        competition1.addNumber("TurretPosn", () -> m_turret.getAngle());
+                        competition1.addNumber("RobotPosn", () -> m_robotDrive.getAverageDistance());
+                        competition1.addNumber("ShooterSpeed", () -> m_shooter.getRPM());
+                        competition1.addNumber("Intake", () -> m_intake.getMotor());
+                        competition1.addNumber("FrontRoller", () -> m_transport.getFrontRoller());
+                        competition1.addNumber("RearRoller", () -> m_transport.getRearRoller());
 
                         ShuffleboardLayout shoot = Shuffleboard.getTab("Competition")
                                         .getLayout("Shoot", BuiltInLayouts.kList).withPosition(1, 0).withSize(2, 1)
@@ -336,11 +315,11 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT")); //
 
                         tiltCommands.add("Reset To Min", new ResetTiltAngle(m_tilt, m_limelight));
-                        tiltCommands.add("Position To Max",
+                        tiltCommands.add("Position To 30",
                                         new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MAX_ANGLE));
-                        tiltCommands.add("Position To Mid",
+                        tiltCommands.add("Position To 15",
                                         new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MID_ANGLE));
-                        tiltCommands.add("Position To Min",
+                        tiltCommands.add("Position To 0",
                                         new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE));
 
                         tiltCommands.add("PositionToSwitch", new TiltMoveToReverseLimit(m_tilt));
