@@ -29,32 +29,33 @@ public class ShootData {
              * 
              * first moveDistance, second moveDistance,shootdistance
              * 
-             * shoot time, turret angle, tilt angle.
+             * shoot time, turret angle, turret shift, tilt angle, tilt shift.
              * 
              * distances are absolute and need to be repeated if robot is to remain in place
              */
             // front of power port at initiation line 0
             {
 
-                    { 0, 0, retractDistance, 3, shootTime, 0, 30.3 }, // 0 center start shoot retract
+                    { 0, 0, retractDistance, 3, shootTime, 0, 0, 30.3, 0 }, // 0 center start shoot retract
 
-                    { 0, retractDistance, retractDistance, 4., shootTime, 0, 23.7 }, // 1 center start retract
-                                                                                      // shoot
+                    { 0, retractDistance, retractDistance, 4., shootTime, 0, 0, 23.7, 0 }, // 1 center start retract
+                                                                                           // shoot
 
-                    { 0, 0, retractDistance, 3.2, shootTime, 19.6, 28.8 }, // 2 left start shoot retract
+                    { 0, 0, retractDistance, 3.2, shootTime, 19.6, 0, 28.8, 0 }, // 2 left start shoot retract
 
-                    { 0, retractDistance, retractDistance, 4.2, shootTime, 15, 23 }, // 3 left start retract
-                                                                                     // shoot
+                    { 0, retractDistance, retractDistance, 4.2, shootTime, 15, 0, 23, 0 }, // 3 left start retract
+                    // shoot
 
-                    { 0, 0, retractDistance, 3.2, shootTime, -19.6, 28.8 }, // 4 right start shoot retract
+                    { 0, 0, retractDistance, 3.2, shootTime, -19.6, 0, 28.8, 0 }, // 4 right start shoot retract
 
-                    { 0, retractDistance, retractDistance, 4.2, shootTime, -15, 23 }, // 5 right start retract
-                                                                                      // shoot
+                    { 0, retractDistance, retractDistance, 4.2, shootTime, -15, 0, 23, 0 }, // 5 right start retract
+                    // shoot
 
-                    { 0, twoBallPickup, twoBallPickup, 5.2, shootTime, -26, 19 }, // 6 trench start pickup 2 and shoot
+                    { 0, twoBallPickup, twoBallPickup, 5.2, shootTime, -26, 0, 19, 0 }, // 6 trench start pickup 2 and
+                                                                                        // shoot
 
-                    { 0, twoBallPickup - 1, twoBallPickup, 5.2, shootTime, -26, 19 } // 7 move to pick up 3rd
-                                                                                     // trench ball and shoot
+                    { 0, twoBallPickup - 1, twoBallPickup, 5.2, shootTime, -26, 0, 19, 0 } // 7 move to pick up 3rd
+            // trench ball and shoot
 
             };
 
@@ -85,11 +86,19 @@ public class ShootData {
     }
 
     public static double getTurretAngle(int pointer) {
-        return shootValues[pointer][5];
+        return shootValues[pointer][5] + shootValues[pointer][6];
+    }
+
+    public static double getTurretShift(int pointer) {
+        return shootValues[pointer][6];
     }
 
     public static double getTiltAngle(int pointer) {
-        return shootValues[pointer][6];
+        return shootValues[pointer][7] + shootValues[pointer][8];
+    }
+
+    public static double getTiltShift(int pointer) {
+        return shootValues[pointer][8];
     }
 
 }

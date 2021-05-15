@@ -8,12 +8,14 @@ import java.util.Map;
 
 import edu.wpi.cscore.HttpCamera;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -30,6 +32,7 @@ import frc.robot.commands.ControlPanel.PositionToColor;
 import frc.robot.commands.ControlPanel.ToggleLookForColor;
 import frc.robot.commands.RobotDrive.ClearRobFaults;
 import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.RobotDrive.PositionRobotInc;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.RobotDrive.ResetPose;
@@ -91,6 +94,8 @@ public class SetupShuffleboard {
         private boolean m_showVision = true;
         private boolean m_showTrajectory = false;
         private boolean m_showSubsystems = true;
+        private boolean m_showMisc = false;
+
         private HttpCamera LLFeed;
         public double timeToStart;
 
@@ -496,6 +501,8 @@ public class SetupShuffleboard {
                         robotCommands.add("Reset Pose", new ResetPose(m_robotDrive));
                         robotCommands.add("Pos to 10M", new PositionRobot(m_robotDrive, 10.));
                         robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0));
+                        robotCommands.add("Pos +1", new PositionRobotInc(m_robotDrive, 1));
+                        robotCommands.add("Pos -1", new PositionRobotInc(m_robotDrive, -1));
                         // robotCommands.add("Rot to 90", new TurnToAngleProfiled(m_robotDrive, 90));
                         // robotCommands.add("Rot to 0", new TurnToAngleProfiled(m_robotDrive, 0));
                         // robotCommands.add("Rot to -90", new TurnToAngleProfiled(m_robotDrive, -90));
@@ -757,7 +764,13 @@ public class SetupShuffleboard {
                         climberValues.addBoolean("Climber Arm Up", () -> m_climber.getArmRaised());
 
                 }
+                if (m_showMisc) {
+                        ShuffleboardTab misc = Shuffleboard.getTab("Misc");
+                        PowerDistributionPanel pdp = new PowerDistributionPanel();
+                        misc.add("PDP", pdp).withWidget(BuiltInWidgets.kPowerDistributionPanel).withPosition(0, 0)
+                                        .withSize(6, 3);
 
+                }
         }
 
         public void checkCANDevices() {

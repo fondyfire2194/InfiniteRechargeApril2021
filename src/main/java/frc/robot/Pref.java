@@ -67,12 +67,11 @@ public class Pref {
     prefDict.put("sHTune", 0.);
 
     // Drive
-    prefDict.put("dRRKp", .2);
-    prefDict.put("dRLKp", .2);   
+    prefDict.put("dRKp", .1);
     prefDict.put("dRKi", .0);
     prefDict.put("dRKd", .0);
     prefDict.put("dRKiz", .0);
-    prefDict.put("dRKacc", 500.);// rpm/sec motor
+ 
     prefDict.put("dRTune", 0.);
   }
 

@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevDrivetrain;
 
-public class PositionRobot extends CommandBase {
+public class PositionRobotInc extends CommandBase {
   /** Creates a new PositionRobot. */
   private final RevDrivetrain m_drive;
   private double m_position;
   private double m_startTime;
 
-  public PositionRobot(RevDrivetrain m_robotDrive, double position) {
+  public PositionRobotInc(RevDrivetrain m_robotDrive, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_drive = m_robotDrive;
     m_position = position;
@@ -25,14 +25,15 @@ public class PositionRobot extends CommandBase {
   @Override
   public void initialize() {
     m_startTime = Timer.getFPGATimestamp();
-    m_drive.leftTargetPosition = m_position;
-    m_drive.rightTargetPosition = m_position;
+    m_drive.leftTargetPosition += m_position;
+    m_drive.rightTargetPosition += m_position;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.driveDistance(m_position, m_position);
+ 
+     m_drive.driveDistance(m_position, m_position);
   }
 
   // Called once the command ends or is interrupted.
