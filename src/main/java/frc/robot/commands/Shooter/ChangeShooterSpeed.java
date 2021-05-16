@@ -17,30 +17,29 @@ import frc.robot.subsystems.RevShooterSubsystem;
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
 public class ChangeShooterSpeed extends InstantCommand {
   private RevShooterSubsystem m_shooter;
-  private double m_rpmChange;
+  private double m_fpsChange;
 
-  public ChangeShooterSpeed(RevShooterSubsystem shooter, double rpmChange) {
+  public ChangeShooterSpeed(RevShooterSubsystem shooter, double fpsChange) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
-    m_rpmChange = rpmChange;
+    m_fpsChange = fpsChange;
     // addRequirements(m_shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    double currentSpeed = m_shooter.requiredSpeed;
+    double currentSpeed = m_shooter.requiredMps;
 
-    double newSpeed = currentSpeed += m_rpmChange;
+    double newSpeed = currentSpeed += m_fpsChange;
 
-    if (newSpeed > HoodedShooterConstants.MAX_SHOOTER_RPM)
-      newSpeed = HoodedShooterConstants.MAX_SHOOTER_RPM;
+    if (newSpeed > HoodedShooterConstants.MAX_SHOOTER_FPS)
+      newSpeed = HoodedShooterConstants.MAX_SHOOTER_FPS;
 
     if (newSpeed < 0)
       newSpeed = 0;
 
-    m_shooter.requiredSpeed = newSpeed;
-    SmartDashboard.putNumber("LL1", m_shooter.requiredSpeed);
+    m_shooter.requiredMps = newSpeed;
   //  m_shooter.spin
     m_shooter.useCameraSpeed = false;
     m_shooter.cameraSpeedBypassed = true;

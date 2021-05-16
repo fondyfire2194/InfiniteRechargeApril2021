@@ -39,7 +39,7 @@ public class ShootCells extends CommandBase {
   @Override
   public void initialize() {
     startTime = Timer.getFPGATimestamp();
-    shooter.requiredSpeedLast = 0.;
+    shooter.requiredMpsLast = 0.;
     shooter.shootTime = time;
     compressor.stop();
 

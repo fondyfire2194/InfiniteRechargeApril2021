@@ -47,15 +47,16 @@ public class AutoMode1 extends SequentialCommandGroup {
                 // move back and pickup 2
                 super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
 
-                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
+                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber),
+                                                ShootData.getTiltOffset(shootNumber)),
+                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber),
+                                                ShootData.getTurretOffset(shootNumber)))
 
-                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)))
-
-                                                .deadlineWith(new StartIntake(intake, limelight),
-                                                                new StartShooterWheels(shooter, shooter
-                                                                                .calculateSpeedFromDistance(ShootData
-                                                                                                .getShootDistance(
-                                                                                                                shootNumber)))),
+                                                                .deadlineWith(new StartIntake(intake, limelight),
+                                                                                new StartShooterWheels(shooter, shooter
+                                                                                                .calculateFPSFromDistance(
+                                                                                                                ShootData.getShootDistance(
+                                                                                                                                shootNumber)))),
 
                                 // shoot 5
 

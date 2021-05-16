@@ -23,7 +23,7 @@ public class StopTurret extends CommandBase {
   @Override
   public void initialize() {
 
-    m_turret.visionCorrection = 0;
+    m_turret.targetHorizontalOffset = 0;
 
   }
 

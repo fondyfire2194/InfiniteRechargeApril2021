@@ -28,13 +28,15 @@ public class PositionTurretToVision extends CommandBase {
   private int visionFoundCounter;
   private boolean targetSeen;
   boolean endIt;
+  private double m_offset;
 
-  public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double position) {
+  public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double position, double offset) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
     m_limelight = limelight;
     m_originalTarget = position;
     m_turret.targetAngle = m_originalTarget;
+    m_offset = offset;
     addRequirements(m_turret);
   }
 
@@ -42,7 +44,7 @@ public class PositionTurretToVision extends CommandBase {
   @Override
   public void initialize() {
     m_endpoint = m_originalTarget;
-    m_turret.visionCorrection = 0;
+    m_turret.targetHorizontalOffset = m_offset;
     targetSeen = false;
     visionFoundCounter = 0;
     loopCtr = 0;

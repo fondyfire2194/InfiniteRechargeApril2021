@@ -93,7 +93,7 @@ public class CalculateTargetDistance extends CommandBase {
 
     }
 
-    m_shooter.calculateSpeedFromDistance(m_shooter.calculatedCameraDistance);
+    m_shooter.calculateFPSFromDistance(m_shooter.calculatedCameraDistance);
   }
 
   // Called once the command ends or is interrupted.

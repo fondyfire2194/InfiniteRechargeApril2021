@@ -47,13 +47,13 @@ public class AutoMode2 extends SequentialCommandGroup {
 
                 super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
 
-                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
-
-                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)))
-
-                                                .deadlineWith(new StartIntake(intake, limelight),
+                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber),
+                                                ShootData.getTiltOffset(shootNumber)),
+                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber),
+                                                ShootData.getTurretOffset(shootNumber))).deadlineWith(
+                                                                new StartIntake(intake, limelight),
                                                                 new StartShooterWheels(shooter, shooter
-                                                                                .calculateSpeedFromDistance(ShootData
+                                                                                .calculateFPSFromDistance(ShootData
                                                                                                 .getShootDistance(
                                                                                                                 shootNumber)))),
 
@@ -65,15 +65,16 @@ public class AutoMode2 extends SequentialCommandGroup {
                                 new ParallelCommandGroup(
                                                 new PositionRobot(drive, ShootData.getFirstDistance(shootNumber + 1)),
 
-                                                new PositionTurretToVision(turret, limelight,
-                                                                ShootData.getTurretAngle(shootNumber + 1)),
-
                                                 new PositionTiltToVision(tilt, limelight,
-                                                                ShootData.getTiltAngle(shootNumber + 1)))
+                                                                ShootData.getTiltAngle(shootNumber + 1),
+                                                                ShootData.getTiltOffset(shootNumber + 1)),
+                                                new PositionTurretToVision(turret, limelight,
+                                                                ShootData.getTurretAngle(shootNumber + 1),
+                                                                ShootData.getTurretOffset(shootNumber + 1)))
 
                                                                                 .deadlineWith(new StartShooterWheels(
                                                                                                 shooter,
-                                                                                                shooter.calculateSpeedFromDistance(
+                                                                                                shooter.calculateFPSFromDistance(
                                                                                                                 ShootData.getShootDistance(
                                                                                                                                 shootNumber + 1)))),
 

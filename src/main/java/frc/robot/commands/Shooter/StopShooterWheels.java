@@ -21,8 +21,8 @@ public class StopShooterWheels extends CommandBase {
   @Override
   public void initialize() {
     m_shooter.stop();
-    m_shooter.requiredSpeed = 0;
-    m_shooter.requiredSpeedLast = 0;
+    m_shooter.requiredMps = 0;
+    m_shooter.requiredMpsLast = 0;
     m_shooter.cameraSpeedBypassed = false;
   }
 

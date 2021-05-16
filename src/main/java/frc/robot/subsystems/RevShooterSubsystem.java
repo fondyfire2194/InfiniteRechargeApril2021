@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.util.Arrays;
 
 import com.revrobotics.CANEncoder;
+import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -28,8 +29,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private final CANEncoder mEncoder;
     private final CANPIDController mPidController;
     private ISimWrapper mSimulator;
-    public double requiredSpeedLast;
-    public double requiredSpeed;
+    public double requiredMpsLast;
+    public double requiredMps;
     public double shootTime;
     public double shootTimeRemaining;
     public static DCMotor kGearbox = DCMotor.getNeo550(2);
@@ -40,27 +41,44 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double cameraCalculatedSpeed;
     public boolean useCameraSpeed;
     private final int VELOCITY_SLOT = 0;
+    /**
+     * 8" diameter wheels = (8/12)*pi ft circ.
+     * 
+     * 
+     * 
+     * 
+     * so circ =
+     * (2 *pi)/3 = 2.1 ft = .638 meters per rev max speed 80 revs per sec so about
+     * 50 meters per  sec max
+     * Angle range is 30 to 1 or 2?
+     */
+    public final double metersPerRev = .638;
 
     /**
      * 
+     * https://www.omnicalculator.com/physics/projectile-motion
      * 
-     * following is array representing shoot speeds for distances from 2 to 14
+     * following is array representing shoot mpersec for distances from 2 to 14
      * meters or 10 meters
      *
      * 10 meters with steps of 1 meter is 10 steps or 40 inches per step.
      * 
-     * we can measure every meter and out results in array and then interpolate.
+     * we can measure every meter, put results in array and then interpolate.
      */
     private int speedBaseDistance = 2;
     private int speedMaxDistance = 14;
-    public double[] speedFromCamera = new double[] { 1500, 2000, 2250, 3000, 3500, 4000, 4250, 4750, 5000, 5200, 5500,
-            5600, 5700 };
+    private double maxMPS = 50;
 
-    // matching calculated tilt lauch angles when on target 2 to 14 m.
-    // 39.01, 28.37, 22.05,17.95,15.11,13.03,11.45,10.20,9.20,8.38,7.69,7.10,6.60
-    // launch velocity mps = shooter rpm * pi * wheel diameter = rpm * 3.14 * 8 /(60 *39.37) = .01 * rpm
-    // rollers feeding shooter are 4" diameter so their velocity is .005 * rpm use bag motors ?1000:1 ratio
-    // free speed 13000
+    public double[] shooterFPSFromCamera = new double[] { 5, 8, 10, 15, 15.5, 20, 22, 5, 25, 30, 35, 40, 45, 50 };
+
+    // matching calculated tilt launch angles when on target 2 to 14 m.
+    // 39.01, 28.37, 22.05, 17.95, 15.11, 13.03, 11.45, 10.20, 9.20, 8.38, 7.69,
+    // 7.10, 6.60
+    // launch velocity mps = shooter rpm * pi * wheel diameter = rpm * 3.14 * 8 /(60
+    // *39.37) = .01 * rpm
+    // rollers feeding shooter are 4" diameter so their velocity is .005 * rpm use
+    // bag motors ?1000:1 ratio
+    // free speed 13,000
 
     public String[] shootColor = { "red", "yellow", "green" };
     public int shootColorNumber;
@@ -75,6 +93,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean cameraSpeedBypassed;
 
     public RevShooterSubsystem() {
+
         mLeftMotor = new SimableCANSparkMax(CANConstants.LEFT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
         mRightMotor = new SimableCANSparkMax(CANConstants.RIGHT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
 
@@ -82,7 +101,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mPidController = mLeftMotor.getPIDController();
         mLeftMotor.restoreFactoryDefaults();
         mLeftMotor.setOpenLoopRampRate(5.);
-        mLeftMotor.setClosedLoopRampRate(5.);
+        mLeftMotor.setClosedLoopRampRate(1.);
 
         mRightMotor.restoreFactoryDefaults();
         mRightMotor.follow(mLeftMotor, true);
@@ -97,7 +116,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             mSimulator = new FlywheelSimWrapper(FlywheelSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(mLeftMotor), RevEncoderSimWrapper.create(mLeftMotor));
         }
-        requiredSpeed = 2500;
+        requiredMps = 20;
         setGains();
 
     }
@@ -110,13 +129,19 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     @Override
     public void spinAtRpm(double rpm) {
-        requiredSpeed = rpm;
+        requiredMps = rpm;
+        mPidController.setReference(rpm, ControlType.kVelocity, VELOCITY_SLOT);
+    }
+
+    public void spinAtMetersPerSec(double metersPerSec) {
+        double rpm = (metersPerSec * 60) / metersPerRev;
+        requiredMps = rpm;
         mPidController.setReference(rpm, ControlType.kVelocity, VELOCITY_SLOT);
     }
 
     public void runShooter() {
 
-        spinAtRpm(requiredSpeed);
+        spinAtMetersPerSec(requiredMps);
     }
 
     public void moveManually(double speed) {
@@ -137,7 +162,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             lastTuneOn = tuneOn;
 
         if (useCameraSpeed && !cameraSpeedBypassed)
-            requiredSpeed = cameraCalculatedSpeed;
+            requiredMps = cameraCalculatedSpeed;
 
     }
 
@@ -153,8 +178,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         return mEncoder.getVelocity();
     }
 
+    public double getMPS() {
+        return (getRPM() / 60) * metersPerRev;
+    }
+
     public boolean atSpeed() {
-        return requiredSpeed > 0 && Math.abs(requiredSpeed - getRPM()) < requiredSpeed * .1;
+        return requiredMps > 0 && Math.abs(requiredMps - getMPS()) < requiredMps * .1;
 
     }
 
@@ -180,6 +209,10 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mLeftMotor.set(0);
 
         mRightMotor.set(0);
+    }
+
+    public double getLeftPctOut() {
+        return mLeftMotor.get();
     }
 
     public void clearLeftFaults() {
@@ -245,11 +278,11 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     }
 
-    public double calculateSpeedFromDistance(double distance) {
+    public double calculateFPSFromDistance(double distance) {
         SmartDashboard.putNumber("D", distance);
         calculatedCameraDistance = distance;
         if (distance >= speedBaseDistance && distance <= speedMaxDistance) {
-            // subtract base distance of 3 meters
+            // subtract base distance of 2 meters
 
             double tempDistance = distance - speedBaseDistance;
 
@@ -262,8 +295,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             SmartDashboard.putNumber("B", base);
             SmartDashboard.putNumber("BR", rem);
 
-            double baseSpeed = speedFromCamera[baseI];
-            double upperSpeed = speedFromCamera[baseI + 1];
+            double baseSpeed = shooterFPSFromCamera[baseI];
+            double upperSpeed = shooterFPSFromCamera[baseI + 1];
 
             double speedRange = upperSpeed - baseSpeed;
 

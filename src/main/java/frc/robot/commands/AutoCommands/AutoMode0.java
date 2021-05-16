@@ -62,12 +62,14 @@ public class AutoMode0 extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(
                                                 new PositionTiltToVision(tilt, limelight,
-                                                                ShootData.getTiltAngle(shootNumber)),
+                                                                ShootData.getTiltAngle(shootNumber),
+                                                                ShootData.getTiltOffset(shootNumber)),
                                                 new PositionTurretToVision(turret, limelight,
-                                                                ShootData.getTurretAngle(shootNumber)),
+                                                                ShootData.getTurretAngle(shootNumber),
+                                                                ShootData.getTurretOffset(shootNumber)),
                                                 new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)))
                                                                 .deadlineWith(new StartShooterWheels(shooter, shooter
-                                                                                .calculateSpeedFromDistance(ShootData
+                                                                                .calculateFPSFromDistance(ShootData
                                                                                                 .getShootDistance(
                                                                                                                 shootNumber)))),
 
@@ -78,7 +80,8 @@ public class AutoMode0 extends SequentialCommandGroup {
                                 new ParallelCommandGroup(new MessageCommand("GroupStarted"),
                                                 new PositionRobot(drive, ShootData.getSecondDistance(shootNumber)),
 
-                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE), new PositionTurret(turret, 0)));
+                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),
+                                                new PositionTurret(turret, 0)));
 
         }
 }

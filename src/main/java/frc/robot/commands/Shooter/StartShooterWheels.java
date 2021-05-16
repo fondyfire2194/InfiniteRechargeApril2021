@@ -15,19 +15,19 @@ public class StartShooterWheels extends CommandBase {
    * Creates a new StartShooter.
    */
   private RevShooterSubsystem m_shooter;
-  private double m_rpm;
+  private double m_ftpersec;
 
-  public StartShooterWheels(RevShooterSubsystem shooter, double rpm) {
+  public StartShooterWheels(RevShooterSubsystem shooter, double ftpersec) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooter);
     m_shooter = shooter;
-    m_rpm = rpm;
+    m_ftpersec = ftpersec;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooter.requiredSpeed = m_rpm;
+    m_shooter.requiredMps = m_ftpersec;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

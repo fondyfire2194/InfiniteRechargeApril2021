@@ -37,7 +37,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private final CANEncoder mEncoder;
     private final CANPIDController mPidController;
     private ISimWrapper mElevatorSim;
-    public double visionCorrection;
     public double targetAngle;
     private double inPositionBandwidth = .25;
     public double targetHorizontalOffset;

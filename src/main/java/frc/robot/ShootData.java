@@ -89,7 +89,7 @@ public class ShootData {
         return shootValues[pointer][5] + shootValues[pointer][6];
     }
 
-    public static double getTurretShift(int pointer) {
+    public static double getTurretOffset(int pointer) {
         return shootValues[pointer][6];
     }
 
@@ -97,7 +97,7 @@ public class ShootData {
         return shootValues[pointer][7] + shootValues[pointer][8];
     }
 
-    public static double getTiltShift(int pointer) {
+    public static double getTiltOffset(int pointer) {
         return shootValues[pointer][8];
     }
 

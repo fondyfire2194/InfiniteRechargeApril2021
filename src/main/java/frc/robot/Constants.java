@@ -157,6 +157,7 @@ public final class Constants {
    public static class HoodedShooterConstants {
 
       public static final double MAX_SHOOTER_RPM = 5700;
+      public static final double MAX_SHOOTER_FPS = 120;
 
       /**
        * Tilt axis is a leadscrew driven through a 14T to 28T or 2:1 belt and a 10:1
@@ -184,6 +185,8 @@ public final class Constants {
 
       public static final double TILT_MIN_ANGLE = 1;
       public static final double TILT_MAX_ANGLE = 30;
+
+      public static double TILT_HEIGHT = Units.inchesToMeters(26);
 
       public static double maxAngleChange = TILT_MAX_ANGLE - TILT_MIN_ANGLE;
 
@@ -267,8 +270,8 @@ public final class Constants {
       public static final double TARGET_HEIGHT = Units.inchesToMeters(9);
       public static final double BASE_CAMERA_HEIGHT = Units.inchesToMeters(18);
       public static final double MAX_CAMERA_HEIGHT = Units.inchesToMeters(27);
-      public static final double CAMERA_BASE_ANGLE = 60.;
-      public static final double CAMERA_MAX_ANGLE = 90;
+      public static final double CAMERA_BASE_ANGLE = 20.;
+      public static final double CAMERA_MAX_ANGLE = 0;
       public static double cameraAngleRange = CAMERA_MAX_ANGLE - CAMERA_BASE_ANGLE;
       public static final double cameraHeightRange = MAX_CAMERA_HEIGHT - BASE_CAMERA_HEIGHT;
       public static double cameraHeightSlope = cameraHeightRange / HoodedShooterConstants.tiltRange;

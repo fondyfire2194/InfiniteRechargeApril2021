@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -94,10 +95,12 @@ public class SetupShuffleboard {
         private boolean m_showVision = true;
         private boolean m_showTrajectory = false;
         private boolean m_showSubsystems = true;
-        private boolean m_showMisc = false;
+        private boolean m_showMisc = true;
 
         private HttpCamera LLFeed;
         public double timeToStart;
+
+        private ComplexWidget pdpWidget;
 
         public SendableChooser<Integer> autoChooser = new SendableChooser<>();
         public SendableChooser<Integer> startDelayChooser = new SendableChooser<>();
@@ -387,35 +390,42 @@ public class SetupShuffleboard {
                  */
                 if (m_showShooter & !liveMatch) {
                         ShuffleboardLayout shooterCommands = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("Shooter", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
+                                        .getLayout("MAXFPS 120", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
                                                                                            // commands
 
-                        shooterCommands.add("Shooter", new StartShooterWheels(m_shooter, 500));
+                        shooterCommands.add("Shooter 50 mps", new StartShooterWheels(m_shooter, 50));
                         shooterCommands.add("Stop", new StopShooterWheels(m_shooter));
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
-                        shooterCommands.add("Inc 250", new ChangeShooterSpeed(m_shooter, 250));
-                        shooterCommands.add("Dec 250 ", new ChangeShooterSpeed(m_shooter, -250));
+                        shooterCommands.add("Inc 2 mpersec", new ChangeShooterSpeed(m_shooter, 2));
+                        shooterCommands.add("Dec 2 mpersec ", new ChangeShooterSpeed(m_shooter, -2));
                         shooterCommands.add("Shoot", new ShootCells(m_shooter, m_transport, m_compressor, 0));
                         shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
                         shooterCommands.add("Cmd", m_shooter);
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
                                         .getLayout("ShooterValues", BuiltInLayouts.kList).withPosition(2, 0)
-                                        .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels
+                                        .withSize(2, 3).withProperties(Map.of("Label position", "LEFT")); // labels
                                                                                                           // for
 
-                        shooterValues.addNumber("LeftRPM", () -> m_shooter.getRPM());
+                        shooterValues.addNumber("LeftMPS", () -> m_shooter.getMPS());
+                        shooterValues.addNumber("Left PCT", () -> m_shooter.getLeftPctOut());
                         shooterValues.addNumber("LeftAmps", () -> m_shooter.getLeftAmps());
                         shooterValues.addNumber("RightAmps", () -> m_shooter.getRightAmps());
-                        shooterValues.addNumber("SpeedCommand", () -> m_shooter.requiredSpeed);
+                        shooterValues.addNumber("SpeedCommand FPS", () -> m_shooter.requiredMps);
                         shooterValues.addNumber("LeftFaults", () -> m_shooter.getLeftFaults());
                         shooterValues.addNumber("RightFaults", () -> m_shooter.getRightFaults());
-                        shooterValues.addNumber("VertOffset", () -> m_tilt.targetVerticalOffset);
-                        shooterValues.addNumber("HorOffset", () -> m_turret.targetHorizontalOffset);
                         shooterValues.addBoolean("CameraHasSpeed", () -> m_shooter.useCameraSpeed);
-                        shooterValues.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
-                        shooterValues.addNumber("CameraAngle", () -> m_tilt.getCameraAngle());
+
+                        ShuffleboardLayout shooterValues1 = Shuffleboard.getTab("SetupShooter")
+                                        .getLayout("ShooterValues1", BuiltInLayouts.kList).withPosition(2, 3)
+                                        .withSize(2, 3).withProperties(Map.of("Label position", "LEFT")); // labels
+
+                        shooterValues1.addNumber("VertOffset", () -> m_tilt.targetVerticalOffset);
+                        shooterValues1.addNumber("HorOffset", () -> m_turret.targetHorizontalOffset);
+
+                        shooterValues1.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
+                        shooterValues1.addNumber("CameraAngle", () -> m_tilt.getCameraAngle());
 
                         ShuffleboardLayout shooterValues2 = Shuffleboard.getTab("SetupShooter")
                                         .getLayout("States", BuiltInLayouts.kGrid).withPosition(4, 0).withSize(2, 3)
@@ -431,12 +441,12 @@ public class SetupShuffleboard {
 
                         if (m_shooterTune) {
 
-                                ShuffleboardLayout shooterValues1 = Shuffleboard.getTab("SetupShooter")
+                                ShuffleboardLayout shooterValues3 = Shuffleboard.getTab("SetupShooter")
                                                 .getLayout("Charts", BuiltInLayouts.kList).withPosition(4, 0)
                                                 .withSize(4, 5).withProperties(Map.of("Label position", "LEFT")); // labels
-                                shooterValues1.addNumber("Speed", () -> m_shooter.getRPM())
+                                shooterValues3.addNumber("Speed", () -> m_shooter.getRPM())
                                                 .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
-                                shooterValues1.addNumber("Amps", () -> m_shooter.getLeftAmps())
+                                shooterValues3.addNumber("Amps", () -> m_shooter.getLeftAmps())
                                                 .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
 
                         }
@@ -767,8 +777,8 @@ public class SetupShuffleboard {
                 if (m_showMisc) {
                         ShuffleboardTab misc = Shuffleboard.getTab("Misc");
                         PowerDistributionPanel pdp = new PowerDistributionPanel();
-                        misc.add("PDP", pdp).withWidget(BuiltInWidgets.kPowerDistributionPanel).withPosition(0, 0)
-                                        .withSize(6, 3);
+                        pdpWidget = misc.add("PDP", pdp).withWidget(BuiltInWidgets.kPowerDistributionPanel)
+                                        .withPosition(0, 0).withSize(6, 3);
 
                 }
         }

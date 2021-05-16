@@ -32,14 +32,16 @@ public class PositionTiltToVision extends CommandBase {
   private double motorDegrees;
 
   private double limelightVerticalAngle;
+  private double m_offset;
 
   private final int filterCount = 5;
 
-  public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double position) {
+  public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double position, double offset) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
     m_originalTarget = position;
     m_limelight = limelight;
+    m_offset = offset;
     addRequirements(m_tilt);
   }
 
@@ -49,11 +51,12 @@ public class PositionTiltToVision extends CommandBase {
     m_endpoint = m_originalTarget;
     m_tilt.visionCorrection = 0;
     m_tilt.targetAngle = m_endpoint;
+    m_tilt.targetVerticalOffset = m_offset;
     if (m_endpoint < HoodedShooterConstants.TILT_MIN_ANGLE)
       m_endpoint = HoodedShooterConstants.TILT_MIN_ANGLE;
     if (m_endpoint > HoodedShooterConstants.TILT_MAX_ANGLE)
       m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE;
-    motorDegrees = ( m_tilt.tiltMaxAngle - m_endpoint);
+    motorDegrees = (m_tilt.tiltMaxAngle - m_endpoint);
     loopCtr = 0;
   }
 

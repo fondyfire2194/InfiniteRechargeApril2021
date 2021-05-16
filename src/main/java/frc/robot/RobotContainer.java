@@ -240,7 +240,7 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 3).whenPressed(new StopShooterWheels(m_shooter));
 
             new JoystickButton(m_driverController, 6).whenPressed(new ChangeShooterSpeed(m_shooter, +250));
- 
+
             new JoystickButton(m_driverController, 4).whenPressed(new ChangeShooterSpeed(m_shooter, -250));
 
             driverUpButton.whenPressed(() -> m_tilt.aimHigher(.05));
@@ -311,8 +311,10 @@ public class RobotContainer {
 
             double baseSpeed = 1500;
 
-            row1Left.whenPressed(new PositionTiltToVision(m_tilt, m_limelight, ShootData.getTiltAngle(2)))
-                        .whenPressed(new PositionTurretToVision(m_turret, m_limelight, ShootData.getTiltAngle(2)))
+            row1Left.whenPressed(new PositionTiltToVision(m_tilt, m_limelight, ShootData.getTiltAngle(2),
+                        ShootData.getTiltOffset(2)))
+                        .whenPressed(new PositionTurretToVision(m_turret, m_limelight, ShootData.getTiltAngle(2),
+                                    ShootData.getTurretOffset(2)))
                         .whenPressed((new StartShooterWheels(m_shooter, m_shooter.cameraCalculatedSpeed)));
 
             row1Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed));// front of trench
