@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -322,7 +321,7 @@ public class SetupShuffleboard {
                                         .getLayout("Tilt", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); //
 
-                        tiltCommands.add("Reset To Min", new ResetTiltAngle(m_tilt, m_limelight));
+                        tiltCommands.add("Reset To Min", new ResetTiltAngle(m_tilt));
                         tiltCommands.add("Position To 30",
                                         new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MAX_ANGLE));
                         tiltCommands.add("Position To 15",

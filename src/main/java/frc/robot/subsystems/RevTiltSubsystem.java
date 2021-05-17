@@ -17,7 +17,6 @@ import org.snobotv2.sim_wrappers.ISimWrapper;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
@@ -57,8 +56,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public boolean tuneOn = false;
     public boolean tiltMotorConnected;
     public boolean lastTuneOn;
-    private double startTime;
-    private double endTime;
     private double maxAdjustShoot = .45;
 
     /**
@@ -124,11 +121,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         tuneOn = Pref.getPref("tILTune") != 0.;
 
         if (tuneOn && !lastTuneOn) {
-            startTime = Timer.getFPGATimestamp();
+      
             tuneGains();
             lastTuneOn = true;
-            endTime = Timer.getFPGATimestamp();
-            // SmartDashboard.putNumber("TGT", endTime - startTime);
         }
 
         if (lastTuneOn)

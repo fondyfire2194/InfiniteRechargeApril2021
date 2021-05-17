@@ -35,8 +35,6 @@ public class FondyFireTrajectory {
         public Trajectory centerStart, leftStart, rightStart;
         public Trajectory leftStartCurve, rightStartCurve;
         private RevDrivetrain m_drive;
-        private static double bottomRectAngle = -Math.toRadians(67.5);
-        private static double topRectAngle = -Math.toRadians(22.5);
 
         public FondyFireTrajectory(RevDrivetrain drive) {
                 m_drive = drive;

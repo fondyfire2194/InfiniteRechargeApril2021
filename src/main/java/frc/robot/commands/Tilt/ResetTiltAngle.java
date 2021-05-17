@@ -13,13 +13,11 @@ import frc.robot.subsystems.RevTiltSubsystem;
 public class ResetTiltAngle extends CommandBase {
     /** Creates a new ResetTiltAngle. */
     private final RevTiltSubsystem m_tilt;
-    private final LimeLight m_limelight;
     private int loopCtr;
 
-    public ResetTiltAngle(RevTiltSubsystem tilt, LimeLight limelight) {
+    public ResetTiltAngle(RevTiltSubsystem tilt) {
         // Use addRequirements() here to declare subsy limelightstem dependencies.
         m_tilt = tilt;
-        m_limelight = limelight;
         addRequirements(m_tilt);
     }
 
@@ -35,7 +33,6 @@ public class ResetTiltAngle extends CommandBase {
         loopCtr++;
         m_tilt.resetAngle();
         m_tilt.targetAngle = HoodedShooterConstants.TILT_MAX_ANGLE;
-        // m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_limelight));
         if (RobotBase.isReal())
             m_tilt.setSoftwareLimits();
     }

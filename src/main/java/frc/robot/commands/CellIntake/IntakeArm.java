@@ -5,7 +5,6 @@
 package frc.robot.commands.CellIntake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ControlPanelSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import edu.wpi.first.wpilibj.Timer;
 

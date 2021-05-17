@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
@@ -39,7 +38,6 @@ import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Tilt.TiltWaitForStop;
 import frc.robot.commands.Turret.PositionHoldTurret;
-import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretJogVelocity;
@@ -309,7 +307,7 @@ public class RobotContainer {
             L3Button = buttonBox.getL3Button();
             R3Button = buttonBox.getR3Button();
 
-            double baseSpeed = 1500;
+            double baseSpeed = 5;
 
             row1Left.whenPressed(new PositionTiltToVision(m_tilt, m_limelight, ShootData.getTiltAngle(2),
                         ShootData.getTiltOffset(2)))
@@ -318,14 +316,14 @@ public class RobotContainer {
                         .whenPressed((new StartShooterWheels(m_shooter, m_shooter.cameraCalculatedSpeed)));
 
             row1Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed));// front of trench
-            row2Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 500));// 1/4 trench
-            row3Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1000));// mid trench
-            row4Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1500));// 3/4 trench
+            row2Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1));// 1/4 trench
+            row3Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 2));// mid trench
+            row4Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 3));// 3/4 trench
 
-            row1Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 250));//
-            row2Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 750));//
-            row3Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1250));//
-            row4Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1750));//
+            row1Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 4));//
+            row2Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 5));//
+            row3Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 6));//
+            row4Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 7));//
 
             // LiveWindow.disableAllTelemetry();
 

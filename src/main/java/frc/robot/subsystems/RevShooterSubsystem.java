@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import java.util.Arrays;
 
 import com.revrobotics.CANEncoder;
-import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -67,7 +66,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
      */
     private int speedBaseDistance = 2;
     private int speedMaxDistance = 14;
-    private double maxMPS = 50;
 
     public double[] shooterFPSFromCamera = new double[] { 5, 8, 10, 15, 15.5, 20, 22, 5, 25, 30, 35, 40, 45, 50 };
 

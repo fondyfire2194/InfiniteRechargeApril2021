@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.util.Units;
-
 /** Add your docs here. */
 public class ShootData {
 
