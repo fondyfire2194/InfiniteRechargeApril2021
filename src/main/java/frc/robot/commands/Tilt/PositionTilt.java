@@ -35,9 +35,10 @@ public class PositionTilt extends CommandBase {
       m_endpoint = HoodedShooterConstants.TILT_MIN_ANGLE;
     if (m_endpoint > HoodedShooterConstants.TILT_MAX_ANGLE)
       m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE;
-    motorDegrees = ( m_tilt.tiltMaxAngle - m_endpoint);
+    motorDegrees = (m_tilt.tiltMaxAngle - m_endpoint);
+    m_tilt.motorEndpointDegrees = motorDegrees;
     loopCtr = 0;
-   
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -45,7 +46,7 @@ public class PositionTilt extends CommandBase {
   public void execute() {
     loopCtr++;
 
-    m_tilt.goToPosition(motorDegrees);
+    m_tilt.goToPositionMotionMagic(motorDegrees);
 
     endIt = m_tilt.atTargetAngle() && loopCtr > 10 && Math.abs(m_tilt.getSpeed()) < 1;// || !m_tilt.positionResetDone;
   }

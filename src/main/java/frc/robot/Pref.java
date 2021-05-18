@@ -42,19 +42,21 @@ public class Pref {
 
     // Tilt smart motion
 
-    prefDict.put("tILKp", .0176);
-    prefDict.put("tILKi", 0.000012);
-    prefDict.put("tILKd", .0005);
-    prefDict.put("tILKiz", .000001);
-    prefDict.put("tILAcc", 500.);// rpm/sec motor - closed loop
-    prefDict.put("tILTune", 0.);
+    prefDict.put("tIKp", .000002);
+    prefDict.put("tIKi", 0.25e-4);
+    prefDict.put("tIKd", .0005);
+    prefDict.put("tIKiz", 1.);
+    prefDict.put("tIMaxV", 250.);// 10000 rpm motor
+    prefDict.put("tIMaxA", 850.);// deg per min/sec
+    prefDict.put("tITune", 0.);
 
     // Turret smart motion
-    prefDict.put("tURKp", .0176);
-    prefDict.put("tURKi", .000012);
-    prefDict.put("tURKd", .000001);
+    prefDict.put("tURKp", .00018);
+    prefDict.put("tURKi", .0001);
+    prefDict.put("tURKd", .0002);
     prefDict.put("tURKiz", 1.);
-    prefDict.put("tURAcc", 500.);// rpm/sec motor
+    prefDict.put("tURMaxV", 1000.);// deg/sec motor
+    prefDict.put("tURMaxA", 850.);// deg/sec motor
     prefDict.put("tURTune", 0.);
 
     // shooter velocity
@@ -71,7 +73,7 @@ public class Pref {
     prefDict.put("dRKi", .0);
     prefDict.put("dRKd", .0);
     prefDict.put("dRKiz", .0);
- 
+
     prefDict.put("dRTune", 0.);
   }
 

@@ -83,26 +83,26 @@ public class SetupShuffleboard {
         private boolean m_showTurret = true;
         private boolean m_turretTune = false;
         private boolean m_showTilt = true;
-        private boolean m_tiltTune = false;
-        private boolean m_showShooter = true;
+        private boolean m_tiltTune = true;
+        private boolean m_showShooter = false;
         private boolean m_shooterTune = false;
-        private boolean m_showRobot = true;
+        private boolean m_showRobot = false;
         private boolean m_robotTune = false;
-        private boolean m_showClimberControlPanel = true;
+        private boolean m_showClimberControlPanel = false;
 
-        private boolean m_showTransport = true;
-        private boolean m_showVision = true;
+        private boolean m_showTransport = false;
+        private boolean m_showVision = false;
         private boolean m_showTrajectory = false;
         private boolean m_showSubsystems = true;
         private boolean m_showMisc = true;
-
+        private boolean m_showTiltGains = false;
+        private boolean m_showTurretGains = true;
         private HttpCamera LLFeed;
         public double timeToStart;
 
-        private ComplexWidget pdpWidget;
-
         public SendableChooser<Integer> autoChooser = new SendableChooser<>();
         public SendableChooser<Integer> startDelayChooser = new SendableChooser<>();
+        private ComplexWidget pdpWidget;
 
         public SetupShuffleboard(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevDrivetrain drive,
                         RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor,
@@ -176,7 +176,7 @@ public class SetupShuffleboard {
                         preMatch.add("CANCheck", new CheckCANDevices(this));
                         preMatch.addNumber("TurretView", () -> m_turret.getAngle());
 
-                        preMatch.addBoolean("Tilt Down OK", () -> m_tilt.m_reverseLimit.get());
+                        preMatch.addBoolean("Tilt Down OK", () -> m_tilt.onLimitSwitch);
                         preMatch.addBoolean("CANConnected",
                                         () -> m_tilt.tiltMotorConnected && m_turret.turretMotorConnected
                                                         && m_transport.allConnected && m_shooter.allConnected
@@ -251,7 +251,7 @@ public class SetupShuffleboard {
 
                 {
                         ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurret")
-                                        .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
+                                        .getLayout("BtnA leftStickY", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
                                                                                            // commands
 
@@ -333,7 +333,7 @@ public class SetupShuffleboard {
                         tiltCommands.add("StopTilt", new StopTilt(m_tilt));
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
                         tiltCommands.add("Cmd", m_tilt);
-                        tiltCommands.addNumber("Faults", () -> m_tilt.getFaults());
+                        tiltCommands.addNumber("Faults", () -> m_tilt.faultSeen);
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(2, 0).withSize(2, 4)
@@ -348,12 +348,13 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("AdjTarget", () -> m_tilt.adjustedTargetAngle);
                         tiltValues.addNumber("Vision Error", () -> m_limelight.getdegVerticalToTarget());
                         tiltValues.addNumber("MotorDeg", () -> m_tilt.getMotorDegrees());
-                        // tiltValues.addNumber("CamerAngle", () -> m_tilt.getCameraAngle());
+                        tiltValues.addNumber("MotorTarget", () -> m_tilt.motorEndpointDegrees);
+                        // tiltValues.addNumber("CameraAngle", () -> m_tilt.getCameraAngle());
 
                         tiltValues.addNumber("IAccum", () -> m_tilt.getIaccum());
 
                         ShuffleboardLayout tiltValues2 = Shuffleboard.getTab("SetupTilt")
-                                        .getLayout("States", BuiltInLayouts.kGrid).withPosition(4, 0).withSize(2, 3)
+                                        .getLayout("States", BuiltInLayouts.kGrid).withPosition(4, 3).withSize(4, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         tiltValues2.addBoolean("InPosition", () -> m_tilt.atTargetAngle());
@@ -372,7 +373,7 @@ public class SetupShuffleboard {
 
                                 ShuffleboardLayout tiltValues1 = Shuffleboard.getTab("SetupTilt")
                                                 .getLayout("Charts", BuiltInLayouts.kList).withPosition(4, 0)
-                                                .withSize(4, 4).withProperties(Map.of("Label position", "TOP")); // labels
+                                                .withSize(4, 3).withProperties(Map.of("Label position", "TOP")); // labels
                                                                                                                  // for
                                 tiltValues1.addNumber("Speed", () -> m_tilt.getSpeed())
                                                 .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
@@ -780,6 +781,7 @@ public class SetupShuffleboard {
                                         .withPosition(0, 0).withSize(6, 3);
 
                 }
+
         }
 
         public void checkCANDevices() {

@@ -4,6 +4,7 @@ import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
+import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -27,20 +28,22 @@ import frc.robot.sim.ElevatorSubsystem;
 public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem {
 
     public final int POSITION_SLOT = 0;
-    public final int VISION_SLOT = 1;
-    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, kAcc;
-    public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastkAcc;
+    public final int SMART_MOTION_SLOT = 1;
+    public final int VISION_SLOT = 2;
 
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
+    public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastmaxRPM, lastmaxVel,
+            lastminVel, lastmaxAcc, lastallowedErr;
     private final SimableCANSparkMax m_motor; // NOPMD
     private final CANEncoder mEncoder;
-    private final CANPIDController mPidController;
+    public final CANPIDController mPidController;
     public CANDigitalInput m_reverseLimit;
     private ISimWrapper mElevatorSim;
     public double visionCorrection;
     public boolean positionResetDone;
     public double targetAngle;
     private double inPositionBandwidth = 1;
-
+    public boolean onLimitSwitch;
     public double targetVerticalOffset;
     public boolean validTargetSeen;
     public double adjustedTargetAngle;
@@ -57,6 +60,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public boolean tiltMotorConnected;
     public boolean lastTuneOn;
     private double maxAdjustShoot = .45;
+    public double motorEndpointDegrees;
+    public int faultSeen;
 
     /**
      * 
@@ -90,18 +95,23 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
 
-        m_motor.setSmartCurrentLimit(10, 10);
+        // m_motor.setSmartCurrentLimit(10, 3);
+
         m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+
         m_reverseLimit.enableLimitSwitch(RobotBase.isReal());
-        if (RobotBase.isReal() && m_reverseLimit.get()) {
+
+        // onLimitSwitch = m_reverseLimit.get();
+
+        if (RobotBase.isReal() && onLimitSwitch) {
             resetAngle();
         }
 
         if (RobotBase.isSimulation()) {
             ElevatorSimConstants.kCarriageMass = .001;
             ElevatorSimConstants.kElevatorGearing = 1;
-            ElevatorSimConstants.kMaxElevatorHeight = 30;// HoodedShooterConstants.TILT_MAX_ANGLE;
-            ElevatorSimConstants.kMinElevatorHeight = 0;// HoodedShooterConstants.TILT_MIN_ANGLE;
+            ElevatorSimConstants.kMaxElevatorHeight = 100;// HoodedShooterConstants.TILT_MAX_ANGLE;
+            ElevatorSimConstants.kMinElevatorHeight = -100;// HoodedShooterConstants.TILT_MIN_ANGLE;
             ElevatorSimConstants.kElevatorGearbox = DCMotor.getNeo550(1);
 
             mElevatorSim = new ElevatorSimWrapper(ElevatorSimConstants.createSim(),
@@ -118,21 +128,15 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public void periodic() {
         // This method will be called once per scheduler run
 
-        tuneOn = Pref.getPref("tILTune") != 0.;
-
-        if (tuneOn && !lastTuneOn) {
-      
-            tuneGains();
-            lastTuneOn = true;
-        }
-
-        if (lastTuneOn)
-            lastTuneOn = tuneOn;
+        checkTune();
 
         if (RobotBase.isReal() && DriverStation.getInstance().isDisabled())
             targetAngle = getAngle();
 
         // SmartDashboard.putNumber("CTA", calculateTiltAngle());
+
+        if (faultSeen != 0)
+            faultSeen = getFaults();
 
     }
 
@@ -177,7 +181,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         // convert angle to motor turns
 
-        mPidController.setReference(motorDegrees, ControlType.kSmartMotion, POSITION_SLOT);
+        mPidController.setReference(motorDegrees, ControlType.kSmartMotion, SMART_MOTION_SLOT);
     }
 
     public void resetAngle() {
@@ -220,11 +224,15 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     public boolean onPlusSoftwareLimit() {
-        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kReverse);
+        return m_motor.getFault(FaultID.kSoftLimitFwd);
     }
 
     public boolean onMinusSoftwareLimit() {
-        return m_motor.isSoftLimitEnabled(SoftLimitDirection.kForward);
+        return m_motor.getFault(FaultID.kSoftLimitRev);
+    }
+
+    public boolean onMinusHardwarLimit() {
+        return m_motor.getFault(FaultID.kHardLimitRev);
     }
 
     @Override
@@ -247,6 +255,12 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         m_motor.setIdleMode(IdleMode.kBrake);
     }
 
+    @Override
+    public boolean isAtHeight(double inches) {
+        // TODO Auto-generated method stub
+        return ElevatorSubsystem.super.isAtHeight(inches);
+    }
+
     public boolean isBrake() {
         return m_motor.getIdleMode() == IdleMode.kBrake;
     }
@@ -258,10 +272,11 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public void clearFaults() {
         m_motor.clearFaults();
+        faultSeen = 0;
     }
 
     public int getFaults() {
-        return 0;// m_motor.getFaults();
+        return m_motor.getFaults();
     }
 
     public void aimHigher(double angle) {
@@ -299,85 +314,103 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         return cameraBaseAngle + Math.toDegrees(valRads);
     }
 
-    public void calibratePID(double p, double i, double d, double acc, double kIz, int slotNumber) {
-
+    public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
+            int slotNumber) {
         if (p != lastkP) {
             mPidController.setP(p, slotNumber);
-            lastkP = p;// mPidController.getP(slotNumber);
+            lastkP = mPidController.getP(slotNumber);
 
         }
         if (i != lastkI) {
             mPidController.setI(i, slotNumber);
-            lastkI = i;// mPidController.getI(slotNumber);
+            lastkI = mPidController.getI(slotNumber);
         }
 
         if (d != lastkD) {
             mPidController.setD(d, slotNumber);
-            lastkD = d;// mPidController.getD(slotNumber);
+            lastkD = mPidController.getD(slotNumber);
         }
-        if (acc != lastkAcc) {
-            m_motor.setClosedLoopRampRate(acc);
-            lastkAcc = acc;// m_motor.getClosedLoopRampRate();
+        if (f != lastkFF) {
+            mPidController.setFF(f, slotNumber);
+            lastkFF = f;
         }
         if (kIz != lastkIz) {
             mPidController.setIZone(kIz, slotNumber);
-
-            lastkIz = kIz;// mPidController.getIZone(slotNumber);
+            lastkIz = mPidController.getIZone(slotNumber);
         }
         if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
             mPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
             lastkMinOutput = kMinOutput;
             lastkMaxOutput = kMaxOutput;
         }
+        if (slotNumber == SMART_MOTION_SLOT) {
+            if (lastmaxAcc != maxAcc) {
+                mPidController.setSmartMotionMaxAccel(maxAcc, slotNumber);
+                lastmaxAcc = maxAcc;
+            }
 
+            if (lastmaxVel != maxVel) {
+                mPidController.setSmartMotionMaxVelocity(maxAcc, slotNumber);
+                lastmaxVel = maxVel;
+            }
+
+            if (lastallowedErr != allowedErr) {
+                mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, slotNumber);
+                lastallowedErr = allowedErr;
+            }
+        }
     }
 
     private void setGains() {
-        /**
-         * PID coefficients//max rpm = 11000 and degrees per rev = 1.421
-         * 
-         * 
-         * 11000 * 1.421 degrees per rev = 15631 deg per minute
-         * 
-         * 100% FF = 1/15631 = 6.9 e-5
-         * 
-         * 90% FF = 5.8 e-5 15631 deg per min = 250 degrees per second = .8 seconds full
-         * travel +100 to -100 degrees
-         */
+
         fixedSettings();
 
-        kP = .0006;
-        kI = 0.000012;
-        kD = .000001;
+        kP = .000002;
+        kI = 0.25e-4;
+        kD = .0005;
         kIz = 1;
 
-        kAcc = 500;
+        maxAcc = 850;
+        maxVel = 250;
 
         // set PID coefficients
-        calibratePID(kP, kI, kD, kAcc, kIz, POSITION_SLOT);
-        calibratePID(kP, kI, kD, kAcc, kIz, VISION_SLOT);
+        calibratePID(kP, kI, kD, kFF, kIz, SMART_MOTION_SLOT);
 
     }
 
     private void tuneGains() {
         fixedSettings();
 
-        double p = Pref.getPref("tILKp");
-        double i = Pref.getPref("tILKi");
-        double d = Pref.getPref("tILKd");
-        double iz = Pref.getPref("tILKiz");
-        kAcc = Pref.getPref("tILAcc");
+        double p = Pref.getPref("tIKp");
+        double i = Pref.getPref("tIKi");
+        double d = Pref.getPref("tIKd");
+        double iz = Pref.getPref("tIKiz");
+        maxVel = Pref.getPref("tIMaxV");
+        maxAcc = Pref.getPref("tIMaxA");
 
-        calibratePID(p, i, d, kAcc, iz, POSITION_SLOT);
-        calibratePID(p, i, d, kAcc, iz, VISION_SLOT);
+        calibratePID(p, i, d, kFF, iz, SMART_MOTION_SLOT);
+
     }
 
     private void fixedSettings() {
-        kFF = .0000;//
-        mPidController.setFF(kFF);
-        kMaxOutput = 1;
-        kMinOutput = -1;
+        kFF = .0004;// 10000 rpm = 10000 * .25 deg per rev= 2500 1/2500 = .0004
+        kMaxOutput = .5;
+        kMinOutput = -.5;
+        maxRPM = 11000;// not used
+        allowedErr = 1;
+    }
 
+    private void checkTune() {
+        tuneOn = Pref.getPref("tITune") != 0.;
+
+        if (tuneOn && !lastTuneOn) {
+
+            tuneGains();
+            lastTuneOn = true;
+        }
+
+        if (lastTuneOn)
+            lastTuneOn = tuneOn;
     }
 
 }

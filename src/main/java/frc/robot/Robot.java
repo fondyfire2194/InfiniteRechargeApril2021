@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
     // CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().run();
     m_robotContainer.m_setup.checkCANDevices();
-    FieldMap.showValues();
+   // FieldMap.showValues();
   }
 
   @Override
@@ -225,8 +225,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     autoHasRun = false;
-    if (RobotBase.isReal() && !m_robotContainer.m_tilt.positionResetDone)
-      new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
+    // if (RobotBase.isReal() && !m_robotContainer.m_tilt.positionResetDone)
+    //   new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
     // CommandScheduler.getInstance().cancelAll();
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)

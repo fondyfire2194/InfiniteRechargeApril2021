@@ -10,7 +10,6 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.CellTransportConstants;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
 
@@ -24,6 +23,7 @@ public class ShootCells extends CommandBase {
   private final Compressor compressor;
   private double startTime;
   private double time;
+  private final double rollerPctofShooter = .75;
 
   public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor, double time) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -52,9 +52,10 @@ public class ShootCells extends CommandBase {
     shooter.runShooter();
     ;
     if (Timer.getFPGATimestamp() > startTime + 1) {
-
-      transport.runFrontRollerMotor(CellTransportConstants.FRONT_SHOOT_SPEED);
-      transport.runRearRollerMotor(CellTransportConstants.REAR_SHOOT_SPEED);
+      double shooterOut = shooter.getLeftPctOut();
+      double rollerMotorOut = shooterOut * rollerPctofShooter;
+      transport.runFrontRollerMotor(rollerMotorOut);
+      transport.runRearRollerMotor(-rollerMotorOut);
       shooter.shootTimeRemaining = startTime + shooter.shootTime - Timer.getFPGATimestamp();
     }
 

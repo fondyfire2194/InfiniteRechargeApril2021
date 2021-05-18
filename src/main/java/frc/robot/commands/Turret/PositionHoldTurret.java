@@ -33,8 +33,8 @@ public class PositionHoldTurret extends CommandBase {
   private final int filterCount = 3;
   private double visionFoundAngle;
   private double m_endpoint;
-  private double deadband = .1;
-  private int activeGainSlot;
+  private double deadband = 1;
+  
 
   public PositionHoldTurret(RevTurretSubsystem turret, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -53,7 +53,7 @@ public class PositionHoldTurret extends CommandBase {
       visionFoundCounter = filterCount;
     else
       visionFoundCounter = 0;
-    activeGainSlot = m_turret.POSITION_SLOT;
+  
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -96,10 +96,10 @@ public class PositionHoldTurret extends CommandBase {
       visionFoundAngle = m_turret.getAngle() + m_turret.adjustedTargetAngle;
       m_endpoint = visionFoundAngle;
       m_turret.targetAngle = m_endpoint;
-      activeGainSlot = m_turret.VISION_SLOT;
+    
     }
 
-    m_turret.positionTurret(m_endpoint, activeGainSlot);
+    m_turret.goToPositionMotionMagic(m_endpoint);
   }
 
   // Called once the command ends or is interrupted.

@@ -93,7 +93,7 @@ public class PositionTurretToVision extends CommandBase {
     }
 
     // m_turret.goToPositionMotionMagic(m_turret.targetAngle);
-    m_turret.goToPosition(m_turret.targetAngle);
+    m_turret.goToPositionMotionMagic(m_turret.targetAngle);
 
     endIt = targetSeen && visionFoundCounter > 5 || Math.abs(m_limelight.getdegRotationToTarget()) < 2 && loopCtr > 5
         || loopCtr > 250;

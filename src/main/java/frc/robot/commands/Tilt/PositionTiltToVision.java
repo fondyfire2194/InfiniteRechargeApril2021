@@ -92,7 +92,7 @@ public class PositionTiltToVision extends CommandBase {
       m_tilt.targetAngle = m_endpoint;
     }
 
-    m_tilt.goToPosition(motorDegrees);
+    m_tilt.goToPositionMotionMagic(motorDegrees);
 
     endIt = m_tilt.validTargetSeen && visionFoundCounter > 5 || m_tilt.atTargetAngle() && loopCtr > 5 || loopCtr > 250;
 

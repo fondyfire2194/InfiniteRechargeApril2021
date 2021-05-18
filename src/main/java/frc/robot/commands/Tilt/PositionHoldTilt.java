@@ -84,7 +84,9 @@ public class PositionHoldTilt extends CommandBase {
     }
 
     double motorTurns = m_tilt.tiltMaxAngle - m_endpoint;
-    m_tilt.positionTilt(motorTurns, activeGainSlot);
+    m_tilt.motorEndpointDegrees= motorTurns;
+    m_tilt.goToPositionMotionMagic(motorTurns);
+
   }
 
   // Called once the command ends or is interrupted.
