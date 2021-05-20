@@ -94,6 +94,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         setGains();
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
+        setSoftwareLimits();
 
         // m_motor.setSmartCurrentLimit(10, 3);
 
@@ -107,6 +108,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
             resetAngle();
         }
 
+        setSoftwareLimits();
+
         if (RobotBase.isSimulation()) {
             ElevatorSimConstants.kCarriageMass = .001;
             ElevatorSimConstants.kElevatorGearing = 1;
@@ -119,7 +122,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
             mPidController.setP(.12);
 
-            setSoftwareLimits();
         }
 
     }
@@ -250,9 +252,13 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kReverse, (float) 0.);
         m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kForward,
                 (float) HoodedShooterConstants.maxMotorTurns);
-        m_motor.enableSoftLimit(SoftLimitDirection.kForward, true);
-        m_motor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+  //       enableSofLimits(true);
         m_motor.setIdleMode(IdleMode.kBrake);
+    }
+
+    public void enableSoftLimits(boolean on) {
+        m_motor.enableSoftLimit(SoftLimitDirection.kForward, on);
+        m_motor.enableSoftLimit(SoftLimitDirection.kReverse, on);
     }
 
     @Override

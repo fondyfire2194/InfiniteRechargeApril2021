@@ -83,7 +83,7 @@ public class SetupShuffleboard {
         private boolean m_showTurret = true;
         private boolean m_turretTune = false;
         private boolean m_showTilt = true;
-        private boolean m_tiltTune = true;
+        private boolean m_tiltTune = false;
         private boolean m_showShooter = false;
         private boolean m_shooterTune = false;
         private boolean m_showRobot = false;
@@ -94,9 +94,10 @@ public class SetupShuffleboard {
         private boolean m_showVision = false;
         private boolean m_showTrajectory = false;
         private boolean m_showSubsystems = true;
-        private boolean m_showMisc = true;
+        private boolean m_showPower = true;
         private boolean m_showTiltGains = false;
         private boolean m_showTurretGains = true;
+        private boolean m_showButtons = true;
         private HttpCamera LLFeed;
         public double timeToStart;
 
@@ -251,9 +252,9 @@ public class SetupShuffleboard {
 
                 {
                         ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurret")
-                                        .getLayout("BtnA leftStickY", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
-                                        .withProperties(Map.of("Label position", "LEFT")); // labels for
-                                                                                           // commands
+                                        .getLayout("BtnA leftStickY", BuiltInLayouts.kList).withPosition(0, 0)
+                                        .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels for
+                                                                                                          // commands
 
                         turretCommands.add("Reset to 0", new ResetTurretAngle(m_turret));
                         turretCommands.add("Position To 0", new PositionTurret(m_turret, 0));// degrees
@@ -682,7 +683,7 @@ public class SetupShuffleboard {
                         visionData.addNumber("BndBoxHeight", () -> m_limelight.getBoundingBoxHeight());
                         visionData.addNumber("CameraAngle", () -> m_tilt.getAngle());
                         visionData.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
-                        visionData.addNumber("CameraCalculatedRPM", () -> m_shooter.cameraCalculatedSpeed);
+                        visionData.addNumber("CameraCalculatedMPS", () -> m_shooter.cameraCalculatedSpeed);
 
                         ShuffleboardLayout visionBools = Shuffleboard.getTab("Vision")
                                         .getLayout("States", BuiltInLayouts.kGrid).withPosition(3, 3).withSize(2, 2)
@@ -774,11 +775,66 @@ public class SetupShuffleboard {
                         climberValues.addBoolean("Climber Arm Up", () -> m_climber.getArmRaised());
 
                 }
-                if (m_showMisc) {
-                        ShuffleboardTab misc = Shuffleboard.getTab("Misc");
+                if (m_showPower) {
+                        ShuffleboardTab misc = Shuffleboard.getTab("Power");
                         PowerDistributionPanel pdp = new PowerDistributionPanel();
                         pdpWidget = misc.add("PDP", pdp).withWidget(BuiltInWidgets.kPowerDistributionPanel)
                                         .withPosition(0, 0).withSize(6, 3);
+
+                }
+
+                if (m_showButtons) {
+
+                        ShuffleboardLayout driverButtons = Shuffleboard.getTab("Buttons")
+                                        .getLayout("Driver JS(0)", BuiltInLayouts.kList).withPosition(0, 0)
+                                        .withSize(3, 5).withProperties(Map.of("Label position", "LEFT")); //
+                        driverButtons.addString("1", () -> " Hold Pick Up Cells");
+                        driverButtons.addString("2", () -> "Hold Shoot Cells");
+                        driverButtons.addString("3", () -> "Stop Shooter Wheels ");
+                        driverButtons.addString("4", () -> "Inc Shooter Wheels");
+                        driverButtons.addString("5", () -> "Run Shooter Wheels");
+                        driverButtons.addString("6", () -> "Dec Shooter Wheels ");
+                        driverButtons.addString("POV Up", () -> "RaiseShooterAim");
+                        driverButtons.addString("POV Down", () -> "LowerShooterAim");
+                        driverButtons.addString("POV Left", () -> "ShooterAimLeft");
+                        driverButtons.addString("POV Right", () -> "ShooterAimRight");
+
+                        ShuffleboardLayout gamepadButtons = Shuffleboard.getTab("Buttons")
+                                        .getLayout("Codriver XBox(1)", BuiltInLayouts.kList).withPosition(3, 0)
+                                        .withSize(3, 5).withProperties(Map.of("Label position", "LEFT")); //
+                        gamepadButtons.addString("A", () -> "Unassigned");
+                        gamepadButtons.addString("B", () -> "Unassigned");
+                        gamepadButtons.addString("X", () -> "Unassigned");
+                        gamepadButtons.addString("Y", () -> "Unassigned");
+                        gamepadButtons.addString("Back", () -> "Unassigned");
+                        gamepadButtons.addString("Start", () -> "Unassigned");
+                        gamepadButtons.addString("Left Trigger", () -> "Unassigned");
+                        gamepadButtons.addString("Right Trigger", () -> "Unassigned");
+                        gamepadButtons.addString("Right Bumper", () -> "Unassigned");
+                        gamepadButtons.addString("Left Bumper", () -> "Unassigned");
+                        gamepadButtons.addString("POV Up", () -> "Unassigned");
+                        gamepadButtons.addString("POV Down", () -> "Unassigned");
+                        gamepadButtons.addString("POV Left", () -> "Unassigned");
+                        gamepadButtons.addString("POV Right", () -> "Unassigned");
+
+                        ShuffleboardLayout setupButtons = Shuffleboard.getTab("Buttons")
+                                        .getLayout("Setup XBox(3)", BuiltInLayouts.kList).withPosition(6, 0)
+                                        .withSize(3, 5).withProperties(Map.of("Label position", "LEFT")); //
+
+                        setupButtons.addString("A", () -> "Hold Jog Turret LeftX");
+                        setupButtons.addString("B", () -> "Unassigned");
+                        setupButtons.addString("X", () -> "Hold Jog Shooter RightY");
+                        setupButtons.addString("Y", () -> "Hold Jog Tilt LeftY");
+                        setupButtons.addString("Back", () -> "Intake Cells");
+                        setupButtons.addString("Start", () -> "TiltToSwitch");
+                        setupButtons.addString("Left Trigger", () -> "Climb");
+                        setupButtons.addString("Right Trigger", () -> "Return Climber");
+                        setupButtons.addString("Right Bumper", () -> "Hold Bypass Soft Limits");
+                        setupButtons.addString("Left Bumper", () -> "Unassigned");
+                        setupButtons.addString("POV Up", () -> "Hold Run Belts");
+                        setupButtons.addString("POV Down", () -> "Hold Run Rollers");
+                        setupButtons.addString("POV Left", () -> "Hold Pulse Left Belt");
+                        setupButtons.addString("POV Right", () -> "Hold Pulse Right Belt");
 
                 }
 

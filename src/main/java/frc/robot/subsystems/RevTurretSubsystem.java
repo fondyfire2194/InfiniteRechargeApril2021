@@ -68,6 +68,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         aimCenter();
 
         setGains();
+        setSoftwareLimits();
 
         if (RobotBase.isReal()) {
             // m_motor.setSmartCurrentLimit(5);
@@ -90,8 +91,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mEncoder.setPosition(0);
         targetAngle = 0;
 
-        setSoftwareLimits();
-
         if (RobotBase.isSimulation())
 
         {
@@ -105,7 +104,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
 
         }
-   
+
     }
 
     @Override
@@ -149,8 +148,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     @Override
     public void goToPositionMotionMagic(double angle) {
-        mPidController.setReference(angle, ControlType.kSmartMotion,SMART_MOTION_SLOT);
-        SmartDashboard.putNumber("TUEP",angle);
+        mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
+        SmartDashboard.putNumber("TUEP", angle);
 
     }
 
@@ -177,9 +176,14 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
                 (float) HoodedShooterConstants.TURRET_MAX_ANGLE);
         m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kReverse,
                 (float) HoodedShooterConstants.TURRET_MIN_ANGLE);
-        m_motor.enableSoftLimit(SoftLimitDirection.kForward, true);
-        m_motor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+        enableSofLimits(true);
         m_motor.setIdleMode(IdleMode.kBrake);
+    }
+
+    public void enableSofLimits(boolean on) {
+        SmartDashboard.putBoolean("TUSL", on);
+        m_motor.enableSoftLimit(SoftLimitDirection.kForward, on);
+        m_motor.enableSoftLimit(SoftLimitDirection.kReverse, on);
     }
 
     public boolean getSoftwareLimitsEnabled() {
@@ -290,7 +294,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
                 lastallowedErr = allowedErr;
 
             }
-      
+
         }
 
     }

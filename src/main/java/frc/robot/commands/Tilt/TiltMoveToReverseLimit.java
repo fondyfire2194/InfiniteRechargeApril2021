@@ -30,6 +30,8 @@ public class TiltMoveToReverseLimit extends CommandBase {
   public void initialize() {
     simCtr = 0;
     m_startAngle = m_tilt.getAngle();
+    m_tilt.positionResetDone = false;
+    m_tilt.enableSoftLimits(false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -37,24 +39,19 @@ public class TiltMoveToReverseLimit extends CommandBase {
   public void execute() {
     simCtr++;
     if (!endIt) {
-      // if (!m_tilt.positionResetDone) {
       m_tilt.moveManually(-.2);
-      // if (Robot.isSimulation())
-      // simCtr++;
-      // }
     }
-    endIt =m_tilt.onLimitSwitch|| m_tilt.getAngle() < m_startAngle - 10 || simCtr > 2500;
+    endIt = m_tilt.onLimitSwitch || m_tilt.getAngle() < m_startAngle - 10 || simCtr > 2500;
 
-    if (endIt)
-      m_tilt.stop();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_tilt.stop();
     m_tilt.resetAngle();
     m_tilt.positionResetDone = true;
-   // m_tilt.setSoftwareLimits();
+    m_tilt.enableSoftLimits(true);
   }
 
   // Returns true when the command should end.

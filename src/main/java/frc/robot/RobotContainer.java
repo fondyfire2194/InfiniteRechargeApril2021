@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,6 +27,8 @@ import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellTransport.CellBeltPulseSelect;
+import frc.robot.commands.Climber.ClimberArm;
+import frc.robot.commands.Climber.TurnClimberMotor;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.JogShooter;
@@ -36,6 +39,7 @@ import frc.robot.commands.Shooter.StopShooterWheels;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.TiltJog;
+import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Tilt.TiltWaitForStop;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
@@ -237,9 +241,9 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShooterWheels(m_shooter));
 
-            new JoystickButton(m_driverController, 6).whenPressed(new ChangeShooterSpeed(m_shooter, +250));
+            new JoystickButton(m_driverController, 6).whenPressed(new ChangeShooterSpeed(m_shooter, +.1));
 
-            new JoystickButton(m_driverController, 4).whenPressed(new ChangeShooterSpeed(m_shooter, -250));
+            new JoystickButton(m_driverController, 4).whenPressed(new ChangeShooterSpeed(m_shooter, -.1));
 
             driverUpButton.whenPressed(() -> m_tilt.aimHigher(.05));
             driverDownButton.whenPressed(() -> m_tilt.aimLower(.05));
@@ -268,15 +272,18 @@ public class RobotContainer {
                         .whenReleased(() -> m_transport.runLeftBeltMotor(0))
                         .whenReleased(() -> m_transport.runLeftBeltMotor(0));
 
-            setupLeftButton
+            setupLeftButton.whileHeld(new CellBeltPulseSelect(m_transport, true, 1, .25, 1, -.25));
 
-                        .whileHeld(new CellBeltPulseSelect(m_transport, true, 1, .25, 1, -.25));
+            setupRightButton.whileHeld(new CellBeltPulseSelect(m_transport, false, 1, .25, 1, -.25));
 
-            setupRightButton
+            setupLeftTrigger.whileHeld(new ClimberArm(m_climber, true)).whileHeld(new TurnClimberMotor(m_climber, .25));
 
-                        .whileHeld(new CellBeltPulseSelect(m_transport, false, 1, .25, 1, -.25));
+            setupRightTrigger.whileHeld(new ClimberArm(m_climber, false))
+                        .whileHeld(new TurnClimberMotor(m_climber, -.25));
 
-            setupBack.whenPressed(new StartIntake(m_intake, m_limelight)).whenReleased(new StopIntake(m_intake));
+            setupBack.whileHeld(new StartIntake(m_intake, m_limelight)).whenReleased(new StopIntake(m_intake));
+
+            setupStart.whenPressed(new TiltMoveToReverseLimit(m_tilt));
 
             setupX.whileHeld(getJogShooterCommand());
 
@@ -349,11 +356,11 @@ public class RobotContainer {
       }
 
       public Command getJogTurretCommand() {
-            return new TurretJog(m_turret, () -> setupGamepad.getRawAxis(0) / 5);
+            return new TurretJog(m_turret, () -> setupGamepad.getRawAxis(0) / 5, setupGamepad);
       }
 
       public Command getJogTiltCommand() {
-            return new TiltJog(m_tilt, () -> setupGamepad.getRawAxis(1) / 5);
+            return new TiltJog(m_tilt, () -> setupGamepad.getRawAxis(1) / 5, setupGamepad);
       }
 
       public Command getJogShooterCommand() {

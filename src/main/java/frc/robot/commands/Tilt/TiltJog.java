@@ -6,6 +6,7 @@ package frc.robot.commands.Tilt;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTiltSubsystem;
 
@@ -13,11 +14,13 @@ public class TiltJog extends CommandBase {
   /** Creates a new JogTilt. */
   private final RevTiltSubsystem m_tilt;
   private final Supplier<Double> m_xaxisSpeedSupplier;
+  private XboxController m_controller;
 
-  public TiltJog(RevTiltSubsystem tilt, Supplier<Double> xaxisSpeedSupplier) {
+  public TiltJog(RevTiltSubsystem tilt, Supplier<Double> xaxisSpeedSupplier, XboxController controller) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
     m_xaxisSpeedSupplier = xaxisSpeedSupplier;
+    m_controller = controller;
     addRequirements(m_tilt);
   }
 
@@ -29,10 +32,16 @@ public class TiltJog extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double temp = 0;
+    boolean pressed = m_controller.getRawButton(6);
     if (Math.abs(m_xaxisSpeedSupplier.get()) < .1)
       m_tilt.moveManually(0);
     else
-      m_tilt.moveManually(m_xaxisSpeedSupplier.get());
+      temp = m_xaxisSpeedSupplier.get();
+    if (pressed)
+      temp = temp / 2;
+    m_tilt.moveManually(temp);
+    m_tilt.enableSofLimits(!pressed);
   }
 
   // Called once the command ends or is interrupted.
