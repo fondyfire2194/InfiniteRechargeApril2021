@@ -285,12 +285,12 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         return m_motor.getFaults();
     }
 
-    public void aimHigher(double angle) {
+    public void aimLower(double angle) {
         if (targetVerticalOffset < maxAdjustShoot)
             targetVerticalOffset += angle;
     }
 
-    public void aimLower(double angle) {
+    public void aimHigher(double angle) {
         if (targetVerticalOffset > -maxAdjustShoot)
             targetVerticalOffset -= angle;
     }

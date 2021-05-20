@@ -29,6 +29,10 @@ import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellTransport.CellBeltPulseSelect;
 import frc.robot.commands.Climber.ClimberArm;
 import frc.robot.commands.Climber.TurnClimberMotor;
+import frc.robot.commands.ControlPanel.ControlPanelArm;
+import frc.robot.commands.ControlPanel.PositionNumberRevs;
+import frc.robot.commands.ControlPanel.PositionToColor;
+import frc.robot.commands.ControlPanel.TurnControlPanel;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.JogShooter;
@@ -46,6 +50,7 @@ import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretJogVelocity;
 import frc.robot.commands.Turret.TurretWaitForStop;
+import frc.robot.commands.Vision.LimelightCamMode;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ControlPanelSubsystem;
@@ -68,9 +73,8 @@ public class RobotContainer {
 
       // The driver's controller
       public final Joystick m_driverController = new Joystick(OIConstants.kDriverControllerPort);
-      public final XboxController m_gamepad = new XboxController(OIConstants.kCoDriverControllerPort);
+      public final XboxController coDriverGamepad = new XboxController(OIConstants.kCoDriverControllerPort);
       public final XboxController setupGamepad = new XboxController(OIConstants.kSetupControllerPort);
-      public final ButtonBox buttonBox = new ButtonBox(OIConstants.kShootBoxControllerPort);
 
       public final RevDrivetrain m_robotDrive;
 
@@ -106,18 +110,21 @@ public class RobotContainer {
 
       public boolean clickUp;
 
-      public JoystickButton row4Right;
-      public JoystickButton row4Left;
-      public JoystickButton row3Right;
-      public JoystickButton row3Left;
-      public JoystickButton row2Right;
-      public JoystickButton row2Left;
-      public JoystickButton row1Right;
-      public JoystickButton row1Left;
-      public JoystickButton optionsButton;
-      public JoystickButton shareButton;
-      public JoystickButton L3Button;
-      public JoystickButton R3Button;
+      // Setup gamepad XBox 1
+      JoystickButton coDriverA = new JoystickButton(coDriverGamepad, 1);
+      JoystickButton coDriverB = new JoystickButton(coDriverGamepad, 2);
+      JoystickButton coDriverX = new JoystickButton(coDriverGamepad, 3);
+      JoystickButton coDriverY = new JoystickButton(coDriverGamepad, 4);
+      JoystickButton coDriverLeftTrigger = new JoystickButton(coDriverGamepad, 5);
+      JoystickButton coDriverRightTrigger = new JoystickButton(coDriverGamepad, 6);
+
+      JoystickButton coDriverBack = new JoystickButton(coDriverGamepad, 7);
+      JoystickButton coDriverStart = new JoystickButton(coDriverGamepad, 8);
+
+      public POVButton coDriverUpButton = new POVButton(coDriverGamepad, 0);
+      public POVButton coDriverRightButton = new POVButton(coDriverGamepad, 90);
+      public POVButton coDriverDownButton = new POVButton(coDriverGamepad, 180);
+      public POVButton coDriverLeftButton = new POVButton(coDriverGamepad, 270);
 
       // Setup gamepad XBox 3
       JoystickButton setupA = new JoystickButton(setupGamepad, 1);
@@ -139,11 +146,6 @@ public class RobotContainer {
       public POVButton driverRightButton = new POVButton(m_driverController, 90);
       public POVButton driverDownButton = new POVButton(m_driverController, 180);
       public POVButton driverLeftButton = new POVButton(m_driverController, 270);
-
-      public POVButton buttonBoxUpButton = new POVButton(buttonBox, 0);
-      public POVButton buttonBoxRightButton = new POVButton(buttonBox, 90);
-      public POVButton buttonBoxDownButton = new POVButton(buttonBox, 180);
-      public POVButton buttonBoxLeftButton = new POVButton(buttonBox, 270);
 
       // AutoCommands ac;// = new AutoCommands(m_robotDrive);
       public int shootPosition;
@@ -227,9 +229,6 @@ public class RobotContainer {
              * 
              * Driver Joystick assignments
              * 
-             * 
-             * 
-             * 
              */
 
             new JoystickButton(m_driverController, 1).whileHeld(new StartIntake(m_intake, m_limelight));
@@ -245,11 +244,34 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 4).whenPressed(new ChangeShooterSpeed(m_shooter, -.1));
 
+            new JoystickButton(m_driverController, 7).whenPressed(() -> m_tilt.aimCenter())
+                        .whenPressed(() -> m_turret.aimCenter());
+
+            new JoystickButton(m_driverController, 8).whenPressed(new LimelightCamMode(m_limelight, CamMode.kdriver));
+
+            new JoystickButton(m_driverController, 9).whenPressed(new LimelightCamMode(m_limelight, CamMode.kvision));
+
             driverUpButton.whenPressed(() -> m_tilt.aimHigher(.05));
             driverDownButton.whenPressed(() -> m_tilt.aimLower(.05));
 
             driverLeftButton.whenPressed(() -> m_turret.aimFurtherLeft(.05));
             driverRightButton.whenPressed(() -> m_turret.aimFurtherRight(.05));
+            /**
+             * Co driver has miscellaneous functions
+             * 
+             * 
+             * 
+             */
+            coDriverA.whenPressed(new ControlPanelArm(m_controlPanel, true));
+            coDriverB.whenPressed(new ControlPanelArm(m_controlPanel, false));
+   
+            coDriverX.whileHeld(new TurnControlPanel(m_controlPanel,.25));
+
+            coDriverX.whenPressed(new PositionToColor(m_controlPanel,.25));
+            coDriverBack.whenPressed(new PositionNumberRevs(m_controlPanel, 3, .25));
+
+
+
 
             /**
              * 
@@ -290,47 +312,6 @@ public class RobotContainer {
             setupY.whileHeld(getJogTiltCommand()).whenReleased(new TiltWaitForStop(m_tilt));
 
             setupA.whileHeld(getJogTurretCommand()).whenReleased(new TurretWaitForStop(m_turret));
-
-            /**
-             * 
-             * Button box
-             */
-
-            row4Left = buttonBox.getButtonLT();
-            row4Right = buttonBox.getButtonL1();
-
-            row3Left = buttonBox.getButtonA();
-            row3Right = buttonBox.getButtonX();
-
-            row2Left = buttonBox.getButtonB();
-            row2Right = buttonBox.getButtonY();
-
-            row1Left = buttonBox.getButtonRT();
-            row1Right = buttonBox.getButtonR1();
-
-            shareButton = buttonBox.getShareButton();
-            optionsButton = buttonBox.getOptionsButton();
-
-            L3Button = buttonBox.getL3Button();
-            R3Button = buttonBox.getR3Button();
-
-            double baseSpeed = 5;
-
-            row1Left.whenPressed(new PositionTiltToVision(m_tilt, m_limelight, ShootData.getTiltAngle(2),
-                        ShootData.getTiltOffset(2)))
-                        .whenPressed(new PositionTurretToVision(m_turret, m_limelight, ShootData.getTiltAngle(2),
-                                    ShootData.getTurretOffset(2)))
-                        .whenPressed((new StartShooterWheels(m_shooter, m_shooter.cameraCalculatedSpeed)));
-
-            row1Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed));// front of trench
-            row2Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 1));// 1/4 trench
-            row3Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 2));// mid trench
-            row4Left.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 3));// 3/4 trench
-
-            row1Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 4));//
-            row2Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 5));//
-            row3Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 6));//
-            row4Right.whenPressed(new StartShooterWheels(m_shooter, baseSpeed + 7));//
 
             // LiveWindow.disableAllTelemetry();
 

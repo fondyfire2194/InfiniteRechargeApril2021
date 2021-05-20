@@ -24,11 +24,13 @@ public class TurnControlPanel extends CommandBase {
   private int colorsPassed;
   private int colorsToPass = 9;
   private boolean redSeen;
+  private double m_speed;
 
-  public TurnControlPanel(ControlPanelSubsystem cp) {
+  public TurnControlPanel(ControlPanelSubsystem cp, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(cp);
     this.cp = cp;
+    m_speed=speed;
   }
 
   // Called when the command is initially scheduled.
@@ -44,7 +46,7 @@ public class TurnControlPanel extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    cp.turnWheelMotor(.1);
+    cp.turnWheelMotor(m_speed);
     currentColor = cp.colorNumberFiltered;
 
 if (!redSeen && currentColor == 3) {

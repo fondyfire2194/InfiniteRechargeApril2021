@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
     // CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().run();
     m_robotContainer.m_setup.checkCANDevices();
-   // FieldMap.showValues();
+    // FieldMap.showValues();
   }
 
   @Override
@@ -95,9 +95,9 @@ public class Robot extends TimedRobot {
 
     if (RobotBase.isReal())
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
-      
-      m_robotContainer.m_tilt.enableSofLimits(true);
-      m_robotContainer.m_turret.enableSofLimits(true);     
+
+    m_robotContainer.m_tilt.enableSoftLimits(true);
+    m_robotContainer.m_turret.enableSofLimits(true);
 
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 
@@ -107,10 +107,8 @@ public class Robot extends TimedRobot {
 
     m_startDelay = (double) m_robotContainer.m_setup.startDelayChooser.getSelected();
 
-    // SmartDashboard.putNumber("Delay", m_startDelay);
-
     autoChoice = m_robotContainer.m_setup.autoChooser.getSelected();
-
+    m_robotContainer.m_limelight.useVision = true;
     switch (autoChoice) {
 
     case 0:// in front of power port use 0 shooter data index use pipeline 0 - no zoom
@@ -170,8 +168,9 @@ public class Robot extends TimedRobot {
       m_autoFactory.shootNumber = 6;
       m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
       break;
+
     case 8:// Front of trench move back use 6 shooter data index move back under control
-           // panel pickup move back and shoot
+      // panel pickup move back and shoot
       // use 7 shooter data
       setStartingPose(FieldMap.startPosition[3]);
       m_autoFactory.shootNumber = 6;
@@ -181,6 +180,7 @@ public class Robot extends TimedRobot {
     case 9:// cross line
 
       setStartingPose(FieldMap.startPosition[4]);
+      m_robotContainer.m_limelight.useVision = false;
       m_autonomousCommand = new PositionRobot(m_robotContainer.m_robotDrive, -1);
 
       break;
@@ -229,7 +229,7 @@ public class Robot extends TimedRobot {
     }
     autoHasRun = false;
     // if (RobotBase.isReal() && !m_robotContainer.m_tilt.positionResetDone)
-    //   new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
+    // new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
     // CommandScheduler.getInstance().cancelAll();
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)

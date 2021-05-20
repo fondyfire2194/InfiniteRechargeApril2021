@@ -36,7 +36,7 @@ public class PositionHoldTilt extends CommandBase {
   @Override
   public void initialize() {
     m_endpoint = m_tilt.targetAngle;
-    if (m_tilt.validTargetSeen)
+    if (m_tilt.validTargetSeen && m_limelight.useVision)
       visionFoundCounter = filterCount;
     else
       visionFoundCounter = 0;
@@ -47,10 +47,10 @@ public class PositionHoldTilt extends CommandBase {
   @Override
   public void execute() {
 
-    targetSeen = m_limelight.getIsTargetFound();
+    targetSeen = m_limelight.getIsTargetFound() && m_limelight.useVision;
     if (targetSeen && m_tilt.validTargetSeen) {
       limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
-      m_tilt.adjustedTargetAngle = limelightVerticalAngle + m_tilt.adjustedTargetAngle;
+      m_tilt.adjustedTargetAngle = limelightVerticalAngle - m_tilt.adjustedTargetAngle;
       m_limelight.setVerticalOffset(m_tilt.targetVerticalOffset);
     } else {
       limelightVerticalAngle = 0;
@@ -77,14 +77,14 @@ public class PositionHoldTilt extends CommandBase {
     }
 
     if (RobotBase.isReal() && targetSeen) {
-      visionFoundAngle = m_tilt.getAngle() + m_tilt.adjustedTargetAngle;
+      visionFoundAngle = m_tilt.getAngle() - m_tilt.adjustedTargetAngle;
       m_endpoint = visionFoundAngle;
       m_tilt.targetAngle = m_endpoint;
       activeGainSlot = m_tilt.VISION_SLOT;
     }
 
     double motorTurns = m_tilt.tiltMaxAngle - m_endpoint;
-    m_tilt.motorEndpointDegrees= motorTurns;
+    m_tilt.motorEndpointDegrees = motorTurns;
     m_tilt.goToPositionMotionMagic(motorTurns);
 
   }

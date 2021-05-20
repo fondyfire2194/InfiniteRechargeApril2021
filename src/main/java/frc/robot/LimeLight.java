@@ -26,6 +26,7 @@ public class LimeLight {
     final Double[] defValRGB = new Double[] { 0.0, 0.0, 0.0 };
     public double horizontalOffset = 0;
     public double verticalOffset = 0;
+    public boolean useVision;
 
     class PeriodicRunnable implements java.lang.Runnable {
         public void run() {
@@ -87,7 +88,7 @@ public class LimeLight {
     public boolean getIsTargetFound() {
         NetworkTableEntry tv = m_table.getEntry("tv");
         double v = tv.getDouble(0);
-        if (v == 0.0f) {
+        if (v == 0.0f ) {
             return false;
         } else {
             return true;

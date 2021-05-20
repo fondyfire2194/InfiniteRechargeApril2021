@@ -57,6 +57,7 @@ import frc.robot.commands.Vision.LimelightCamMode;
 import frc.robot.commands.Vision.LimelightLeds;
 import frc.robot.commands.Vision.LimelightSetPipeline;
 import frc.robot.commands.Vision.LimelightStreamMode;
+import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ControlPanelSubsystem;
@@ -91,7 +92,7 @@ public class SetupShuffleboard {
         private boolean m_showClimberControlPanel = false;
 
         private boolean m_showTransport = false;
-        private boolean m_showVision = false;
+        private boolean m_showVision = true;
         private boolean m_showTrajectory = false;
         private boolean m_showSubsystems = true;
         private boolean m_showPower = true;
@@ -312,10 +313,8 @@ public class SetupShuffleboard {
                                                 .withWidget(BuiltInWidgets.kGraph).withSize(4, 2); //
                         }
                 }
-                /**
-                 * 
+                /** 
                  * Shooter Tilt
-                 * 
                  */
                 if (m_showTilt & !liveMatch) {
                         ShuffleboardLayout tiltCommands = Shuffleboard.getTab("SetupTilt")
@@ -335,6 +334,7 @@ public class SetupShuffleboard {
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
                         tiltCommands.add("Cmd", m_tilt);
                         tiltCommands.addNumber("Faults", () -> m_tilt.faultSeen);
+                        tiltCommands.addString("To Jog", ()->"SetupXBox Btn Y left Y");
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(2, 0).withSize(2, 4)
@@ -649,6 +649,13 @@ public class SetupShuffleboard {
                         zoomCommands.add("2XZoom", new LimelightSetPipeline(m_limelight, 1));
                         zoomCommands.add("3X Zoom", new LimelightSetPipeline(m_limelight, 2));
 
+                        ShuffleboardLayout visionCommands = Shuffleboard.getTab("Vision")
+                                        .getLayout("On-Off", BuiltInLayouts.kList).withPosition(0, 2).withSize(1, 2)
+                                        .withProperties(Map.of("Label position", "TOP")); //
+
+                        visionCommands.add("Vision On", new UseVision(limelight, true));
+                        visionCommands.add("Vision Off", new UseVision(limelight, false));
+
                         ShuffleboardLayout cameraCommands = Shuffleboard.getTab("Vision")
                                         .getLayout("Camera", BuiltInLayouts.kList).withPosition(1, 0).withSize(1, 4)
                                         .withProperties(Map.of("Label position", "TOP")); // labels for
@@ -696,6 +703,8 @@ public class SetupShuffleboard {
                         visionBools.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget());
 
                         visionBools.addBoolean("TargetFound", () -> m_limelight.getIsTargetFound());
+
+                        visionBools.addBoolean("Use Vision", () -> m_limelight.useVision);
 
                         if (RobotBase.isReal()) {
 
@@ -775,7 +784,7 @@ public class SetupShuffleboard {
                         climberValues.addBoolean("Climber Arm Up", () -> m_climber.getArmRaised());
 
                 }
-                if (m_showPower) {
+                if (m_showPower && !liveMatch) {
                         ShuffleboardTab misc = Shuffleboard.getTab("Power");
                         PowerDistributionPanel pdp = new PowerDistributionPanel();
                         pdpWidget = misc.add("PDP", pdp).withWidget(BuiltInWidgets.kPowerDistributionPanel)
@@ -783,9 +792,9 @@ public class SetupShuffleboard {
 
                 }
 
-                if (m_showButtons) {
+                if (m_showButtons && !liveMatch) {
 
-                        ShuffleboardLayout driverButtons = Shuffleboard.getTab("Buttons")
+                        ShuffleboardLayout driverButtons = Shuffleboard.getTab("ButtonsHelp")
                                         .getLayout("Driver JS(0)", BuiltInLayouts.kList).withPosition(0, 0)
                                         .withSize(3, 5).withProperties(Map.of("Label position", "LEFT")); //
                         driverButtons.addString("1", () -> " Hold Pick Up Cells");
@@ -794,35 +803,42 @@ public class SetupShuffleboard {
                         driverButtons.addString("4", () -> "Inc Shooter Wheels");
                         driverButtons.addString("5", () -> "Run Shooter Wheels");
                         driverButtons.addString("6", () -> "Dec Shooter Wheels ");
+                        driverButtons.addString("7", () -> "Shooter Aim Center");
+                        driverButtons.addString("8", () -> "Driver Camera");
+                        driverButtons.addString("9", () -> "Intake Camera");
+                        driverButtons.addString("10", () -> "Not Assigned");
+                        driverButtons.addString("11", () -> "Not Assigned");
+                        driverButtons.addString("12", () -> "Not Assigned");
+
                         driverButtons.addString("POV Up", () -> "RaiseShooterAim");
                         driverButtons.addString("POV Down", () -> "LowerShooterAim");
                         driverButtons.addString("POV Left", () -> "ShooterAimLeft");
                         driverButtons.addString("POV Right", () -> "ShooterAimRight");
 
-                        ShuffleboardLayout gamepadButtons = Shuffleboard.getTab("Buttons")
+                        ShuffleboardLayout coDriverButtons = Shuffleboard.getTab("ButtonsHelp")
                                         .getLayout("Codriver XBox(1)", BuiltInLayouts.kList).withPosition(3, 0)
                                         .withSize(3, 5).withProperties(Map.of("Label position", "LEFT")); //
-                        gamepadButtons.addString("A", () -> "Unassigned");
-                        gamepadButtons.addString("B", () -> "Unassigned");
-                        gamepadButtons.addString("X", () -> "Unassigned");
-                        gamepadButtons.addString("Y", () -> "Unassigned");
-                        gamepadButtons.addString("Back", () -> "Unassigned");
-                        gamepadButtons.addString("Start", () -> "Unassigned");
-                        gamepadButtons.addString("Left Trigger", () -> "Unassigned");
-                        gamepadButtons.addString("Right Trigger", () -> "Unassigned");
-                        gamepadButtons.addString("Right Bumper", () -> "Unassigned");
-                        gamepadButtons.addString("Left Bumper", () -> "Unassigned");
-                        gamepadButtons.addString("POV Up", () -> "Unassigned");
-                        gamepadButtons.addString("POV Down", () -> "Unassigned");
-                        gamepadButtons.addString("POV Left", () -> "Unassigned");
-                        gamepadButtons.addString("POV Right", () -> "Unassigned");
+                        coDriverButtons.addString("A", () -> "Lower Color Arm");
+                        coDriverButtons.addString("B", () -> "Raise Color Arm");
+                        coDriverButtons.addString("X", () -> "Turn Color Wheel");
+                        coDriverButtons.addString("Y", () -> "Position To Color");
+                        coDriverButtons.addString("Back", () -> "Position Number Turns");
+                        coDriverButtons.addString("Start", () -> "Not Assigned");
+                        coDriverButtons.addString("Left Trigger", () -> "Not Assigned");
+                        coDriverButtons.addString("Right Trigger", () -> "Not Assigned");
+                        coDriverButtons.addString("Right Bumper", () -> "Not Assigned");
+                        coDriverButtons.addString("Left Bumper", () -> "Not Assigned");
+                        coDriverButtons.addString("POV Up", () -> "Not Assigned");
+                        coDriverButtons.addString("POV Down", () -> "Not Assigned");
+                        coDriverButtons.addString("POV Left", () -> "Not Assigned");
+                        coDriverButtons.addString("POV Right", () -> "Not Assigned");
 
-                        ShuffleboardLayout setupButtons = Shuffleboard.getTab("Buttons")
+                        ShuffleboardLayout setupButtons = Shuffleboard.getTab("ButtonsHelp")
                                         .getLayout("Setup XBox(3)", BuiltInLayouts.kList).withPosition(6, 0)
                                         .withSize(3, 5).withProperties(Map.of("Label position", "LEFT")); //
 
                         setupButtons.addString("A", () -> "Hold Jog Turret LeftX");
-                        setupButtons.addString("B", () -> "Unassigned");
+                        setupButtons.addString("B", () -> "Not Assigned");
                         setupButtons.addString("X", () -> "Hold Jog Shooter RightY");
                         setupButtons.addString("Y", () -> "Hold Jog Tilt LeftY");
                         setupButtons.addString("Back", () -> "Intake Cells");
@@ -830,7 +846,7 @@ public class SetupShuffleboard {
                         setupButtons.addString("Left Trigger", () -> "Climb");
                         setupButtons.addString("Right Trigger", () -> "Return Climber");
                         setupButtons.addString("Right Bumper", () -> "Hold Bypass Soft Limits");
-                        setupButtons.addString("Left Bumper", () -> "Unassigned");
+                        setupButtons.addString("Left Bumper", () -> "Not Assigned");
                         setupButtons.addString("POV Up", () -> "Hold Run Belts");
                         setupButtons.addString("POV Down", () -> "Hold Run Rollers");
                         setupButtons.addString("POV Left", () -> "Hold Pulse Left Belt");

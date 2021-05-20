@@ -85,7 +85,7 @@ public class PositionTiltToVision extends CommandBase {
     if (targetSeen && m_tilt.validTargetSeen) {
       limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
 
-      visionFoundAngle = m_tilt.getAngle() + limelightVerticalAngle + m_tilt.targetVerticalOffset;
+      visionFoundAngle = m_tilt.getAngle() - limelightVerticalAngle - m_tilt.targetVerticalOffset;
 
       m_endpoint = visionFoundAngle;
 

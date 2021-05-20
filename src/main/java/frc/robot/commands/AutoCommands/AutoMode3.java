@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.Constants.HoodedShooterConstants;
+import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
@@ -24,6 +25,7 @@ import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
+import frc.robot.commands.Vision.LimelightLeds;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -69,7 +71,7 @@ public class AutoMode3 extends SequentialCommandGroup {
                                 new ParallelCommandGroup(
                                                 new PositionRobot(drive,
                                                                 ShootData.getFirstDistance(shootNumber + 1) - 2),
-                                                new ReturnTiltTurret(turret, 0, tilt, 60)).deadlineWith(
+                                                new PositionTurret(turret, 0), new PositionTilt(tilt, 40)).deadlineWith(
                                                                 new StartIntake(intake, limelight),
                                                                 new StopShooterWheels(shooter)),
 
@@ -97,7 +99,7 @@ public class AutoMode3 extends SequentialCommandGroup {
 
                                 // return tilt and turret
                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),
-                                new PositionTurret(turret, 0));
+                                new LimelightLeds(limelight, LedMode.kforceOff), new PositionTurret(turret, 0));
         }
 
 }

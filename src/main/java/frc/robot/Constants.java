@@ -40,9 +40,9 @@ public final class Constants {
       public static final int LEFT_MOTOR = 6;
       public static final int RIGHT_MOTOR = 7;
 
-      public static final int TURRET_ROTATE_MOTOR = 8;// turret
+      public static final int TURRET_ROTATE_MOTOR = 9;// turret
 
-      public static final int TILT_MOTOR = 9;
+      public static final int TILT_MOTOR = 8;
 
       // talons
 
@@ -166,7 +166,7 @@ public final class Constants {
        * The tilt has a mechanical base angle of around 60 degrees and a max angle of
        * around 90
        * 
-       * Accurate angle calculations for target distance purposes are done base on the
+       * Accurate angle calculations for target distance purposes are done based on the
        * tilt mechanical design
        * 
        * 

@@ -34,7 +34,6 @@ public class PositionHoldTurret extends CommandBase {
   private double visionFoundAngle;
   private double m_endpoint;
   private double deadband = 1;
-  
 
   public PositionHoldTurret(RevTurretSubsystem turret, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -49,18 +48,18 @@ public class PositionHoldTurret extends CommandBase {
   public void initialize() {
     m_endpoint = m_turret.targetAngle;
 
-    if (m_turret.validTargetSeen)
+    if (m_turret.validTargetSeen && m_limelight.useVision)
       visionFoundCounter = filterCount;
     else
       visionFoundCounter = 0;
-  
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    targetSeen = m_limelight.getIsTargetFound();
+    targetSeen = m_limelight.getIsTargetFound() && m_limelight.useVision;
 
     if (targetSeen && m_turret.validTargetSeen) {
       limelightHorizontalAngle = m_limelight.getdegRotationToTarget();
@@ -96,7 +95,7 @@ public class PositionHoldTurret extends CommandBase {
       visionFoundAngle = m_turret.getAngle() + m_turret.adjustedTargetAngle;
       m_endpoint = visionFoundAngle;
       m_turret.targetAngle = m_endpoint;
-    
+
     }
 
     m_turret.goToPositionMotionMagic(m_endpoint);

@@ -41,7 +41,7 @@ public class TiltJog extends CommandBase {
     if (pressed)
       temp = temp / 2;
     m_tilt.moveManually(temp);
-    m_tilt.enableSofLimits(!pressed);
+    m_tilt.enableSoftLimits(!pressed);
   }
 
   // Called once the command ends or is interrupted.
