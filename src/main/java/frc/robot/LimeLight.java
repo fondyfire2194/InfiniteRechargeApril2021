@@ -24,8 +24,8 @@ public class LimeLight {
     private double _hearBeatPeriod = 0.1;
     final Double[] defVal = new Double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     final Double[] defValRGB = new Double[] { 0.0, 0.0, 0.0 };
-    public double horizontalOffset = 0;
-    public double verticalOffset = 0;
+    public double horizontalOffset;
+    public double verticalOffset;
     public boolean useVision;
 
     class PeriodicRunnable implements java.lang.Runnable {

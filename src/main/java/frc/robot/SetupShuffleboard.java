@@ -281,6 +281,7 @@ public class SetupShuffleboard {
                         turretValues.addNumber("AdjTarget", () -> m_turret.adjustedTargetAngle);
                         turretValues.addNumber("Vision Error", () -> m_limelight.getdegRotationToTarget());
                         turretValues.addNumber("IAccum", () -> m_turret.getIaccum());
+                        turretValues.addNumber("HorOff+Right",()-> m_limelight.horizontalOffset);
 
                         ShuffleboardLayout turretValues2 = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("States", BuiltInLayouts.kGrid).withPosition(2, 3).withSize(2, 3)
@@ -296,6 +297,7 @@ public class SetupShuffleboard {
                         turretValues2.addBoolean("InPosition", () -> m_turret.atTargetAngle());
 
                         turretValues2.addBoolean("BrakeMode", () -> m_turret.isBrake());
+                        turretValues2.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget());
 
                         turretValues2.addBoolean("OKTune", () -> (m_turret.tuneOn && m_turret.lastTuneOn));
 
@@ -350,6 +352,7 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("Vision Error", () -> m_limelight.getdegVerticalToTarget());
                         tiltValues.addNumber("MotorDeg", () -> m_tilt.getMotorDegrees());
                         tiltValues.addNumber("MotorTarget", () -> m_tilt.motorEndpointDegrees);
+                        tiltValues.addNumber("VertOff+Low",()-> m_limelight.verticalOffset);
                         // tiltValues.addNumber("CameraAngle", () -> m_tilt.getCameraAngle());
 
                         tiltValues.addNumber("IAccum", () -> m_tilt.getIaccum());
@@ -369,7 +372,9 @@ public class SetupShuffleboard {
                         tiltValues2.addBoolean("+SWLimit", () -> m_tilt.onPlusSoftwareLimit());
                         tiltValues2.addBoolean("-SWLimit", () -> m_tilt.onMinusSoftwareLimit());
                         tiltValues2.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled());
+                       tiltValues2.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget());
 
+                
                         if (m_tiltTune) {
 
                                 ShuffleboardLayout tiltValues1 = Shuffleboard.getTab("SetupTilt")
@@ -691,6 +696,9 @@ public class SetupShuffleboard {
                         visionData.addNumber("CameraAngle", () -> m_tilt.getAngle());
                         visionData.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
                         visionData.addNumber("CameraCalculatedMPS", () -> m_shooter.cameraCalculatedSpeed);
+                        visionData.addNumber("VertOff+Low",()-> m_limelight.verticalOffset);
+                        visionData.addNumber("HorOff+Right",()-> m_limelight.horizontalOffset);
+
 
                         ShuffleboardLayout visionBools = Shuffleboard.getTab("Vision")
                                         .getLayout("States", BuiltInLayouts.kGrid).withPosition(3, 3).withSize(2, 2)

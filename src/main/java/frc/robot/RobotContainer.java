@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,15 +37,12 @@ import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Shooter.RunShooterWheels;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShooterWheels;
 import frc.robot.commands.Tilt.PositionHoldTilt;
-import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Tilt.TiltWaitForStop;
 import frc.robot.commands.Turret.PositionHoldTurret;
-import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretJogVelocity;
 import frc.robot.commands.Turret.TurretWaitForStop;
@@ -264,14 +260,12 @@ public class RobotContainer {
              */
             coDriverA.whenPressed(new ControlPanelArm(m_controlPanel, true));
             coDriverB.whenPressed(new ControlPanelArm(m_controlPanel, false));
-   
-            coDriverX.whileHeld(new TurnControlPanel(m_controlPanel,.25));
 
-            coDriverX.whenPressed(new PositionToColor(m_controlPanel,.25));
+            coDriverX.whileHeld(new TurnControlPanel(m_controlPanel, .25));
+
+            coDriverX.whenPressed(new PositionToColor(m_controlPanel, .25));
             coDriverBack.whenPressed(new PositionNumberRevs(m_controlPanel, 3, .25));
-
-
-
+      
 
             /**
              * 
