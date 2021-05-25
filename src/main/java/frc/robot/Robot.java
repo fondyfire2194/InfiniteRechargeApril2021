@@ -236,16 +236,43 @@ public class Robot extends TimedRobot {
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)
         .schedule(true);
     new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
-  
+
   }
 
   /**
    * This function is called periodically during operator control.
    */
   @Override
+
+  /**
+   * In teleop after cells have been picked up, the tilt and turret need to be
+   * pointed at the target so the Limelight can be used to lock them on.
+   * 
+   * The robot is designed so it can use the trench and this will be the default
+   * turret / tilt positions afer a pickup. Thes axes will be positioned to a
+   * place where the camera can pick up the target as the robot comes out from
+   * under the control panel. At this point they will both be in position hold
+   * mode until a target is seen and then they will move to lock on the target.
+   * Target horizontal and vertical offsets can be used to shift the lock on
+   * points. To lock on with vision a limelight useVision boolean must be set. A
+   * Shoot when Ready command can be started at any point and will initiate
+   * shooting when the shooter is at speed, the tilt and turret are lock on and
+   * the robot is not moving. Shooting will prevent the joystick being used to
+   * move the robot.
+   * 
+   * If the trench is not being used, the co driver picks either a right, left,
+   * short straight or long straight shot turret from driver instructions. The
+   * tilt angle will be move from its base 30 degree angle towards 0. It should
+   * then pick up a target and both tilt and turret will lock on.
+   * 
+   * Shot speed is determined from distance calculated from target height and
+   * camera angle. Speeds need to be empirically determined and put in a table to
+   * be interpolated.
+   * 
+   */
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
-    m_robotContainer.setupGamepad.setRumble(RumbleType.kLeftRumble,1.0);
+    // m_robotContainer.setupGamepad.setRumble(RumbleType.kLeftRumble, 1.0);
 
   }
 

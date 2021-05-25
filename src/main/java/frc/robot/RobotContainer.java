@@ -35,6 +35,7 @@ import frc.robot.commands.ControlPanel.TurnControlPanel;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.JogShooter;
+import frc.robot.commands.Shooter.ReturnTiltTurret;
 import frc.robot.commands.Shooter.RunShooterWheels;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShooterWheels;
@@ -175,7 +176,7 @@ public class RobotContainer {
             m_compressor = new Compressor();
 
             m_autoFactory = new AutoFactory(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
-                        m_compressor, m_intake, 0);
+                        m_compressor, m_intake, 10);
 
             m_trajectory = new FondyFireTrajectory(m_robotDrive);
 
@@ -258,14 +259,24 @@ public class RobotContainer {
              * 
              * 
              */
-            coDriverA.whenPressed(new ControlPanelArm(m_controlPanel, true));
-            coDriverB.whenPressed(new ControlPanelArm(m_controlPanel, false));
+            coDriverDownButton.whenPressed(new ControlPanelArm(m_controlPanel, true));
+            coDriverUpButton.whenPressed(new ControlPanelArm(m_controlPanel, false));
+            coDriverLeftButton.whileHeld(new TurnControlPanel(m_controlPanel, .25));
+            coDriverRightButton.whenPressed(new PositionToColor(m_controlPanel, .25));
+            coDriverStart.whenPressed(new PositionNumberRevs(m_controlPanel, 3, .25));
 
-            coDriverX.whileHeld(new TurnControlPanel(m_controlPanel, .25));
+            // trench settings
+            // right shot
+            coDriverB.whenPressed(new ReturnTiltTurret(m_turret, 75, m_tilt, 10, m_limelight, false, m_shooter, 5));
 
-            coDriverX.whenPressed(new PositionToColor(m_controlPanel, .25));
-            coDriverBack.whenPressed(new PositionNumberRevs(m_controlPanel, 3, .25));
-      
+            // left shot
+            coDriverX.whenPressed(new ReturnTiltTurret(m_turret, -75, m_tilt, 10, m_limelight, false, m_shooter, 5));
+
+            // long straight shot
+            coDriverB.whenPressed(new ReturnTiltTurret(m_turret, 0, m_tilt, 5, m_limelight, false, m_shooter, 5));
+
+            // close straight shot
+            coDriverB.whenPressed(new ReturnTiltTurret(m_turret, 0, m_tilt, 15, m_limelight, false, m_shooter, 5));
 
             /**
              * 

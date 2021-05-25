@@ -4,7 +4,11 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import edu.wpi.cscore.HttpCamera;
 import edu.wpi.first.wpilibj.Compressor;
@@ -104,6 +108,9 @@ public class SetupShuffleboard {
 
         public SendableChooser<Integer> autoChooser = new SendableChooser<>();
         public SendableChooser<Integer> startDelayChooser = new SendableChooser<>();
+        SendableChooser<String> driverJS = new SendableChooser<>();
+        SendableChooser<String> coDriverXBox = new SendableChooser<>();
+        SendableChooser<String> setUpXBox = new SendableChooser<>();
         private ComplexWidget pdpWidget;
 
         public SetupShuffleboard(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevDrivetrain drive,
@@ -281,12 +288,12 @@ public class SetupShuffleboard {
                         turretValues.addNumber("AdjTarget", () -> m_turret.adjustedTargetAngle);
                         turretValues.addNumber("Vision Error", () -> m_limelight.getdegRotationToTarget());
                         turretValues.addNumber("IAccum", () -> m_turret.getIaccum());
-                        turretValues.addNumber("HorOff+Right",()-> m_limelight.horizontalOffset);
+                        turretValues.addNumber("HorOff+Right", () -> m_limelight.horizontalOffset);
 
                         ShuffleboardLayout turretValues2 = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("States", BuiltInLayouts.kGrid).withPosition(2, 3).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
-                        turretValues2.addBoolean("Connected", () -> m_turret.turretMotorConnected);
+                        turretValues2.addBoolean("Connected (8)", () -> m_turret.turretMotorConnected);
 
                         turretValues2.addBoolean("PlusLimit", () -> m_turret.onPlusSoftwareLimit());
 
@@ -315,7 +322,7 @@ public class SetupShuffleboard {
                                                 .withWidget(BuiltInWidgets.kGraph).withSize(4, 2); //
                         }
                 }
-                /** 
+                /**
                  * Shooter Tilt
                  */
                 if (m_showTilt & !liveMatch) {
@@ -336,7 +343,7 @@ public class SetupShuffleboard {
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
                         tiltCommands.add("Cmd", m_tilt);
                         tiltCommands.addNumber("Faults", () -> m_tilt.faultSeen);
-                        tiltCommands.addString("To Jog", ()->"SetupXBox Btn Y left Y");
+                        tiltCommands.addString("To Jog", () -> "SetupXBox Btn Y left Y");
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(2, 0).withSize(2, 4)
@@ -352,7 +359,7 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("Vision Error", () -> m_limelight.getdegVerticalToTarget());
                         tiltValues.addNumber("MotorDeg", () -> m_tilt.getMotorDegrees());
                         tiltValues.addNumber("MotorTarget", () -> m_tilt.motorEndpointDegrees);
-                        tiltValues.addNumber("VertOff+Low",()-> m_limelight.verticalOffset);
+                        tiltValues.addNumber("VertOff+Low", () -> m_limelight.verticalOffset);
                         // tiltValues.addNumber("CameraAngle", () -> m_tilt.getCameraAngle());
 
                         tiltValues.addNumber("IAccum", () -> m_tilt.getIaccum());
@@ -368,13 +375,12 @@ public class SetupShuffleboard {
                         tiltValues2.addBoolean("PosResetDone", () -> m_tilt.positionResetDone);
                         tiltValues2.addBoolean("BrakeMode", () -> m_tilt.isBrake());
                         tiltValues2.addBoolean("OKTune", () -> (m_tilt.tuneOn && m_tilt.lastTuneOn));
-                        tiltValues2.addBoolean("Connected", () -> m_tilt.tiltMotorConnected);
+                        tiltValues2.addBoolean("Connected (9)", () -> m_tilt.tiltMotorConnected);
                         tiltValues2.addBoolean("+SWLimit", () -> m_tilt.onPlusSoftwareLimit());
                         tiltValues2.addBoolean("-SWLimit", () -> m_tilt.onMinusSoftwareLimit());
                         tiltValues2.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled());
-                       tiltValues2.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget());
+                        tiltValues2.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget());
 
-                
                         if (m_tiltTune) {
 
                                 ShuffleboardLayout tiltValues1 = Shuffleboard.getTab("SetupTilt")
@@ -440,8 +446,8 @@ public class SetupShuffleboard {
                         shooterValues2.addBoolean("AtSpeed", () -> m_shooter.atSpeed());
                         shooterValues2.addBoolean("CameraBypassed", () -> m_shooter.cameraSpeedBypassed);
                         shooterValues2.addBoolean("TuneOn", () -> (m_shooter.tuneOn && m_shooter.lastTuneOn));
-                        shooterValues2.addBoolean("LeftConnected", () -> m_shooter.leftMotorConnected);
-                        shooterValues2.addBoolean("RightConnected", () -> m_shooter.rightMotorConnected);
+                        shooterValues2.addBoolean("LeftConnected (6)", () -> m_shooter.leftMotorConnected);
+                        shooterValues2.addBoolean("RightConnected (7)", () -> m_shooter.rightMotorConnected);
                         shooterValues2.addBoolean(("RollersTurning"),
                                         () -> Math.abs(m_transport.getFrontRoller()) > .1);
 
@@ -482,12 +488,14 @@ public class SetupShuffleboard {
 
                         transportValues1.addBoolean("Arm Up", () -> m_intake.getArmRaised());
                         transportValues1.addBoolean("Arm Down", () -> m_intake.getArmLowered());
-                        transportValues1.addBoolean("IntakeConnected", () -> m_intake.intakeMotorConnected);
+                        transportValues1.addBoolean("IntakeConnected (10)", () -> m_intake.intakeMotorConnected);
 
-                        transportValues1.addBoolean("LeftBeltConnected", () -> m_transport.leftBeltMotorConnected);
-                        transportValues1.addBoolean("RightBeltConnected", () -> m_transport.rightBeltMotorConnected);
-                        transportValues1.addBoolean("RearRollerConnected", () -> m_transport.rearRollerMotorConnected);
-                        transportValues1.addBoolean("FrontRollerConnected",
+                        transportValues1.addBoolean("LeftBeltConnected (13)", () -> m_transport.leftBeltMotorConnected);
+                        transportValues1.addBoolean("RightBeltConnected (11)",
+                                        () -> m_transport.rightBeltMotorConnected);
+                        transportValues1.addBoolean("RearRollerConnected (12)",
+                                        () -> m_transport.rearRollerMotorConnected);
+                        transportValues1.addBoolean("FrontRollerConnected (14)",
                                         () -> m_transport.frontRollerMotorConnected);
 
                         ShuffleboardLayout intakeValues = Shuffleboard.getTab("SetupCellHandle")
@@ -548,10 +556,10 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         robotValues2.addBoolean("TuneOn", () -> (m_robotDrive.tuneOn && m_robotDrive.lastTuneOn));
-                        robotValues2.addBoolean("Left1Connected", () -> m_robotDrive.leftLeadConnected);
-                        robotValues2.addBoolean("Left2Connected", () -> m_robotDrive.leftFollowerConnected);
-                        robotValues2.addBoolean("Right1Connected", () -> m_robotDrive.rightLeadConnected);
-                        robotValues2.addBoolean("Right2Connected", () -> m_robotDrive.rightFollowerConnected);
+                        robotValues2.addBoolean("Left1Connected (2)", () -> m_robotDrive.leftLeadConnected);
+                        robotValues2.addBoolean("Left2Connected (3)", () -> m_robotDrive.leftFollowerConnected);
+                        robotValues2.addBoolean("Right1Connected (4)", () -> m_robotDrive.rightLeadConnected);
+                        robotValues2.addBoolean("Right2Connected (5)", () -> m_robotDrive.rightFollowerConnected);
                         robotValues2.addBoolean("LInPosition", () -> m_robotDrive.getInPositionLeft());
                         robotValues2.addBoolean("RInPosition", () -> m_robotDrive.getInPositionRight());
 
@@ -621,21 +629,21 @@ public class SetupShuffleboard {
                                         .getLayout("Canbus", BuiltInLayouts.kGrid).withPosition(3, 2).withSize(5, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
-                        canBus.addBoolean("TurretConnected", () -> m_turret.turretMotorConnected);
-                        canBus.addBoolean("TiltConnected", () -> m_tilt.tiltMotorConnected);
-                        canBus.addBoolean("LeftShooterConnected", () -> m_shooter.leftMotorConnected);
-                        canBus.addBoolean("RightShooterConnected", () -> m_shooter.rightMotorConnected);
-                        canBus.addBoolean("LeftBeltConnected", () -> m_transport.leftBeltMotorConnected);
-                        canBus.addBoolean("RightBeltConnected", () -> m_transport.rightBeltMotorConnected);
-                        canBus.addBoolean("RearRollerConnected", () -> m_transport.rearRollerMotorConnected);
-                        canBus.addBoolean("FrontRollerConnected", () -> m_transport.frontRollerMotorConnected);
-                        canBus.addBoolean("CLConected", () -> m_climber.climberMotorConnected);
-                        canBus.addBoolean("LDR1Connected", () -> m_robotDrive.leftLeadConnected);
-                        canBus.addBoolean("LDr2Connected", () -> m_robotDrive.leftFollowerConnected);
-                        canBus.addBoolean("RDr1Connected", () -> m_robotDrive.rightLeadConnected);
-                        canBus.addBoolean("RDr2Connected", () -> m_robotDrive.rightFollowerConnected);
-                        canBus.addBoolean("CPConnected", () -> m_controlPanel.controlPanelMotorConnected);
-                        canBus.addBoolean(("IntakeConnected"), () -> m_intake.intakeMotorConnected);
+                        canBus.addBoolean("TurretConnected (8)", () -> m_turret.turretMotorConnected);
+                        canBus.addBoolean("TiltConnected (9)", () -> m_tilt.tiltMotorConnected);
+                        canBus.addBoolean("LeftShooterConnected (6)", () -> m_shooter.leftMotorConnected);
+                        canBus.addBoolean("RightShooterConnected (7)", () -> m_shooter.rightMotorConnected);
+                        canBus.addBoolean("LeftBeltConnected (13)", () -> m_transport.leftBeltMotorConnected);
+                        canBus.addBoolean("RightBeltConnected (11)", () -> m_transport.rightBeltMotorConnected);
+                        canBus.addBoolean("RearRollerConnected (12)", () -> m_transport.rearRollerMotorConnected);
+                        canBus.addBoolean("FrontRollerConnected (14)", () -> m_transport.frontRollerMotorConnected);
+                        canBus.addBoolean("CLConected (15)", () -> m_climber.climberMotorConnected);
+                        canBus.addBoolean("LDR1Connected (2)", () -> m_robotDrive.leftLeadConnected);
+                        canBus.addBoolean("LDr2Connected (3)", () -> m_robotDrive.leftFollowerConnected);
+                        canBus.addBoolean("RDr1Connected (4)", () -> m_robotDrive.rightLeadConnected);
+                        canBus.addBoolean("RDr2Connected (5)", () -> m_robotDrive.rightFollowerConnected);
+                        canBus.addBoolean("CPConnected (16)", () -> m_controlPanel.controlPanelMotorConnected);
+                        canBus.addBoolean("IntakeConnected (10)", () -> m_intake.intakeMotorConnected);
 
                 }
                 /**
@@ -696,9 +704,8 @@ public class SetupShuffleboard {
                         visionData.addNumber("CameraAngle", () -> m_tilt.getAngle());
                         visionData.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
                         visionData.addNumber("CameraCalculatedMPS", () -> m_shooter.cameraCalculatedSpeed);
-                        visionData.addNumber("VertOff+Low",()-> m_limelight.verticalOffset);
-                        visionData.addNumber("HorOff+Right",()-> m_limelight.horizontalOffset);
-
+                        visionData.addNumber("VertOff+Low", () -> m_limelight.verticalOffset);
+                        visionData.addNumber("HorOff+Right", () -> m_limelight.horizontalOffset);
 
                         ShuffleboardLayout visionBools = Shuffleboard.getTab("Vision")
                                         .getLayout("States", BuiltInLayouts.kGrid).withPosition(3, 3).withSize(2, 2)
@@ -765,7 +772,7 @@ public class SetupShuffleboard {
 
                         cpValues.addBoolean("CP Arm Up", () -> m_controlPanel.getArmRaised());
                         cpValues.addBoolean("CP Arm Down", () -> m_controlPanel.getArmLowered());
-                        cpValues.addBoolean("Connected", () -> m_controlPanel.controlPanelMotorConnected);
+                        cpValues.addBoolean("Connected (16)", () -> m_controlPanel.controlPanelMotorConnected);
 
                         /**
                          * 
@@ -788,7 +795,7 @@ public class SetupShuffleboard {
                         climberValues.addBoolean("Climber Arm Down", () -> m_climber.getArmLowered());
                         climberValues.addNumber("Motor Amps", () -> m_climber.getMotorAmps());
                         climberValues.addNumber("Motor Out", () -> m_climber.getMotorOut());
-                        climberValues.addBoolean("Conected", () -> m_climber.climberMotorConnected);
+                        climberValues.addBoolean("Connected (15)", () -> m_climber.climberMotorConnected);
                         climberValues.addBoolean("Climber Arm Up", () -> m_climber.getArmRaised());
 
                 }
@@ -796,69 +803,70 @@ public class SetupShuffleboard {
                         ShuffleboardTab misc = Shuffleboard.getTab("Power");
                         PowerDistributionPanel pdp = new PowerDistributionPanel();
                         pdpWidget = misc.add("PDP", pdp).withWidget(BuiltInWidgets.kPowerDistributionPanel)
-                                        .withPosition(0, 0).withSize(6, 3);
+                                        .withPosition(0, 0).withSize(3, 4);
 
                 }
 
                 if (m_showButtons && !liveMatch) {
 
-                        ShuffleboardLayout driverButtons = Shuffleboard.getTab("ButtonsHelp")
-                                        .getLayout("Driver JS(0)", BuiltInLayouts.kList).withPosition(0, 0)
-                                        .withSize(3, 5).withProperties(Map.of("Label position", "LEFT")); //
-                        driverButtons.addString("1", () -> " Hold Pick Up Cells");
-                        driverButtons.addString("2", () -> "Hold Shoot Cells");
-                        driverButtons.addString("3", () -> "Stop Shooter Wheels ");
-                        driverButtons.addString("4", () -> "Inc Shooter Wheels");
-                        driverButtons.addString("5", () -> "Run Shooter Wheels");
-                        driverButtons.addString("6", () -> "Dec Shooter Wheels ");
-                        driverButtons.addString("7", () -> "Shooter Aim Center");
-                        driverButtons.addString("8", () -> "Driver Camera");
-                        driverButtons.addString("9", () -> "Intake Camera");
-                        driverButtons.addString("10", () -> "Not Assigned");
-                        driverButtons.addString("11", () -> "Not Assigned");
-                        driverButtons.addString("12", () -> "Not Assigned");
+                        Shuffleboard.getTab("ButtonsHelp").add("Driver JS", driverJS).withSize(2, 1)
 
-                        driverButtons.addString("POV Up", () -> "RaiseShooterAim");
-                        driverButtons.addString("POV Down", () -> "LowerShooterAim");
-                        driverButtons.addString("POV Left", () -> "ShooterAimLeft");
-                        driverButtons.addString("POV Right", () -> "ShooterAimRight");
+                                        .withPosition(0, 0); // place it in the top-left corner
 
-                        ShuffleboardLayout coDriverButtons = Shuffleboard.getTab("ButtonsHelp")
-                                        .getLayout("Codriver XBox(1)", BuiltInLayouts.kList).withPosition(3, 0)
-                                        .withSize(3, 5).withProperties(Map.of("Label position", "LEFT")); //
-                        coDriverButtons.addString("A", () -> "Lower Color Arm");
-                        coDriverButtons.addString("B", () -> "Raise Color Arm");
-                        coDriverButtons.addString("X", () -> "Turn Color Wheel");
-                        coDriverButtons.addString("Y", () -> "Position To Color");
-                        coDriverButtons.addString("Back", () -> "Position Number Turns");
-                        coDriverButtons.addString("Start", () -> "Not Assigned");
-                        coDriverButtons.addString("Left Trigger", () -> "Not Assigned");
-                        coDriverButtons.addString("Right Trigger", () -> "Not Assigned");
-                        coDriverButtons.addString("Right Bumper", () -> "Not Assigned");
-                        coDriverButtons.addString("Left Bumper", () -> "Not Assigned");
-                        coDriverButtons.addString("POV Up", () -> "Not Assigned");
-                        coDriverButtons.addString("POV Down", () -> "Not Assigned");
-                        coDriverButtons.addString("POV Left", () -> "Not Assigned");
-                        coDriverButtons.addString("POV Right", () -> "Not Assigned");
+                        driverJS.setDefaultOption("1 - Hold Pick Up Cells", "1");
+                        driverJS.addOption("2 - Hold Shoot Cells", "2");
+                        driverJS.addOption("3 - Stop Shooter Wheels", "3");
+                        driverJS.addOption("4 - Inc Shooter Wheels", "4");
+                        driverJS.addOption("5 - Run Shooter Wheels", "5");
+                        driverJS.addOption("6 - Dec Shooter Wheels ", "6");
+                        driverJS.addOption("7 - Shooter Aim Center", "7");
+                        driverJS.addOption("8 - Driver Camera", "8");
+                        driverJS.addOption("9 - Intake Camera", "9");
+                        driverJS.addOption("10 - Not Assigned", "10");
+                        driverJS.addOption("11 - Not Assigned", "11");
+                        driverJS.addOption("12 - Not Assigned", "12");
 
-                        ShuffleboardLayout setupButtons = Shuffleboard.getTab("ButtonsHelp")
-                                        .getLayout("Setup XBox(3)", BuiltInLayouts.kList).withPosition(6, 0)
-                                        .withSize(3, 5).withProperties(Map.of("Label position", "LEFT")); //
+                        driverJS.addOption("POV - UpRaiseShooterAim", "13");
+                        driverJS.addOption("POV - DownLowerShooterAim", "14'");
+                        driverJS.addOption("POV - LeftShooterAimLeft", "15");
+                        driverJS.addOption("POV - RightShooterAimRight", "16");
 
-                        setupButtons.addString("A", () -> "Hold Jog Turret LeftX");
-                        setupButtons.addString("B", () -> "Not Assigned");
-                        setupButtons.addString("X", () -> "Hold Jog Shooter RightY");
-                        setupButtons.addString("Y", () -> "Hold Jog Tilt LeftY");
-                        setupButtons.addString("Back", () -> "Intake Cells");
-                        setupButtons.addString("Start", () -> "TiltToSwitch");
-                        setupButtons.addString("Left Trigger", () -> "Climb");
-                        setupButtons.addString("Right Trigger", () -> "Return Climber");
-                        setupButtons.addString("Right Bumper", () -> "Hold Bypass Soft Limits");
-                        setupButtons.addString("Left Bumper", () -> "Not Assigned");
-                        setupButtons.addString("POV Up", () -> "Hold Run Belts");
-                        setupButtons.addString("POV Down", () -> "Hold Run Rollers");
-                        setupButtons.addString("POV Left", () -> "Hold Pulse Left Belt");
-                        setupButtons.addString("POV Right", () -> "Hold Pulse Right Belt");
+                        Shuffleboard.getTab("ButtonsHelp").add("CoDriverXBox", coDriverXBox).withSize(2, 1)
+
+                                        .withPosition(3, 0); //
+                        coDriverXBox.setDefaultOption("A - Lower Color Arm", "1");
+                        coDriverXBox.addOption("B - Raise Color Arm", "2");
+                        coDriverXBox.addOption("X - Turn Color Wheel", "3");
+                        coDriverXBox.addOption("Y - CP Position To Color", "4");
+                        coDriverXBox.addOption("Back - CP Position Number Turns", "5");
+                        coDriverXBox.addOption("Start - Not Assigned", "6");
+                        coDriverXBox.addOption("Left Trigger - Not Assigned", "7");
+                        coDriverXBox.addOption("Right Trigger - Not Assigned", "8");
+                        coDriverXBox.addOption("Right Bumper - Not Assigned", "9");
+                        coDriverXBox.addOption("Left Bumper - Not Assigned", "10");
+                        coDriverXBox.addOption("POV Up - Not Assigned", "11");
+                        coDriverXBox.addOption("POV Down - Not Assigned", "12");
+                        coDriverXBox.addOption("POV Left - Not Assigned", "13");
+                        coDriverXBox.addOption("POV Right - Not Assigned", "14");
+
+                        Shuffleboard.getTab("ButtonsHelp").add("SetupXBox", setUpXBox).withSize(2, 1)
+
+                                        .withPosition(6, 0); //
+
+                        setUpXBox.setDefaultOption("A - Hold Jog Turret LeftX", "1");
+                        setUpXBox.addOption("B - Not Assigned", "2");
+                        setUpXBox.addOption("X - Hold Jog Shooter RightY", "3");
+                        setUpXBox.addOption("Y - Hold Jog Tilt LeftY", "4");
+                        setUpXBox.addOption("Back - Intake Cells", "5");
+                        setUpXBox.addOption("Start - TiltToSwitch", "6");
+                        setUpXBox.addOption("Left Trigger - Climb", "7");
+                        setUpXBox.addOption("Right Trigger - Return Climber", "8");
+                        setUpXBox.addOption("Right Bumper - Hold Bypass Soft Limits", "9");
+                        setUpXBox.addOption("Left Bumper - Not Assigned", "10");
+                        setUpXBox.addOption("POV Up - Hold Run Belts", "11");
+                        setUpXBox.addOption("POV Down - Hold Run Rollers", "12");
+                        setUpXBox.addOption("POV Left - Hold Pulse Left Belt", "13");
+                        setUpXBox.addOption("POV Right - Hold Pulse Right Belt", "14");
 
                 }
 

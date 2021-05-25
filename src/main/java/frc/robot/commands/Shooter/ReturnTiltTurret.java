@@ -39,6 +39,10 @@ public class ReturnTiltTurret extends ParallelCommandGroup {
     m_shooter = shooter;
     // Add your commands in the adddCommands() call, e.g. tilt
     // addCommands(new FooCommand(), new BarCommand());
+    /**
+     * Returns the tilt and turret to a position
+     * 
+     */
 
     addCommands(new PositionTurret(m_turret, m_turretPosition), new PositionTilt(m_tilt, m_tiltPosition),
         new UseVision(m_limelight, m_on), new StartShooterWheels(m_shooter, m_fps));

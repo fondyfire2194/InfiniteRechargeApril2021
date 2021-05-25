@@ -75,6 +75,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public boolean rightFollowerConnected;
     public boolean allConnected;
 
+    public boolean lockedForVision;
+
     @Override
     public void close() {
         mLeadLeft.close();
@@ -216,7 +218,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     @Override
     public void arcadeDrive(double speed, double rotation) {
 
-        if (Math.abs(speed) < .1)
+        if (Math.abs(speed) < .1 || lockedForVision)
             speed = 0;
         if (Math.abs(rotation) < .1)
             rotation = 0;
@@ -273,19 +275,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     @Override
     public void periodic() {
         updateOdometry();
-
-        tuneOn = Pref.getPref("dRTune") != 0.;
-
-        if (tuneOn && !lastTuneOn) {
-
-            tuneGains();
-            lastTuneOn = true;
-
-        }
-
-        if (lastTuneOn)
-            lastTuneOn = tuneOn;
-
+        checkTune();
     }
 
     public boolean checkCAN() {
@@ -329,6 +319,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public void resetGyro() {
         mGyro.reset();
+    }
+
+    public boolean isStopped() {
+        return Math.abs(mLeftEncoder.getVelocity()) < .2;
     }
 
     public double getHeading() {
@@ -450,4 +444,18 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         allowedErr = .2;
 
     }
+
+    private void checkTune() {
+        tuneOn = Pref.getPref("dRTune") != 0.;
+
+        if (tuneOn && !lastTuneOn) {
+
+            tuneGains();
+            lastTuneOn = true;
+        }
+
+        if (lastTuneOn)
+            lastTuneOn = tuneOn;
+    }
+
 }
