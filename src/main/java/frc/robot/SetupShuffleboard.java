@@ -169,7 +169,6 @@ public class SetupShuffleboard {
                         startDelayChooser.addOption("Four Seconds", 4);
                         startDelayChooser.addOption("Five Seconds", 5);
 
-
                         ShuffleboardLayout preMatch = Shuffleboard.getTab("Pre-Round")
                                         .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(2, 5)
                                         .withProperties(Map.of("Label position", "TOP"));
@@ -599,7 +598,7 @@ public class SetupShuffleboard {
                 }
 
                 if (m_showSubsystems) {
-                        ShuffleboardLayout subSystems = Shuffleboard.getTab("Subsystems")
+                        ShuffleboardLayout subSystems = Shuffleboard.getTab("Can+Sols")
                                         .getLayout("All", BuiltInLayouts.kList).withPosition(0, 0).withSize(3, 7)
                                         .withProperties(Map.of("Label position", "LEFT")); //
                                                                                            // labels
@@ -613,14 +612,14 @@ public class SetupShuffleboard {
                         subSystems.add("Intake", m_intake);
                         subSystems.add("Climber", m_climber);
 
-                        ShuffleboardLayout scheduler = Shuffleboard.getTab("Subsystems")
+                        ShuffleboardLayout scheduler = Shuffleboard.getTab("Can+Sols")
                                         .getLayout("Scheduler", BuiltInLayouts.kList).withPosition(3, 0).withSize(6, 2)
                                         .withProperties(Map.of("Label position", "TOP")); //
 
                         scheduler.add("Scheduler", CommandScheduler.getInstance());
 
-                        ShuffleboardLayout canBus = Shuffleboard.getTab("Subsystems")
-                                        .getLayout("Canbus", BuiltInLayouts.kGrid).withPosition(3, 2).withSize(5, 2)
+                        ShuffleboardLayout canBus = Shuffleboard.getTab("Can+Sols")
+                                        .getLayout("Canbus", BuiltInLayouts.kGrid).withPosition(3, 2).withSize(4, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         canBus.addBoolean("TurretConnected (8)", () -> m_turret.turretMotorConnected);
@@ -638,6 +637,14 @@ public class SetupShuffleboard {
                         canBus.addBoolean("RDr2Connected (5)", () -> m_robotDrive.rightFollowerConnected);
                         canBus.addBoolean("CPConnected (16)", () -> m_controlPanel.controlPanelMotorConnected);
                         canBus.addBoolean("IntakeConnected (10)", () -> m_intake.intakeMotorConnected);
+
+                        ShuffleboardLayout sols = Shuffleboard.getTab("Can+Sols")
+                                        .getLayout("Solenoids", BuiltInLayouts.kGrid).withPosition(7, 2).withSize(2, 2)
+                                        .withProperties(Map.of("Label position", "TOP")); // labels
+
+                        sols.addString("Intake Sol", () -> " pins 2 and 3");
+                        sols.addString("Climber Sol", () -> " pins 4 and 5");
+                        sols.addString("ControlPanel Sol", () -> " pins 0 and 1");
 
                 }
                 /**
@@ -794,7 +801,7 @@ public class SetupShuffleboard {
 
                 }
                 if (m_showPower && !liveMatch) {
-                        ShuffleboardTab misc = Shuffleboard.getTab("Power");
+                        ShuffleboardTab misc = Shuffleboard.getTab("PDP");
                         PowerDistributionPanel pdp = new PowerDistributionPanel();
                         pdpWidget = misc.add("PDP", pdp).withWidget(BuiltInWidgets.kPowerDistributionPanel)
                                         .withPosition(0, 0).withSize(6, 4);
