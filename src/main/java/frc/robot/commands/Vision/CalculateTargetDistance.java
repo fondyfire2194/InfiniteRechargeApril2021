@@ -22,7 +22,6 @@ public class CalculateTargetDistance extends CommandBase {
   private double heightDifference;
 
   private double m_limelightVerticalAngle;
-  
 
   public CalculateTargetDistance(LimeLight limelight, RevTiltSubsystem tilt, RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -74,7 +73,6 @@ public class CalculateTargetDistance extends CommandBase {
 
       m_limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
 
-
       if (RobotBase.isSimulation()) {
         m_limelightVerticalAngle = 0;
 
@@ -89,11 +87,11 @@ public class CalculateTargetDistance extends CommandBase {
 
     {
 
-      m_shooter.calculatedCameraDistance = 0;
+      m_shooter.calculatedCameraDistance = 3;
 
     }
 
-    m_shooter.calculateFPSFromDistance(m_shooter.calculatedCameraDistance);
+    m_shooter.requiredMps = m_shooter.calculateFPSFromDistance(m_shooter.calculatedCameraDistance);
   }
 
   // Called once the command ends or is interrupted.

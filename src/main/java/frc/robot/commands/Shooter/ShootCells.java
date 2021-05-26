@@ -50,7 +50,7 @@ public class ShootCells extends CommandBase {
   public void execute() {
 
     shooter.runShooter();
-    ;
+    
     if (Timer.getFPGATimestamp() > startTime + 1) {
       double shooterOut = shooter.getLeftPctOut();
       double rollerMotorOut = shooterOut * rollerPctofShooter;

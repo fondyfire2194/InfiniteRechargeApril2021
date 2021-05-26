@@ -102,7 +102,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         m_reverseLimit.enableLimitSwitch(RobotBase.isReal());
 
-        // onLimitSwitch = m_reverseLimit.get();
+        onLimitSwitch = m_reverseLimit.get();
 
         if (RobotBase.isReal() && onLimitSwitch) {
             resetAngle();
@@ -252,7 +252,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kReverse, (float) 0.);
         m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kForward,
                 (float) HoodedShooterConstants.maxMotorTurns);
-  //       enableSofLimits(true);
+        // enableSofLimits(true);
         m_motor.setIdleMode(IdleMode.kBrake);
     }
 

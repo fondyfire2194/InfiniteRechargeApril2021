@@ -5,26 +5,43 @@
 package frc.robot.commands.Turret;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ChangeTurretPositionTest extends InstantCommand {
+public class TurretShift extends InstantCommand {
   private final RevTurretSubsystem m_turret;
+  private final RevShooterSubsystem m_shooter;
   private double m_change;
 
-  public ChangeTurretPositionTest(RevTurretSubsystem turret, double change) {
+  public TurretShift(RevTurretSubsystem turret, double change, RevShooterSubsystem shooter) {
     // Use addRequirements() here to decl are subsystem dependencies.
     m_turret = turret;
+    m_shooter = shooter;
     m_change = change;
   }
 
   // Called when the command is initially scheduled.
+  /**
+   * The change distance is at the target A positive change means shoot more right
+   * so turret angle needs to be more positive.
+   * 
+   * Need to calculate the angular turret change which is sin-1(change/distance)
+   * 
+   * 
+   */
   @Override
   public void initialize() {
-    if (Math.abs(m_change) > 5)
-      m_change = 0;
-    m_turret.targetAngle += m_change;
+
+    double distance;
+    double correction = 0;
+    distance = m_shooter.calculatedCameraDistance;
+    
+    if (distance > 2 && distance < 15)
+      correction = Math.toDegrees(Math.asin(m_change / distance));
+
+    m_turret.targetAngle += correction;
   }
 }

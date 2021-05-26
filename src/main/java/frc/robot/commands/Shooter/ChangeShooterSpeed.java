@@ -29,6 +29,7 @@ public class ChangeShooterSpeed extends InstantCommand {
   @Override
   public void initialize() {
     double currentSpeed = m_shooter.requiredMps;
+    double shotDistance = m_shooter.calculatedCameraDistance;
 
     double newSpeed = currentSpeed += m_fpsChange;
 

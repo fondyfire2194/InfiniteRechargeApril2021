@@ -13,6 +13,18 @@ public class ShootData {
      * 
      * 
      */
+    public static int initLineStraight = 0;
+    public static int retractOneStraight = 1;
+
+    public static int initLineLeft = 2;
+    public static int retractOneLeft = 3;
+
+    public static int initLineRight = 4;
+    public static int retractOneRight = 5;
+
+    public static int trenchTwoBall = 6;
+    public static int trenchThirdBall = 7;
+
     private static final double shootTime = 5;
     private static final double retractDistance = -1;
     private static final double twoBallPickup = -3;
@@ -25,7 +37,7 @@ public class ShootData {
              * 
              * pipeline,
              * 
-             * first moveDistance, second moveDistance,shootdistance
+             * first moveDistance, second moveDistance, shootdistance
              * 
              * shoot time, turret angle, turret shift, tilt angle, tilt shift.
              * 
@@ -34,19 +46,19 @@ public class ShootData {
             // front of power port at initiation line 0
             {
 
-                    { 0, 0, retractDistance, 3, shootTime, 0, 0, 30.3, 0 }, // 0 center start shoot retract
+                    { 0, 0, retractDistance, 3., shootTime, 0, 0, 28.37, 0 }, // 0 center start shoot retract
 
-                    { 0, retractDistance, retractDistance, 4., shootTime, 0, 0, 23.7, 0 }, // 1 center start retract
-                                                                                           // shoot
+                    { 0, retractDistance, retractDistance, 4., shootTime, 0, 0, 22.05, 0 }, // 1 center start retract
+                                                                                            // shoot
 
-                    { 0, 0, retractDistance, 3.2, shootTime, 19.6, 0, 28.8, 0 }, // 2 left start shoot retract
+                    { 0, 0, retractDistance, 3.2, shootTime, 24.8, 0, 28.8, 0 }, // 2 left start shoot retract
 
-                    { 0, retractDistance, retractDistance, 4.2, shootTime, 15, 0, 23, 0 }, // 3 left start retract
+                    { 0, retractDistance, retractDistance, 4.2, shootTime, 15, 0, 22.05, 0 }, // 3 left start retract
                     // shoot
 
-                    { 0, 0, retractDistance, 3.2, shootTime, -19.6, 0, 28.8, 0 }, // 4 right start shoot retract
+                    { 0, 0, retractDistance, 3.2, shootTime, -24.8, 0, 22.05, 0 }, // 4 right start shoot retract
 
-                    { 0, retractDistance, retractDistance, 4.2, shootTime, -15, 0, 23, 0 }, // 5 right start retract
+                    { 0, retractDistance, retractDistance, 4.2, shootTime, -15, 0, 22.05, 0 }, // 5 right start retract
                     // shoot
 
                     { 0, twoBallPickup, twoBallPickup, 5.2, shootTime, -26, 0, 19, 0 }, // 6 trench start pickup 2 and

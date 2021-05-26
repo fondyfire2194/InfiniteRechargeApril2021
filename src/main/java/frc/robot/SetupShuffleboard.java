@@ -4,11 +4,7 @@
 
 package frc.robot;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import edu.wpi.cscore.HttpCamera;
 import edu.wpi.first.wpilibj.Compressor;
@@ -89,13 +85,13 @@ public class SetupShuffleboard {
         private boolean m_turretTune = false;
         private boolean m_showTilt = true;
         private boolean m_tiltTune = false;
-        private boolean m_showShooter = false;
+        private boolean m_showShooter = true;
         private boolean m_shooterTune = false;
-        private boolean m_showRobot = false;
+        private boolean m_showRobot = true;
         private boolean m_robotTune = false;
-        private boolean m_showClimberControlPanel = false;
+        private boolean m_showClimberControlPanel = true;
 
-        private boolean m_showTransport = false;
+        private boolean m_showTransport = true;
         private boolean m_showVision = true;
         private boolean m_showTrajectory = false;
         private boolean m_showSubsystems = true;
@@ -161,13 +157,9 @@ public class SetupShuffleboard {
                         place = 7;
                         autoChooser.addOption("Trench Start One More Pickup Shoot", place);
                         place = 8;
-                        autoChooser.addOption("Trench Start Three More Pickup Shoot", place);
-                        place = 9;
                         autoChooser.addOption("Cross Line", place);
 
-                        Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1) // make the
-                                                                                                             // widget
-                                        // 2x1
+                        Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
 
                         startDelayChooser.setDefaultOption("No Delay", 0);
@@ -176,6 +168,7 @@ public class SetupShuffleboard {
                         startDelayChooser.addOption("Three Seconds", 3);
                         startDelayChooser.addOption("Four Seconds", 4);
                         startDelayChooser.addOption("Five Seconds", 5);
+
 
                         ShuffleboardLayout preMatch = Shuffleboard.getTab("Pre-Round")
                                         .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(2, 5)
@@ -237,6 +230,7 @@ public class SetupShuffleboard {
                         competition.addBoolean("TiltOnTarget", () -> m_tilt.atTargetAngle());
                         competition.addBoolean("TurretOnTarget", () -> m_turret.atTargetAngle());
                         competition.addBoolean("ShooterAtSpeed", () -> m_shooter.atSpeed());
+                        competition.addBoolean("Use Vision", () -> m_limelight.useVision);
 
                         if (RobotBase.isReal()) {
 
@@ -803,7 +797,7 @@ public class SetupShuffleboard {
                         ShuffleboardTab misc = Shuffleboard.getTab("Power");
                         PowerDistributionPanel pdp = new PowerDistributionPanel();
                         pdpWidget = misc.add("PDP", pdp).withWidget(BuiltInWidgets.kPowerDistributionPanel)
-                                        .withPosition(0, 0).withSize(3, 4);
+                                        .withPosition(0, 0).withSize(6, 4);
 
                 }
 
@@ -816,34 +810,39 @@ public class SetupShuffleboard {
                         driverJS.setDefaultOption("1 - Hold Pick Up Cells", "1");
                         driverJS.addOption("2 - Hold Shoot Cells", "2");
                         driverJS.addOption("3 - Stop Shooter Wheels", "3");
-                        driverJS.addOption("4 - Inc Shooter Wheels", "4");
+                        driverJS.addOption("4 - Toggle Camera", "4");
                         driverJS.addOption("5 - Run Shooter Wheels", "5");
-                        driverJS.addOption("6 - Dec Shooter Wheels ", "6");
-                        driverJS.addOption("7 - Shooter Aim Center", "7");
-                        driverJS.addOption("8 - Driver Camera", "8");
-                        driverJS.addOption("9 - Intake Camera", "9");
-                        driverJS.addOption("10 - Not Assigned", "10");
+                        driverJS.addOption("6 - Not Assigned", "6");
+
+                        driverJS.addOption("7 - Trench Shoot", "7");
+                        driverJS.addOption("8 - Straight Shoot", "8");
+                        driverJS.addOption("9 - Left Shoot", "9");
+                        driverJS.addOption("10 - Right Shoot", "10");
                         driverJS.addOption("11 - Not Assigned", "11");
                         driverJS.addOption("12 - Not Assigned", "12");
 
-                        driverJS.addOption("POV - UpRaiseShooterAim", "13");
-                        driverJS.addOption("POV - DownLowerShooterAim", "14'");
-                        driverJS.addOption("POV - LeftShooterAimLeft", "15");
-                        driverJS.addOption("POV - RightShooterAimRight", "16");
+                        driverJS.addOption("POV Up - Inc Shooter Speed", "13");
+                        driverJS.addOption("POV Down - Dec Shooter Speed", "14'");
+                        driverJS.addOption("POV Left - Not Assigned", "15");
+                        driverJS.addOption("POV Right - Not Assigned", "16");
 
                         Shuffleboard.getTab("ButtonsHelp").add("CoDriverXBox", coDriverXBox).withSize(2, 1)
-
                                         .withPosition(3, 0); //
                         coDriverXBox.setDefaultOption("A - Lower Color Arm", "1");
                         coDriverXBox.addOption("B - Raise Color Arm", "2");
+
                         coDriverXBox.addOption("X - Turn Color Wheel", "3");
                         coDriverXBox.addOption("Y - CP Position To Color", "4");
+
                         coDriverXBox.addOption("Back - CP Position Number Turns", "5");
                         coDriverXBox.addOption("Start - Not Assigned", "6");
+
                         coDriverXBox.addOption("Left Trigger - Not Assigned", "7");
                         coDriverXBox.addOption("Right Trigger - Not Assigned", "8");
+
                         coDriverXBox.addOption("Right Bumper - Not Assigned", "9");
                         coDriverXBox.addOption("Left Bumper - Not Assigned", "10");
+
                         coDriverXBox.addOption("POV Up - Not Assigned", "11");
                         coDriverXBox.addOption("POV Down - Not Assigned", "12");
                         coDriverXBox.addOption("POV Left - Not Assigned", "13");
@@ -854,15 +853,21 @@ public class SetupShuffleboard {
                                         .withPosition(6, 0); //
 
                         setUpXBox.setDefaultOption("A - Hold Jog Turret LeftX", "1");
+
                         setUpXBox.addOption("B - Not Assigned", "2");
                         setUpXBox.addOption("X - Hold Jog Shooter RightY", "3");
+
                         setUpXBox.addOption("Y - Hold Jog Tilt LeftY", "4");
+
                         setUpXBox.addOption("Back - Intake Cells", "5");
                         setUpXBox.addOption("Start - TiltToSwitch", "6");
+
                         setUpXBox.addOption("Left Trigger - Climb", "7");
                         setUpXBox.addOption("Right Trigger - Return Climber", "8");
+
                         setUpXBox.addOption("Right Bumper - Hold Bypass Soft Limits", "9");
                         setUpXBox.addOption("Left Bumper - Not Assigned", "10");
+
                         setUpXBox.addOption("POV Up - Hold Run Belts", "11");
                         setUpXBox.addOption("POV Down - Hold Run Rollers", "12");
                         setUpXBox.addOption("POV Left - Hold Pulse Left Belt", "13");

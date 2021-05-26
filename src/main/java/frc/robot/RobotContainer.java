@@ -46,8 +46,10 @@ import frc.robot.commands.Tilt.TiltWaitForStop;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretJogVelocity;
+import frc.robot.commands.Turret.TurretShift;
 import frc.robot.commands.Turret.TurretWaitForStop;
 import frc.robot.commands.Vision.LimelightCamMode;
+import frc.robot.commands.Vision.ToggleCamera;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ControlPanelSubsystem;
@@ -237,22 +239,38 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShooterWheels(m_shooter));
 
-            new JoystickButton(m_driverController, 6).whenPressed(new ChangeShooterSpeed(m_shooter, +.1));
+            new JoystickButton(m_driverController, 4).whenPressed(new ToggleCamera(m_limelight));
 
-            new JoystickButton(m_driverController, 4).whenPressed(new ChangeShooterSpeed(m_shooter, -.1));
+            // new JoystickButton(m_driverController, 6)
 
-            new JoystickButton(m_driverController, 7).whenPressed(() -> m_tilt.aimCenter())
-                        .whenPressed(() -> m_turret.aimCenter());
+            int shootIndex = 5;// trench rear
+            new JoystickButton(m_driverController, 7).whenPressed((new ReturnTiltTurret(m_turret,
+                        ShootData.getTurretAngle(shootIndex), m_tilt, ShootData.getTiltAngle(shootIndex), m_limelight,
+                        true, m_shooter, ShootData.getShootDistance(shootIndex))));
 
-            new JoystickButton(m_driverController, 8).whenPressed(new LimelightCamMode(m_limelight, CamMode.kdriver));
+            shootIndex = 1;// straight shot 1 meter behind initiation line
+            new JoystickButton(m_driverController, 8)
+                        .whenPressed((new ReturnTiltTurret(m_turret, 0, m_tilt, ShootData.getTiltAngle(shootIndex),
+                                    m_limelight, true, m_shooter, ShootData.getShootDistance(shootIndex))));
 
-            new JoystickButton(m_driverController, 9).whenPressed(new LimelightCamMode(m_limelight, CamMode.kvision));
+            shootIndex = 3;// left shoot
+            new JoystickButton(m_driverController, 9)
+                        .whenPressed((new ReturnTiltTurret(m_turret, -75, m_tilt, ShootData.getTiltAngle(shootIndex),
+                                    m_limelight, true, m_shooter, ShootData.getShootDistance(shootIndex))));
 
-            driverUpButton.whenPressed(() -> m_tilt.aimHigher(.05));
-            driverDownButton.whenPressed(() -> m_tilt.aimLower(.05));
+            shootIndex = 4;// right shoot
+            new JoystickButton(m_driverController, 10)
+                        .whenPressed((new ReturnTiltTurret(m_turret, 15, m_tilt, ShootData.getTiltAngle(shootIndex),
+                                    m_limelight, true, m_shooter, ShootData.getShootDistance(shootIndex))));
 
-            driverLeftButton.whenPressed(() -> m_turret.aimFurtherLeft(.05));
-            driverRightButton.whenPressed(() -> m_turret.aimFurtherRight(.05));
+            driverUpButton.whenPressed(new ChangeShooterSpeed(m_shooter, +.05));
+
+            driverDownButton.whenPressed(new ChangeShooterSpeed(m_shooter, -.05));
+
+            driverLeftButton.whenPressed(new TurretShift(m_turret, .1, m_shooter));// shoot right
+
+            driverRightButton.whenPressed(new TurretShift(m_turret, -.1, m_shooter));// shoot left
+
             /**
              * Co driver has miscellaneous functions
              * 
