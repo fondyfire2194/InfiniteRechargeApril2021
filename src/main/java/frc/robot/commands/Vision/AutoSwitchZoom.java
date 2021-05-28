@@ -40,8 +40,7 @@ public class AutoSwitchZoom extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   /**
-   * need to change between no and 2 x zoom as target gets too smallor large
-   * otherwisw.
+   * need to change between no and 2 x zoom as target gets too small or large
    * 
    * The tilt and turret lock loops should be stopped during the changeover.
    * 
@@ -51,7 +50,7 @@ public class AutoSwitchZoom extends CommandBase {
    */
   public void execute() {
 
-    // check if too far away for pipeline 0 - no zoom
+    // check if too far away for pipeline 1 - no zoom
 
     if (m_limelight.getIsTargetFound()) {
 
@@ -99,9 +98,9 @@ public class AutoSwitchZoom extends CommandBase {
         changeToZoom1Counter = 0;
       }
 
-      // if a chacgeover is in progress, wait for period of time
+      // if a changeover is in progress, wait for period of time
       if (changeLocked) {
-
+        m_limelight.useVision = false;
         changeLockedCounter--;
       }
 
@@ -109,6 +108,7 @@ public class AutoSwitchZoom extends CommandBase {
 
         changeLocked = false;
         changeLockedCounter = 0;
+        m_limelight.useVision = true;
 
       }
     }

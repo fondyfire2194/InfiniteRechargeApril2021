@@ -5,6 +5,7 @@
 package frc.robot.commands.Vision;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.LimeLight;
@@ -18,10 +19,13 @@ public class CalculateTargetDistance extends CommandBase {
   private final RevShooterSubsystem m_shooter;
 
   private double baseCameraHeight = FieldConstants.BASE_CAMERA_HEIGHT;
+  private double maxCameraHeight = FieldConstants.MAX_CAMERA_HEIGHT;
   private double targetHeight = FieldConstants.TARGET_HEIGHT;
   private double heightDifference;
 
   private double m_limelightVerticalAngle;
+  private double cameraAngle;
+  private double cameraHeightSlope = (maxCameraHeight - baseCameraHeight) / 30;// inches per tilt degree
 
   public CalculateTargetDistance(LimeLight limelight, RevTiltSubsystem tilt, RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -40,11 +44,7 @@ public class CalculateTargetDistance extends CommandBase {
    * As the tilt angle to the ground increases, the camera angle to the target
    * falls.
    * 
-   * Low tilt angles mean high camera angles.Camera angle = 90 - tilt angle?
-   * 
-   * Minimum tilt angle measured to the ground is 59 degrees. Max is 89 degrees
-   * 
-   * So min camera to target angle is 1 degree and max is 31 degrees
+   * Low tilt angles mean high camera angles!
    * 
    * Target distance can be calculated from
    * 
@@ -59,15 +59,19 @@ public class CalculateTargetDistance extends CommandBase {
    * it consists of a base height and a varying height.
    * 
    * When locked on target a2 is 0 so d = (h2-h1)/tan(cameraAngle) and cameraAngle
-   * = tan-1(h2-h1)/d with tilt angle being 90 -camera angle
+   * = tan-1(h2-h1)/d with tilt angle being camera angle
    * 
-   * Base camera angle = 90 - base tilt angle
+   * 
    * 
    */
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    double cameraHeight = baseCameraHeight + (cameraHeightSlope * m_tilt.getMotorDegrees());
+
+    heightDifference = targetHeight - cameraHeight;
 
     if (m_limelight.getIsTargetFound() || RobotBase.isSimulation()) {
 
@@ -78,8 +82,9 @@ public class CalculateTargetDistance extends CommandBase {
 
       }
       // tilt counts up camera angle counts down
+      cameraAngle = m_tilt.getCameraAngle();
 
-      double tanAngleSum = Math.tan((Math.toRadians(m_limelightVerticalAngle + m_tilt.getCameraAngle())));
+      double tanAngleSum = Math.tan((Math.toRadians(m_limelightVerticalAngle + cameraAngle)));
 
       m_shooter.calculatedCameraDistance = (heightDifference) / tanAngleSum;
 

@@ -39,6 +39,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastAcc;
     public double cameraCalculatedSpeed;
     public boolean useCameraSpeed;
+    public double cameraAngleCalculatedSpeed;
+    public boolean useCameraAngleSpeed;
+
     private final int VELOCITY_SLOT = 0;
     /**
      * 8" diameter wheels = (8/12)*pi ft circ.
@@ -46,10 +49,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
      * 
      * 
      * 
-     * so circ =
-     * (2 *pi)/3 = 2.1 ft = .638 meters per rev max speed 80 revs per sec so about
-     * 50 meters per  sec max
-     * Angle range is 30 to 1 or 2?
+     * so circ = (2 *pi)/3 = 2.1 ft = .638 meters per rev max speed 80 revs per sec
+     * so about 50 meters per sec max Angle range is 30 to 1 or 2?
      */
     public final double metersPerRev = .638;
 
@@ -67,7 +68,23 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private int speedBaseDistance = 2;
     private int speedMaxDistance = 14;
 
-    public double[] shooterFPSFromCamera = new double[] { 5, 8, 10, 15, 15.5, 20, 22, 5, 25, 30, 35, 40, 45, 50 };
+    public double[] shooterFPSFromCamera = new double[] { 5, 8, 10, 15, 15.5, 20, 22, 24, 25, 30, 35, 40, 45, 50 };
+
+    /**
+     * Tilt angle is the simplest way to determine shooter speed. Useful tilt angle
+     * range is from 30 degrees at the initiation line to 8 degrees at 12 meters on
+     * the other side of the field over the control panel. So every 2 degrees makes
+     * 10 entries. Speed decreases as camera angle increases.
+     * 
+     * 
+     * 
+     * 
+     */
+    private int speedBaseAngle = 8;
+    private int speedMaxAngle = 30;
+
+    public double[] shooterFPSfromCameraAngle = new double[] { 50, 47.5, 45, 42.5, 40, 37.5, 35, 32.5, 30, 27.5, 25,
+            22.5, 20, 17.5, 15, 14.2, 12, 11, 10, 9, 8, 5, 2, 1 };
 
     // matching calculated tilt launch angles when on target 2 to 14 m.
     // 39.01, 28.37, 22.05, 17.95, 15.11, 13.03, 11.45, 10.20, 9.20, 8.38, 7.69,
@@ -161,6 +178,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
         if (useCameraSpeed && !cameraSpeedBypassed)
             requiredMps = cameraCalculatedSpeed;
+
 
     }
 
@@ -273,6 +291,50 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             mLeftMotor.setClosedLoopRampRate(acc);
             lastAcc = acc;
         }
+
+    }
+
+    public double calculateFPSFromAngle(double angle) {
+        /**
+         * Speed will decrease as angle increases Need to find the base of the speed
+         * range for the angle then the difference between that and the next speed and
+         * subtract the amount into that range from the base.
+         * 
+         * speedBaseAngle = 8;speedMaxAngle = 30;
+         * 
+         * shooterFPSfromCameraAngle = 50, 47.5,45,42.5 40, 37.5,35, 30, 25, 20, 15, 12,
+         * 18, 8, 5
+         * 
+         * So an angle of 15
+         *
+         */
+
+        if (angle < speedBaseAngle)
+            angle = speedBaseAngle;
+        if (angle > speedMaxAngle)
+            angle = speedMaxAngle;
+
+        // find index into array since it doesn't start at 0
+
+        double tempAngle = angle - speedBaseAngle;
+
+        int baseI = (int) tempAngle;
+        double base = (double) baseI;
+
+        double rem = tempAngle - base;
+
+        double baseSpeed = shooterFPSfromCameraAngle[baseI];
+        double upperSpeed = shooterFPSfromCameraAngle[baseI + 1];
+   
+        double speedRange = baseSpeed - upperSpeed;
+
+        double speedAdder = speedRange * rem;
+
+        cameraAngleCalculatedSpeed = baseSpeed - speedAdder;
+
+        useCameraAngleSpeed = true;
+
+        return cameraAngleCalculatedSpeed;
 
     }
 

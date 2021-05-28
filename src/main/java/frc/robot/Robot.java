@@ -96,7 +96,6 @@ public class Robot extends TimedRobot {
     if (RobotBase.isReal())
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
 
-    m_robotContainer.m_tilt.enableSoftLimits(true);
     m_robotContainer.m_turret.enableSofLimits(true);
 
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;

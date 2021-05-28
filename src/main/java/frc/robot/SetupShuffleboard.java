@@ -253,7 +253,7 @@ public class SetupShuffleboard {
 
                 {
                         ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurret")
-                                        .getLayout("BtnA leftStickX", BuiltInLayouts.kList).withPosition(0, 0)
+                                        .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0)
                                         .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels for
                                                                                                           // commands
 
@@ -266,6 +266,9 @@ public class SetupShuffleboard {
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
                         turretCommands.add("Cmd", m_turret);
                         turretCommands.addNumber("Faults", () -> m_turret.getFaults());
+                        turretCommands.addString("To Jog", () -> "SetupXBox Btn A left X");
+                        turretCommands.addString("OvrRideSoftLim", () -> "SetupXBox rightBmpr");                  
+
 
                         ShuffleboardLayout turretValues = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("TurretValues", BuiltInLayouts.kList).withPosition(2, 0)
@@ -323,7 +326,7 @@ public class SetupShuffleboard {
                                         .getLayout("Tilt", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); //
 
-                        tiltCommands.add("Reset To Min", new ResetTiltAngle(m_tilt));
+
                         tiltCommands.add("Position To 25", new PositionTilt(m_tilt, 25));
                         tiltCommands.add("Position To 15", new PositionTilt(m_tilt, 15));
                         tiltCommands.add("Position To 5", new PositionTilt(m_tilt, 5));
@@ -334,12 +337,13 @@ public class SetupShuffleboard {
                         tiltCommands.add("Cmd", m_tilt);
                         tiltCommands.addNumber("Faults", () -> m_tilt.faultSeen);
                         tiltCommands.addString("To Jog", () -> "SetupXBox Btn Y left Y");
+                        tiltCommands.addString("OvrRideSoftLim", () -> "SetupXBox rightBmpr"); 
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(2, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
 
-                        tiltValues.addNumber("TIAngle", () -> m_tilt.getAngle());
+                        tiltValues.addNumber("TICameraAngle", () -> m_tilt.getAngle());
                         tiltValues.addNumber("TITgt", () -> m_tilt.targetAngle);
                         tiltValues.addNumber("PCT", () -> m_tilt.getOut());
                         tiltValues.addNumber("Amps", () -> m_tilt.getAmps());
@@ -350,7 +354,7 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("MotorDeg", () -> m_tilt.getMotorDegrees());
                         tiltValues.addNumber("MotorTarget", () -> m_tilt.motorEndpointDegrees);
                         tiltValues.addNumber("VertOff+Low", () -> m_limelight.verticalOffset);
-                        // tiltValues.addNumber("CameraAngle", () -> m_tilt.getCameraAngle());
+                        
 
                         tiltValues.addNumber("IAccum", () -> m_tilt.getIaccum());
 
@@ -656,9 +660,9 @@ public class SetupShuffleboard {
                                                                                           // labels
                                                                                           // for
 
-                        zoomCommands.add("No Zoom", new LimelightSetPipeline(m_limelight, 0));
-                        zoomCommands.add("2XZoom", new LimelightSetPipeline(m_limelight, 1));
-                        zoomCommands.add("3X Zoom", new LimelightSetPipeline(m_limelight, 2));
+                        zoomCommands.add("No Zoom", new LimelightSetPipeline(m_limelight, 1));
+                        zoomCommands.add("2XZoom", new LimelightSetPipeline(m_limelight, 2));
+                        zoomCommands.add("3X Zoom", new LimelightSetPipeline(m_limelight, 3));
 
                         ShuffleboardLayout visionCommands = Shuffleboard.getTab("Vision")
                                         .getLayout("On-Off", BuiltInLayouts.kList).withPosition(0, 2).withSize(1, 2)

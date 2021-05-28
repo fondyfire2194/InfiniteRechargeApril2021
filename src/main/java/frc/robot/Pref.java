@@ -42,12 +42,12 @@ public class Pref {
 
     // Tilt smart motion
 
-    prefDict.put("tIKp", .000002);
-    prefDict.put("tIKi", 0.25e-4);
-    prefDict.put("tIKd", .0005);
+    prefDict.put("tIKp", .001);
+    prefDict.put("tIKi", .001);
+    prefDict.put("tIKd", 0.);
     prefDict.put("tIKiz", 1.);
-    prefDict.put("tIMaxV", 250.);// 10000 rpm motor
-    prefDict.put("tIMaxA", 850.);// deg per min/sec
+    prefDict.put("tIMaxV", 1000.);// 1000 deg per min 
+    prefDict.put("tIMaxA", 1250.);// deg per min/sec
     prefDict.put("tITune", 0.);
 
     // Turret smart motion
