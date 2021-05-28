@@ -42,8 +42,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double visionCorrection;
     public boolean positionResetDone;
     public double targetAngle;
-    private double inPositionBandwidth = 1;
-    public boolean onLimitSwitch;
+    private double inPositionBandwidth = .2;
     public double targetVerticalOffset;
     public boolean validTargetSeen;
     public double adjustedTargetAngle;
@@ -94,17 +93,15 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         setGains();
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
-        setSoftwareLimits();
+        // setSoftwareLimits();
 
         // m_motor.setSmartCurrentLimit(10, 3);
 
-        m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+        m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
 
         m_reverseLimit.enableLimitSwitch(RobotBase.isReal());
 
-        onLimitSwitch = m_reverseLimit.get();
-
-        if (RobotBase.isReal() && onLimitSwitch) {
+        if (RobotBase.isReal() && m_reverseLimit.get()) {
             resetAngle();
         }
 
@@ -250,8 +247,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public void setSoftwareLimits() {
         m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kReverse, (float) 0.);
-        m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kForward,
-                (float) HoodedShooterConstants.maxMotorTurns);
+        m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kForward, (float) (29));
         // enableSofLimits(true);
         m_motor.setIdleMode(IdleMode.kBrake);
     }
@@ -371,13 +367,13 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         fixedSettings();
 
-        kP = .000002;
-        kI = 0.25e-4;
-        kD = .0005;
+        kP = .001;
+        kI = 0.001;
+        kD = .000;
         kIz = 1;
 
-        maxAcc = 850;
-        maxVel = 250;
+        maxAcc = 1250;
+        maxVel = 1000;
 
         // set PID coefficients
         calibratePID(kP, kI, kD, kFF, kIz, SMART_MOTION_SLOT);
@@ -403,7 +399,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         kMaxOutput = .5;
         kMinOutput = -.5;
         maxRPM = 11000;// not used
-        allowedErr = 1;
+        allowedErr = .01;
     }
 
     private void checkTune() {

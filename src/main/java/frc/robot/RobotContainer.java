@@ -184,7 +184,7 @@ public class RobotContainer {
 
             m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_limelight));
 
-            m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
+            // m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
 
             // m_shooter.setDefaultCommand(getJogShooterCommand());
 
@@ -364,7 +364,7 @@ public class RobotContainer {
       }
 
       public Command getJogTiltCommand() {
-            return new TiltJog(m_tilt, () -> setupGamepad.getRawAxis(1) / 5, setupGamepad);
+            return new TiltJog(m_tilt, () -> -setupGamepad.getRawAxis(1) / 5, setupGamepad);
       }
 
       public Command getJogShooterCommand() {

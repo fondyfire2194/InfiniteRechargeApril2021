@@ -335,7 +335,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         kMaxOutput = .75;
         kMinOutput = -.75;
         maxRPM = 11000;// not used
-        allowedErr = .25;
+        allowedErr = .01;
     }
 
     private void checkTune() {

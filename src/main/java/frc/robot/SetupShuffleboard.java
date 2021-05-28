@@ -177,7 +177,7 @@ public class SetupShuffleboard {
                         preMatch.add("CANCheck", new CheckCANDevices(this));
                         preMatch.addNumber("TurretView", () -> m_turret.getAngle());
 
-                        preMatch.addBoolean("Tilt Down OK", () -> m_tilt.onLimitSwitch);
+                        preMatch.addBoolean("Tilt Down OK", () -> m_tilt.m_reverseLimit.get());
                         preMatch.addBoolean("CANConnected",
                                         () -> m_tilt.tiltMotorConnected && m_turret.turretMotorConnected
                                                         && m_transport.allConnected && m_shooter.allConnected
@@ -185,7 +185,7 @@ public class SetupShuffleboard {
                                                         && m_intake.intakeMotorConnected
                                                         && m_controlPanel.controlPanelMotorConnected);
 
-                        if (RobotBase.isReal()) {
+                 //       if (RobotBase.isReal()) {
 
                                 LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
 
@@ -193,8 +193,8 @@ public class SetupShuffleboard {
                                                 .withWidget(BuiltInWidgets.kCameraStream).withPosition(4, 0)
                                                 .withSize(3, 2)
                                                 .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
-                        }
-
+                        
+//}
                         /**
                          * 
                          * Competition Driver Tab
@@ -253,7 +253,7 @@ public class SetupShuffleboard {
 
                 {
                         ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurret")
-                                        .getLayout("BtnA leftStickY", BuiltInLayouts.kList).withPosition(0, 0)
+                                        .getLayout("BtnA leftStickX", BuiltInLayouts.kList).withPosition(0, 0)
                                         .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels for
                                                                                                           // commands
 
@@ -324,12 +324,9 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT")); //
 
                         tiltCommands.add("Reset To Min", new ResetTiltAngle(m_tilt));
-                        tiltCommands.add("Position To 30",
-                                        new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MAX_ANGLE));
-                        tiltCommands.add("Position To 15",
-                                        new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MID_ANGLE));
-                        tiltCommands.add("Position To 0",
-                                        new PositionTilt(m_tilt, HoodedShooterConstants.TILT_MIN_ANGLE));
+                        tiltCommands.add("Position To 25", new PositionTilt(m_tilt, 25));
+                        tiltCommands.add("Position To 15", new PositionTilt(m_tilt, 15));
+                        tiltCommands.add("Position To 5", new PositionTilt(m_tilt, 5));
 
                         tiltCommands.add("PositionToSwitch", new TiltMoveToReverseLimit(m_tilt));
                         tiltCommands.add("StopTilt", new StopTilt(m_tilt));
@@ -802,7 +799,7 @@ public class SetupShuffleboard {
                 }
                 if (m_showPower && !liveMatch) {
                         ShuffleboardTab misc = Shuffleboard.getTab("PDP");
-                        PowerDistributionPanel pdp = new PowerDistributionPanel();
+                        PowerDistributionPanel pdp = new PowerDistributionPanel(1);
                         pdpWidget = misc.add("PDP", pdp).withWidget(BuiltInWidgets.kPowerDistributionPanel)
                                         .withPosition(0, 0).withSize(6, 4);
 
