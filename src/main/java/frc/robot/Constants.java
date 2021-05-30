@@ -166,8 +166,8 @@ public final class Constants {
        * The tilt has a mechanical base angle of around 60 degrees and a max angle of
        * around 90
        * 
-       * Accurate angle calculations for target distance purposes are done based on the
-       * tilt mechanical design
+       * Accurate angle calculations for target distance purposes are done based on
+       * the tilt mechanical design
        * 
        * 
        * 
@@ -263,14 +263,17 @@ public final class Constants {
 
       public static final double trenchToUnderCP = 0;
 
-      public static final double robotLength = 1.5;
-      public static final double robotWidth = 0;
-
       public static final double powerPortTargetCenterHeight = Units.inchesToMeters(84);
-      public static final double TARGET_HEIGHT = Units.inchesToMeters(90);
+      public static final double PORT_CENTER_HEIGHT = Units.inchesToMeters(90);
       public static final double BASE_CAMERA_HEIGHT = Units.inchesToMeters(26);
       public static final double MAX_CAMERA_HEIGHT = Units.inchesToMeters(27);
-      public static final double CAMERA_BASE_ANGLE = 20.;
+      public static final double CELL_DIAMETER = Units.inchesToMeters(7);
+      public static final double INNER_PORT_DIAMETER = Units.inchesToMeters(13);
+      public static final double INNER_PORT_DISTANCE = Units.inchesToMeters(29.25);
+      public static final double OUTER_PORT_MAX_GAP = Units.inchesToMeters(30);
+      public static final double MIN_BALL_CENTER_AT_OUTER = PORT_CENTER_HEIGHT - (OUTER_PORT_MAX_GAP / 2)
+            + CELL_DIAMETER / 2;
+      public static final double CAMERA_BASE_ANGLE = 30.;
       public static final double CAMERA_MAX_ANGLE = 0;
       public static double cameraAngleRange = CAMERA_MAX_ANGLE - CAMERA_BASE_ANGLE;
       public static final double cameraHeightRange = MAX_CAMERA_HEIGHT - BASE_CAMERA_HEIGHT;

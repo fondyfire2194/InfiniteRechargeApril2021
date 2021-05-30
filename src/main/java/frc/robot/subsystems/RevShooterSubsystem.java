@@ -99,6 +99,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public int shootColorNumber;
     public double startDistance;
     public double calculatedCameraDistance;
+    public double innerPortFloorDistance;
 
     public boolean tuneOn = false;
     public boolean lastTuneOn;

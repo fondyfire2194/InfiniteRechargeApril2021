@@ -135,29 +135,20 @@ public class SetupShuffleboard {
                         // The first argument is the root container
                         // The second argument is whether logging and config should be given separate
                         // tabs
-                        Shuffleboard.getTab("Pre-Round").add("Auto Commands", autoChooser).withSize(2, 1) // make the
-                                                                                                          // widget
-                                        // 2x1
+                        Shuffleboard.getTab("Pre-Round").add("Auto Commands", autoChooser).withSize(2, 1)
                                         .withPosition(0, 0); // place it in the top-left corner
 
                         int place = 0;
-                        autoChooser.setDefaultOption("Center Start Shoot", place);
+                        autoChooser.setDefaultOption("Cross Line", 0);
+                        
                         place = 1;
-                        autoChooser.setDefaultOption("Center Start Retract Shoot", place);
+                        autoChooser.addOption("Center Start Retract Shoot", 1);
+
                         place = 2;
-                        autoChooser.addOption("Left Start Shoot", place);
+                        autoChooser.addOption("Left Start Retract Pickup Shoot", 2);
+
                         place = 3;
-                        autoChooser.addOption("Left Start Retract Shoot", place);
-                        place = 4;
-                        autoChooser.addOption("Right Start Shoot", place);
-                        place = 5;
-                        autoChooser.addOption("Right Start Retract Shoot", place);
-                        place = 6;
-                        autoChooser.addOption("Trench Start Two Pickup Shoot", place);
-                        place = 7;
-                        autoChooser.addOption("Trench Start One More Pickup Shoot", place);
-                        place = 8;
-                        autoChooser.addOption("Cross Line", place);
+                        autoChooser.addOption("Trench Start Two Pickup Shoot",3);
 
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
@@ -185,16 +176,15 @@ public class SetupShuffleboard {
                                                         && m_intake.intakeMotorConnected
                                                         && m_controlPanel.controlPanelMotorConnected);
 
-                 //       if (RobotBase.isReal()) {
+                        // if (RobotBase.isReal()) {
 
-                                LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
+                        LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
 
-                                Shuffleboard.getTab("Pre-Round").add("Limelight", LLFeed)
-                                                .withWidget(BuiltInWidgets.kCameraStream).withPosition(4, 0)
-                                                .withSize(3, 2)
-                                                .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
-                        
-//}
+                        Shuffleboard.getTab("Pre-Round").add("Limelight", LLFeed)
+                                        .withWidget(BuiltInWidgets.kCameraStream).withPosition(4, 0).withSize(3, 2)
+                                        .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
+
+                        // }
                         /**
                          * 
                          * Competition Driver Tab
@@ -208,7 +198,7 @@ public class SetupShuffleboard {
                         competition1.addNumber("ShootAngle", () -> m_tilt.getAngle());
                         competition1.addNumber("TurretPosn", () -> m_turret.getAngle());
                         competition1.addNumber("RobotPosn", () -> m_robotDrive.getAverageDistance());
-                        competition1.addNumber("ShooterSpeed", () -> m_shooter.getRPM());
+                        competition1.addNumber("ShooterSpeed", () -> m_shooter.getMPS());
                         competition1.addNumber("Intake", () -> m_intake.getMotor());
                         competition1.addNumber("FrontRoller", () -> m_transport.getFrontRoller());
                         competition1.addNumber("RearRoller", () -> m_transport.getRearRoller());
@@ -253,9 +243,9 @@ public class SetupShuffleboard {
 
                 {
                         ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurret")
-                                        .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0)
-                                        .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels for
-                                                                                                          // commands
+                                        .getLayout("Turret", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
+                                        .withProperties(Map.of("Label position", "LEFT")); // labels for
+                                                                                           // commands
 
                         turretCommands.add("Reset to 0", new ResetTurretAngle(m_turret));
                         turretCommands.add("Position To 0", new PositionTurret(m_turret, 0));// degrees
@@ -267,8 +257,7 @@ public class SetupShuffleboard {
                         turretCommands.add("Cmd", m_turret);
                         turretCommands.addNumber("Faults", () -> m_turret.getFaults());
                         turretCommands.addString("To Jog", () -> "SetupXBox Btn A left X");
-                        turretCommands.addString("OvrRideSoftLim", () -> "SetupXBox rightBmpr");                  
-
+                        turretCommands.addString("OvrRideSoftLim", () -> "SetupXBox rightBmpr");
 
                         ShuffleboardLayout turretValues = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("TurretValues", BuiltInLayouts.kList).withPosition(2, 0)
@@ -326,7 +315,6 @@ public class SetupShuffleboard {
                                         .getLayout("Tilt", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); //
 
-
                         tiltCommands.add("Position To 25", new PositionTilt(m_tilt, 25));
                         tiltCommands.add("Position To 15", new PositionTilt(m_tilt, 15));
                         tiltCommands.add("Position To 5", new PositionTilt(m_tilt, 5));
@@ -337,7 +325,7 @@ public class SetupShuffleboard {
                         tiltCommands.add("Cmd", m_tilt);
                         tiltCommands.addNumber("Faults", () -> m_tilt.faultSeen);
                         tiltCommands.addString("To Jog", () -> "SetupXBox Btn Y left Y");
-                        tiltCommands.addString("OvrRideSoftLim", () -> "SetupXBox rightBmpr"); 
+                        tiltCommands.addString("OvrRideSoftLim", () -> "SetupXBox rightBmpr");
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(2, 0).withSize(2, 4)
@@ -354,7 +342,6 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("MotorDeg", () -> m_tilt.getMotorDegrees());
                         tiltValues.addNumber("MotorTarget", () -> m_tilt.motorEndpointDegrees);
                         tiltValues.addNumber("VertOff+Low", () -> m_limelight.verticalOffset);
-                        
 
                         tiltValues.addNumber("IAccum", () -> m_tilt.getIaccum());
 

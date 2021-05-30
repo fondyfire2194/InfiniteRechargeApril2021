@@ -40,19 +40,6 @@ public class AutoMode0 extends SequentialCommandGroup {
          * Start in front of power port and shoot
          */
 
-        // private final static int shootPosition = 0;
-        // private final static double shootTime =
-        // ShootData.getShootTime(shootPosition);
-        // private final static int pipeline = ShootData.getPipeline(shootPosition);
-        // private static double tiltAngle = ShootData.getTiltAngle(shootPosition);
-        // private final static double turretAngle =
-        // ShootData.getTurretAngle(shootPosition);
-        // private final static double shootSpeed =
-        // ShootData.getShootSpeed(shootPosition);
-        // private final static double moveDistance =
-        // ShootData.getMoveDistance(shootPosition);
-        // private final static double shootDistance =
-        // ShootData.getShootDistance(shootPosition);
 
         public AutoMode0(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,

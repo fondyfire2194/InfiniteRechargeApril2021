@@ -243,7 +243,7 @@ public class RobotContainer {
 
             // new JoystickButton(m_driverController, 6)
 
-            int shootIndex = 5;// trench rear
+            int shootIndex = 3;// trench rear
             new JoystickButton(m_driverController, 7).whenPressed((new ReturnTiltTurret(m_turret,
                         ShootData.getTurretAngle(shootIndex), m_tilt, ShootData.getTiltAngle(shootIndex), m_limelight,
                         true, m_shooter, ShootData.getShootDistance(shootIndex))));
@@ -253,15 +253,12 @@ public class RobotContainer {
                         .whenPressed((new ReturnTiltTurret(m_turret, 0, m_tilt, ShootData.getTiltAngle(shootIndex),
                                     m_limelight, true, m_shooter, ShootData.getShootDistance(shootIndex))));
 
-            shootIndex = 3;// left shoot
+            shootIndex = 2;// left shoot
             new JoystickButton(m_driverController, 9)
-                        .whenPressed((new ReturnTiltTurret(m_turret, -75, m_tilt, ShootData.getTiltAngle(shootIndex),
+                        .whenPressed((new ReturnTiltTurret(m_turret, ShootData.getTurretAngle(shootIndex), m_tilt, ShootData.getTiltAngle(shootIndex),
                                     m_limelight, true, m_shooter, ShootData.getShootDistance(shootIndex))));
 
-            shootIndex = 4;// right shoot
-            new JoystickButton(m_driverController, 10)
-                        .whenPressed((new ReturnTiltTurret(m_turret, 15, m_tilt, ShootData.getTiltAngle(shootIndex),
-                                    m_limelight, true, m_shooter, ShootData.getShootDistance(shootIndex))));
+ 
 
             driverUpButton.whenPressed(new ChangeShooterSpeed(m_shooter, +.05));
 

@@ -83,7 +83,10 @@ public class Robot extends TimedRobot {
     // CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().run();
     m_robotContainer.m_setup.checkCANDevices();
-    // FieldMap.showValues();
+    ShootData.showValues(1);
+    ShootData.showValues(2);
+    ShootData.showValues(3);
+
   }
 
   @Override
@@ -108,80 +111,37 @@ public class Robot extends TimedRobot {
 
     autoChoice = m_robotContainer.m_setup.autoChooser.getSelected();
     m_robotContainer.m_limelight.useVision = true;
+   SmartDashboard.putNumber("ASel", autoChoice); 
     switch (autoChoice) {
 
-      case 0:// in front of power port use 0 shooter data index use pipeline 0 - no zoom
-             // shoot then retract
+      case 0:// cross line
+
         setStartingPose(FieldMap.startPosition[0]);
-        m_autoFactory.shootNumber = ShootData.initLineStraight;
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
+        m_robotContainer.m_limelight.useVision = false;
+        m_autonomousCommand = new PositionRobot(m_robotContainer.m_robotDrive, -1);
+
         break;
-      case 1:// in front of power port, move back use 1 shooter data index use pipeline 0 -
-             // no zoom
-        setStartingPose(FieldMap.startPosition[0]);
+      case 1:// in front of power port, move back use shooter data index 1
+
+        setStartingPose(FieldMap.startPosition[1]);
         m_autoFactory.shootNumber = ShootData.retractOneStraight;
         m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
         break;
 
-      case 2:// Left of power port use 2 shooter data index use pipeline 0 - no zoom
+      case 2:// Left of power port use 1 shoot data
 
-        setStartingPose(FieldMap.startPosition[1]);
-        m_autoFactory.shootNumber = ShootData.initLineLeft;
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
-
-        break;
-
-      case 3:// Left of power port move back use 3 shooter data index use pipeline 0 - no
-             // zoom
-        setStartingPose(FieldMap.startPosition[1]);
-        m_autoFactory.shootNumber = ShootData.retractOneLeft;
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
-        break;
-
-      case 4:// Right of power port use 4 shooter data index use pipeline 0 - no zoom
-             // m_autoFactory.shootNumber = 0;
         setStartingPose(FieldMap.startPosition[2]);
-        m_autoFactory.shootNumber = ShootData.initLineRight;
-
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
-        break;
-
-      case 5:// Right of power port nmove back use 5 shooter data index use pipeline 0 - no
-             // zoom
-        setStartingPose(FieldMap.startPosition[2]);
-        m_autoFactory.shootNumber = ShootData.retractOneRight;
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
-        break;
-
-      case 6:// Front of trench move back pick up 2 shoot use 6 shooter data index use
-             // pipeline 0 - no zoom
-        // move back pick up 3, return shoot
-        setStartingPose(FieldMap.startPosition[3]);
-        m_autoFactory.shootNumber = ShootData.trenchTwoBall;
+        m_autoFactory.shootNumber = ShootData.leftTwoBall;
         m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
+
         break;
 
-      case 7:// Front of trench move back use 6 shooter data index move back again pickup and
-             // use 7 shooter data
+      case 3:// Trench
+             
         setStartingPose(FieldMap.startPosition[3]);
         m_autoFactory.shootNumber = ShootData.trenchTwoBall;
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
-        break;
 
-      case 8:// Front of trench move back use 6 shooter data index move back under control
-        // panel pickup move back and shoot
-        // use 7 shooter data
-        setStartingPose(FieldMap.startPosition[3]);
-        m_autoFactory.shootNumber = 6;
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
-        break;
-
-      case 9:// cross line
-
-        setStartingPose(FieldMap.startPosition[4]);
-        m_robotContainer.m_limelight.useVision = false;
-        m_autonomousCommand = new PositionRobot(m_robotContainer.m_robotDrive, -1);
-
+        m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
         break;
 
       default:

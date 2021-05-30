@@ -5,7 +5,6 @@
 package frc.robot.commands.Vision;
 
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.LimeLight;
@@ -20,7 +19,7 @@ public class CalculateTargetDistance extends CommandBase {
 
   private double baseCameraHeight = FieldConstants.BASE_CAMERA_HEIGHT;
   private double maxCameraHeight = FieldConstants.MAX_CAMERA_HEIGHT;
-  private double targetHeight = FieldConstants.TARGET_HEIGHT;
+  private double targetHeight = FieldConstants.PORT_CENTER_HEIGHT;
   private double heightDifference;
 
   private double m_limelightVerticalAngle;
@@ -37,7 +36,7 @@ public class CalculateTargetDistance extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    heightDifference = targetHeight - baseCameraHeight;
+    
   }
 
   /**
@@ -45,6 +44,8 @@ public class CalculateTargetDistance extends CommandBase {
    * falls.
    * 
    * Low tilt angles mean high camera angles!
+   * 
+   * Limelight must have the Y offset to the center of the port - if not it provides the cener of the target
    * 
    * Target distance can be calculated from
    * 

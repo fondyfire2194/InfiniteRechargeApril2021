@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.util.Units;
+import frc.robot.Constants.FieldConstants;
+
 /** Add your docs here. */
 public class ShootData {
 
@@ -13,61 +16,59 @@ public class ShootData {
      * 
      * 
      */
-    public static int initLineStraight = 0;
+    public static int crossLine = 0;
     public static int retractOneStraight = 1;
 
-    public static int initLineLeft = 2;
-    public static int retractOneLeft = 3;
-
-    public static int initLineRight = 4;
-    public static int retractOneRight = 5;
-
-    public static int trenchTwoBall = 6;
-    public static int trenchThirdBall = 7;
+    public static int leftTwoBall = 2;
+    public static int trenchTwoBall = 3;
 
     private static final double shootTime = 5;
-    private static final double retractDistance = -1;
-    private static final double twoBallPickup = -3;
+    private static final double xRetractDistance = -1;
+    private static final double xTrenchTwoBallPickup = -3;
+    private static final double xLeftTwoBallPickup = -2;
 
-    private static double[][] shootValues =
+    private static final double allowInnerPort = -2.5;
 
-            /**
-             * 
-             * array contents are
-             * 
-             * pipeline,
-             * 
-             * first moveDistance, second moveDistance, shootdistance
-             * 
-             * shoot time, turret angle, turret shift, tilt angle, tilt shift.
-             * 
-             * distances are absolute and need to be repeated if robot is to remain in place
-             */
-            // front of power port at initiation line 0
-            {
+    private static double yTrenchCenterFromPort = FieldMap.trenchCLtoGoalY;
+    private static double yLeftPickupFromPort = Units.inchesToMeters(72.4);
 
-                    { 0, 0, retractDistance, 3., shootTime, 0, 0, 28.37, 0 }, // 0 center start shoot retract
+    private static double initiationLine = FieldConstants.initiationLine;
+    private static double portCenterHeight = FieldConstants.PORT_CENTER_HEIGHT - FieldConstants.BASE_CAMERA_HEIGHT;
+    private static double innerWallFromOuter = .74;
 
-                    { 0, retractDistance, retractDistance, 4., shootTime, 0, 0, 22.05, 0 }, // 1 center start retract
-                                                                                            // shoot
+    /**
+     * 
+     * array contents are
+     * 
+     * pipeline,
+     * 
+     * first moveDistance, second moveDistance, shootdistance
+     * 
+     * shoot time, turret angle, turret shift deg, tilt angle, tilt shift deg.
+     * 
+     * distances are absolute and need to be repeated if robot is to remain in place
+     */
 
-                    { 0, 0, retractDistance, 3.2, shootTime, 24.8, 0, 28.8, 0 }, // 2 left start shoot retract
+    private static double[][] shootValues = {
 
-                    { 0, retractDistance, retractDistance, 4.2, shootTime, 15, 0, 22.05, 0 }, // 3 left start retract
-                    // shoot
+            // cross line 0 (not used but don't delete!
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 0 )
 
-                    { 0, 0, retractDistance, 3.2, shootTime, -24.8, 0, 22.05, 0 }, // 4 right start shoot retract
+            { 0, xRetractDistance, xRetractDistance,
+                    getShotDistance((initiationLine - xRetractDistance + innerWallFromOuter), 0), shootTime, 0, 0,
+                    getOuterTiltAngle((initiationLine - xRetractDistance), 0), allowInnerPort },
 
-                    { 0, retractDistance, retractDistance, 4.2, shootTime, -15, 0, 22.05, 0 }, // 5 right start retract
-                    // shoot
+            { 0, xLeftTwoBallPickup, xLeftTwoBallPickup,
+                    getShotDistance((initiationLine - xLeftTwoBallPickup), yLeftPickupFromPort), shootTime,
+                    getTurretAngleXY((initiationLine - xLeftTwoBallPickup), yLeftPickupFromPort), 0,
+                    getOuterTiltAngle((initiationLine - xLeftTwoBallPickup), yLeftPickupFromPort), 0 },
 
-                    { 0, twoBallPickup, twoBallPickup, 5.2, shootTime, -26, 0, 19, 0 }, // 6 trench start pickup 2 and
-                                                                                        // shoot
+            { 0, xTrenchTwoBallPickup, xTrenchTwoBallPickup,
+                    getShotDistance((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), shootTime,
+                    -getTurretAngleXY((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), 0,
+                    getOuterTiltAngle((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), 0 }
 
-                    { 0, twoBallPickup - 1, twoBallPickup, 5.2, shootTime, -26, 0, 19, 0 } // 7 move to pick up 3rd
-            // trench ball and shoot
-
-            };
+    };
 
     // private static double positionRate = 3;
 
@@ -109,6 +110,31 @@ public class ShootData {
 
     public static double getTiltOffset(int pointer) {
         return shootValues[pointer][8];
+    }
+
+    private static double getOuterTiltAngle(double x, double y) {
+        return Math.toDegrees(Math.atan(portCenterHeight / getFloorDistance(x, y)));
+    }
+
+    private static double getTurretAngleXY(double x, double y) {
+        return Math.toDegrees(Math.atan(y / x));
+    }
+
+    private static double getFloorDistance(double x, double y) {
+        return Math.sqrt((x * x) + (y * y));
+    }
+
+    private static double getShotDistance(double x, double y) {
+        double floorDistance = getFloorDistance(x, y);
+        return Math.sqrt((floorDistance * floorDistance) + (portCenterHeight * portCenterHeight));
+    }
+
+    public static void showValues(int value) {
+
+        SD.putN1("TiltAngle " + String.valueOf(value), getTiltAngle(value));
+        SD.putN1("TurretAngle " + String.valueOf(value), getTurretAngle(value));
+        SD.putN1("ShootDistance " + String.valueOf(value), getShootDistance(value));
+
     }
 
 }

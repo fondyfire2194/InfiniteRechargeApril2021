@@ -6,7 +6,6 @@ package frc.robot.commands.Tilt;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.LimeLight;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.subsystems.RevTiltSubsystem;
 
