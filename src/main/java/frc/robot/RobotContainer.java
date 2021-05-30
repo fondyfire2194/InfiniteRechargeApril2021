@@ -33,6 +33,7 @@ import frc.robot.commands.ControlPanel.PositionNumberRevs;
 import frc.robot.commands.ControlPanel.PositionToColor;
 import frc.robot.commands.ControlPanel.TurnControlPanel;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
+import frc.robot.commands.RobotDrive.DriveStraightJoystick;
 import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Shooter.ReturnTiltTurret;
@@ -43,12 +44,10 @@ import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Tilt.TiltWaitForStop;
-import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretJogVelocity;
 import frc.robot.commands.Turret.TurretShift;
 import frc.robot.commands.Turret.TurretWaitForStop;
-import frc.robot.commands.Vision.LimelightCamMode;
 import frc.robot.commands.Vision.ToggleCamera;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -241,7 +240,7 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 4).whenPressed(new ToggleCamera(m_limelight));
 
-            // new JoystickButton(m_driverController, 6)
+            new JoystickButton(m_driverController, 6).whenPressed(getDriveStraightCommand());
 
             int shootIndex = 3;// trench rear
             new JoystickButton(m_driverController, 7).whenPressed((new ReturnTiltTurret(m_turret,
@@ -254,11 +253,9 @@ public class RobotContainer {
                                     m_limelight, true, m_shooter, ShootData.getShootDistance(shootIndex))));
 
             shootIndex = 2;// left shoot
-            new JoystickButton(m_driverController, 9)
-                        .whenPressed((new ReturnTiltTurret(m_turret, ShootData.getTurretAngle(shootIndex), m_tilt, ShootData.getTiltAngle(shootIndex),
-                                    m_limelight, true, m_shooter, ShootData.getShootDistance(shootIndex))));
-
- 
+            new JoystickButton(m_driverController, 9).whenPressed((new ReturnTiltTurret(m_turret,
+                        ShootData.getTurretAngle(shootIndex), m_tilt, ShootData.getTiltAngle(shootIndex), m_limelight,
+                        true, m_shooter, ShootData.getShootDistance(shootIndex))));
 
             driverUpButton.whenPressed(new ChangeShooterSpeed(m_shooter, +.05));
 
@@ -352,8 +349,9 @@ public class RobotContainer {
             return new ArcadeDrive(m_robotDrive, () -> -m_driverController.getY(), () -> m_driverController.getTwist());
       }
 
-      public Command getJogTurretVelocityCommand() {
-            return new TurretJogVelocity(m_turret, () -> setupGamepad.getRawAxis(0) / 2);
+      public Command getDriveStraightCommand() {
+            return new DriveStraightJoystick(m_robotDrive, () -> -m_driverController.getY());
+
       }
 
       public Command getJogTurretCommand() {

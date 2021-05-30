@@ -29,14 +29,7 @@ public class Pref {
 
   public static HashMap<String, Double> prefDict = new HashMap<>();
 
-  // kP = 5e-5;
-  // kI = 1e-6;
-  // kD = 0;
-  // kIz = 0;
-  // kFF = 0;
-  // kMaxOutput = 1;
-  // kMinOutput = -1;
-  // maxRPM = 5700;
+ 
 
   static {
 
@@ -73,6 +66,7 @@ public class Pref {
     prefDict.put("dRKi", .0);
     prefDict.put("dRKd", .0);
     prefDict.put("dRKiz", .0);
+    prefDict.put("dRStKp",.1);
 
     prefDict.put("dRTune", 0.);
   }
