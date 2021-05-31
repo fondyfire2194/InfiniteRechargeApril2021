@@ -7,29 +7,23 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
+import frc.robot.Constants.HoodedShooterConstants;
+import frc.robot.commands.Tilt.PositionTilt;
+import frc.robot.commands.Vision.LimelightSetPipeline;
 import frc.robot.subsystems.CellTransportSubsystem;
-import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
-import frc.robot.subsystems.RevTurretSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ShootWhenReady extends SequentialCommandGroup {
-  /**
-   * Creates a new ShootWhenReady.
-   * 
-   * Moves the tilt and turret to position where it can pick up the target when
-   * the anticipated shoot position is reached. Sets the shoot speed to the
-   * anticipated level for that position.
-   * 
-   */
-  public ShootWhenReady(RevShooterSubsystem shooter, LimeLight limelight, RevTiltSubsystem tilt,
-      RevTurretSubsystem turret, RevDrivetrain drive, CellTransportSubsystem transport, Compressor compressor) {
+public class LobShot extends SequentialCommandGroup {
+  /** Creates a new LobShot. */
+  public LobShot(RevShooterSubsystem shooter, RevTiltSubsystem tilt, LimeLight limelight,
+      CellTransportSubsystem transport, Compressor compressor) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new OKToShoot(shooter, limelight, drive), new ShootCells(shooter, transport, compressor, 5),
-        new ReturnTiltTurret(turret, 0, tilt, 20, limelight, false, shooter, 1000));
+    addCommands(new LimelightSetPipeline(limelight, 8), new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
+        new SetShooterSpeed(shooter, 1), new ShootCells(shooter, transport, compressor, 5));
   }
 }

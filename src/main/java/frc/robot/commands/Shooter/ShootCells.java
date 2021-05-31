@@ -15,7 +15,7 @@ import frc.robot.subsystems.RevShooterSubsystem;
 
 public class ShootCells extends CommandBase {
   /**
-   * Creates a new ShootCells.
+   * Creates a new ShootCells
    * 
    */
   private final RevShooterSubsystem shooter;
@@ -24,6 +24,16 @@ public class ShootCells extends CommandBase {
   private double startTime;
   private double time;
   private final double rollerPctofShooter = .75;
+
+  public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor) {
+    // Use addRequirements() here to declare subsystem dependencies.
+    this.shooter = shooter;
+    this.transport = transport;
+    this.compressor = compressor;
+    this.time = 5;
+
+    addRequirements(shooter, transport);
+  }
 
   public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor, double time) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -50,7 +60,7 @@ public class ShootCells extends CommandBase {
   public void execute() {
 
     shooter.runShooter();
-    
+
     if (Timer.getFPGATimestamp() > startTime + 1) {
       double shooterOut = shooter.getLeftPctOut();
       double rollerMotorOut = shooterOut * rollerPctofShooter;

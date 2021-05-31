@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -47,6 +48,9 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings.
 
     m_robotContainer = new RobotContainer();
+
+    CameraServer.getInstance().startAutomaticCapture("Intake", 0);
+    
 
     Shuffleboard.selectTab("Pre-Round");
 

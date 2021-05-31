@@ -16,7 +16,7 @@ import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.subsystems.RevTiltSubsystem;
 
 public class PositionTiltToVision extends CommandBase {
-  /** Creates a new PositionTilt. */
+  /** Creates a new PositionTilttoVision. */
 
   private final RevTiltSubsystem m_tilt;
 

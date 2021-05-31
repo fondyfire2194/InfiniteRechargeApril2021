@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.Map;
 
 import edu.wpi.cscore.HttpCamera;
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -19,7 +20,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
@@ -45,7 +45,6 @@ import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.StopShooterWheels;
 import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.PositionTilt;
-import frc.robot.commands.Tilt.ResetTiltAngle;
 import frc.robot.commands.Tilt.StopTilt;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.ClearTurFaults;
@@ -100,6 +99,7 @@ public class SetupShuffleboard {
         private boolean m_showTurretGains = true;
         private boolean m_showButtons = true;
         private HttpCamera LLFeed;
+        private UsbCamera intakeFeed;
         public double timeToStart;
 
         public SendableChooser<Integer> autoChooser = new SendableChooser<>();
@@ -140,7 +140,7 @@ public class SetupShuffleboard {
 
                         int place = 0;
                         autoChooser.setDefaultOption("Cross Line", 0);
-                        
+
                         place = 1;
                         autoChooser.addOption("Center Start Retract Shoot", 1);
 
@@ -148,7 +148,7 @@ public class SetupShuffleboard {
                         autoChooser.addOption("Left Start Retract Pickup Shoot", 2);
 
                         place = 3;
-                        autoChooser.addOption("Trench Start Two Pickup Shoot",3);
+                        autoChooser.addOption("Trench Start Two Pickup Shoot", 3);
 
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
@@ -182,6 +182,13 @@ public class SetupShuffleboard {
 
                         Shuffleboard.getTab("Pre-Round").add("Limelight", LLFeed)
                                         .withWidget(BuiltInWidgets.kCameraStream).withPosition(4, 0).withSize(3, 2)
+                                        .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
+
+                        intakeFeed = new UsbCamera("Intake", "http://roboRIO-2194-FRC.local:1180/stream.mjpg");
+                        intakeFeed.setResolution(320, 240);
+
+                        Shuffleboard.getTab("Pre-Round").add("Intake", intakeFeed)
+                                        .withWidget(BuiltInWidgets.kCameraStream).withPosition(4, 2).withSize(3, 2)
                                         .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
 
                         // }
@@ -233,6 +240,10 @@ public class SetupShuffleboard {
                         } // here
 
                 }
+
+                Shuffleboard.getTab("Intake").add("Intake", intakeFeed).withWidget(BuiltInWidgets.kCameraStream)
+                                .withPosition(2, 0).withSize(6, 4)
+                                .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
 
                 /**
                  * 
@@ -601,7 +612,7 @@ public class SetupShuffleboard {
                         subSystems.add("Climber", m_climber);
 
                         ShuffleboardLayout scheduler = Shuffleboard.getTab("Can+Sols")
-                                        .getLayout("Scheduler", BuiltInLayouts.kList).withPosition(3, 0).withSize(6, 2)
+                                        .getLayout("Scheduler", BuiltInLayouts.kList).withPosition(3, 0).withSize(7, 2)
                                         .withProperties(Map.of("Label position", "TOP")); //
 
                         scheduler.add("Scheduler", CommandScheduler.getInstance());

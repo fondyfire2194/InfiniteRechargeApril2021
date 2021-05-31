@@ -176,7 +176,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     }
 
     public void enableSofLimits(boolean on) {
-        SmartDashboard.putBoolean("TUSL", on);
         m_motor.enableSoftLimit(SoftLimitDirection.kForward, on);
         m_motor.enableSoftLimit(SoftLimitDirection.kReverse, on);
     }

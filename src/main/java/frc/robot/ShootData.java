@@ -23,7 +23,7 @@ public class ShootData {
     public static int trenchTwoBall = 3;
 
     private static final double shootTime = 5;
-    private static final double xRetractDistance = -1;
+    private static final double xRetractDistance = -.75;
     private static final double xTrenchTwoBallPickup = -3;
     private static final double xLeftTwoBallPickup = -2;
 

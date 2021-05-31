@@ -24,7 +24,7 @@ import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
-import frc.robot.commands.Vision.LimelightLeds;
+import frc.robot.commands.Vision.LimelightSetPipeline;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -98,7 +98,7 @@ public class AutoMode3 extends SequentialCommandGroup {
 
                                 // return tilt and turret
                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),
-                                new LimelightLeds(limelight, LedMode.kforceOff), new PositionTurret(turret, 0));
+                                new LimelightSetPipeline(limelight, 8), new PositionTurret(turret, 0));
         }
 
 }

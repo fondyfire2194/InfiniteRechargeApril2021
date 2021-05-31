@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
@@ -35,17 +36,22 @@ import frc.robot.commands.ControlPanel.TurnControlPanel;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
 import frc.robot.commands.Shooter.ChangeShooterSpeed;
+import frc.robot.commands.Shooter.InnerShot;
 import frc.robot.commands.Shooter.JogShooter;
+import frc.robot.commands.Shooter.LobShot;
 import frc.robot.commands.Shooter.ReturnTiltTurret;
 import frc.robot.commands.Shooter.RunShooterWheels;
+import frc.robot.commands.Shooter.SetShooterSpeed;
+import frc.robot.commands.Shooter.ShieldGenShot;
 import frc.robot.commands.Shooter.ShootCells;
+import frc.robot.commands.Shooter.ShootStraight;
 import frc.robot.commands.Shooter.StopShooterWheels;
+import frc.robot.commands.Shooter.TrenchShot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Tilt.TiltWaitForStop;
 import frc.robot.commands.Turret.TurretJog;
-import frc.robot.commands.Turret.TurretJogVelocity;
 import frc.robot.commands.Turret.TurretShift;
 import frc.robot.commands.Turret.TurretWaitForStop;
 import frc.robot.commands.Vision.ToggleCamera;
@@ -234,7 +240,8 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 2)
                         .whileHeld(new ShootCells(m_shooter, m_transport, m_compressor, 100));
 
-            new JoystickButton(m_driverController, 5).whenPressed(new RunShooterWheels(m_shooter));
+            new JoystickButton(m_driverController, 5).whenPressed(new SetShooterSpeed(m_shooter, 10))
+                        .whenPressed(new RunShooterWheels(m_shooter));
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShooterWheels(m_shooter));
 
@@ -242,20 +249,23 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 6).whenPressed(getDriveStraightCommand());
 
-            int shootIndex = 3;// trench rear
-            new JoystickButton(m_driverController, 7).whenPressed((new ReturnTiltTurret(m_turret,
-                        ShootData.getTurretAngle(shootIndex), m_tilt, ShootData.getTiltAngle(shootIndex), m_limelight,
-                        true, m_shooter, ShootData.getShootDistance(shootIndex))));
+            new JoystickButton(m_driverController, 7).whenPressed(
+                        new ShootStraight(m_tilt, m_limelight, m_shooter, m_robotDrive, m_transport, m_compressor));
 
-            shootIndex = 1;// straight shot 1 meter behind initiation line
-            new JoystickButton(m_driverController, 8)
-                        .whenPressed((new ReturnTiltTurret(m_turret, 0, m_tilt, ShootData.getTiltAngle(shootIndex),
-                                    m_limelight, true, m_shooter, ShootData.getShootDistance(shootIndex))));
+            // new JoystickButton(m_driverController, 8)
 
-            shootIndex = 2;// left shoot
-            new JoystickButton(m_driverController, 9).whenPressed((new ReturnTiltTurret(m_turret,
-                        ShootData.getTurretAngle(shootIndex), m_tilt, ShootData.getTiltAngle(shootIndex), m_limelight,
-                        true, m_shooter, ShootData.getShootDistance(shootIndex))));
+            // lob shoot inside init line no vision
+            new JoystickButton(m_driverController, 9)
+                        .whenPressed(new LobShot(m_shooter, m_tilt, m_limelight, m_transport, m_compressor));
+            // Inner shot
+            new JoystickButton(m_driverController, 10).whenPressed(
+                        new InnerShot(m_shooter, m_turret, m_tilt, m_transport, m_limelight, m_compressor));
+            // Trench Shot
+            new JoystickButton(m_driverController, 11).whenPressed(
+                        new TrenchShot(m_shooter, m_turret, m_tilt, m_transport, m_limelight, m_compressor));
+            // Shield Generator Shot
+            new JoystickButton(m_driverController, 12).whenPressed(
+                        new ShieldGenShot(m_shooter, m_turret, m_tilt, m_transport, m_limelight, m_compressor));
 
             driverUpButton.whenPressed(new ChangeShooterSpeed(m_shooter, +.05));
 

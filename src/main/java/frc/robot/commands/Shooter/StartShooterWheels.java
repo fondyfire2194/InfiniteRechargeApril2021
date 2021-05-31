@@ -24,6 +24,13 @@ public class StartShooterWheels extends CommandBase {
     m_mpersec = mpersec;
   }
 
+  public StartShooterWheels(RevShooterSubsystem shooter) {
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(shooter);
+    m_shooter = shooter;
+    m_mpersec = 2;
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {

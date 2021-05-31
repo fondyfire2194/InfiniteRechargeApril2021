@@ -186,6 +186,9 @@ public final class Constants {
       public static final double TILT_MIN_ANGLE = 1;
       public static final double TILT_MAX_ANGLE = 30;
 
+      public static final double TILT_CLOSE_ANGLE = 22;
+      public static final double TILT_MIDFIELD_ANGLE = 12;
+
       public static double TILT_HEIGHT = Units.inchesToMeters(26);
 
       public static double maxAngleChange = TILT_MAX_ANGLE - TILT_MIN_ANGLE;
@@ -194,10 +197,9 @@ public final class Constants {
 
       public static double maxMotorTurns = 120;
 
-      public static double tiltDegreesPerRev = maxAngleChange / maxMotorTurns;// 30/120 = .25 degrees per rev
-
-      public static final double TILT_MID_ANGLE = TILT_MIN_ANGLE + ((TILT_MAX_ANGLE - TILT_MIN_ANGLE) / 2);
       public static double tiltRange = TILT_MAX_ANGLE - TILT_MIN_ANGLE;
+      public static final double TILT_MID_ANGLE = TILT_MIN_ANGLE + ((TILT_MAX_ANGLE - TILT_MIN_ANGLE) / 2);
+      public static double tiltDegreesPerRev = maxAngleChange / maxMotorTurns;// 30/120 = .25 degrees per rev
 
       /**
        * 20 revs of turret motor turns an 18 tooth pinion one time There are 228 teeth
