@@ -240,8 +240,7 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 2)
                         .whileHeld(new ShootCells(m_shooter, m_transport, m_compressor, 100));
 
-            new JoystickButton(m_driverController, 5).whenPressed(new SetShooterSpeed(m_shooter, 10))
-                        .whenPressed(new RunShooterWheels(m_shooter));
+         //   new JoystickButton(m_driverController, 5)
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShooterWheels(m_shooter));
 

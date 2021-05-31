@@ -816,16 +816,16 @@ public class SetupShuffleboard {
                         driverJS.setDefaultOption("1 - Hold Pick Up Cells", "1");
                         driverJS.addOption("2 - Hold Shoot Cells", "2");
                         driverJS.addOption("3 - Stop Shooter Wheels", "3");
-                        driverJS.addOption("4 - Toggle Camera", "4");
-                        driverJS.addOption("5 - Run Shooter Wheels", "5");
-                        driverJS.addOption("6 - Not Assigned", "6");
+                        driverJS.addOption("4 - Toggle Limelight Views", "4");
+                        driverJS.addOption("5 - Not Assigned", "5");
+                        driverJS.addOption("6 - Drive Straight", "6");
 
-                        driverJS.addOption("7 - Trench Shoot", "7");
-                        driverJS.addOption("8 - Straight Shoot", "8");
-                        driverJS.addOption("9 - Left Shoot", "9");
-                        driverJS.addOption("10 - Right Shoot", "10");
-                        driverJS.addOption("11 - Not Assigned", "11");
-                        driverJS.addOption("12 - Not Assigned", "12");
+                        driverJS.addOption("7 - Straight Shoot", "7");
+                        driverJS.addOption("8 - Not Assigned", "8");
+                        driverJS.addOption("9 - Lob Shot", "9");
+                        driverJS.addOption("10 - Front of Port Inner Shot", "10");
+                        driverJS.addOption("11 - Trench Shot", "11");
+                        driverJS.addOption("12 - Shield Gen Shot", "12");
 
                         driverJS.addOption("POV Up - Inc Shooter Speed", "13");
                         driverJS.addOption("POV Down - Dec Shooter Speed", "14'");
