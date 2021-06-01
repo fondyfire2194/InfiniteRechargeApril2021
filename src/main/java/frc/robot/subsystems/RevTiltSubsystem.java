@@ -18,6 +18,8 @@ import org.snobotv2.sim_wrappers.ISimWrapper;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
@@ -37,6 +39,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private final SimableCANSparkMax m_motor; // NOPMD
     private final CANEncoder mEncoder;
     public final CANPIDController mPidController;
+    public final PIDController tiltLockController = new PIDController(.032, 0.001, 0);
     public CANDigitalInput m_reverseLimit;
     private ISimWrapper mElevatorSim;
     public double visionCorrection;
@@ -56,11 +59,17 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public final double tiltMinAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
 
     public boolean tuneOn = false;
-    public boolean tiltMotorConnected;
     public boolean lastTuneOn;
+
+    public boolean lockTuneOn = false;
+    public boolean lastLockTuneOn;
+
+    public boolean tiltMotorConnected;
     private double maxAdjustShoot = .45;
     public double motorEndpointDegrees;
     public int faultSeen;
+    public double lockPIDOut;
+	public boolean visionOnTarget;
 
     /**
      * 
@@ -90,10 +99,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         }
 
-        setGains();
+        tuneGains();
+        setTiltLockGains();
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
-
 
         m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
 
@@ -104,6 +113,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         }
 
         setSoftwareLimits();
+        tiltLockController.setTolerance(.01);
 
         if (RobotBase.isSimulation()) {
             ElevatorSimConstants.kCarriageMass = .001;
@@ -179,6 +189,12 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         // convert angle to motor turns
 
         mPidController.setReference(motorDegrees, ControlType.kSmartMotion, SMART_MOTION_SLOT);
+    }
+
+    public boolean lockTiltToVision(double cameraError) {
+        lockPIDOut = tiltLockController.calculate(cameraError, 0);
+        m_motor.set(lockPIDOut);
+        return tiltLockController.atSetpoint();
     }
 
     public void resetAngle() {
@@ -399,6 +415,16 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         allowedErr = .01;
     }
 
+    private void setTiltLockGains() {
+
+        tiltLockController.setP(Pref.getPref("TiLkP"));
+        tiltLockController.setI(Pref.getPref("TiLkI"));
+        tiltLockController.setD(Pref.getPref("TiLkD"));
+        double Izone = Pref.getPref("TiLkIZ");
+        tiltLockController.setIntegratorRange(-Izone, Izone);
+        tiltLockController.setTolerance(.5);
+    }
+
     private void checkTune() {
         tuneOn = Pref.getPref("tITune") != 0.;
 
@@ -410,6 +436,20 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         if (lastTuneOn)
             lastTuneOn = tuneOn;
+
+        // Lock controller
+
+        lockTuneOn = Pref.getPref("tILTune") != 0.;
+
+        if (lockTuneOn && !lastLockTuneOn) {
+
+            setTiltLockGains();
+            lastLockTuneOn = true;
+        }
+
+        if (lastLockTuneOn)
+            lastLockTuneOn = lockTuneOn;
+
     }
 
 }

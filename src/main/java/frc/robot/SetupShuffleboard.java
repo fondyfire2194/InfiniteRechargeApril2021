@@ -260,8 +260,8 @@ public class SetupShuffleboard {
 
                         turretCommands.add("Reset to 0", new ResetTurretAngle(m_turret));
                         turretCommands.add("Position To 0", new PositionTurret(m_turret, 0));// degrees
-                        turretCommands.add("Position To -90", new PositionTurret(m_turret, -90));// degrees
-                        turretCommands.add("Position To 90", new PositionTurret(m_turret, 90));
+                        turretCommands.add("Position To -30", new PositionTurret(m_turret, -30));// degrees
+                        turretCommands.add("Position To 30", new PositionTurret(m_turret, 30));
                         turretCommands.add("Position + 2", new PositionTurretInc(m_turret, 2));
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
@@ -283,8 +283,18 @@ public class SetupShuffleboard {
                         turretValues.addNumber("Vision Offset", () -> m_turret.targetHorizontalOffset);
                         turretValues.addNumber("AdjTarget", () -> m_turret.adjustedTargetAngle);
                         turretValues.addNumber("Vision Error", () -> m_limelight.getdegRotationToTarget());
-                        turretValues.addNumber("IAccum", () -> m_turret.getIaccum());
                         turretValues.addNumber("HorOff+Right", () -> m_limelight.horizontalOffset);
+
+                        ShuffleboardLayout turretValues3 = Shuffleboard.getTab("SetupTurret")
+                                        .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 3)
+                                        .withProperties(Map.of("Label position", "LEFT")); // labels for
+
+                        turretValues3.addNumber("IAccum", () -> m_tilt.getIaccum());
+
+                        turretValues3.addNumber("LockOutput", () -> m_tilt.lockPIDOut);
+                        turretValues3.addNumber("LockError", () -> m_turret.m_turretLockController.getPositionError());
+                        turretValues3.addBoolean("LockController", () -> m_turret.validTargetSeen);
+                        turretValues3.addBoolean("LockOnTarget", () -> m_turret.visionOnTarget);
 
                         ShuffleboardLayout turretValues2 = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("States", BuiltInLayouts.kGrid).withPosition(2, 3).withSize(2, 3)
@@ -335,7 +345,7 @@ public class SetupShuffleboard {
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
                         tiltCommands.add("Cmd", m_tilt);
                         tiltCommands.addNumber("Faults", () -> m_tilt.faultSeen);
-                        tiltCommands.addString("To Jog", () -> "SetupXBox Btn Y left Y");
+                        tiltCommands.addString("To Jog", () -> "Setup Y left Y");
                         tiltCommands.addString("OvrRideSoftLim", () -> "SetupXBox rightBmpr");
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTilt")
@@ -354,7 +364,16 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("MotorTarget", () -> m_tilt.motorEndpointDegrees);
                         tiltValues.addNumber("VertOff+Low", () -> m_limelight.verticalOffset);
 
-                        tiltValues.addNumber("IAccum", () -> m_tilt.getIaccum());
+                        ShuffleboardLayout tiltValues3 = Shuffleboard.getTab("SetupTilt")
+                                        .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 3)
+                                        .withProperties(Map.of("Label position", "LEFT")); // labels for
+
+                        tiltValues3.addNumber("IAccum", () -> m_tilt.getIaccum());
+
+                        tiltValues3.addNumber("LockOutput", () -> m_tilt.lockPIDOut);
+                        tiltValues3.addNumber("LockError", () -> m_tilt.tiltLockController.getPositionError());
+                        tiltValues3.addBoolean(("LockController"), () -> m_tilt.validTargetSeen);
+                        tiltValues3.addBoolean("LockOnTarget", () -> m_tilt.visionOnTarget);
 
                         ShuffleboardLayout tiltValues2 = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("States", BuiltInLayouts.kGrid).withPosition(4, 3).withSize(4, 2)
@@ -372,20 +391,6 @@ public class SetupShuffleboard {
                         tiltValues2.addBoolean("-SWLimit", () -> m_tilt.onMinusSoftwareLimit());
                         tiltValues2.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled());
                         tiltValues2.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget());
-
-                        if (m_tiltTune) {
-
-                                ShuffleboardLayout tiltValues1 = Shuffleboard.getTab("SetupTilt")
-                                                .getLayout("Charts", BuiltInLayouts.kList).withPosition(4, 0)
-                                                .withSize(4, 3).withProperties(Map.of("Label position", "TOP")); // labels
-                                                                                                                 // for
-                                tiltValues1.addNumber("Speed", () -> m_tilt.getSpeed())
-                                                .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
-                                tiltValues1.addNumber("Position", () -> m_tilt.getAngle())
-                                                .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
-                                tiltValues1.addNumber("Amps", () -> m_tilt.getAmps()).withWidget(BuiltInWidgets.kGraph)
-                                                .withSize(4, 2);
-                        }
                 }
                 /**
                  * 

@@ -114,7 +114,7 @@ public class Robot extends TimedRobot {
     m_startDelay = (double) m_robotContainer.m_setup.startDelayChooser.getSelected();
 
     autoChoice = m_robotContainer.m_setup.autoChooser.getSelected();
-    m_robotContainer.m_limelight.useVision = true;
+ //   m_robotContainer.m_limelight.useVision = true;
    SmartDashboard.putNumber("ASel", autoChoice); 
     switch (autoChoice) {
 
@@ -197,7 +197,7 @@ public class Robot extends TimedRobot {
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)
         .schedule(true);
-    new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
+ //   new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
 
   }
 

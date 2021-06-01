@@ -29,8 +29,6 @@ public class Pref {
 
   public static HashMap<String, Double> prefDict = new HashMap<>();
 
- 
-
   static {
 
     // Tilt smart motion
@@ -39,9 +37,18 @@ public class Pref {
     prefDict.put("tIKi", .001);
     prefDict.put("tIKd", 0.);
     prefDict.put("tIKiz", 1.);
-    prefDict.put("tIMaxV", 1000.);// 1000 deg per min 
+    prefDict.put("tIMaxV", 1000.);// 1000 deg per min
     prefDict.put("tIMaxA", 1250.);// deg per min/sec
     prefDict.put("tITune", 0.);
+
+    // Tilt Lock
+
+    prefDict.put("TiLkP", .032);
+    prefDict.put("TiLkI", .001);
+    prefDict.put("TiLkD", 0.);
+    prefDict.put("TiLkIZ", 0.);
+    prefDict.put("tiLTune", 0.);
+
 
     // Turret smart motion
     prefDict.put("tURKp", .00018);
@@ -51,6 +58,15 @@ public class Pref {
     prefDict.put("tURMaxV", 1000.);// deg/sec motor
     prefDict.put("tURMaxA", 850.);// deg/sec motor
     prefDict.put("tURTune", 0.);
+
+     // Turret Lock
+
+     prefDict.put("TuLkP", .03);
+     prefDict.put("TuLkI", .00);
+     prefDict.put("TuLkD", 0.);
+     prefDict.put("TuLkIZ", 0.);
+     prefDict.put("tuLTune", 0.);
+ 
 
     // shooter velocity
 
@@ -66,7 +82,7 @@ public class Pref {
     prefDict.put("dRKi", .0);
     prefDict.put("dRKd", .0);
     prefDict.put("dRKiz", .0);
-    prefDict.put("dRStKp",.1);
+    prefDict.put("dRStKp", .1);
 
     prefDict.put("dRTune", 0.);
   }

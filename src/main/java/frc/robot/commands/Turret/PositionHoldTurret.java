@@ -17,7 +17,6 @@
 
 package frc.robot.commands.Turret;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.RevTurretSubsystem;
@@ -31,9 +30,8 @@ public class PositionHoldTurret extends CommandBase {
   private double limelightHorizontalAngle;
   private int visionFoundCounter;
   private final int filterCount = 3;
-  private double visionFoundAngle;
   private double m_endpoint;
-  private double deadband = 1;
+  private double deadband = .01;
 
   public PositionHoldTurret(RevTurretSubsystem turret, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -65,6 +63,7 @@ public class PositionHoldTurret extends CommandBase {
       limelightHorizontalAngle = m_limelight.getdegRotationToTarget();
       m_turret.adjustedTargetAngle = limelightHorizontalAngle + m_turret.targetHorizontalOffset;
       m_limelight.setHorizontalOffset(m_turret.targetHorizontalOffset);
+
     } else {
       limelightHorizontalAngle = 0;
       m_turret.adjustedTargetAngle = 0;
@@ -91,20 +90,18 @@ public class PositionHoldTurret extends CommandBase {
       limelightHorizontalAngle = 0;
     }
 
-    if (RobotBase.isReal() && m_turret.validTargetSeen) {
-      visionFoundAngle = m_turret.getAngle() + m_turret.adjustedTargetAngle;
-      m_endpoint = visionFoundAngle;
-      m_turret.targetAngle = m_endpoint;
-
-    }
-
-    m_turret.goToPositionMotionMagic(m_endpoint);
+    if (!m_turret.validTargetSeen)
+      m_turret.goToPositionMotionMagic(m_endpoint);
+    else
+      m_turret.visionOnTarget = m_turret.lockTurretToVision(m_turret.adjustedTargetAngle);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_turret.targetAngle = m_turret.getAngle();
+    m_turret.validTargetSeen = false;
+    m_turret.visionOnTarget = false;
   }
 
   // Returns true when the command should end.

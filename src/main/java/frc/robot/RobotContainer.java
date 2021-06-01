@@ -51,6 +51,7 @@ import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Tilt.TiltWaitForStop;
+import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretShift;
 import frc.robot.commands.Turret.TurretWaitForStop;
@@ -189,7 +190,7 @@ public class RobotContainer {
 
             m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_limelight));
 
-            // m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
+            m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
 
             // m_shooter.setDefaultCommand(getJogShooterCommand());
 
@@ -240,7 +241,7 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 2)
                         .whileHeld(new ShootCells(m_shooter, m_transport, m_compressor, 100));
 
-         //   new JoystickButton(m_driverController, 5)
+            // new JoystickButton(m_driverController, 5)
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShooterWheels(m_shooter));
 

@@ -4,7 +4,6 @@
 
 package frc.robot.commands.Tilt;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.RevTiltSubsystem;
@@ -18,10 +17,10 @@ public class PositionHoldTilt extends CommandBase {
   private boolean targetSeen;
   private double m_endpoint;
   private int visionFoundCounter;
-  private double visionFoundAngle;
   private double limelightVerticalAngle;
   private final int filterCount = 3;
-  private double deadband = .1;
+  private double deadband = .01;
+
   public PositionHoldTilt(RevTiltSubsystem tilt, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
@@ -34,6 +33,7 @@ public class PositionHoldTilt extends CommandBase {
   @Override
   public void initialize() {
     m_endpoint = m_tilt.targetAngle;
+
     if (m_tilt.validTargetSeen && m_limelight.useVision)
       visionFoundCounter = filterCount;
     else
@@ -45,18 +45,23 @@ public class PositionHoldTilt extends CommandBase {
   public void execute() {
 
     targetSeen = m_limelight.getIsTargetFound() && m_limelight.useVision;
+
     if (targetSeen && m_tilt.validTargetSeen) {
+
       limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
-      m_tilt.adjustedTargetAngle = -m_limelight.getBoundingBoxHeight() / 2;
-      m_tilt.adjustedTargetAngle = limelightVerticalAngle - m_tilt.adjustedTargetAngle;
+      m_tilt.adjustedTargetAngle = limelightVerticalAngle + m_tilt.targetVerticalOffset;
+
       m_limelight.setVerticalOffset(m_tilt.targetVerticalOffset);
+
     } else {
       limelightVerticalAngle = 0;
       m_tilt.adjustedTargetAngle = 0;
       m_limelight.setVerticalOffset(0);
     }
+
     if (Math.abs(m_tilt.adjustedTargetAngle) < deadband)
       m_tilt.adjustedTargetAngle = 0;
+
     if (targetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
     }
@@ -74,15 +79,15 @@ public class PositionHoldTilt extends CommandBase {
       limelightVerticalAngle = 0;
     }
 
-    if (RobotBase.isReal() && targetSeen) {
-      visionFoundAngle = m_tilt.getAngle() - m_tilt.adjustedTargetAngle;
-      m_endpoint = visionFoundAngle;
-      m_tilt.targetAngle = m_endpoint;
-    }
-
     double motorTurns = m_tilt.tiltMaxAngle - m_endpoint;
     m_tilt.motorEndpointDegrees = motorTurns;
-    m_tilt.goToPositionMotionMagic(motorTurns);
+
+    if (!m_tilt.validTargetSeen) {
+      m_tilt.goToPositionMotionMagic(motorTurns);
+    } else {
+      m_tilt.visionOnTarget = m_tilt.lockTiltToVision(m_tilt.adjustedTargetAngle);
+      m_tilt.targetAngle = m_tilt.getAngle();
+    }
 
   }
 
@@ -90,6 +95,9 @@ public class PositionHoldTilt extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_tilt.targetAngle = m_tilt.getAngle();
+    m_tilt.validTargetSeen = false;
+    m_tilt.visionOnTarget = false;
+    visionFoundCounter = 0;
   }
 
   // Returns true when the command should end.

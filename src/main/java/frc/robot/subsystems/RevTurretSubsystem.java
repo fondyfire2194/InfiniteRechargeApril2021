@@ -16,6 +16,7 @@ import org.snobotv2.sim_wrappers.ISimWrapper;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,6 +38,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private final SimableCANSparkMax m_motor; // NOPMD
     private final CANEncoder mEncoder;
     public final CANPIDController mPidController;
+    public final PIDController m_turretLockController = new PIDController(.03, 0, 0);
     private ISimWrapper mElevatorSim;
     public double targetAngle;
     private double inPositionBandwidth = .25;
@@ -47,9 +49,15 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public boolean tuneOn = false;
     public boolean lastTuneOn;
 
+    public boolean lockTuneOn = false;
+    public boolean lastLockTuneOn;
+
     public boolean turretMotorConnected;
 
     private double maxAdjustShoot = .5;
+
+    public double pidLockOut;
+    public boolean visionOnTarget;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -62,7 +70,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mEncoder.setPosition(0);
         aimCenter();
 
-        setGains();
+        tuneGains();
+        setTurretLockGains();
+        m_turretLockController.setTolerance(.01);
         setSoftwareLimits();
 
         if (RobotBase.isReal()) {
@@ -146,6 +156,13 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
         SmartDashboard.putNumber("TUEP", angle);
 
+    }
+
+    public boolean lockTurretToVision(double cameraError) {
+        pidLockOut = m_turretLockController.calculate(cameraError, 0);
+        m_motor.set(pidLockOut);
+        targetAngle = getAngle();
+        return m_turretLockController.atSetpoint();
     }
 
     public void resetAngle(double angle) {
@@ -332,17 +349,41 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         allowedErr = .01;
     }
 
+    private void setTurretLockGains() {
+
+        m_turretLockController.setP(Pref.getPref("TiLkP"));
+        m_turretLockController.setI(Pref.getPref("TiLkI"));
+        m_turretLockController.setD(Pref.getPref("TiLkD"));
+        double Izone = Pref.getPref("TiLkIZ");
+        m_turretLockController.setIntegratorRange(-Izone, Izone);
+        m_turretLockController.setTolerance(.5);
+    }
+
     private void checkTune() {
+        
         tuneOn = Pref.getPref("tURTune") != 0.;
 
         if (tuneOn && !lastTuneOn) {
-
             tuneGains();
             lastTuneOn = true;
         }
 
         if (lastTuneOn)
             lastTuneOn = tuneOn;
+
+//lock controller
+
+        lockTuneOn = Pref.getPref("tULTune") != 0.;
+
+        if (lockTuneOn && !lastLockTuneOn) {
+
+            setTurretLockGains();
+            lastLockTuneOn = true;
+        }
+
+        if (lastLockTuneOn)
+            lastLockTuneOn = lockTuneOn;
+
     }
 
     public void clearFaults() {

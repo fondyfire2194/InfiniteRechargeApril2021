@@ -64,44 +64,36 @@ public class PositionTurretToVision extends CommandBase {
   @Override
   public void execute() {
     loopCtr++;
-    targetSeen = m_limelight.getIsTargetFound();
 
-    if (targetSeen && m_turret.validTargetSeen)
-      limelightHorizontalAngle = m_limelight.getdegVerticalToTarget();
+    targetSeen = m_limelight.useVision && m_limelight.getIsTargetFound();
 
-    if (targetSeen && visionFoundCounter < filterCount) {
+    if (targetSeen && !m_turret.validTargetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
     }
 
-    if (visionFoundCounter >= filterCount)
+    if (!m_turret.validTargetSeen && visionFoundCounter >= filterCount) {
       m_turret.validTargetSeen = true;
+    }
 
     if (!targetSeen && m_turret.validTargetSeen) {
       visionFoundCounter--;
     }
 
-    if (!targetSeen && visionFoundCounter < 0) {
+    if (!targetSeen && m_turret.validTargetSeen && visionFoundCounter < 0) {
       visionFoundCounter = 0;
       m_turret.validTargetSeen = false;
       limelightHorizontalAngle = 0;
     }
 
-    if (targetSeen && m_turret.validTargetSeen) {
-      visionFoundAngle = m_turret.getAngle() + limelightHorizontalAngle + m_turret.targetHorizontalOffset;
-      m_endpoint = visionFoundAngle;
-      m_turret.targetAngle = m_endpoint;
-    }
-
-    // m_turret.goToPositionMotionMagic(m_turret.targetAngle);
     m_turret.goToPositionMotionMagic(m_turret.targetAngle);
 
-    endIt = targetSeen && visionFoundCounter > 5 || Math.abs(m_limelight.getdegRotationToTarget()) < 2 && loopCtr > 5
-        || loopCtr > 250;
+    endIt = m_turret.validTargetSeen || (m_turret.atTargetAngle() && loopCtr > 5) || loopCtr > 250;
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+
     if (!endIt)
       m_turret.targetAngle = m_turret.getAngle();
   }

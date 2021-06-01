@@ -64,14 +64,16 @@ public class PositionTiltToVision extends CommandBase {
   @Override
   public void execute() {
     loopCtr++;
-    targetSeen = m_limelight.getIsTargetFound();
 
-    if (targetSeen && visionFoundCounter < filterCount) {
+    targetSeen = m_limelight.useVision && m_limelight.getIsTargetFound();
+
+    if (targetSeen && !m_tilt.validTargetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
     }
 
-    if (!m_tilt.validTargetSeen && visionFoundCounter >= filterCount)
+    if (!m_tilt.validTargetSeen && visionFoundCounter >= filterCount) {
       m_tilt.validTargetSeen = true;
+    }
 
     if (!targetSeen && m_tilt.validTargetSeen) {
       visionFoundCounter--;
@@ -82,19 +84,9 @@ public class PositionTiltToVision extends CommandBase {
       visionFoundCounter = 0;
     }
 
-    if (targetSeen && m_tilt.validTargetSeen) {
-      limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
-
-      visionFoundAngle = m_tilt.getAngle() - limelightVerticalAngle - m_tilt.targetVerticalOffset;
-
-      m_endpoint = visionFoundAngle;
-
-      m_tilt.targetAngle = m_endpoint;
-    }
-
     m_tilt.goToPositionMotionMagic(motorDegrees);
 
-    endIt = m_tilt.validTargetSeen && visionFoundCounter > 5 || m_tilt.atTargetAngle() && loopCtr > 5 || loopCtr > 250;
+    endIt = m_tilt.validTargetSeen || (m_tilt.atTargetAngle() && loopCtr > 5) || loopCtr > 250;
 
   }
 
