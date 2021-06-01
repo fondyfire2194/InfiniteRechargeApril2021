@@ -70,9 +70,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mEncoder.setPosition(0);
         aimCenter();
 
-        tuneGains();
+ //       tuneGains();
         setTurretLockGains();
-        m_turretLockController.setTolerance(.01);
         setSoftwareLimits();
 
         if (RobotBase.isReal()) {
@@ -351,12 +350,12 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     private void setTurretLockGains() {
 
-        m_turretLockController.setP(Pref.getPref("TiLkP"));
-        m_turretLockController.setI(Pref.getPref("TiLkI"));
-        m_turretLockController.setD(Pref.getPref("TiLkD"));
-        double Izone = Pref.getPref("TiLkIZ");
+        m_turretLockController.setP(Pref.getPref("TuLkP"));
+        m_turretLockController.setI(Pref.getPref("TuLkI"));
+        m_turretLockController.setD(Pref.getPref("TuLkD"));
+        double Izone = Pref.getPref("TuLkIZ");
         m_turretLockController.setIntegratorRange(-Izone, Izone);
-        m_turretLockController.setTolerance(.5);
+        m_turretLockController.setTolerance(.1);
     }
 
     private void checkTune() {

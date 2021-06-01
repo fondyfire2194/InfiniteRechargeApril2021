@@ -99,7 +99,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         }
 
-        tuneGains();
+ //       tuneGains();
         setTiltLockGains();
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
@@ -113,7 +113,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         }
 
         setSoftwareLimits();
-        tiltLockController.setTolerance(.01);
+        
 
         if (RobotBase.isSimulation()) {
             ElevatorSimConstants.kCarriageMass = .001;
@@ -422,7 +422,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         tiltLockController.setD(Pref.getPref("TiLkD"));
         double Izone = Pref.getPref("TiLkIZ");
         tiltLockController.setIntegratorRange(-Izone, Izone);
-        tiltLockController.setTolerance(.5);
+        tiltLockController.setTolerance(.1);
     }
 
     private void checkTune() {
@@ -439,7 +439,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         // Lock controller
 
-        lockTuneOn = Pref.getPref("tILTune") != 0.;
+        lockTuneOn = Pref.getPref("tiLTune") != 0.;
 
         if (lockTuneOn && !lastLockTuneOn) {
 
