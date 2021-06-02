@@ -22,8 +22,10 @@ import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShooterWheels;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
+import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
+import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.LimelightSetPipeline;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
@@ -50,11 +52,11 @@ public class AutoMode3 extends SequentialCommandGroup {
                 // move back and pickup 2
 
                 super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
-                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber),
-                                                ShootData.getTiltOffset(shootNumber)),
-                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber),
-                                                ShootData.getTurretOffset(shootNumber))).deadlineWith(
-                                                                new StartIntake(intake, limelight),
+                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)),
+                                new SetTiltOffset(tilt, ShootData.getTiltOffset(shootNumber)),
+                                new SetTurretOffset(turret, ShootData.getTurretOffset(shootNumber)),
+                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)))
+                                                .deadlineWith(new StartIntake(intake, limelight),
                                                                 new StartShooterWheels(shooter, shooter
                                                                                 .calculateFPSFromDistance(ShootData
                                                                                                 .getShootDistance(
@@ -82,15 +84,15 @@ public class AutoMode3 extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(
                                                 new PositionTiltToVision(tilt, limelight,
-                                                                ShootData.getTiltAngle(shootNumber),
-                                                                ShootData.getTiltOffset(shootNumber)),
-                                                new PositionTurretToVision(turret, limelight,
-                                                                ShootData.getTurretAngle(shootNumber),
-                                                                ShootData.getTurretOffset(shootNumber))).deadlineWith(
-                                                                                new StartShooterWheels(shooter, shooter
-                                                                                                .calculateFPSFromDistance(
-                                                                                                                ShootData.getShootDistance(
-                                                                                                                                shootNumber)))),
+                                                                ShootData.getTiltAngle(shootNumber)),
+                                                new SetTiltOffset(tilt, ShootData.getTiltOffset(shootNumber)),
+                                                new SetTurretOffset(turret, ShootData.getTurretOffset(shootNumber)),
+                                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(
+                                                                shootNumber))).deadlineWith(new StartShooterWheels(
+                                                                                shooter,
+                                                                                shooter.calculateFPSFromDistance(
+                                                                                                ShootData.getShootDistance(
+                                                                                                                shootNumber)))),
 
                                 // // shoot 3
 

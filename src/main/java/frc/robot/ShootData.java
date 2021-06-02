@@ -33,7 +33,7 @@ public class ShootData {
     private static double yLeftPickupFromPort = Units.inchesToMeters(72.4);
 
     private static double initiationLine = FieldConstants.initiationLine;
-    private static double portCenterHeight = FieldConstants.PORT_CENTER_HEIGHT - FieldConstants.BASE_CAMERA_HEIGHT;
+    private static double shotHeight = FieldConstants.SHOT_HEIGHT;
     private static double innerWallFromOuter = .74;
 
     /**
@@ -113,7 +113,7 @@ public class ShootData {
     }
 
     private static double getOuterTiltAngle(double x, double y) {
-        return Math.toDegrees(Math.atan(portCenterHeight / getFloorDistance(x, y)));
+        return Math.toDegrees(Math.atan(shotHeight / getFloorDistance(x, y)));
     }
 
     private static double getTurretAngleXY(double x, double y) {
@@ -126,7 +126,7 @@ public class ShootData {
 
     private static double getShotDistance(double x, double y) {
         double floorDistance = getFloorDistance(x, y);
-        return Math.sqrt((floorDistance * floorDistance) + (portCenterHeight * portCenterHeight));
+        return Math.sqrt((floorDistance * floorDistance) + (shotHeight * shotHeight));
     }
 
     public static void showValues(int value) {

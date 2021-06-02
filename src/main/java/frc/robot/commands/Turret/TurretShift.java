@@ -42,6 +42,6 @@ public class TurretShift extends InstantCommand {
     if (distance > 2 && distance < 15)
       correction = Math.toDegrees(Math.asin(m_change / distance));
 
-    m_turret.targetAngle += correction;
+    m_turret.targetHorizontalOffset += correction;
   }
 }

@@ -41,7 +41,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public final PIDController tiltLockController = new PIDController(.032, 0.001, 0);
     public CANDigitalInput m_reverseLimit;
     private ISimWrapper mElevatorSim;
-    public double visionCorrection;
     public boolean positionResetDone;
     public double targetAngle;
     private double inPositionBandwidth = .2;

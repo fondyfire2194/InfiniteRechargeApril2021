@@ -19,32 +19,26 @@ public class PositionTurretToVision extends CommandBase {
 
   private final RevTurretSubsystem m_turret;
   private final LimeLight m_limelight;
-  private double m_originalTarget;
+  private double m_position;
   private int loopCtr;
-  private double m_endpoint;
-  private double visionFoundAngle;
   private final int filterCount = 3;
-  private double limelightHorizontalAngle;
   private int visionFoundCounter;
   private boolean targetSeen;
   boolean endIt;
-  private double m_offset;
 
-  public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double position, double offset) {
+  public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
     m_limelight = limelight;
-    m_originalTarget = position;
-    m_turret.targetAngle = m_originalTarget;
-    m_offset = offset;
+    m_position = position;
+
     addRequirements(m_turret);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_endpoint = m_originalTarget;
-    m_turret.targetHorizontalOffset = m_offset;
+    m_turret.targetAngle = m_position;
     targetSeen = false;
     visionFoundCounter = 0;
     loopCtr = 0;
@@ -82,7 +76,7 @@ public class PositionTurretToVision extends CommandBase {
     if (!targetSeen && m_turret.validTargetSeen && visionFoundCounter < 0) {
       visionFoundCounter = 0;
       m_turret.validTargetSeen = false;
-      limelightHorizontalAngle = 0;
+
     }
 
     m_turret.goToPositionMotionMagic(m_turret.targetAngle);

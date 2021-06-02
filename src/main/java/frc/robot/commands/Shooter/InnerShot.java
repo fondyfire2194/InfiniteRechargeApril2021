@@ -16,6 +16,7 @@ import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
+import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Vision.LimelightSetPipeline;
@@ -40,18 +41,17 @@ public class InnerShot extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
 
                 super(new LimelightSetPipeline(limelight, ShootData.getPipeline(1)),
+                                new SetTiltOffset(tilt, ShootData.getTiltOffset(1)),
 
                                 new ParallelCommandGroup(
-                                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(1),
-                                                                ShootData.getTiltOffset(1)),
-                                                new PositionTurretToVision(turret, limelight,
-                                                                ShootData.getTurretAngle(1),
-                                                                ShootData.getTurretOffset(1)))
-                                                                                .deadlineWith(new StartShooterWheels(
-                                                                                                shooter,
-                                                                                                shooter.calculateFPSFromDistance(
-                                                                                                                ShootData.getShootDistance(
-                                                                                                                                1)))),
+                                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(1)),
+
+                                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(
+                                                                1))).deadlineWith(new StartShooterWheels(
+                                                                                shooter,
+                                                                                shooter.calculateFPSFromDistance(
+                                                                                                ShootData.getShootDistance(
+                                                                                                                1)))),
 
                                 new ParallelCommandGroup(new MessageCommand("Group2Started"),
                                                 new ShootCells(shooter, transport, compressor,

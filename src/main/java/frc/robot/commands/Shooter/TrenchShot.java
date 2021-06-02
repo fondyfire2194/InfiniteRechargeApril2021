@@ -42,15 +42,13 @@ public class TrenchShot extends SequentialCommandGroup {
                 super(new LimelightSetPipeline(limelight, ShootData.getPipeline(3)),
 
                                 new ParallelCommandGroup(
-                                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(3),
-                                                                ShootData.getTiltOffset(3)),
-                                                new PositionTurretToVision(turret, limelight,
-                                                                ShootData.getTurretAngle(3),
-                                                                ShootData.getTurretOffset(3))).deadlineWith(
-                                                                                new StartShooterWheels(shooter, shooter
-                                                                                                .calculateFPSFromDistance(
-                                                                                                                ShootData.getShootDistance(
-                                                                                                                                3)))),
+                                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(3)),
+                                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(
+                                                                3))).deadlineWith(new StartShooterWheels(
+                                                                                shooter,
+                                                                                shooter.calculateFPSFromDistance(
+                                                                                                ShootData.getShootDistance(
+                                                                                                                3)))),
 
                                 new ParallelCommandGroup(new MessageCommand("Group2Started"),
                                                 new ShootCells(shooter, transport, compressor,

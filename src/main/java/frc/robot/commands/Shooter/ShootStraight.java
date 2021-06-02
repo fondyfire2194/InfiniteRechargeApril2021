@@ -34,7 +34,7 @@ public class ShootStraight extends SequentialCommandGroup {
 
     super(new LimelightSetPipeline(limelight, 0),
 
-        new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, HoodedShooterConstants.TILT_CLOSE_ANGLE, 0),
+        new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, HoodedShooterConstants.TILT_CLOSE_ANGLE),
             new OKToShoot(shooter, limelight, drive)).deadlineWith(new StartShooterWheels(shooter)),
 
         new ParallelCommandGroup(new MessageCommand("Group2Started"), new ShootCells(shooter, transport, compressor)),
@@ -42,7 +42,7 @@ public class ShootStraight extends SequentialCommandGroup {
         new ParallelCommandGroup(new MessageCommand("GroupStarted"),
 
             new PositionTilt(tilt, HoodedShooterConstants.TILT_MIDFIELD_ANGLE),
-            
+
             new LimelightSetPipeline(limelight, 8)));
 
   }

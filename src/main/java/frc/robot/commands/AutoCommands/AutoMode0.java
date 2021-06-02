@@ -19,8 +19,10 @@ import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
+import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
+import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.LimelightSetPipeline;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -38,7 +40,6 @@ public class AutoMode0 extends SequentialCommandGroup {
          * Start in front of power port and shoot
          */
 
-
         public AutoMode0(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
                         Compressor compressor, int shootNumber) {
@@ -47,13 +48,12 @@ public class AutoMode0 extends SequentialCommandGroup {
 
                 super(new LimelightSetPipeline(limelight, ShootData.getPipeline(shootNumber)),
 
-                                new ParallelCommandGroup(
+                                new ParallelCommandGroup(new SetTiltOffset(tilt, ShootData.getTiltOffset(shootNumber)),
+                                                new SetTurretOffset(turret, ShootData.getTurretOffset(shootNumber)),
                                                 new PositionTiltToVision(tilt, limelight,
-                                                                ShootData.getTiltAngle(shootNumber),
-                                                                ShootData.getTiltOffset(shootNumber)),
+                                                                ShootData.getTiltAngle(shootNumber)),
                                                 new PositionTurretToVision(turret, limelight,
-                                                                ShootData.getTurretAngle(shootNumber),
-                                                                ShootData.getTurretOffset(shootNumber)),
+                                                                ShootData.getTurretAngle(shootNumber)),
                                                 new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)))
                                                                 .deadlineWith(new StartShooterWheels(shooter, shooter
                                                                                 .calculateFPSFromDistance(ShootData
@@ -68,8 +68,7 @@ public class AutoMode0 extends SequentialCommandGroup {
 
                                                 new PositionRobot(drive, ShootData.getSecondDistance(shootNumber)),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),
-                                                new LimelightSetPipeline(limelight, 8),
-                                                new PositionTurret(turret, 0)));
+                                                new LimelightSetPipeline(limelight, 8), new PositionTurret(turret, 0)));
 
         }
 }

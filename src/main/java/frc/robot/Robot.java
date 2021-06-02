@@ -74,10 +74,6 @@ public class Robot extends TimedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    if (m_robotContainer.m_setup.runCan.getBoolean(false)) {
-      m_robotContainer.m_setup.checkCANDevices();;
-      m_robotContainer.m_setup.runCan.setBoolean(false);
-    }
 
   }
 
@@ -90,15 +86,18 @@ public class Robot extends TimedRobot {
     // CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().run();
     m_robotContainer.m_setup.checkCANDevices();
-    ShootData.showValues(1);
-    ShootData.showValues(2);
-    ShootData.showValues(3);
+    // ShootData.showValues(1);
+    // ShootData.showValues(2);
+    // ShootData.showValues(3);
 
   }
 
   @Override
   public void disabledPeriodic() {
-
+    if (m_robotContainer.m_setup.runCan.getBoolean(false)) {
+      m_robotContainer.m_setup.checkCANDevices();
+      m_robotContainer.m_setup.runCan.setBoolean(false);
+    }
   }
 
   public void autonomousInit() {
