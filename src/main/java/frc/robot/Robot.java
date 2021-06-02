@@ -50,7 +50,6 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     CameraServer.getInstance().startAutomaticCapture("Intake", 0);
-    
 
     Shuffleboard.selectTab("Pre-Round");
 
@@ -75,6 +74,10 @@ public class Robot extends TimedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    if (m_robotContainer.m_setup.runCan.getBoolean(false)) {
+      m_robotContainer.m_setup.checkCANDevices();;
+      m_robotContainer.m_setup.runCan.setBoolean(false);
+    }
 
   }
 
@@ -114,8 +117,8 @@ public class Robot extends TimedRobot {
     m_startDelay = (double) m_robotContainer.m_setup.startDelayChooser.getSelected();
 
     autoChoice = m_robotContainer.m_setup.autoChooser.getSelected();
- //   m_robotContainer.m_limelight.useVision = true;
-   SmartDashboard.putNumber("ASel", autoChoice); 
+    // m_robotContainer.m_limelight.useVision = true;
+    SmartDashboard.putNumber("ASel", autoChoice);
     switch (autoChoice) {
 
       case 0:// cross line
@@ -141,7 +144,7 @@ public class Robot extends TimedRobot {
         break;
 
       case 3:// Trench
-             
+
         setStartingPose(FieldMap.startPosition[3]);
         m_autoFactory.shootNumber = ShootData.trenchTwoBall;
 
@@ -197,7 +200,7 @@ public class Robot extends TimedRobot {
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)
         .schedule(true);
- //   new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
+    // new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
 
   }
 
