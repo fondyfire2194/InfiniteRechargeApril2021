@@ -30,6 +30,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private ISimWrapper mSimulator;
     public double requiredMpsLast;
     public double requiredMps;
+    public double shotDistance;S
     public double shootTime;
     public double shootTimeRemaining;
     public static DCMotor kGearbox = DCMotor.getNeo550(2);

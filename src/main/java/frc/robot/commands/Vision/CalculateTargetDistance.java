@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.LimeLight;
+import frc.robot.ShootData;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 
@@ -36,7 +37,7 @@ public class CalculateTargetDistance extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
+
   }
 
   /**
@@ -45,7 +46,8 @@ public class CalculateTargetDistance extends CommandBase {
    * 
    * Low tilt angles mean high camera angles!
    * 
-   * Limelight must have the Y offset to the center of the port - if not it provides the cener of the target
+   * Limelight must have the Y offset to the center of the port - if not it
+   * provides the cener of the target
    * 
    * Target distance can be calculated from
    * 
@@ -96,8 +98,9 @@ public class CalculateTargetDistance extends CommandBase {
       m_shooter.calculatedCameraDistance = 3;
 
     }
-
-    m_shooter.requiredMps = m_shooter.calculateFPSFromDistance(m_shooter.calculatedCameraDistance);
+    m_shooter.shotDistance = Math.sqrt((m_shooter.calculatedCameraDistance * m_shooter.calculatedCameraDistance)
+        + (FieldConstants.SHOT_HEIGHT_SQUARED));
+    m_shooter.requiredMps = m_shooter.calculateFPSFromDistance(m_shooter.shotDistance);
   }
 
   // Called once the command ends or is interrupted.

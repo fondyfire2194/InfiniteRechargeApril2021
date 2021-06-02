@@ -268,6 +268,8 @@ public final class Constants {
       public static final double powerPortTargetCenterHeight = Units.inchesToMeters(84);
       public static final double PORT_CENTER_HEIGHT = Units.inchesToMeters(90);
       public static final double BASE_CAMERA_HEIGHT = Units.inchesToMeters(26);
+      public static final double SHOT_HEIGHT = PORT_CENTER_HEIGHT - BASE_CAMERA_HEIGHT;
+      public static final double SHOT_HEIGHT_SQUARED = SHOT_HEIGHT * SHOT_HEIGHT;
       public static final double MAX_CAMERA_HEIGHT = Units.inchesToMeters(27);
       public static final double CELL_DIAMETER = Units.inchesToMeters(7);
       public static final double INNER_PORT_DIAMETER = Units.inchesToMeters(13);
