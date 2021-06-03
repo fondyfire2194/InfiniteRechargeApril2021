@@ -22,7 +22,7 @@ public class PositionTiltToVision extends CommandBase {
 
   private final LimeLight m_limelight;
 
-  private double m_originalTarget;
+  private double m_position;
   private boolean targetSeen;
   private double m_endpoint;
   private int visionFoundCounter;
@@ -37,7 +37,7 @@ public class PositionTiltToVision extends CommandBase {
   public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
-    m_originalTarget = position;
+    m_position = position;
     m_limelight = limelight;
     addRequirements(m_tilt);
   }
@@ -45,7 +45,8 @@ public class PositionTiltToVision extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_endpoint = m_originalTarget;
+    m_endpoint = m_position;
+    m_limelight.useVision = true;
     m_tilt.targetAngle = m_endpoint;
     m_tilt.targetVerticalOffset = m_offset;
     if (m_endpoint < HoodedShooterConstants.TILT_MIN_ANGLE)

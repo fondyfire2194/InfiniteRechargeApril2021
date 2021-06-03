@@ -66,8 +66,8 @@ public final class Constants {
       public static final int DRIVETRAIN_RIGHT_MOTOR_B_PDP = 4;
       public static final int ELEVATOR_MOTOR_A_PDP = 5;
       public static final int ELEVATOR_MOTOR_B_PDP = 6;
-      public static final int SHOOTER_MOTOR_A_PDP = 7;
-      public static final int SHOOTER_MOTOR_B_PDP = 8;
+      public static final int SHOOTER_MOTOR_A_PDP = 2;
+      public static final int SHOOTER_MOTOR_B_PDP = 3;
 
    }
 

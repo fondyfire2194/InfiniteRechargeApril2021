@@ -93,7 +93,7 @@ public class PositionHoldTurret extends CommandBase {
     if (!m_turret.validTargetSeen)
       m_turret.goToPositionMotionMagic(m_endpoint);
     else
-      m_turret.visionOnTarget = m_turret.lockTurretToVision(m_turret.adjustedTargetAngle);
+      m_turret.visionOnTarget = m_turret.lockTurretToVision(-m_turret.adjustedTargetAngle);
   }
 
   // Called once the command ends or is interrupted.

@@ -95,7 +95,7 @@ public class SetupShuffleboard {
         private boolean m_showTrajectory = false;
         private boolean m_showSubsystems = true;
         private boolean m_showPower = true;
-        private boolean m_showButtons = true;
+        private boolean m_showButtons = false;
         private HttpCamera LLFeed;
         private UsbCamera intakeFeed;
         public double timeToStart;
@@ -159,8 +159,7 @@ public class SetupShuffleboard {
                                         .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(2, 5)
                                         .withProperties(Map.of("Label position", "TOP"));
 
-                        runCan = Shuffleboard.getTab("Pre-Round").add("CanChk", false).withWidget("Toggle Switch")
-                                        .withPosition(2, 1).withSize(1, 1).getEntry();
+  
 
                         preMatch.addNumber("TiltView", () -> m_tilt.getAngle());
                         preMatch.addNumber("TurretView", () -> m_turret.getAngle());
@@ -545,6 +544,8 @@ public class SetupShuffleboard {
                         robotValues2.addBoolean("Right2Connected (5)", () -> m_robotDrive.rightFollowerConnected);
                         robotValues2.addBoolean("LInPosition", () -> m_robotDrive.getInPositionLeft());
                         robotValues2.addBoolean("RInPosition", () -> m_robotDrive.getInPositionRight());
+                        robotValues2.addBoolean("LFoll", () -> m_robotDrive.getLeftFollower());
+                        robotValues2.addBoolean("RFoll", () -> m_robotDrive.getRightFollower());
 
                         if (m_robotTune) {
 
@@ -608,6 +609,9 @@ public class SetupShuffleboard {
 
                         scheduler.add("Scheduler", CommandScheduler.getInstance());
 
+                        runCan = Shuffleboard.getTab("Can+Sols").add("CanChk", false).withWidget("Toggle Switch")
+                        .withPosition(8,2).withSize(1, 1).getEntry();
+
                         ShuffleboardLayout canBus = Shuffleboard.getTab("Can+Sols")
                                         .getLayout("Canbus", BuiltInLayouts.kGrid).withPosition(3, 2).withSize(4, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
@@ -620,7 +624,7 @@ public class SetupShuffleboard {
                         canBus.addBoolean("RightBeltConnected (11)", () -> m_transport.rightBeltMotorConnected);
                         canBus.addBoolean("RearRollerConnected (12)", () -> m_transport.rearRollerMotorConnected);
                         canBus.addBoolean("FrontRollerConnected (14)", () -> m_transport.frontRollerMotorConnected);
-                        canBus.addBoolean("CLConected (15)", () -> m_climber.climberMotorConnected);
+                        canBus.addBoolean("CLConnected (15)", () -> m_climber.climberMotorConnected);
                         canBus.addBoolean("LDR1Connected (2)", () -> m_robotDrive.leftLeadConnected);
                         canBus.addBoolean("LDr2Connected (3)", () -> m_robotDrive.leftFollowerConnected);
                         canBus.addBoolean("RDr1Connected (4)", () -> m_robotDrive.rightLeadConnected);
@@ -629,7 +633,7 @@ public class SetupShuffleboard {
                         canBus.addBoolean("IntakeConnected (10)", () -> m_intake.intakeMotorConnected);
 
                         ShuffleboardLayout sols = Shuffleboard.getTab("Can+Sols")
-                                        .getLayout("Solenoids", BuiltInLayouts.kGrid).withPosition(7, 2).withSize(2, 2)
+                                        .getLayout("Solenoids", BuiltInLayouts.kGrid).withPosition(7, 2).withSize(1,2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         sols.addString("Intake Sol", () -> " pins 2 and 3");

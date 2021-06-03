@@ -33,6 +33,8 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private int autoChoice;
 
+  private double canCheckWait;
+
   public RobotContainer m_robotContainer;
   private boolean autoHasRun;
   private double m_startDelay;
@@ -82,8 +84,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    SmartDashboard.updateValues();
-    // CommandScheduler.getInstance().cancelAll();
+
     CommandScheduler.getInstance().run();
     m_robotContainer.m_setup.checkCANDevices();
     // ShootData.showValues(1);
@@ -94,6 +95,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
+
+    SmartDashboard.putNumber("JSTH", m_robotContainer.getThrottle());
+
+    // run can check on switch
     if (m_robotContainer.m_setup.runCan.getBoolean(false)) {
       m_robotContainer.m_setup.checkCANDevices();
       m_robotContainer.m_setup.runCan.setBoolean(false);
@@ -116,8 +121,8 @@ public class Robot extends TimedRobot {
     m_startDelay = (double) m_robotContainer.m_setup.startDelayChooser.getSelected();
 
     autoChoice = m_robotContainer.m_setup.autoChooser.getSelected();
-    // m_robotContainer.m_limelight.useVision = true;
-    SmartDashboard.putNumber("ASel", autoChoice);
+    //
+
     switch (autoChoice) {
 
       case 0:// cross line

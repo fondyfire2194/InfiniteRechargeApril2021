@@ -1,5 +1,16 @@
 [NetworkTables Storage 3.0]
 string "/Preferences/.type"="RobotPreferences"
+double "/Preferences/CPSpeed"=0.2
+double "/Preferences/ClimbSpeed"=0.25
+double "/Preferences/IntakeSpeed"=0.25
+double "/Preferences/TiLkD"=0
+double "/Preferences/TiLkI"=0.001
+double "/Preferences/TiLkIZ"=0
+double "/Preferences/TiLkP"=0.032
+double "/Preferences/TuLkD"=0
+double "/Preferences/TuLkI"=0
+double "/Preferences/TuLkIZ"=0
+double "/Preferences/TuLkP"=0.03
 double "/Preferences/dRKd"=0
 double "/Preferences/dRKi"=0.001
 double "/Preferences/dRKiz"=0.3
@@ -26,3 +37,5 @@ double "/Preferences/tURKp"=0.0176
 double "/Preferences/tURMaxA"=850
 double "/Preferences/tURMaxV"=1000
 double "/Preferences/tURTune"=0
+double "/Preferences/tiLTune"=0
+double "/Preferences/tuLTune"=0

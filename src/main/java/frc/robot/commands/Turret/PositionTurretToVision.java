@@ -42,6 +42,7 @@ public class PositionTurretToVision extends CommandBase {
     targetSeen = false;
     visionFoundCounter = 0;
     loopCtr = 0;
+    m_limelight.useVision = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

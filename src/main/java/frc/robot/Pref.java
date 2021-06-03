@@ -49,7 +49,6 @@ public class Pref {
     prefDict.put("TiLkIZ", 0.);
     prefDict.put("tiLTune", 0.);
 
-
     // Turret smart motion
     prefDict.put("tURKp", .00018);
     prefDict.put("tURKi", .0001);
@@ -59,14 +58,13 @@ public class Pref {
     prefDict.put("tURMaxA", 850.);// deg/sec motor
     prefDict.put("tURTune", 0.);
 
-     // Turret Lock
+    // Turret Lock
 
-     prefDict.put("TuLkP", .03);
-     prefDict.put("TuLkI", .00);
-     prefDict.put("TuLkD", 0.);
-     prefDict.put("TuLkIZ", 0.);
-     prefDict.put("tuLTune", 0.);
- 
+    prefDict.put("TuLkP", .03);
+    prefDict.put("TuLkI", .00);
+    prefDict.put("TuLkD", 0.);
+    prefDict.put("TuLkIZ", 0.);
+    prefDict.put("tuLTune", 0.);
 
     // shooter velocity
 
@@ -85,6 +83,14 @@ public class Pref {
     prefDict.put("dRStKp", .1);
 
     prefDict.put("dRTune", 0.);
+
+    // talon speeds
+
+    prefDict.put("SpeedIntake", .25);
+    prefDict.put("SpeedClimb", .25);
+    prefDict.put("SpeedCPnl", .2);
+    prefDict.put("SpeedBelt", .25);
+
   }
 
   public static void ensureRioPrefs() {

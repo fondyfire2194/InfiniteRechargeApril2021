@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
+import frc.robot.Pref;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.subsystems.RearIntakeSubsystem;
@@ -38,7 +39,7 @@ public class StartIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_rearIntake.runIntakeMotor(IntakeConstants.REAR_SPEED);
+    m_rearIntake.runIntakeMotor(Pref.getPref("SpeedIntake"));
     m_rearIntake.lowerArm();
 
   }

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.security.spec.MGF1ParameterSpec;
 import java.util.Arrays;
 
 //import com.kauailabs.navx.frc.AHRS;
@@ -121,8 +122,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         leftTargetPosition = 0;
         rightTargetPosition = 0;
 
-        mLeadLeft.setInverted(false);
-        mLeadRight.setInverted(false);
+         mLeadLeft.setInverted(false);
+         mLeadRight.setInverted(true);
 
         mFollowerLeft.follow(mLeadLeft, false);
         mFollowerRight.follow(mLeadRight, false);
@@ -208,6 +209,14 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public double getLeftFollowerOut() {
         return mFollowerLeft.getAppliedOutput();
+    }
+
+    public boolean getLeftFollower(){
+        return mFollowerLeft.isFollower();
+    }
+
+    public boolean getRightFollower(){
+        return mFollowerRight.isFollower();
     }
 
     @Override
@@ -310,7 +319,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     public double getYaw() {
-        return Math.IEEEremainder(mGyro.getAngle(), 360) * -1;
+        return mGyro.getYaw();
+  //      return Math.IEEEremainder(mGyro.getAngle(), 360) * -1;
     }
 
     public Translation2d getTranslation() {

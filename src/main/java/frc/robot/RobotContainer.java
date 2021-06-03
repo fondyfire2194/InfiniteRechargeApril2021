@@ -287,18 +287,13 @@ public class RobotContainer {
             coDriverRightButton.whenPressed(new PositionToColor(m_controlPanel, .25));
             coDriverStart.whenPressed(new PositionNumberRevs(m_controlPanel, 3, .25));
 
-            // trench settings
-            // right shot
-            coDriverB.whenPressed(new ReturnTiltTurret(m_turret, 75, m_tilt, 10, m_limelight, false, m_shooter, 5));
+            // coDriverB.whenPressed(
 
-            // left shot
-            coDriverX.whenPressed(new ReturnTiltTurret(m_turret, -75, m_tilt, 10, m_limelight, false, m_shooter, 5));
+            // coDriverX.whenPressed(
 
-            // long straight shot
-            coDriverB.whenPressed(new ReturnTiltTurret(m_turret, 0, m_tilt, 5, m_limelight, false, m_shooter, 5));
+            // coDriverB.whenPressed(
 
-            // close straight shot
-            coDriverB.whenPressed(new ReturnTiltTurret(m_turret, 0, m_tilt, 15, m_limelight, false, m_shooter, 5));
+            // coDriverB.whenPressed
 
             /**
              * 
@@ -306,20 +301,15 @@ public class RobotContainer {
              * 
              * 
              */
-            setupDownButton
-
-                        .whenPressed(() -> m_transport.runFrontRollerMotor(-.5))
-                        .whenPressed(() -> m_transport.runRearRollerMotor(.5))
+            setupDownButton.whileHeld(() -> m_transport.runFrontRollerMotor(-.5))
+                        .whileHeld(() -> m_transport.runRearRollerMotor(.5))
                         .whenReleased(() -> m_transport.runFrontRollerMotor(0))
                         .whenReleased(() -> m_transport.runRearRollerMotor(0));
 
-            setupUpButton
-
-                        .whenPressed(() -> m_transport.runLeftBeltMotor(.5))
-                        .whenPressed(() -> m_transport.runRightBeltMotor(.5))
-
+            setupUpButton.whileHeld(() -> m_transport.runLeftBeltMotor(.5))
+                        .whileHeld(() -> m_transport.runRightBeltMotor(.5))
                         .whenReleased(() -> m_transport.runLeftBeltMotor(0))
-                        .whenReleased(() -> m_transport.runLeftBeltMotor(0));
+                        .whenReleased(() -> m_transport.runRightBeltMotor(0));
 
             setupLeftButton.whileHeld(new CellBeltPulseSelect(m_transport, true, 1, .25, 1, -.25));
 
@@ -332,7 +322,8 @@ public class RobotContainer {
 
             setupBack.whileHeld(new StartIntake(m_intake, m_limelight)).whenReleased(new StopIntake(m_intake));
 
-            setupStart.whenPressed(new TiltMoveToReverseLimit(m_tilt));
+            setupStart.whileHeld(() -> m_controlPanel.turnWheelMotor(.2))
+                        .whenReleased(() -> m_controlPanel.turnWheelMotor(0));
 
             setupX.whileHeld(getJogShooterCommand());
 
@@ -375,6 +366,10 @@ public class RobotContainer {
       public Command getJogShooterCommand() {
             return new JogShooter(m_shooter, () -> -setupGamepad.getRawAxis(5) / 2);
 
+      }
+
+      public double getThrottle() {
+            return ( 1 - m_driverController.getThrottle() ) / 2;
       }
 
 }
