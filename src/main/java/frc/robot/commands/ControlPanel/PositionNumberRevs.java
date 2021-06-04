@@ -11,14 +11,12 @@ public class PositionNumberRevs extends CommandBase {
   /** Creates a new PositionToColor. */
   private final ControlPanelSubsystem m_panel;
   private int m_numberRevs;
-  private double m_speed;
   private int lastColor;
 
-  public PositionNumberRevs(ControlPanelSubsystem panel, int numberRevs, double speed) {
+  public PositionNumberRevs(ControlPanelSubsystem panel, int numberRevs) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_panel = panel;
     m_numberRevs = numberRevs;
-    m_speed = speed;
     addRequirements(m_panel);
   }
 

@@ -66,6 +66,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
    public int lastColorNumber;
    public int colorNumberFiltered;
    private int loopCount;
+   public int colorsPassed;
 
    private int filterNumber = 3;
    private int redCount;
@@ -109,8 +110,8 @@ public class ControlPanelSubsystem extends SubsystemBase {
       m_colorMatcher.addColorMatch(kRedTarget);
       m_colorMatcher.addColorMatch(kYellowTarget);
 
-      ShuffleboardLayout competition = Shuffleboard.getTab("Competition").getLayout("Color", BuiltInLayouts.kList)
-            .withPosition(2, 1).withSize(1, 2).withProperties(Map.of("Label position", "TOP"));
+      ShuffleboardLayout competition = Shuffleboard.getTab("SetupClimber_CP").getLayout("Color", BuiltInLayouts.kList)
+            .withPosition(8, 1).withSize(1, 2).withProperties(Map.of("Label position", "TOP"));
 
       colorWidget = competition.add("SensorColor", false).withWidget("Boolean Box")
             .withProperties(Map.of("colorWhenFalse", "maroon"));
@@ -121,16 +122,19 @@ public class ControlPanelSubsystem extends SubsystemBase {
             .withProperties(Map.of("colorWhenFalse", "maroon"));
       gameColorWidgetEntry = gameColorWidget.getEntry();
       gameColorWidgetEntry.getBoolean(false);
-
+      competition.addNumber("ColorsPassed", () -> colorsPassed);
       cpSpeed = Shuffleboard.getTab("SetupClimber_CP").addPersistent("CPSpeed", .2).withWidget("Number Slider")
             .withPosition(8, 0).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", .75)).getEntry();
+
+            // NetworkTableEntry intakeSpeed = Shuffleboard.getTab("SetupClimber_CP").add("CPSpeed", .2).withWidget("Number Slider")
+            // .withPosition(8,3 ).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", .75)).getEntry();
 
       raiseArm();
 
    }
 
    public void turnWheelMotor() {
-    
+
       m_controlPanelMotor.set(ControlMode.PercentOutput, useSpeed);
 
    }
@@ -211,7 +215,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
    @Override
    public void periodic() {
       useSpeed = cpSpeed.getDouble(.2);
-  
+
       loopCount++;
       if (loopCount > 5 && lookForColor) {
          // This method will be called once per scheduler run

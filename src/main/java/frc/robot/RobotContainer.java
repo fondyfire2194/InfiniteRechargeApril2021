@@ -277,9 +277,9 @@ public class RobotContainer {
              */
             coDriverDownButton.whenPressed(new ControlPanelArm(m_controlPanel, true));
             coDriverUpButton.whenPressed(new ControlPanelArm(m_controlPanel, false));
-            coDriverLeftButton.whileHeld(new TurnControlPanel(m_controlPanel, .25));
-            coDriverRightButton.whenPressed(new PositionToColor(m_controlPanel, .25));
-            coDriverStart.whenPressed(new PositionNumberRevs(m_controlPanel, 3, .25));
+            coDriverLeftButton.whileHeld(new TurnControlPanel(m_controlPanel));
+            coDriverRightButton.whenPressed(new PositionToColor(m_controlPanel));
+            coDriverStart.whenPressed(new PositionNumberRevs(m_controlPanel, 3));
 
             // coDriverB.whenPressed(
 

@@ -7,7 +7,6 @@
 
 package frc.robot.commands.ControlPanel;
 
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ControlPanelSubsystem;
 
@@ -17,40 +16,40 @@ public class TurnControlPanel extends CommandBase {
    * 
    */
 
-  private ControlPanelSubsystem cp;
+  private ControlPanelSubsystem m_cp;
   private int startColor;
   private int currentColor;
-  private int lastColor;
-  private int colorsPassed;
+
+
   private int colorsToPass = 9;
   private boolean redSeen;
-  private double m_speed;
+  private int lastColor;
 
-  public TurnControlPanel(ControlPanelSubsystem cp, double speed) {
+  public TurnControlPanel(ControlPanelSubsystem cp) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(cp);
-    this.cp = cp;
-    m_speed=speed;
+    m_cp = cp;
+
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
 
-    startColor = cp.colorNumberFiltered;
+    startColor = m_cp.colorNumberFiltered;
     lastColor = startColor;
-    colorsPassed = 0;
+    m_cp.colorsPassed = 0;
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    cp.turnWheelMotor();
-    currentColor = cp.colorNumberFiltered;
+    m_cp.turnWheelMotor();
+    currentColor = m_cp.colorNumberFiltered;
 
-if (!redSeen && currentColor == 3) {
-      colorsPassed++;
+    if (!redSeen && currentColor == 3) {
+      m_cp.colorsPassed++;
     }
     if (currentColor == 3) {
       redSeen = true;
@@ -59,28 +58,17 @@ if (!redSeen && currentColor == 3) {
       redSeen = false;
     }
 
-    
-
-    // if (currentColor != lastColor)
-
-    // {
-    //   colorsPassed++;
-    //   lastColor = currentColor;
-    // }
-    Shuffleboard.getTab("ControlPanel").add("ColorsPassed", colorsPassed);
-    Shuffleboard.getTab("ControlPanel").add("ColorNow", currentColor);
-    Shuffleboard.getTab("ControlPanel").add("ColorsLast", lastColor);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    cp.stopWheelMotor();
+    m_cp.stopWheelMotor();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return colorsPassed >= colorsToPass;
+    return m_cp.colorsPassed >= colorsToPass;
   }
 }

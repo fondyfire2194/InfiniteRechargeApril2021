@@ -10,13 +10,12 @@ import frc.robot.subsystems.ControlPanelSubsystem;
 public class PositionToColor extends CommandBase {
   /** Creates a new PositionToColor. */
   private final ControlPanelSubsystem m_panel;
-  private double m_speed;
+  
   private int loopCount;
 
-  public PositionToColor(ControlPanelSubsystem panel, double speed) {
+  public PositionToColor(ControlPanelSubsystem panel) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_panel = panel;
-    m_speed = speed;
     addRequirements(m_panel);
   }
 

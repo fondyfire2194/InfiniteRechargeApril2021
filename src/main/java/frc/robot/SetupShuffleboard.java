@@ -739,12 +739,12 @@ public class SetupShuffleboard {
                                                                                                          // labels
 
                         controlPanelCommands.add("ArmRaise", new ControlPanelArm(m_controlPanel, false));
-                        controlPanelCommands.add("LookForRevs", new PositionNumberRevs(m_controlPanel, 30, .25));
+                        controlPanelCommands.add("LookForRevs", new PositionNumberRevs(m_controlPanel, 30));
 
                         controlPanelCommands.add("ArmLower", new ControlPanelArm(m_controlPanel, true));
                         controlPanelCommands.add("ToggleLookForColor", new ToggleLookForColor(m_controlPanel));
 
-                        controlPanelCommands.add("PositionToColor", new PositionToColor(m_controlPanel, .25));
+                        controlPanelCommands.add("PositionToColor", new PositionToColor(m_controlPanel));
 
                         controlPanelCommands.add("CP", m_controlPanel);
 
