@@ -32,7 +32,7 @@ public class StopIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_rearIntake.runIntakeMotor(0);
+    m_rearIntake.stopIntakeMotor();
     m_rearIntake.raiseArm();
 
   }

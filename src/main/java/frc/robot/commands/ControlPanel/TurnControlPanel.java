@@ -46,7 +46,7 @@ public class TurnControlPanel extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    cp.turnWheelMotor(m_speed);
+    cp.turnWheelMotor();
     currentColor = cp.colorNumberFiltered;
 
 if (!redSeen && currentColor == 3) {
@@ -75,7 +75,7 @@ if (!redSeen && currentColor == 3) {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    cp.turnWheelMotor(0.);
+    cp.stopWheelMotor();
   }
 
   // Returns true when the command should end.

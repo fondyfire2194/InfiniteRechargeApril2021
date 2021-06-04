@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.HoodedShooterConstants;
@@ -52,7 +51,6 @@ import frc.robot.commands.Tilt.StopTilt;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.ClearTurFaults;
 import frc.robot.commands.Turret.PositionTurret;
-import frc.robot.commands.Turret.PositionTurretInc;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.ResetTurretAngle;
 import frc.robot.commands.Turret.StopTurret;
@@ -100,6 +98,7 @@ public class SetupShuffleboard {
         private UsbCamera intakeFeed;
         public double timeToStart;
         public NetworkTableEntry runCan;
+
 
         public SendableChooser<Integer> autoChooser = new SendableChooser<>();
         public SendableChooser<Integer> startDelayChooser = new SendableChooser<>();
@@ -158,8 +157,6 @@ public class SetupShuffleboard {
                         ShuffleboardLayout preMatch = Shuffleboard.getTab("Pre-Round")
                                         .getLayout("Info", BuiltInLayouts.kList).withPosition(0, 1).withSize(2, 5)
                                         .withProperties(Map.of("Label position", "TOP"));
-
-  
 
                         preMatch.addNumber("TiltView", () -> m_tilt.getAngle());
                         preMatch.addNumber("TurretView", () -> m_turret.getAngle());
@@ -408,7 +405,7 @@ public class SetupShuffleboard {
 
                 {
                         ShuffleboardLayout shooterCommands = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("MAXFPS 120", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
+                                        .getLayout("MAXMPS 50", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
                                                                                            // commands
 
@@ -610,7 +607,7 @@ public class SetupShuffleboard {
                         scheduler.add("Scheduler", CommandScheduler.getInstance());
 
                         runCan = Shuffleboard.getTab("Can+Sols").add("CanChk", false).withWidget("Toggle Switch")
-                        .withPosition(8,2).withSize(1, 1).getEntry();
+                                        .withPosition(8, 2).withSize(1, 1).getEntry();
 
                         ShuffleboardLayout canBus = Shuffleboard.getTab("Can+Sols")
                                         .getLayout("Canbus", BuiltInLayouts.kGrid).withPosition(3, 2).withSize(4, 2)
@@ -633,7 +630,7 @@ public class SetupShuffleboard {
                         canBus.addBoolean("IntakeConnected (10)", () -> m_intake.intakeMotorConnected);
 
                         ShuffleboardLayout sols = Shuffleboard.getTab("Can+Sols")
-                                        .getLayout("Solenoids", BuiltInLayouts.kGrid).withPosition(7, 2).withSize(1,2)
+                                        .getLayout("Solenoids", BuiltInLayouts.kGrid).withPosition(7, 2).withSize(1, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         sols.addString("Intake Sol", () -> " pins 2 and 3");
@@ -768,6 +765,8 @@ public class SetupShuffleboard {
                         cpValues.addBoolean("CP Arm Up", () -> m_controlPanel.getArmRaised());
                         cpValues.addBoolean("CP Arm Down", () -> m_controlPanel.getArmLowered());
                         cpValues.addBoolean("Connected (16)", () -> m_controlPanel.controlPanelMotorConnected);
+
+ 
 
                         /**
                          * 

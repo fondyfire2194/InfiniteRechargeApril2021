@@ -4,19 +4,21 @@
 
 package frc.robot.commands.Climber;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClimberSubsystem;
 
-public class TurnClimberMotor extends CommandBase {
+public class JogClimber extends CommandBase {
   /** Creates a new TurnClimberMotor. */
 
   private final ClimberSubsystem m_climber;
-  private double m_speed;
+  private final Supplier<Double> m_xaxisSpeedSupplier;
 
-  public TurnClimberMotor(ClimberSubsystem climber, double speed) {
+  public JogClimber(ClimberSubsystem climber, Supplier<Double> xaxisSpeedSupplier) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_climber = climber;
-    m_speed = speed;
+    m_xaxisSpeedSupplier = xaxisSpeedSupplier;
   }
 
   // Called when the command is initially scheduled.
@@ -27,13 +29,13 @@ public class TurnClimberMotor extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_climber.turnClimberMotor(m_speed);
+    m_climber.runMotor(m_xaxisSpeedSupplier.get());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_climber.turnClimberMotor(0);
+    m_climber.runMotor(0);
   }
 
   // Returns true when the command should end.

@@ -34,7 +34,7 @@ public class PositionNumberRevs extends CommandBase {
   public void execute() {
     m_panel.lowerArm();
     m_panel.lookForColor = true;
-    m_panel.turnWheelMotor(m_speed);
+    m_panel.turnWheelMotor();
     if (m_panel.colorNumberFiltered != lastColor) {
       lastColor = m_panel.colorNumberFiltered;
       m_panel.revsDone++;
@@ -45,7 +45,7 @@ public class PositionNumberRevs extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_panel.turnWheelMotor(0);
+    m_panel.stopWheelMotor();
     m_panel.raiseArm();
     m_panel.lookForColor = false;
 

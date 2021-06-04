@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
@@ -95,7 +96,8 @@ public class ControlPanelSubsystem extends SubsystemBase {
    public boolean showShuffleboardTab;
    public String colorSeen = "None";
    public String gameData = "None";
-
+   private NetworkTableEntry cpSpeed;
+   private double useSpeed;
 
    public ControlPanelSubsystem() {
 
@@ -120,17 +122,25 @@ public class ControlPanelSubsystem extends SubsystemBase {
       gameColorWidgetEntry = gameColorWidget.getEntry();
       gameColorWidgetEntry.getBoolean(false);
 
+      cpSpeed = Shuffleboard.getTab("SetupClimber_CP").addPersistent("CPSpeed", .2).withWidget("Number Slider")
+            .withPosition(8, 0).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", .75)).getEntry();
+
       raiseArm();
 
    }
 
-   public void turnWheelMotor(double speed) {
-      m_controlPanelMotor.set(ControlMode.PercentOutput, speed);
+   public void turnWheelMotor() {
+    
+      m_controlPanelMotor.set(ControlMode.PercentOutput, useSpeed);
 
    }
 
+   public void stopWheelMotor() {
+      m_controlPanelMotor.set(ControlMode.PercentOutput, 0);
+   }
+
    public double getMotorSet() {
-      return m_controlPanelMotor.get();
+      return m_controlPanelMotor.getMotorOutputPercent();
    }
 
    public double getMotorAmps() {
@@ -200,7 +210,8 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
    @Override
    public void periodic() {
-
+      useSpeed = cpSpeed.getDouble(.2);
+  
       loopCount++;
       if (loopCount > 5 && lookForColor) {
          // This method will be called once per scheduler run
@@ -312,33 +323,33 @@ public class ControlPanelSubsystem extends SubsystemBase {
    }
 
    public int getGameData() {
-   
+
       gameData = DriverStation.getInstance().getGameSpecificMessage();
-      
+
       if (gameData.length() > 0) {
 
          switch (gameData.charAt(0)) {
-         case 'B':
-            // Blue case code
-            gameColorNumber = 1;
+            case 'B':
+               // Blue case code
+               gameColorNumber = 1;
 
-            break;
-         case 'G':
-            // Green case code
-            gameColorNumber = 2;
-            break;
-         case 'R':
-            // Red case code
-            gameColorNumber = 3;
-            break;
-         case 'Y':
-            // Yellow case code
-            gameColorNumber = 4;
-            break;
-         default:
-            // This is corrupt data
-            gameColorNumber = 0;
-            break;
+               break;
+            case 'G':
+               // Green case code
+               gameColorNumber = 2;
+               break;
+            case 'R':
+               // Red case code
+               gameColorNumber = 3;
+               break;
+            case 'Y':
+               // Yellow case code
+               gameColorNumber = 4;
+               break;
+            default:
+               // This is corrupt data
+               gameColorNumber = 0;
+               break;
          }
       } else {
          // Code for no data received yet

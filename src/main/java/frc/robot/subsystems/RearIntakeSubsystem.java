@@ -7,12 +7,18 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.simulation.DoubleSolenoidSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.sim.PhysicsSim;
@@ -25,8 +31,12 @@ public class RearIntakeSubsystem extends SubsystemBase {
   private final WPI_TalonSRX m_intakeMotor = new TalonSRXWrapper(CANConstants.REAR_MOTOR);
   public final DoubleSolenoidSim m_intakeArm = new DoubleSolenoidSim(2, 3);
   public boolean intakeMotorConnected;
+  public NetworkTableEntry intakeSpeed;
+  private double useSpeed;
 
   public RearIntakeSubsystem() {
+    intakeSpeed = Shuffleboard.getTab("Intake").addPersistent("IntakeSpeed", .2).withWidget("Number Slider")
+        .withPosition(8, 0).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", .75)).getEntry();
 
     m_intakeMotor.configFactoryDefault();
     m_intakeMotor.setNeutralMode(NeutralMode.Brake);
@@ -44,7 +54,8 @@ public class RearIntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
+    useSpeed = intakeSpeed.getDouble(.2);
+
   }
 
   public boolean checkCAN() {
@@ -52,8 +63,12 @@ public class RearIntakeSubsystem extends SubsystemBase {
 
   }
 
-  public void runIntakeMotor(double speed) {
-    m_intakeMotor.set(ControlMode.PercentOutput, speed);
+  public void runIntakeMotor() {
+    m_intakeMotor.set(ControlMode.PercentOutput, useSpeed);
+  }
+
+  public void stopIntakeMotor() {
+    m_intakeMotor.set(ControlMode.PercentOutput, 0);
   }
 
   public double getMotor() {

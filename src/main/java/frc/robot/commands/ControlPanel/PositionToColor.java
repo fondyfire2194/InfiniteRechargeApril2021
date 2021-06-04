@@ -31,7 +31,7 @@ public class PositionToColor extends CommandBase {
   @Override
   public void execute() {
     m_panel.lowerArm();
-    m_panel.turnWheelMotor(m_speed);
+    m_panel.turnWheelMotor();
 
     if (m_panel.colorNumberFiltered == m_panel.gameColorNumber) {
       loopCount++;
@@ -44,7 +44,7 @@ public class PositionToColor extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_panel.turnWheelMotor(0);
+    m_panel.stopWheelMotor();
     m_panel.raiseArm();
     m_panel.lookForColor = false;
 

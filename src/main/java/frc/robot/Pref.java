@@ -84,12 +84,6 @@ public class Pref {
 
     prefDict.put("dRTune", 0.);
 
-    // talon speeds
-
-    prefDict.put("SpeedIntake", .25);
-    prefDict.put("SpeedClimb", .25);
-    prefDict.put("SpeedCPnl", .2);
-    prefDict.put("SpeedBelt", .25);
 
   }
 
