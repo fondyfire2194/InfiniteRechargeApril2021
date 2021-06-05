@@ -145,12 +145,20 @@ public class Robot extends TimedRobot {
 
         break;
 
-      case 3:// Trench
+        case 3:// Trench
 
         setStartingPose(FieldMap.startPosition[3]);
         m_autoFactory.shootNumber = ShootData.trenchTwoBall;
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
+        break;
+
+        case 4:// Trench shoot and picking up while moving
+
+        setStartingPose(FieldMap.startPosition[3]);
+        m_autoFactory.shootNumber = ShootData.trench3Ball;
+
+        m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
         break;
 
       default:

@@ -122,8 +122,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         leftTargetPosition = 0;
         rightTargetPosition = 0;
 
-         mLeadLeft.setInverted(false);
-         mLeadRight.setInverted(true);
+        mLeadLeft.setInverted(false);
+        mLeadRight.setInverted(true);
 
         mFollowerLeft.follow(mLeadLeft, false);
         mFollowerRight.follow(mLeadRight, false);
@@ -211,11 +211,11 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         return mFollowerLeft.getAppliedOutput();
     }
 
-    public boolean getLeftFollower(){
+    public boolean getLeftFollower() {
         return mFollowerLeft.isFollower();
     }
 
-    public boolean getRightFollower(){
+    public boolean getRightFollower() {
         return mFollowerRight.isFollower();
     }
 
@@ -253,7 +253,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mLeftPidController.setReference(leftPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
         mRightPidController.setReference(rightPosition, ControlType.kSmartMotion, SMART_MOTION_SLOT);
         mDrive.feed();
-
     }
 
     public void positionDistance(double leftPosition, double rightPosition) {
@@ -320,7 +319,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public double getYaw() {
         return mGyro.getYaw();
-  //      return Math.IEEEremainder(mGyro.getAngle(), 360) * -1;
+        // return Math.IEEEremainder(mGyro.getAngle(), 360) * -1;
     }
 
     public Translation2d getTranslation() {
@@ -370,6 +369,11 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public boolean getInPositionRight() {
         return Math.abs(rightTargetPosition - getRightDistance()) < allowedErr;
+    }
+
+    public void setMaxVel(double maxVel) {
+        mLeftPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
+        mRightPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
     }
 
     public void calibratePID(final double p, final double i, final double d, double kIz, double acc, double kFF,

@@ -21,11 +21,13 @@ public class ShootData {
 
     public static int leftTwoBall = 2;
     public static int trenchTwoBall = 3;
+    public static int trench3Ball = 4;
 
     private static final double shootTime = 5;
     private static final double xRetractDistance = -.75;
     private static final double xTrenchTwoBallPickup = -3;
     private static final double xLeftTwoBallPickup = -2;
+    private static final double xTrenchThreeBallPickup = -4;
 
     private static final double allowInnerPort = -2.5;
 
@@ -64,6 +66,11 @@ public class ShootData {
                     getOuterTiltAngle((initiationLine - xLeftTwoBallPickup), yLeftPickupFromPort), 0 },
 
             { 0, xTrenchTwoBallPickup, xTrenchTwoBallPickup,
+                    getShotDistance((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), shootTime,
+                    -getTurretAngleXY((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), 0,
+                    getOuterTiltAngle((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), 0 },
+
+            { 0, xRetractDistance, xTrenchThreeBallPickup,
                     getShotDistance((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), shootTime,
                     -getTurretAngleXY((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), 0,
                     getOuterTiltAngle((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), 0 }
@@ -123,14 +130,13 @@ public class ShootData {
     private static double getFloorDistanceSqrd(double x, double y) {
         return ((x * x) + (y * y));
     }
-   
 
     private static double getFloorDistance(double x, double y) {
         return Math.sqrt(getFloorDistanceSqrd(x, y));
     }
 
     private static double getShotDistance(double x, double y) {
-        
+
         return Math.sqrt((getFloorDistanceSqrd(x, y)) + (shotHeight * shotHeight));
     }
 

@@ -353,10 +353,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
             double rem = tempDistance - base;
 
-            SmartDashboard.putNumber("BI", baseI);
-            SmartDashboard.putNumber("B", base);
-            SmartDashboard.putNumber("BR", rem);
-
             double baseSpeed = shooterFPSFromCamera[baseI];
             double upperSpeed = shooterFPSFromCamera[baseI + 1];
 

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.Constants.HoodedShooterConstants;
+import frc.robot.commands.MessageCommand;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.ShootCells;
@@ -48,45 +49,27 @@ public class AutoMode2 extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
 
-                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
-                                new SetTiltOffset(tilt, ShootData.getTiltOffset(shootNumber)),
+                super(new ParallelCommandGroup(new SetTiltOffset(tilt, ShootData.getTiltOffset(shootNumber)),
                                 new SetTurretOffset(turret, ShootData.getTurretOffset(shootNumber)),
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)),
-
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)))
-                                                .deadlineWith(new StartIntake(intake),
-                                                                new StartShooterWheels(shooter, shooter
-                                                                                .calculateFPSFromDistance(ShootData
-                                                                                                .getShootDistance(
-                                                                                                                shootNumber)))),
+                                                .deadlineWith(new StartShooterWheels(shooter,
+                                                                shooter.calculateFPSFromDistance(ShootData
+                                                                                .getShootDistance(shootNumber)))),
 
-                                // shoot 5
+                                // shoot 6 while moving
 
-                                new ParallelCommandGroup(new ShootCells(shooter, transport, compressor,
-                                                ShootData.getShootTime(shootNumber))),
-                                // pick up 1
-                                new ParallelCommandGroup(
-                                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber + 1)),
-                                                new SetTiltOffset(tilt, ShootData.getTiltOffset(shootNumber + 1)),
-                                                new SetTurretOffset(turret, ShootData.getTurretOffset(shootNumber + 1)),
-                                                new PositionTiltToVision(tilt, limelight,
-                                                                ShootData.getTiltAngle(shootNumber + 1)),
+                                new ParallelCommandGroup(new StartIntake(intake), new ShootCells(shooter, transport,
+                                                compressor, ShootData.getShootTime(shootNumber))
+                                                                .deadlineWith(new PositionRobot(drive,
+                                                                                ShootData.getSecondDistance(
+                                                                                                shootNumber)))),
 
-                                                new PositionTurretToVision(turret, limelight,
-                                                                ShootData.getTurretAngle(shootNumber + 1)))
+                                new ParallelCommandGroup(new MessageCommand("GroupStarted"),
 
-                                                                                .deadlineWith(new StartShooterWheels(
-                                                                                                shooter,
-                                                                                                shooter.calculateFPSFromDistance(
-                                                                                                                ShootData.getShootDistance(
-                                                                                                                                shootNumber + 1)))),
-
-                                // shoot 1
-
-                                new ShootCells(shooter, transport, compressor, ShootData.getShootTime(shootNumber + 1)),
-
-                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),
-                                new LimelightSetPipeline(limelight, 8), new PositionTurret(turret, 0));
+                                                new PositionRobot(drive, ShootData.getSecondDistance(shootNumber)),
+                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),
+                                                new LimelightSetPipeline(limelight, 8), new PositionTurret(turret, 0)));
 
         }
 
