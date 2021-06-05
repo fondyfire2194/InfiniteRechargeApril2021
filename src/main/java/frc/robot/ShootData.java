@@ -120,13 +120,18 @@ public class ShootData {
         return Math.toDegrees(Math.atan(y / x));
     }
 
+    private static double getFloorDistanceSqrd(double x, double y) {
+        return ((x * x) + (y * y));
+    }
+   
+
     private static double getFloorDistance(double x, double y) {
-        return Math.sqrt((x * x) + (y * y));
+        return Math.sqrt(getFloorDistanceSqrd(x, y));
     }
 
     private static double getShotDistance(double x, double y) {
-        double floorDistance = getFloorDistance(x, y);
-        return Math.sqrt((floorDistance * floorDistance) + (shotHeight * shotHeight));
+        
+        return Math.sqrt((getFloorDistanceSqrd(x, y)) + (shotHeight * shotHeight));
     }
 
     public static void showValues(int value) {

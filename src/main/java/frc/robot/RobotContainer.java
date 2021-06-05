@@ -230,7 +230,7 @@ public class RobotContainer {
              * 
              */
 
-            new JoystickButton(m_driverController, 1).whileHeld(new StartIntake(m_intake, m_limelight));
+            new JoystickButton(m_driverController, 1).whileHeld(new StartIntake(m_intake));
 
             new JoystickButton(m_driverController, 2)
                         .whileHeld(new ShootCells(m_shooter, m_transport, m_compressor, 100));
@@ -313,7 +313,7 @@ public class RobotContainer {
 
             // setupRightTrigger.whileHeld
 
-            setupBack.whileHeld(new StartIntake(m_intake, m_limelight)).whenReleased(new StopIntake(m_intake));
+            setupBack.whileHeld(new StartIntake(m_intake)).whenReleased(new StopIntake(m_intake));
 
             setupStart.whileHeld(() -> m_controlPanel.turnWheelMotor())
                         .whenReleased(() -> m_controlPanel.stopWheelMotor());

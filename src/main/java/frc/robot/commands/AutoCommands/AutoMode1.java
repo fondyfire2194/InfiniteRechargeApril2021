@@ -10,10 +10,9 @@ package frc.robot.commands.AutoCommands;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
-import frc.robot.Constants.HoodedShooterConstants;
-import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
@@ -57,7 +56,7 @@ public class AutoMode1 extends SequentialCommandGroup {
 
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)))
 
-                                                .deadlineWith(new StartIntake(intake, limelight),
+                                                .deadlineWith(new StartIntake(intake),
                                                                 new StartShooterWheels(shooter, shooter
                                                                                 .calculateFPSFromDistance(ShootData
                                                                                                 .getShootDistance(

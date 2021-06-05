@@ -96,8 +96,6 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
 
-    SmartDashboard.putNumber("JSTH", m_robotContainer.getThrottle());
-
     // run can check on switch
     if (m_robotContainer.m_setup.runCan.getBoolean(false)) {
       m_robotContainer.m_setup.checkCANDevices();
@@ -139,7 +137,7 @@ public class Robot extends TimedRobot {
         m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
         break;
 
-      case 2:// Left of power port use 1 shoot data
+      case 2:// Lined up with 2 balls on shield generator
 
         setStartingPose(FieldMap.startPosition[2]);
         m_autoFactory.shootNumber = ShootData.leftTwoBall;

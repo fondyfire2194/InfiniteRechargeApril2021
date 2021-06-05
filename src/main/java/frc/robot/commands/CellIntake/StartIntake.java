@@ -7,19 +7,16 @@ package frc.robot.commands.CellIntake;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.LimeLight;
-import frc.robot.Pref;
 import frc.robot.subsystems.RearIntakeSubsystem;
 
 public class StartIntake extends CommandBase {
   /** Creates a new RunIntake. */
   private final RearIntakeSubsystem m_rearIntake;
-  private final LimeLight m_limelight;
 
-  public StartIntake(RearIntakeSubsystem rearIntake, LimeLight limelight) {
+  public StartIntake(RearIntakeSubsystem rearIntake) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_rearIntake = rearIntake;
-    m_limelight = limelight;
+
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(rearIntake);
