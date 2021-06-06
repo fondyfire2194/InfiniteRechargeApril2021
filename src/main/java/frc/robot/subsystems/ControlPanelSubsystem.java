@@ -129,7 +129,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
             // NetworkTableEntry intakeSpeed = Shuffleboard.getTab("SetupClimber_CP").add("CPSpeed", .2).withWidget("Number Slider")
             // .withPosition(8,3 ).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", .75)).getEntry();
 
-      raiseArm();
+      lowerArm();
 
    }
 
@@ -163,18 +163,18 @@ public class ControlPanelSubsystem extends SubsystemBase {
    }
 
    public void raiseArm() {
-      m_colorWheelArm.set(DoubleSolenoid.Value.kReverse);
-   }
-
-   public void lowerArm() {
       m_colorWheelArm.set(DoubleSolenoid.Value.kForward);
    }
 
-   public boolean getArmLowered() {
-      return m_colorWheelArm.get() == DoubleSolenoid.Value.kForward;
+   public void lowerArm() {
+      m_colorWheelArm.set(DoubleSolenoid.Value.kReverse);
    }
 
    public boolean getArmRaised() {
+      return m_colorWheelArm.get() == DoubleSolenoid.Value.kForward;
+   }
+
+   public boolean getArmLowered() {
       return m_colorWheelArm.get() == DoubleSolenoid.Value.kReverse;
    }
 

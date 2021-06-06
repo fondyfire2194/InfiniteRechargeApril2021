@@ -29,7 +29,7 @@ public class RearIntakeSubsystem extends SubsystemBase {
    * Creates a new RearIntake.
    */
   private final WPI_TalonSRX m_intakeMotor = new TalonSRXWrapper(CANConstants.REAR_MOTOR);
-  public final DoubleSolenoidSim m_intakeArm = new DoubleSolenoidSim(2, 3);
+  public final DoubleSolenoid m_intakeArm = new DoubleSolenoid(2, 3);
   public boolean intakeMotorConnected;
   public NetworkTableEntry intakeSpeed;
   private double useSpeed;

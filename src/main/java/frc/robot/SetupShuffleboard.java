@@ -27,6 +27,7 @@ import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.IntakeArm;
 import frc.robot.commands.Climber.ClimberArm;
+import frc.robot.commands.Climber.ClimberRatchet;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
 import frc.robot.commands.ControlPanel.PositionNumberRevs;
 import frc.robot.commands.ControlPanel.PositionToColor;
@@ -101,7 +102,6 @@ public class SetupShuffleboard {
         public double timeToStart;
         public NetworkTableEntry runCan;
 
-
         public SendableChooser<Integer> autoChooser = new SendableChooser<>();
         public SendableChooser<Integer> startDelayChooser = new SendableChooser<>();
         SendableChooser<String> driverJS = new SendableChooser<>();
@@ -145,10 +145,8 @@ public class SetupShuffleboard {
                         autoChooser.addOption("Left Start Retract Pickup Shoot", 2);
 
                         autoChooser.addOption("Trench Start Two Pickup Shoot", 3);
- 
+
                         autoChooser.addOption("Trench Start Move Shoot Pickup", 4);
-
-
 
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
@@ -438,7 +436,7 @@ public class SetupShuffleboard {
                         shooterValues.addBoolean("CameraHasSpeed", () -> m_shooter.useCameraSpeed);
 
                         ShuffleboardLayout shooterValues1 = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("ShooterValues1", BuiltInLayouts.kList).withPosition(4,0)
+                                        .getLayout("ShooterValues1", BuiltInLayouts.kList).withPosition(4, 0)
                                         .withSize(2, 2).withProperties(Map.of("Label position", "LEFT")); // labels
 
                         shooterValues1.addNumber("VertOffset", () -> m_tilt.targetVerticalOffset);
@@ -448,7 +446,7 @@ public class SetupShuffleboard {
                         shooterValues1.addNumber("CameraAngle", () -> m_tilt.getCameraAngle());
 
                         ShuffleboardLayout shooterValues2 = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("ShooterStates", BuiltInLayouts.kGrid).withPosition(8,3)
+                                        .getLayout("ShooterStates", BuiltInLayouts.kGrid).withPosition(8, 3)
                                         .withSize(2, 2).withProperties(Map.of("Label position", "TOP")); // labels
 
                         shooterValues2.addBoolean("AtSpeed", () -> m_shooter.atSpeed());
@@ -476,7 +474,7 @@ public class SetupShuffleboard {
                         transportValues.add("Cmd", m_transport);
 
                         ShuffleboardLayout transportValues1 = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("TransportStates", BuiltInLayouts.kGrid).withPosition(8,0)
+                                        .getLayout("TransportStates", BuiltInLayouts.kGrid).withPosition(8, 0)
                                         .withSize(2, 2).withProperties(Map.of("Label position", "TOP")); // label
 
                         transportValues1.addBoolean("Arm Up", () -> m_intake.getArmRaised());
@@ -612,7 +610,7 @@ public class SetupShuffleboard {
                         scheduler.add("Scheduler", CommandScheduler.getInstance());
 
                         runCan = Shuffleboard.getTab("Can+Sols").add("CanChk", false).withWidget("Toggle Switch")
-                                        .withPosition(8, 2).withSize(1, 1).getEntry();
+                                        .withPosition(9, 2).withSize(1, 1).getEntry();
 
                         ShuffleboardLayout canBus = Shuffleboard.getTab("Can+Sols")
                                         .getLayout("Canbus", BuiltInLayouts.kGrid).withPosition(3, 2).withSize(4, 2)
@@ -635,11 +633,12 @@ public class SetupShuffleboard {
                         canBus.addBoolean("IntakeConnected (10)", () -> m_intake.intakeMotorConnected);
 
                         ShuffleboardLayout sols = Shuffleboard.getTab("Can+Sols")
-                                        .getLayout("Solenoids", BuiltInLayouts.kGrid).withPosition(7, 2).withSize(1, 2)
+                                        .getLayout("Solenoids", BuiltInLayouts.kGrid).withPosition(7, 2).withSize(2, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         sols.addString("Intake Sol", () -> " pins 2 and 3");
                         sols.addString("Climber Sol", () -> " pins 4 and 5");
+                        sols.addString("Ratchet", () -> " pins 6 and 7");                        
                         sols.addString("ControlPanel Sol", () -> " pins 0 and 1");
 
                 }
@@ -771,8 +770,6 @@ public class SetupShuffleboard {
                         cpValues.addBoolean("CP Arm Down", () -> m_controlPanel.getArmLowered());
                         cpValues.addBoolean("Connected (16)", () -> m_controlPanel.controlPanelMotorConnected);
 
- 
-
                         /**
                          * 
                          * Climber
@@ -785,6 +782,8 @@ public class SetupShuffleboard {
 
                         climberCommands.add("ArmRaise", new ClimberArm(m_climber, false));
                         climberCommands.add("ArmLower", new ClimberArm(m_climber, true));
+                        climberCommands.add("RatchetUnlock", new ClimberRatchet(m_climber, false));
+                        climberCommands.add("RatchetLock", new ClimberRatchet(m_climber, true));
                         climberCommands.add("Climber", m_climber);
 
                         ShuffleboardLayout climberValues = Shuffleboard.getTab("SetupClimber_CP")
@@ -796,6 +795,8 @@ public class SetupShuffleboard {
                         climberValues.addNumber("Motor Out", () -> m_climber.getMotorOut());
                         climberValues.addBoolean("Connected (15)", () -> m_climber.climberMotorConnected);
                         climberValues.addBoolean("Climber Arm Up", () -> m_climber.getArmRaised());
+                        climberValues.addBoolean("RatchetLocked", () -> m_climber.getRatchetLocked());
+                        climberValues.addBoolean("RatchetUnlocked", () -> m_climber.getRatchetUnlocked());
 
                 }
                 if (m_showPower && !liveMatch) {
