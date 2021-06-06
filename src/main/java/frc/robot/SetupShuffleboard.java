@@ -40,6 +40,8 @@ import frc.robot.commands.RobotDrive.ResetPose;
 import frc.robot.commands.RobotDrive.StopRobot;
 import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.ClearShFaults;
+import frc.robot.commands.Shooter.RunShooter;
+import frc.robot.commands.Shooter.SetShooterSpeed;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
@@ -409,15 +411,14 @@ public class SetupShuffleboard {
 
                 {
                         ShuffleboardLayout shooterCommands = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("MAXMPS 50", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
+                                        .getLayout("MAXMPS 50", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
                                                                                            // commands
 
-                        shooterCommands.add("Shooter 50 mps", new StartShooterWheels(m_shooter, 50));
+                        shooterCommands.add("Shooter Start", new RunShooter(m_shooter));
                         shooterCommands.add("Stop", new StopShooterWheels(m_shooter));
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
-                        shooterCommands.add("Inc 2 mpersec", new ChangeShooterSpeed(m_shooter, 2));
-                        shooterCommands.add("Dec 2 mpersec ", new ChangeShooterSpeed(m_shooter, -2));
+                        shooterCommands.add("Set Speed", new SetShooterSpeed(m_shooter));
                         shooterCommands.add("Shoot", new ShootCells(m_shooter, m_transport, m_compressor, 0));
                         shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
                         shooterCommands.add("Cmd", m_shooter);
@@ -437,8 +438,8 @@ public class SetupShuffleboard {
                         shooterValues.addBoolean("CameraHasSpeed", () -> m_shooter.useCameraSpeed);
 
                         ShuffleboardLayout shooterValues1 = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("ShooterValues1", BuiltInLayouts.kList).withPosition(2, 3)
-                                        .withSize(2, 3).withProperties(Map.of("Label position", "LEFT")); // labels
+                                        .getLayout("ShooterValues1", BuiltInLayouts.kList).withPosition(4,0)
+                                        .withSize(2, 2).withProperties(Map.of("Label position", "LEFT")); // labels
 
                         shooterValues1.addNumber("VertOffset", () -> m_tilt.targetVerticalOffset);
                         shooterValues1.addNumber("HorOffset", () -> m_turret.targetHorizontalOffset);
@@ -447,7 +448,7 @@ public class SetupShuffleboard {
                         shooterValues1.addNumber("CameraAngle", () -> m_tilt.getCameraAngle());
 
                         ShuffleboardLayout shooterValues2 = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("ShooterStates", BuiltInLayouts.kGrid).withPosition(4, 0)
+                                        .getLayout("ShooterStates", BuiltInLayouts.kGrid).withPosition(8,3)
                                         .withSize(2, 2).withProperties(Map.of("Label position", "TOP")); // labels
 
                         shooterValues2.addBoolean("AtSpeed", () -> m_shooter.atSpeed());
@@ -475,7 +476,7 @@ public class SetupShuffleboard {
                         transportValues.add("Cmd", m_transport);
 
                         ShuffleboardLayout transportValues1 = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("TransportStates", BuiltInLayouts.kGrid).withPosition(4, 2)
+                                        .getLayout("TransportStates", BuiltInLayouts.kGrid).withPosition(8,0)
                                         .withSize(2, 2).withProperties(Map.of("Label position", "TOP")); // label
 
                         transportValues1.addBoolean("Arm Up", () -> m_intake.getArmRaised());

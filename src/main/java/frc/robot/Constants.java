@@ -157,7 +157,7 @@ public final class Constants {
    public static class HoodedShooterConstants {
 
       public static final double MAX_SHOOTER_RPM = 5700;
-      public static final double MAX_SHOOTER_FPS = 120;
+      public static final double MAX_SHOOTER_MPS = 80;//
 
       /**
        * Tilt axis is a leadscrew driven through a 14T to 28T or 2:1 belt and a 10:1

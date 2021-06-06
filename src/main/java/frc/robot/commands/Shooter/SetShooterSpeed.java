@@ -20,9 +20,15 @@ public class SetShooterSpeed extends InstantCommand {
     m_mps = mps;
   }
 
+  public SetShooterSpeed(RevShooterSubsystem shooter) {
+    // Use addRequirements() here to declare subsystem dependencies.
+    m_shooter = shooter;
+
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooter.requiredMps = m_mps;
+    m_shooter.requiredMps = m_shooter.shooterSpeed.getDouble(1);
   }
 }

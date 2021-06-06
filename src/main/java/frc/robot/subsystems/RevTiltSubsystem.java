@@ -97,7 +97,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         }
 
- //       tuneGains();
+        tuneGains();
         setTiltLockGains();
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);

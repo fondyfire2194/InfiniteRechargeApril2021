@@ -68,7 +68,7 @@ public class Pref {
 
     // shooter velocity
 
-    prefDict.put("sHFf", .00017);
+    prefDict.put("sHFf", .0003);
     prefDict.put("sHKp", 3e-4);
     prefDict.put("sHkI", .0);
     prefDict.put("sHKd", .0);
@@ -83,7 +83,6 @@ public class Pref {
     prefDict.put("dRStKp", .1);
 
     prefDict.put("dRTune", 0.);
-
 
   }
 

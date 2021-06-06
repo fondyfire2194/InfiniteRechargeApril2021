@@ -76,7 +76,7 @@ public class CalculateTargetDistance extends CommandBase {
 
     heightDifference = targetHeight - cameraHeight;
 
-    if (m_limelight.getIsTargetFound() || RobotBase.isSimulation()) {
+    if (m_limelight.useVision && (m_limelight.getIsTargetFound() || RobotBase.isSimulation())) {
 
       m_limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
 
@@ -100,7 +100,7 @@ public class CalculateTargetDistance extends CommandBase {
     }
     m_shooter.shotDistance = Math.sqrt((m_shooter.calculatedCameraDistance * m_shooter.calculatedCameraDistance)
         + (FieldConstants.SHOT_HEIGHT_SQUARED));
-    m_shooter.requiredMps = m_shooter.calculateFPSFromDistance(m_shooter.shotDistance);
+//    m_shooter.requiredMps = m_shooter.calculateFPSFromDistance(m_shooter.shotDistance);
   }
 
   // Called once the command ends or is interrupted.

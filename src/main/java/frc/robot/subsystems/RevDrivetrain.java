@@ -115,7 +115,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         mLeftPidController.setOutputRange(-.5, .5, POSITION_SLOT);
 
-        setGains();
+        tuneGains();
 
         mLeftEncoder.setPosition(0);
         mRightEncoder.setPosition(0);
@@ -453,9 +453,9 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         kMaxOutput = .75;// 266 mpm = 4 mps limiting to 3mps
         kMinOutput = -.75;
 
-        maxVel = 180;// mpm
-        maxAcc = 20;// mpmpsec
-        allowedErr = .2;
+        maxVel = 180;// mpm 3/sec
+        maxAcc = 10;// mpmpsec
+        allowedErr = .1;
 
     }
 

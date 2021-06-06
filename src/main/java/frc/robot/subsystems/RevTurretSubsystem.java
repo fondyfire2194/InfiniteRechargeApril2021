@@ -70,7 +70,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         mEncoder.setPosition(0);
         aimCenter();
 
- //       tuneGains();
+        tuneGains();
         setTurretLockGains();
         setSoftwareLimits();
 

@@ -33,8 +33,8 @@ public class ChangeShooterSpeed extends InstantCommand {
 
     double newSpeed = currentSpeed += m_fpsChange;
 
-    if (newSpeed > HoodedShooterConstants.MAX_SHOOTER_FPS)
-      newSpeed = HoodedShooterConstants.MAX_SHOOTER_FPS;
+    if (newSpeed > HoodedShooterConstants.MAX_SHOOTER_MPS)
+      newSpeed = HoodedShooterConstants.MAX_SHOOTER_MPS;
 
     if (newSpeed < 0)
       newSpeed = 0;

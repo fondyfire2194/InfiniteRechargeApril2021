@@ -10,21 +10,14 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevShooterSubsystem;
 
-public class StartShooterWheels extends CommandBase {
+public class RunShooter extends CommandBase {
   /**
    * Creates a new StartShooter.
    */
   private RevShooterSubsystem m_shooter;
   private double m_mpersec;
 
-  public StartShooterWheels(RevShooterSubsystem shooter, double mpersec) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooter);
-    m_shooter = shooter;
-    m_mpersec = mpersec;
-  }
-
-  public StartShooterWheels(RevShooterSubsystem shooter) {
+  public RunShooter(RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooter);
     m_shooter = shooter;

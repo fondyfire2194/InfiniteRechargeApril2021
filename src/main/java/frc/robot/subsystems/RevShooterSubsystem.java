@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
@@ -14,7 +15,9 @@ import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.FlywheelSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -42,6 +45,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean useCameraSpeed;
     public double cameraAngleCalculatedSpeed;
     public boolean useCameraAngleSpeed;
+    public NetworkTableEntry shooterSpeed;
+    public double useSpeed;
 
     private final int VELOCITY_SLOT = 0;
     /**
@@ -51,7 +56,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
      * 
      * 
      * so circ = (2 *pi)/3 = 2.1 ft = .638 meters per rev max speed 80 revs per sec
-     * so about 50 meters per sec max Angle range is 30 to 1 or 2?
+     * so about 50 meters per sec 3000 per minute = max Angle range is 30 to around 1
      */
     public final double metersPerRev = .638;
 
@@ -69,7 +74,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private int speedBaseDistance = 2;
     private int speedMaxDistance = 14;
 
-    public double[] shooterFPSFromCamera = new double[] { 5, 8, 10, 15, 15.5, 20, 22, 24, 25, 30, 35, 40, 45, 50 };
+    public double[] shooterMPSFromCamera = new double[] { 5, 8, 10, 15, 15.5, 20, 22, 24, 25, 30, 35, 40, 45, 50 };
 
     /**
      * Tilt angle is the simplest way to determine shooter speed. Useful tilt angle
@@ -84,7 +89,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private int speedBaseAngle = 8;
     private int speedMaxAngle = 30;
 
-    public double[] shooterFPSfromCameraAngle = new double[] { 50, 47.5, 45, 42.5, 40, 37.5, 35, 32.5, 30, 27.5, 25,
+    public double[] shooterMPSfromCameraAngle = new double[] { 50, 47.5, 45, 42.5, 40, 37.5, 35, 32.5, 30, 27.5, 25,
             22.5, 20, 17.5, 15, 14.2, 12, 11, 10, 9, 8, 5, 2, 1 };
 
     // matching calculated tilt launch angles when on target 2 to 14 m.
@@ -133,8 +138,14 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             mSimulator = new FlywheelSimWrapper(FlywheelSimConstants.createSim(),
                     new RevMotorControllerSimWrapper(mLeftMotor), RevEncoderSimWrapper.create(mLeftMotor));
         }
-        requiredMps = 20;
-        setGains();
+        mEncoder.setPositionConversionFactor(metersPerRev);
+        mEncoder.setVelocityConversionFactor(metersPerRev / 60);
+
+        shooterSpeed = Shuffleboard.getTab("SetupShooter").addPersistent("ShooterSpeed", 3).withWidget("Number Slider")
+                .withPosition(0,3).withSize(7, 1).withProperties(Map.of("Min", 0, "Max", 50)).getEntry();
+
+
+        tuneGains();
 
     }
 
@@ -151,9 +162,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     }
 
     public void spinAtMetersPerSec(double metersPerSec) {
-        double rpm = (metersPerSec * 60) / metersPerRev;
-        requiredMps = rpm;
-        mPidController.setReference(rpm, ControlType.kVelocity, VELOCITY_SLOT);
+    
+        mPidController.setReference(metersPerSec, ControlType.kVelocity, VELOCITY_SLOT);
     }
 
     public void runShooter() {
@@ -178,9 +188,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         if (lastTuneOn)
             lastTuneOn = tuneOn;
 
-        if (useCameraSpeed && !cameraSpeedBypassed)
-            requiredMps = cameraCalculatedSpeed;
-
+        // if (useCameraSpeed && !cameraSpeedBypassed)
+        //     requiredMps = cameraCalculatedSpeed;
 
     }
 
@@ -325,16 +334,16 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
         double rem = tempAngle - base;
 
-        double baseSpeed = shooterFPSfromCameraAngle[baseI];
-        double upperSpeed = shooterFPSfromCameraAngle[baseI + 1];
-   
+        double baseSpeed = shooterMPSfromCameraAngle[baseI];
+        double upperSpeed = shooterMPSfromCameraAngle[baseI + 1];
+
         double speedRange = baseSpeed - upperSpeed;
 
         double speedAdder = speedRange * rem;
 
         cameraAngleCalculatedSpeed = baseSpeed - speedAdder;
 
-        useCameraAngleSpeed = true;
+     //   useCameraAngleSpeed = true;
 
         return cameraAngleCalculatedSpeed;
 
@@ -353,8 +362,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
             double rem = tempDistance - base;
 
-            double baseSpeed = shooterFPSFromCamera[baseI];
-            double upperSpeed = shooterFPSFromCamera[baseI + 1];
+            double baseSpeed = shooterMPSFromCamera[baseI];
+            double upperSpeed = shooterMPSFromCamera[baseI + 1];
 
             double speedRange = upperSpeed - baseSpeed;
 
@@ -362,7 +371,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
             cameraCalculatedSpeed = baseSpeed + speedAdder;
 
-            useCameraSpeed = true;
+   //         useCameraSpeed = true;
 
         } else {
 
@@ -375,7 +384,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private void setGains() {
         fixedSettings();
 
-        kFF = .00017;
+        kFF = .0003;//1/3000
         kP = 3e-4;
         kI = 0.0001;
         kD = 0;
