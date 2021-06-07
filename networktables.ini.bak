@@ -37,6 +37,5 @@ double "/Preferences/tURTune"=0
 double "/Preferences/tiLTune"=0
 double "/Preferences/tuLTune"=0
 double "/Shuffleboard/Intake/IntakeSpeed"=0.408859
-double "/Shuffleboard/Intake/ShooterSpeed"=0.2
 double "/Shuffleboard/SetupClimber_CP/CPSpeed"=0.31431
-double "/Shuffleboard/SetupShooter/ShooterSpeed"=12.61
+double "/Shuffleboard/SetupShooter/ShooterSpeed"=22.6854

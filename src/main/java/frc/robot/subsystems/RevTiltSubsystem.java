@@ -45,6 +45,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double targetAngle;
     private double inPositionBandwidth = .2;
     public double targetVerticalOffset;
+    public double driverVerticalOffset;
     public boolean validTargetSeen;
     public double adjustedTargetAngle;
     private final static double pivotDistance = 10.5;// inches
@@ -67,7 +68,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double motorEndpointDegrees;
     public int faultSeen;
     public double lockPIDOut;
-	public boolean visionOnTarget;
+    public boolean visionOnTarget;
 
     /**
      * 
@@ -111,7 +112,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         }
 
         setSoftwareLimits();
-        
 
         if (RobotBase.isSimulation()) {
             ElevatorSimConstants.kCarriageMass = .001;
@@ -294,17 +294,17 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     public void aimLower(double angle) {
-        if (targetVerticalOffset < maxAdjustShoot)
-            targetVerticalOffset += angle;
+        if (driverVerticalOffset < maxAdjustShoot)
+            driverVerticalOffset += angle;
     }
 
     public void aimHigher(double angle) {
-        if (targetVerticalOffset > -maxAdjustShoot)
-            targetVerticalOffset -= angle;
+        if (driverVerticalOffset > -maxAdjustShoot)
+            driverVerticalOffset -= angle;
     }
 
     public void aimCenter() {
-        targetVerticalOffset = 0;
+        driverVerticalOffset = 0;
     }
 
     /**

@@ -25,16 +25,16 @@ public class ReturnTiltTurret extends ParallelCommandGroup {
   private LimeLight m_limelight;
   private boolean m_on;
   private RevShooterSubsystem m_shooter;
-  private double m_fps;
+  private double m_mps;
 
   public ReturnTiltTurret(RevTurretSubsystem turret, double turretPosition, RevTiltSubsystem tilt, double tiltPosition,
-      LimeLight limelight, boolean on, RevShooterSubsystem shooter, double fps) {
+      LimeLight limelight, boolean on, RevShooterSubsystem shooter, double mps) {
     m_turret = turret;
     m_tilt = tilt;
     m_limelight = limelight;
     m_turretPosition = turretPosition;
     m_tiltPosition = tiltPosition;
-    m_fps = fps;
+    m_mps = mps;
     m_on = on;
     m_shooter = shooter;
     // Add your commands in the adddCommands() call, e.g. tilt

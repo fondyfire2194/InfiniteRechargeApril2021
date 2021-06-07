@@ -22,7 +22,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
+import frc.robot.Constants;
 import frc.robot.Pref;
+import frc.robot.Robot;
 import frc.robot.sim.ShooterSubsystem;
 
 public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsystem {
@@ -77,11 +79,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
      */
     private int speedBaseAngle = 0;
     private int speedMaxAngle = 30;
-    private double offsetMax = 5;
 
-    public double[] speedBreakAngles = new double[] { 0, 6, 12, 18, 24, 30, 32 };
+    public double[] speedBreakAngles = new double[] { 0, 6, 12, 18, 24, 30 };
+    public double[] speeedBreakOffset = new double[] { .1, 1, 2, 0, 0, 0 };
+    public double[] speedMPS = new double[] { 2, 5, 7, 15, 21, 32 };
 
-    public double[] speedMPS = new double[] { 5, 7, 15, 21, 32, 40, 42 };
+    public double[] shooterMPSfromCameraAngle = new double[] { 50, 47.5, 45, 42.5, 40, 37.5, 35, 32.5, 30, 27.5, 25 };
 
     public String[] shootColor = { "red", "yellow", "green" };
     public int shootColorNumber;
@@ -94,6 +97,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean leftMotorConnected;
     public boolean rightMotorConnected;
     public boolean allConnected;
+    public double cameraAngleCalculatedSpeed;
+    public boolean hideSliders = Constants.isMatch;
 
     public RevShooterSubsystem() {
 
@@ -124,12 +129,14 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mEncoder.setPositionConversionFactor(metersPerRev);
         mEncoder.setVelocityConversionFactor(metersPerRev / 60);
 
-        shooterSpeed = Shuffleboard.getTab("SetupShooter").addPersistent("ShooterSpeed", 3).withWidget("Number Slider")
-                .withPosition(0, 3).withSize(5, 1).withProperties(Map.of("Min", 0, "Max", 50)).getEntry();
+        if (!hideSliders) {
 
-        setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetupVertOffset", 0).withWidget("Number Slider")
-                .withPosition(5, 3).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", 5)).getEntry();
+            setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetupVertOffset", 0).withWidget("Number Slider")
+                    .withPosition(5, 3).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", 5)).getEntry();
 
+            shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
+                    .withPosition(0, 3).withSize(5, 1).withProperties(Map.of("Min", 0, "Max", 50)).getEntry();
+        }
         tuneGains();
         requiredMps = 12;
     }
@@ -164,6 +171,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         // This method will be called once per scheduler run
 
         checkTune();
+
+        // calculateMPSandYOffset(shooterSpeed.getDouble(0));
 
     }
 
@@ -201,7 +210,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     }
 
     public double getRightAmps() {
-        return 0;// mRightMotor.getOutputCurrent();
+        return mRightMotor.getOutputCurrent();
     }
 
     @Override
@@ -295,24 +304,86 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             angle = speedBaseAngle;
         if (angle >= speedMaxAngle)
             angle = speedMaxAngle;
-        double speed = 0;
+
+        double baseSpeed = 0;
         double offset = 0;
         double angleRange = 0;
+        double offsetRange = 0;
         double rangeBaseAngle = 0;
-        int j = speedBreakAngles.length;
+        double speedRange = 0;
+        int j = speedBreakAngles.length - 1;
+        SmartDashboard.putNumber("ILGHT", j);
         for (int i = 0; i < j; i++) {
-            if (angle >= speedBreakAngles[i] && angle < speedBreakAngles[i + 1]) {
-                speed = speedMPS[i];
+            if (angle >= speedBreakAngles[i] && angle <= speedBreakAngles[i + 1]) {
+                baseSpeed = speedMPS[i];
                 rangeBaseAngle = speedBreakAngles[i];
+                offsetRange = speeedBreakOffset[i];
                 angleRange = speedBreakAngles[i + 1] - speedBreakAngles[i];
+                speedRange = speedMPS[i + 1] - speedMPS[i];
+                SmartDashboard.putNumber("I", i);
+                SmartDashboard.putNumber("IAR", angleRange);
+                SmartDashboard.putNumber("IOR", offsetRange);
+                SmartDashboard.putNumber("ISPR", speedRange);
                 break;
             }
         }
-        temp[0] = speed;
-        offset = (offsetMax * (angle - rangeBaseAngle)) / angleRange;
-        temp[1] = offset;
+
+        offset = (offsetRange * (angle - rangeBaseAngle)) / angleRange;
+        if (offsetRange != 0) {
+            temp[1] = offset;
+            temp[0] = baseSpeed;
+        } else {
+            temp[1] = 0;
+            temp[0] = baseSpeed + (speedRange * (angle - rangeBaseAngle)) / angleRange;
+        }
+        SmartDashboard.putNumber("IOF", temp[1]);
+        SmartDashboard.putNumber("ISPD", temp[0]);
 
         return temp;
+
+    }
+
+    public double calculateMPSFromAngle(double angle) {
+        /**
+         * Speed will decrease as angle increases Need to find the base of the speed
+         * range for the angle then the difference between that and the next speed and
+         * subtract the amount into that range from the base.
+         * 
+         * speedBaseAngle = 8;speedMaxAngle = 30;
+         * 
+         * shooterMPSfromCameraAngle = 50, 47.5,45,42.5 40, 37.5,35, 30, 25, 20, 15, 12,
+         * 18, 8, 5
+         * 
+         * So an angle of 15
+         *
+         */
+
+        if (angle < speedBaseAngle)
+            angle = speedBaseAngle;
+        if (angle > speedMaxAngle)
+            angle = speedMaxAngle;
+
+        // find index into array since it doesn't start at 0
+
+        double tempAngle = angle - speedBaseAngle;
+
+        int baseI = (int) tempAngle;
+        double base = (double) baseI;
+
+        double rem = tempAngle - base;
+
+        double baseSpeed = shooterMPSfromCameraAngle[baseI];
+        double upperSpeed = shooterMPSfromCameraAngle[baseI + 1];
+
+        double speedRange = baseSpeed - upperSpeed;
+
+        double speedAdder = speedRange * rem;
+
+        cameraAngleCalculatedSpeed = baseSpeed - speedAdder;
+
+        useCameraAngleSpeed = true;
+
+        return cameraAngleCalculatedSpeed;
 
     }
 

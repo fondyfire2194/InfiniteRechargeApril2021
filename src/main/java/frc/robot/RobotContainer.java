@@ -26,6 +26,7 @@ import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellTransport.CellBeltPulseSelect;
+import frc.robot.commands.CellTransport.RollersPulseSelect;
 import frc.robot.commands.Climber.JogClimber;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
 import frc.robot.commands.ControlPanel.PositionNumberRevs;
@@ -47,7 +48,6 @@ import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Tilt.TiltWaitForStop;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.TurretJog;
-import frc.robot.commands.Turret.TurretShift;
 import frc.robot.commands.Turret.TurretWaitForStop;
 import frc.robot.commands.Vision.ToggleCamera;
 import frc.robot.subsystems.CellTransportSubsystem;
@@ -105,7 +105,7 @@ public class RobotContainer {
 
       public AutoFactory m_autoFactory;
 
-      public boolean isMatch = false;
+      public boolean isMatch = Constants.isMatch;
 
       public boolean clickUp;
 
@@ -261,13 +261,13 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 12).whenPressed(
                         new ShieldGenShot(m_shooter, m_turret, m_tilt, m_transport, m_limelight, m_compressor));
 
-            // driverUpButton.whenPressed(
+            driverUpButton.whenPressed(() -> m_tilt.aimHigher(.25));
 
-            // driverDownButton.whenPressed(
+            driverDownButton.whenPressed(() -> m_tilt.aimLower(.25));
 
-            driverLeftButton.whenPressed(new TurretShift(m_turret, .1, m_shooter));// shoot right
+            driverLeftButton.whenPressed(() -> m_turret.aimFurtherLeft(.25));// shoot right
 
-            driverRightButton.whenPressed(new TurretShift(m_turret, -.1, m_shooter));// shoot left
+            driverRightButton.whenPressed(() -> m_turret.aimFurtherRight(.25));// shoot left
 
             /**
              * Co driver has miscellaneous functions
@@ -309,9 +309,9 @@ public class RobotContainer {
 
             setupRightButton.whileHeld(new CellBeltPulseSelect(m_transport, false, 1, .25, 1, -.25));
 
-            // setupLeftTrigger.whileHeld
+            setupLeftTrigger.whileHeld(new RollersPulseSelect(m_transport, .25, .5, .25, .15));
 
-            // setupRightTrigger.whileHeld
+            setupRightTrigger.whileHeld(new RollersPulseSelect(m_transport, .25, .5, .25, 0));
 
             setupBack.whileHeld(new StartIntake(m_intake)).whenReleased(new StopIntake(m_intake));
 

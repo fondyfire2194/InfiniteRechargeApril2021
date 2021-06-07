@@ -126,9 +126,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
       cpSpeed = Shuffleboard.getTab("SetupClimber_CP").addPersistent("CPSpeed", .2).withWidget("Number Slider")
             .withPosition(8, 0).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", .75)).getEntry();
 
-            // NetworkTableEntry intakeSpeed = Shuffleboard.getTab("SetupClimber_CP").add("CPSpeed", .2).withWidget("Number Slider")
-            // .withPosition(8,3 ).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", .75)).getEntry();
-
+ 
       lowerArm();
 
    }

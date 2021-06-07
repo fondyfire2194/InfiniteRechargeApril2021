@@ -43,6 +43,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double targetAngle;
     private double inPositionBandwidth = .25;
     public double targetHorizontalOffset;
+    public double driverHorizontalOffset;
+
     public boolean validTargetSeen;
     public double adjustedTargetAngle;
 
@@ -214,17 +216,17 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     }
 
     public void aimFurtherLeft(double angle) {
-        if (targetHorizontalOffset > -maxAdjustShoot)
-            targetHorizontalOffset -= angle;
+        if (driverHorizontalOffset > -maxAdjustShoot)
+            driverHorizontalOffset -= angle;
     }
 
     public void aimFurtherRight(double angle) {
-        if (targetHorizontalOffset < maxAdjustShoot)
-            targetHorizontalOffset += angle;
+        if (driverHorizontalOffset < maxAdjustShoot)
+            driverHorizontalOffset += angle;
     }
 
     public void aimCenter() {
-        targetHorizontalOffset = 0;
+        driverHorizontalOffset = 0;
     }
 
     @Override
@@ -359,7 +361,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     }
 
     private void checkTune() {
-        
+
         tuneOn = Pref.getPref("tURTune") != 0.;
 
         if (tuneOn && !lastTuneOn) {
@@ -370,7 +372,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         if (lastTuneOn)
             lastTuneOn = tuneOn;
 
-//lock controller
+        // lock controller
 
         lockTuneOn = Pref.getPref("tULTune") != 0.;
 

@@ -190,6 +190,11 @@ public class SetupShuffleboard {
                         intakeValues.add("ArmRaise", new IntakeArm(m_intake, false));
                         intakeValues.add("ArmLower", new IntakeArm(m_intake, true));
 
+                        Shuffleboard.getTab("Intake").add("Intake", intakeFeed).withWidget(BuiltInWidgets.kCameraStream)
+                        .withPosition(2, 0).withSize(6, 4)
+                        .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
+
+
                         Shuffleboard.getTab("Pre-Round").add("Intake", intakeFeed)
                                         .withWidget(BuiltInWidgets.kCameraStream).withPosition(4, 2).withSize(3, 2)
                                         .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
@@ -243,10 +248,7 @@ public class SetupShuffleboard {
 
                 }
 
-                Shuffleboard.getTab("Intake").add("Intake", intakeFeed).withWidget(BuiltInWidgets.kCameraStream)
-                                .withPosition(2, 0).withSize(6, 4)
-                                .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
-
+   
                 /**
                  * 
                  * Shooter Turret
@@ -286,7 +288,7 @@ public class SetupShuffleboard {
                         turretValues.addNumber("Vision Offset", () -> m_turret.targetHorizontalOffset);
                         turretValues.addNumber("AdjTarget", () -> m_turret.adjustedTargetAngle);
                         turretValues.addNumber("Vision Error", () -> m_limelight.getdegRotationToTarget());
-                        turretValues.addNumber("HorOff+Right", () -> m_limelight.horizontalOffset);
+                        turretValues.addNumber("DriverOffset", () -> m_turret.driverHorizontalOffset);
 
                         ShuffleboardLayout turretValues3 = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 3)
@@ -367,7 +369,7 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("Vision Error", () -> m_limelight.getdegVerticalToTarget());
                         tiltValues.addNumber("MotorDeg", () -> m_tilt.getMotorDegrees());
                         tiltValues.addNumber("MotorTarget", () -> m_tilt.motorEndpointDegrees);
-                        tiltValues.addNumber("VertOff+Low", () -> m_limelight.verticalOffset);
+                        tiltValues.addNumber("DriverOffset", () -> m_tilt.driverVerticalOffset);
 
                         ShuffleboardLayout tiltValues3 = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 3)
@@ -425,9 +427,9 @@ public class SetupShuffleboard {
                         shooterValues.addNumber("LeftMPS", () -> m_shooter.getMPS());
                         shooterValues.addNumber("Left PCT", () -> m_shooter.getLeftPctOut());
                         shooterValues.addNumber("LeftAmps", () -> m_shooter.getLeftAmps());
-                        shooterValues.addNumber("RightRPM", () -> m_shooter.getRightRPM());                       
+                        shooterValues.addNumber("RightRPM", () -> m_shooter.getRightRPM());
                         shooterValues.addNumber("RightAmps", () -> m_shooter.getRightAmps());
-                        shooterValues.addNumber("SpeedCommand FPS", () -> m_shooter.requiredMps);
+                        shooterValues.addNumber("SpeedCommand MPS", () -> m_shooter.requiredMps);
                         shooterValues.addNumber("LeftFaults", () -> m_shooter.getLeftFaults());
                         shooterValues.addNumber("RightFaults", () -> m_shooter.getRightFaults());
                         shooterValues.addBoolean("CameraHasSpeed", () -> m_shooter.useCameraSpeed);
@@ -440,6 +442,8 @@ public class SetupShuffleboard {
 
                         shooterValues1.addNumber("VertOffset", () -> m_tilt.targetVerticalOffset);
                         shooterValues1.addNumber("HorOffset", () -> m_turret.targetHorizontalOffset);
+                        shooterValues1.addNumber("DriverVOffset", () -> m_tilt.driverVerticalOffset);
+                        shooterValues1.addNumber("DriverHOffset", () -> m_turret.driverHorizontalOffset);
 
                         shooterValues1.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
                         shooterValues1.addNumber("CameraAngle", () -> m_tilt.getCameraAngle());
@@ -452,7 +456,7 @@ public class SetupShuffleboard {
 
                 if (m_showTransport && !liveMatch) {
                         ShuffleboardLayout transportValues = Shuffleboard.getTab("SetupTransport")
-                                        .getLayout("TransportValues", BuiltInLayouts.kList).withPosition(6, 0)
+                                        .getLayout("TransportValues", BuiltInLayouts.kList).withPosition(0, 0)
                                         .withSize(2, 3).withProperties(Map.of("Label position", "LEFT")); // labels
                                                                                                           // for
 
@@ -468,7 +472,7 @@ public class SetupShuffleboard {
                         transportValues.add("Cmd", m_transport);
 
                         ShuffleboardLayout transportValues1 = Shuffleboard.getTab("SetupTransport")
-                                        .getLayout("TransportStates", BuiltInLayouts.kGrid).withPosition(8, 0)
+                                        .getLayout("TransportStates", BuiltInLayouts.kGrid).withPosition(3, 0)
                                         .withSize(2, 2).withProperties(Map.of("Label position", "TOP")); // label
 
                         transportValues1.addBoolean("Arm Up", () -> m_intake.getArmRaised());

@@ -34,7 +34,7 @@ public class CalculateSpeedAndOffset extends CommandBase {
   public void execute() {
     double[] temp = new double[] { 0, 0 };
     if (!m_shooter.useSetupSlider) {
-      temp = m_shooter.calculateMPSandYOffset(m_tilt.getCameraAngle());
+      temp = m_shooter.calculateMPSandYOffset(m_tilt.getCameraAngle() - m_tilt.targetVerticalOffset);
       temp[0] = 0;
       temp[1] = 0;
     } else {
