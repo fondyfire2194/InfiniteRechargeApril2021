@@ -30,9 +30,9 @@ public class StopShoot extends InstantCommand {
   @Override
   public void initialize() {
     m_transport.runLeftBeltMotor(0.);
+    m_transport.runRightBeltMotor(0.);   
     m_transport.runFrontRollerMotor(0.);
     m_transport.runRearRollerMotor(0.);
     m_shooter.spinAtRpm(0);
-    m_shooter.cameraSpeedBypassed = false;
   }
 }

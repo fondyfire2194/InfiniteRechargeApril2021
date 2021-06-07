@@ -16,8 +16,8 @@ import frc.robot.ShootData;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
@@ -48,19 +48,13 @@ public class AutoMode1 extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
-                super(new ParallelCommandGroup(new SetTiltOffset(tilt, ShootData.getTiltOffset(shootNumber)),
-                                new SetTurretOffset(turret, ShootData.getTurretOffset(shootNumber)),
-                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
+                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
 
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)),
 
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)))
 
-                                                .deadlineWith(new StartIntake(intake),
-                                                                new StartShooterWheels(shooter, shooter
-                                                                                .calculateFPSFromDistance(ShootData
-                                                                                                .getShootDistance(
-                                                                                                                shootNumber)))),
+                                                .deadlineWith(new StartIntake(intake), new RunShooter(shooter)),
 
                                 // shoot 5
 

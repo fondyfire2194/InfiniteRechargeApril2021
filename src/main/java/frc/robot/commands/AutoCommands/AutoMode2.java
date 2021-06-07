@@ -16,8 +16,8 @@ import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
@@ -49,13 +49,10 @@ public class AutoMode2 extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
 
-                super(new ParallelCommandGroup(new SetTiltOffset(tilt, ShootData.getTiltOffset(shootNumber)),
-                                new SetTurretOffset(turret, ShootData.getTurretOffset(shootNumber)),
+                super(new ParallelCommandGroup(
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)),
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)))
-                                                .deadlineWith(new StartShooterWheels(shooter,
-                                                                shooter.calculateFPSFromDistance(ShootData
-                                                                                .getShootDistance(shootNumber)))),
+                                                .deadlineWith(new RunShooter(shooter)),
 
                                 // shoot 6 while moving
 

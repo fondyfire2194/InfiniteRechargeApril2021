@@ -39,14 +39,11 @@ import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.RobotDrive.ResetPose;
 import frc.robot.commands.RobotDrive.StopRobot;
-import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.RunShooter;
-import frc.robot.commands.Shooter.SetShooterSpeed;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
-import frc.robot.commands.Shooter.StopShooterWheels;
+import frc.robot.commands.Shooter.ToggleShooterSpeedSource;
 import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
@@ -90,13 +87,13 @@ public class SetupShuffleboard {
         private boolean m_showTilt = true;
         private boolean m_showShooter = true;
         private boolean m_showRobot = true;
+        private boolean m_showTransport = true;
         private boolean m_robotTune = false;
         private boolean m_showClimberControlPanel = true;
         private boolean m_showVision = true;
         private boolean m_showTrajectory = false;
         private boolean m_showSubsystems = true;
-        private boolean m_showPower = true;
-        private boolean m_showButtons = false;
+        private boolean m_showPower = false;
         private HttpCamera LLFeed;
         private UsbCamera intakeFeed;
         public double timeToStart;
@@ -413,12 +410,11 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
                                                                                            // commands
 
-                        shooterCommands.add("Shooter Start", new RunShooter(m_shooter));
-                        shooterCommands.add("Stop", new StopShooterWheels(m_shooter));
+                        shooterCommands.add("Shooter Motor Start", new RunShooter(m_shooter));
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
-                        shooterCommands.add("Set Speed", new SetShooterSpeed(m_shooter));
                         shooterCommands.add("Shoot", new ShootCells(m_shooter, m_transport, m_compressor, 0));
                         shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
+                        shooterCommands.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter));
                         shooterCommands.add("Cmd", m_shooter);
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
@@ -429,15 +425,18 @@ public class SetupShuffleboard {
                         shooterValues.addNumber("LeftMPS", () -> m_shooter.getMPS());
                         shooterValues.addNumber("Left PCT", () -> m_shooter.getLeftPctOut());
                         shooterValues.addNumber("LeftAmps", () -> m_shooter.getLeftAmps());
+                        shooterValues.addNumber("RightRPM", () -> m_shooter.getRightRPM());                       
                         shooterValues.addNumber("RightAmps", () -> m_shooter.getRightAmps());
                         shooterValues.addNumber("SpeedCommand FPS", () -> m_shooter.requiredMps);
                         shooterValues.addNumber("LeftFaults", () -> m_shooter.getLeftFaults());
                         shooterValues.addNumber("RightFaults", () -> m_shooter.getRightFaults());
                         shooterValues.addBoolean("CameraHasSpeed", () -> m_shooter.useCameraSpeed);
+                        shooterValues.addBoolean("SpeedFromSlider", () -> m_shooter.useSetupSlider);
 
                         ShuffleboardLayout shooterValues1 = Shuffleboard.getTab("SetupShooter")
+
                                         .getLayout("ShooterValues1", BuiltInLayouts.kList).withPosition(4, 0)
-                                        .withSize(2, 2).withProperties(Map.of("Label position", "LEFT")); // labels
+                                        .withSize(2, 3).withProperties(Map.of("Label position", "LEFT")); // labels
 
                         shooterValues1.addNumber("VertOffset", () -> m_tilt.targetVerticalOffset);
                         shooterValues1.addNumber("HorOffset", () -> m_turret.targetHorizontalOffset);
@@ -445,19 +444,14 @@ public class SetupShuffleboard {
                         shooterValues1.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
                         shooterValues1.addNumber("CameraAngle", () -> m_tilt.getCameraAngle());
 
-                        ShuffleboardLayout shooterValues2 = Shuffleboard.getTab("SetupShooter")
-                                        .getLayout("ShooterStates", BuiltInLayouts.kGrid).withPosition(8, 3)
-                                        .withSize(2, 2).withProperties(Map.of("Label position", "TOP")); // labels
+                        shooterValues1.addBoolean("AtSpeed", () -> m_shooter.atSpeed());
+                        shooterValues1.addBoolean("TuneOn", () -> (m_shooter.tuneOn && m_shooter.lastTuneOn));
+                        shooterValues1.addBoolean("BothConnected (6,7)", () -> m_shooter.allConnected);
 
-                        shooterValues2.addBoolean("AtSpeed", () -> m_shooter.atSpeed());
-                        shooterValues2.addBoolean("CameraBypassed", () -> m_shooter.cameraSpeedBypassed);
-                        shooterValues2.addBoolean("TuneOn", () -> (m_shooter.tuneOn && m_shooter.lastTuneOn));
-                        shooterValues2.addBoolean("LeftConnected (6)", () -> m_shooter.leftMotorConnected);
-                        shooterValues2.addBoolean("RightConnected (7)", () -> m_shooter.rightMotorConnected);
-                        shooterValues2.addBoolean(("RollersTurning"),
-                                        () -> Math.abs(m_transport.getFrontRoller()) > .1);
+                }
 
-                        ShuffleboardLayout transportValues = Shuffleboard.getTab("SetupShooter")
+                if (m_showTransport && !liveMatch) {
+                        ShuffleboardLayout transportValues = Shuffleboard.getTab("SetupTransport")
                                         .getLayout("TransportValues", BuiltInLayouts.kList).withPosition(6, 0)
                                         .withSize(2, 3).withProperties(Map.of("Label position", "LEFT")); // labels
                                                                                                           // for
@@ -473,7 +467,7 @@ public class SetupShuffleboard {
 
                         transportValues.add("Cmd", m_transport);
 
-                        ShuffleboardLayout transportValues1 = Shuffleboard.getTab("SetupShooter")
+                        ShuffleboardLayout transportValues1 = Shuffleboard.getTab("SetupTransport")
                                         .getLayout("TransportStates", BuiltInLayouts.kGrid).withPosition(8, 0)
                                         .withSize(2, 2).withProperties(Map.of("Label position", "TOP")); // label
 
@@ -488,8 +482,8 @@ public class SetupShuffleboard {
                                         () -> m_transport.rearRollerMotorConnected);
                         transportValues1.addBoolean("FrontRollerConnected (14)",
                                         () -> m_transport.frontRollerMotorConnected);
-
                 }
+
                 /**
                  * 
                  * Robot
@@ -638,7 +632,7 @@ public class SetupShuffleboard {
 
                         sols.addString("Intake Sol", () -> " pins 2 and 3");
                         sols.addString("Climber Sol", () -> " pins 4 and 5");
-                        sols.addString("Ratchet", () -> " pins 6 and 7");                        
+                        sols.addString("Ratchet", () -> " pins 6 and 7");
                         sols.addString("ControlPanel Sol", () -> " pins 0 and 1");
 
                 }
@@ -804,80 +798,6 @@ public class SetupShuffleboard {
                         PowerDistributionPanel pdp = new PowerDistributionPanel(1);
                         pdpWidget = misc.add("PDP", pdp).withWidget(BuiltInWidgets.kPowerDistributionPanel)
                                         .withPosition(0, 0).withSize(6, 4);
-
-                }
-
-                if (m_showButtons && !liveMatch) {
-
-                        Shuffleboard.getTab("ButtonsHelp").add("Driver JS", driverJS).withSize(2, 1)
-
-                                        .withPosition(0, 0); // place it in the top-left corner
-
-                        driverJS.setDefaultOption("1 - Hold Pick Up Cells", "1");
-                        driverJS.addOption("2 - Hold Shoot Cells", "2");
-                        driverJS.addOption("3 - Stop Shooter Wheels", "3");
-                        driverJS.addOption("4 - Toggle Limelight Views", "4");
-                        driverJS.addOption("5 - Not Assigned", "5");
-                        driverJS.addOption("6 - Drive Straight", "6");
-
-                        driverJS.addOption("7 - Straight Shoot", "7");
-                        driverJS.addOption("8 - Not Assigned", "8");
-                        driverJS.addOption("9 - Lob Shot", "9");
-                        driverJS.addOption("10 - Front of Port Inner Shot", "10");
-                        driverJS.addOption("11 - Trench Shot", "11");
-                        driverJS.addOption("12 - Shield Gen Shot", "12");
-
-                        driverJS.addOption("POV Up - Inc Shooter Speed", "13");
-                        driverJS.addOption("POV Down - Dec Shooter Speed", "14'");
-                        driverJS.addOption("POV Left - Not Assigned", "15");
-                        driverJS.addOption("POV Right - Not Assigned", "16");
-
-                        Shuffleboard.getTab("ButtonsHelp").add("CoDriverXBox", coDriverXBox).withSize(2, 1)
-                                        .withPosition(3, 0); //
-                        coDriverXBox.setDefaultOption("A - Lower Color Arm", "1");
-                        coDriverXBox.addOption("B - Raise Color Arm", "2");
-
-                        coDriverXBox.addOption("X - Turn Color Wheel", "3");
-                        coDriverXBox.addOption("Y - CP Position To Color", "4");
-
-                        coDriverXBox.addOption("Back - CP Position Number Turns", "5");
-                        coDriverXBox.addOption("Start - Not Assigned", "6");
-
-                        coDriverXBox.addOption("Left Trigger - Not Assigned", "7");
-                        coDriverXBox.addOption("Right Trigger - Not Assigned", "8");
-
-                        coDriverXBox.addOption("Right Bumper - Not Assigned", "9");
-                        coDriverXBox.addOption("Left Bumper - Not Assigned", "10");
-
-                        coDriverXBox.addOption("POV Up - Not Assigned", "11");
-                        coDriverXBox.addOption("POV Down - Not Assigned", "12");
-                        coDriverXBox.addOption("POV Left - Not Assigned", "13");
-                        coDriverXBox.addOption("POV Right - Not Assigned", "14");
-
-                        Shuffleboard.getTab("ButtonsHelp").add("SetupXBox", setUpXBox).withSize(2, 1)
-
-                                        .withPosition(6, 0); //
-
-                        setUpXBox.setDefaultOption("A - Hold Jog Turret LeftX", "1");
-
-                        setUpXBox.addOption("B - Not Assigned", "2");
-                        setUpXBox.addOption("X - Hold Jog Shooter RightY", "3");
-
-                        setUpXBox.addOption("Y - Hold Jog Tilt LeftY", "4");
-
-                        setUpXBox.addOption("Back - Intake Cells", "5");
-                        setUpXBox.addOption("Start - TiltToSwitch", "6");
-
-                        setUpXBox.addOption("Left Trigger - Climb", "7");
-                        setUpXBox.addOption("Right Trigger - Return Climber", "8");
-
-                        setUpXBox.addOption("Right Bumper - Hold Bypass Soft Limits", "9");
-                        setUpXBox.addOption("Left Bumper - Not Assigned", "10");
-
-                        setUpXBox.addOption("POV Up - Hold Run Belts", "11");
-                        setUpXBox.addOption("POV Down - Hold Run Rollers", "12");
-                        setUpXBox.addOption("POV Left - Hold Pulse Left Belt", "13");
-                        setUpXBox.addOption("POV Right - Hold Pulse Right Belt", "14");
 
                 }
 

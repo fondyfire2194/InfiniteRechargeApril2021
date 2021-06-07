@@ -107,17 +107,17 @@ public class ShootData {
         return shootValues[pointer][5] + shootValues[pointer][6];
     }
 
-    public static double getTurretOffset(int pointer) {
-        return shootValues[pointer][6];
-    }
+    // public static double getTurretOffset(int pointer) {
+    //     return shootValues[pointer][6];
+    // }
 
     public static double getTiltAngle(int pointer) {
         return shootValues[pointer][7] + shootValues[pointer][8];
     }
 
-    public static double getTiltOffset(int pointer) {
-        return shootValues[pointer][8];
-    }
+    // public static double getTiltOffset(int pointer) {
+    //     return shootValues[pointer][8];
+    // }
 
     private static double getOuterTiltAngle(double x, double y) {
         return Math.toDegrees(Math.atan(shotHeight / getFloorDistance(x, y)));

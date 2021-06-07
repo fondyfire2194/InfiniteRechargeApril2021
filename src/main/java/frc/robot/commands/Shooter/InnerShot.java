@@ -41,17 +41,13 @@ public class InnerShot extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
 
                 super(new LimelightSetPipeline(limelight, ShootData.getPipeline(1)),
-                                new SetTiltOffset(tilt, ShootData.getTiltOffset(1)),
 
                                 new ParallelCommandGroup(
                                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(1)),
 
-                                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(
-                                                                1))).deadlineWith(new StartShooterWheels(
-                                                                                shooter,
-                                                                                shooter.calculateFPSFromDistance(
-                                                                                                ShootData.getShootDistance(
-                                                                                                                1)))),
+                                                new PositionTurretToVision(turret, limelight,
+                                                                ShootData.getTurretAngle(1)))
+                                                                                .deadlineWith(new RunShooter(shooter)),
 
                                 new ParallelCommandGroup(new MessageCommand("Group2Started"),
                                                 new ShootCells(shooter, transport, compressor,

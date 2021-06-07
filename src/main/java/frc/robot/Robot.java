@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.Shooter.CalculateSpeedAndOffset;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Vision.AutoSwitchZoom;
 import frc.robot.commands.Vision.CalculateTargetDistance;
@@ -54,6 +55,8 @@ public class Robot extends TimedRobot {
     CameraServer.getInstance().startAutomaticCapture("Intake", 0);
 
     Shuffleboard.selectTab("Pre-Round");
+
+
 
   }
 
@@ -113,12 +116,13 @@ public class Robot extends TimedRobot {
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 
     Shuffleboard.selectTab("Competition");
-
+    Shuffleboard.startRecording();
     // get delay time
 
     m_startDelay = (double) m_robotContainer.m_setup.startDelayChooser.getSelected();
 
     autoChoice = m_robotContainer.m_setup.autoChooser.getSelected();
+
     //
 
     switch (autoChoice) {
@@ -145,7 +149,7 @@ public class Robot extends TimedRobot {
 
         break;
 
-        case 3:// Trench
+      case 3:// Trench
 
         setStartingPose(FieldMap.startPosition[3]);
         m_autoFactory.shootNumber = ShootData.trenchTwoBall;
@@ -153,7 +157,7 @@ public class Robot extends TimedRobot {
         m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
         break;
 
-        case 4:// Trench shoot and picking up while moving
+      case 4:// Trench shoot and picking up while moving
 
         setStartingPose(FieldMap.startPosition[3]);
         m_autoFactory.shootNumber = ShootData.trench3Ball;
@@ -203,15 +207,19 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    Shuffleboard.update();
+    Shuffleboard.startRecording();
     autoHasRun = false;
     if (RobotBase.isReal() && !m_robotContainer.m_tilt.positionResetDone)
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
     // CommandScheduler.getInstance().cancelAll();
 
-    new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_shooter)
-        .schedule(true);
+    // new CalculateTargetDistance(m_robotContainer.m_limelight,
+    // m_robotContainer.m_tilt, m_robotContainer.m_shooter)
+    // .schedule(true);
     // new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
-
+    new CalculateSpeedAndOffset(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_limelight)
+        .schedule(true);
   }
 
   /**

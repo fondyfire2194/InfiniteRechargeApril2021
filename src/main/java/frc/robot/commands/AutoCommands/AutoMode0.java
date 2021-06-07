@@ -15,8 +15,8 @@ import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
@@ -48,17 +48,13 @@ public class AutoMode0 extends SequentialCommandGroup {
 
                 super(new LimelightSetPipeline(limelight, ShootData.getPipeline(shootNumber)),
 
-                                new ParallelCommandGroup(new SetTiltOffset(tilt, ShootData.getTiltOffset(shootNumber)),
-                                                new SetTurretOffset(turret, ShootData.getTurretOffset(shootNumber)),
+                                new ParallelCommandGroup(
                                                 new PositionTiltToVision(tilt, limelight,
                                                                 ShootData.getTiltAngle(shootNumber)),
                                                 new PositionTurretToVision(turret, limelight,
                                                                 ShootData.getTurretAngle(shootNumber)),
                                                 new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)))
-                                                                .deadlineWith(new StartShooterWheels(shooter, shooter
-                                                                                .calculateFPSFromDistance(ShootData
-                                                                                                .getShootDistance(
-                                                                                                                shootNumber)))),
+                                                                .deadlineWith(new RunShooter(shooter)),
 
                                 new ParallelCommandGroup(new MessageCommand("Group2Started"),
                                                 new ShootCells(shooter, transport, compressor,

@@ -60,7 +60,7 @@ public class Pref {
 
     // Turret Lock
 
-    prefDict.put("TuLkP", .03);
+    prefDict.put("TuLkP", .0);
     prefDict.put("TuLkI", .00);
     prefDict.put("TuLkD", 0.);
     prefDict.put("TuLkIZ", 0.);
@@ -68,11 +68,11 @@ public class Pref {
 
     // shooter velocity
 
-    prefDict.put("sHFf", .0003);
-    prefDict.put("sHKp", 3e-4);
-    prefDict.put("sHkI", .0);
-    prefDict.put("sHKd", .0);
-    prefDict.put("sHKiz", 100.);
+    prefDict.put("sHff", .02);
+    prefDict.put("sHkp", .05);
+    prefDict.put("sHkI", .0001);
+    prefDict.put("sHkd", .5);
+    prefDict.put("sHkiz", 100.);
     prefDict.put("sHTune", 0.);
 
     // Drive

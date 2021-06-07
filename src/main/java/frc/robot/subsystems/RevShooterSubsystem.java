@@ -29,6 +29,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public final SimableCANSparkMax mLeftMotor; // NOPMD
     private SimableCANSparkMax mRightMotor; // NOPMD
     private final CANEncoder mEncoder;
+    private final CANEncoder mRightEncoder;
     private final CANPIDController mPidController;
     private ISimWrapper mSimulator;
     public double requiredMpsLast;
@@ -43,10 +44,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastAcc;
     public double cameraCalculatedSpeed;
     public boolean useCameraSpeed;
-    public double cameraAngleCalculatedSpeed;
     public boolean useCameraAngleSpeed;
     public NetworkTableEntry shooterSpeed;
-    public double useSpeed;
+    public NetworkTableEntry setupVertOffset;
+    public double useSetupOffset;
+    public boolean useSetupSlider;
+    public boolean useSetupVetOffset;
 
     private final int VELOCITY_SLOT = 0;
     /**
@@ -56,7 +59,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
      * 
      * 
      * so circ = (2 *pi)/3 = 2.1 ft = .638 meters per rev max speed 80 revs per sec
-     * so about 50 meters per sec 3000 per minute = max Angle range is 30 to around 1
+     * so about 50 meters per sec 3000 per minute = max Angle range is 30 to around
+     * 1
      */
     public final double metersPerRev = .638;
 
@@ -71,35 +75,13 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
      * 
      * we can measure every meter, put results in array and then interpolate.
      */
-    private int speedBaseDistance = 2;
-    private int speedMaxDistance = 14;
-
-    public double[] shooterMPSFromCamera = new double[] { 5, 8, 10, 15, 15.5, 20, 22, 24, 25, 30, 35, 40, 45, 50 };
-
-    /**
-     * Tilt angle is the simplest way to determine shooter speed. Useful tilt angle
-     * range is from 30 degrees at the initiation line to 8 degrees at 12 meters on
-     * the other side of the field over the control panel. So every 2 degrees makes
-     * 10 entries. Speed decreases as camera angle increases.
-     * 
-     * 
-     * 
-     * 
-     */
-    private int speedBaseAngle = 8;
+    private int speedBaseAngle = 0;
     private int speedMaxAngle = 30;
+    private double offsetMax = 5;
 
-    public double[] shooterMPSfromCameraAngle = new double[] { 50, 47.5, 45, 42.5, 40, 37.5, 35, 32.5, 30, 27.5, 25,
-            22.5, 20, 17.5, 15, 14.2, 12, 11, 10, 9, 8, 5, 2, 1 };
+    public double[] speedBreakAngles = new double[] { 0, 6, 12, 18, 24, 30, 32 };
 
-    // matching calculated tilt launch angles when on target 2 to 14 m.
-    // 39.01, 28.37, 22.05, 17.95, 15.11, 13.03, 11.45, 10.20, 9.20, 8.38, 7.69,
-    // 7.10, 6.60
-    // launch velocity mps = shooter rpm * pi * wheel diameter = rpm * 3.14 * 8 /(60
-    // *39.37) = .01 * rpm
-    // rollers feeding shooter are 4" diameter so their velocity is .005 * rpm use
-    // bag motors ?1000:1 ratio
-    // free speed 13,000
+    public double[] speedMPS = new double[] { 5, 7, 15, 21, 32, 40, 42 };
 
     public String[] shootColor = { "red", "yellow", "green" };
     public int shootColorNumber;
@@ -112,7 +94,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean leftMotorConnected;
     public boolean rightMotorConnected;
     public boolean allConnected;
-    public boolean cameraSpeedBypassed;
 
     public RevShooterSubsystem() {
 
@@ -120,6 +101,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mRightMotor = new SimableCANSparkMax(CANConstants.RIGHT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
 
         mEncoder = mLeftMotor.getEncoder();
+        mRightEncoder = mRightMotor.getEncoder();
         mPidController = mLeftMotor.getPIDController();
         mLeftMotor.restoreFactoryDefaults();
         mLeftMotor.setOpenLoopRampRate(5.);
@@ -128,7 +110,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mRightMotor.restoreFactoryDefaults();
         mRightMotor.follow(mLeftMotor, true);
 
-        Arrays.asList(mLeftMotor, mRightMotor).forEach((SimableCANSparkMax spark) -> spark.setSmartCurrentLimit(35));
+        // Arrays.asList(mLeftMotor, mRightMotor).forEach((SimableCANSparkMax spark) ->
+        // spark.setSmartCurrentLimit(35));
 
         // Set motors to brake when idle. We don't want the drive train to coast.
         Arrays.asList(mLeftMotor, mRightMotor)
@@ -142,11 +125,13 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mEncoder.setVelocityConversionFactor(metersPerRev / 60);
 
         shooterSpeed = Shuffleboard.getTab("SetupShooter").addPersistent("ShooterSpeed", 3).withWidget("Number Slider")
-                .withPosition(0,3).withSize(7, 1).withProperties(Map.of("Min", 0, "Max", 50)).getEntry();
+                .withPosition(0, 3).withSize(5, 1).withProperties(Map.of("Min", 0, "Max", 50)).getEntry();
 
+        setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetupVertOffset", 0).withWidget("Number Slider")
+                .withPosition(5, 3).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", 5)).getEntry();
 
         tuneGains();
-
+        requiredMps = 12;
     }
 
     @Override
@@ -162,13 +147,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     }
 
     public void spinAtMetersPerSec(double metersPerSec) {
-    
         mPidController.setReference(metersPerSec, ControlType.kVelocity, VELOCITY_SLOT);
     }
 
     public void runShooter() {
 
-        spinAtMetersPerSec(requiredMps);
+        spinAtMetersPerSec(-requiredMps);
     }
 
     public void moveManually(double speed) {
@@ -179,17 +163,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public void periodic() {
         // This method will be called once per scheduler run
 
-        tuneOn = Pref.getPref("sHTune") != 0.;
-
-        if (tuneOn && !lastTuneOn) {
-            tuneGains();
-            lastTuneOn = true;
-        }
-        if (lastTuneOn)
-            lastTuneOn = tuneOn;
-
-        // if (useCameraSpeed && !cameraSpeedBypassed)
-        //     requiredMps = cameraCalculatedSpeed;
+        checkTune();
 
     }
 
@@ -205,8 +179,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         return mEncoder.getVelocity();
     }
 
+    public double getRightRPM() {
+        return mRightEncoder.getVelocityConversionFactor();
+    }
+
     public double getMPS() {
-        return (getRPM() / 60) * metersPerRev;
+        return mEncoder.getVelocity();
     }
 
     public boolean atSpeed() {
@@ -305,86 +283,43 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     }
 
-    public double calculateFPSFromAngle(double angle) {
+    public double[] calculateMPSandYOffset(double angle) {
         /**
-         * Speed will decrease as angle increases Need to find the base of the speed
-         * range for the angle then the difference between that and the next speed and
-         * subtract the amount into that range from the base.
+         * Find the base speed of the range the angle falls into
          * 
-         * speedBaseAngle = 8;speedMaxAngle = 30;
-         * 
-         * shooterFPSfromCameraAngle = 50, 47.5,45,42.5 40, 37.5,35, 30, 25, 20, 15, 12,
-         * 18, 8, 5
-         * 
-         * So an angle of 15
-         *
+         * The Y offset starts at 0 and increase to the maximum offset with the angle
          */
 
-        if (angle < speedBaseAngle)
+        double[] temp = { 0, 0 };
+        if (angle <= speedBaseAngle)
             angle = speedBaseAngle;
-        if (angle > speedMaxAngle)
+        if (angle >= speedMaxAngle)
             angle = speedMaxAngle;
-
-        // find index into array since it doesn't start at 0
-
-        double tempAngle = angle - speedBaseAngle;
-
-        int baseI = (int) tempAngle;
-        double base = (double) baseI;
-
-        double rem = tempAngle - base;
-
-        double baseSpeed = shooterMPSfromCameraAngle[baseI];
-        double upperSpeed = shooterMPSfromCameraAngle[baseI + 1];
-
-        double speedRange = baseSpeed - upperSpeed;
-
-        double speedAdder = speedRange * rem;
-
-        cameraAngleCalculatedSpeed = baseSpeed - speedAdder;
-
-     //   useCameraAngleSpeed = true;
-
-        return cameraAngleCalculatedSpeed;
-
-    }
-
-    public double calculateFPSFromDistance(double distance) {
-        SmartDashboard.putNumber("D", distance);
-        calculatedCameraDistance = distance;
-        if (distance >= speedBaseDistance && distance <= speedMaxDistance) {
-            // subtract base distance of 2 meters
-
-            double tempDistance = distance - speedBaseDistance;
-
-            int baseI = (int) tempDistance;
-            double base = (double) baseI;
-
-            double rem = tempDistance - base;
-
-            double baseSpeed = shooterMPSFromCamera[baseI];
-            double upperSpeed = shooterMPSFromCamera[baseI + 1];
-
-            double speedRange = upperSpeed - baseSpeed;
-
-            double speedAdder = speedRange * rem;
-
-            cameraCalculatedSpeed = baseSpeed + speedAdder;
-
-   //         useCameraSpeed = true;
-
-        } else {
-
-            cameraCalculatedSpeed = 2500;
+        double speed = 0;
+        double offset = 0;
+        double angleRange = 0;
+        double rangeBaseAngle = 0;
+        int j = speedBreakAngles.length;
+        for (int i = 0; i < j; i++) {
+            if (angle >= speedBreakAngles[i] && angle < speedBreakAngles[i + 1]) {
+                speed = speedMPS[i];
+                rangeBaseAngle = speedBreakAngles[i];
+                angleRange = speedBreakAngles[i + 1] - speedBreakAngles[i];
+                break;
+            }
         }
-        return cameraCalculatedSpeed;
+        temp[0] = speed;
+        offset = (offsetMax * (angle - rangeBaseAngle)) / angleRange;
+        temp[1] = offset;
+
+        return temp;
 
     }
 
     private void setGains() {
         fixedSettings();
 
-        kFF = .0003;//1/3000
+        kFF = .0003;// 1/3000
         kP = 3e-4;
         kI = 0.0001;
         kD = 0;
@@ -396,12 +331,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     private void tuneGains() {
         fixedSettings();
-        double f = Pref.getPref("sHFf");
-        double p = Pref.getPref("sHKp");
-        double i = Pref.getPref("sHKi");
-        double d = Pref.getPref("sHKd");
-        double iz = Pref.getPref("sHKiz");
-        double acc = Pref.getPref("sHKacc");
+        double f = Pref.getPref("sHff");
+        double p = Pref.getPref("sHkp");
+        double i = Pref.getPref("sHki");
+        double d = Pref.getPref("sHkd");
+        double iz = Pref.getPref("sHkiz");
+        double acc = Pref.getPref("sHkacc");
 
         calibratePID(p, i, d, f, iz, acc, VELOCITY_SLOT);
     }
@@ -410,6 +345,18 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
         kMaxOutput = 1;
         kMinOutput = -1;
+
+    }
+
+    private void checkTune() {
+        tuneOn = Pref.getPref("sHTune") != 0.;
+
+        if (tuneOn && !lastTuneOn) {
+            tuneGains();
+            lastTuneOn = true;
+        }
+        if (lastTuneOn)
+            lastTuneOn = tuneOn;
 
     }
 }

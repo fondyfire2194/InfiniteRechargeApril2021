@@ -44,12 +44,9 @@ public class ShieldGenShot extends SequentialCommandGroup {
                                 new ParallelCommandGroup(
                                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(2)),
 
-                                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(
-                                                                2))).deadlineWith(new StartShooterWheels(
-                                                                                shooter,
-                                                                                shooter.calculateFPSFromDistance(
-                                                                                                ShootData.getShootDistance(
-                                                                                                                2)))),
+                                                new PositionTurretToVision(turret, limelight,
+                                                                ShootData.getTurretAngle(2)))
+                                                                                .deadlineWith(new RunShooter(shooter)),
 
                                 new ParallelCommandGroup(new MessageCommand("Group2Started"),
                                                 new ShootCells(shooter, transport, compressor,

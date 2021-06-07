@@ -45,7 +45,7 @@ public class ReturnTiltTurret extends ParallelCommandGroup {
      */
 
     addCommands(new PositionTurret(m_turret, m_turretPosition), new PositionTilt(m_tilt, m_tiltPosition),
-        new UseVision(m_limelight, m_on), new StartShooterWheels(m_shooter, m_fps));
+        new UseVision(m_limelight, m_on), new RunShooter(m_shooter));
 
   }
 }

@@ -37,10 +37,10 @@ public final class Constants {
       public static final int DRIVETRAIN_RIGHT_MASTER = 4;
       public static final int DRIVETRAIN_RIGHT_FOLLOWER = 5;
 
-      public static final int LEFT_MOTOR = 6;
+      public static final int LEFT_MOTOR = 8;
       public static final int RIGHT_MOTOR = 7;
 
-      public static final int TURRET_ROTATE_MOTOR = 8;// turret
+      public static final int TURRET_ROTATE_MOTOR = 6;// turret
 
       public static final int TILT_MOTOR = 9;
 

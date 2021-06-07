@@ -33,14 +33,14 @@ import frc.robot.commands.ControlPanel.PositionToColor;
 import frc.robot.commands.ControlPanel.TurnControlPanel;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
-import frc.robot.commands.Shooter.ChangeShooterSpeed;
+import frc.robot.commands.Shooter.CalculateSpeedAndOffset;
 import frc.robot.commands.Shooter.InnerShot;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Shooter.LobShot;
 import frc.robot.commands.Shooter.ShieldGenShot;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.ShootStraight;
-import frc.robot.commands.Shooter.StopShooterWheels;
+import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.TrenchShot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.TiltJog;
@@ -237,7 +237,7 @@ public class RobotContainer {
 
             // new JoystickButton(m_driverController, 5)
 
-            new JoystickButton(m_driverController, 3).whenPressed(new StopShooterWheels(m_shooter));
+            new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport));
 
             new JoystickButton(m_driverController, 4).whenPressed(new ToggleCamera(m_limelight));
 
@@ -261,9 +261,9 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 12).whenPressed(
                         new ShieldGenShot(m_shooter, m_turret, m_tilt, m_transport, m_limelight, m_compressor));
 
-            driverUpButton.whenPressed(new ChangeShooterSpeed(m_shooter, +.05));
+            // driverUpButton.whenPressed(
 
-            driverDownButton.whenPressed(new ChangeShooterSpeed(m_shooter, -.05));
+            // driverDownButton.whenPressed(
 
             driverLeftButton.whenPressed(new TurretShift(m_turret, .1, m_shooter));// shoot right
 
@@ -327,6 +327,7 @@ public class RobotContainer {
             setupB.whileHeld(getJogClimberCommand());
 
             // LiveWindow.disableAllTelemetry();
+            new CalculateSpeedAndOffset(m_shooter, m_tilt, m_limelight).schedule();
 
       }
 

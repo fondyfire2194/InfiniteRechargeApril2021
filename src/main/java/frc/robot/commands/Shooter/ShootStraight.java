@@ -6,15 +6,12 @@ package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.LimeLight;
 import frc.robot.Constants.HoodedShooterConstants;
-import frc.robot.LimelightControlMode.LedMode;
+import frc.robot.LimeLight;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
-import frc.robot.commands.Vision.LimelightLeds;
 import frc.robot.commands.Vision.LimelightSetPipeline;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -35,7 +32,7 @@ public class ShootStraight extends SequentialCommandGroup {
     super(new LimelightSetPipeline(limelight, 0),
 
         new ParallelCommandGroup(new PositionTiltToVision(tilt, limelight, HoodedShooterConstants.TILT_CLOSE_ANGLE),
-            new OKToShoot(shooter, limelight, drive)).deadlineWith(new StartShooterWheels(shooter)),
+            new OKToShoot(shooter, limelight, drive)).deadlineWith(new RunShooter(shooter)),
 
         new ParallelCommandGroup(new MessageCommand("Group2Started"), new ShootCells(shooter, transport, compressor)),
 

@@ -44,11 +44,8 @@ public class TrenchShot extends SequentialCommandGroup {
                                 new ParallelCommandGroup(
                                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(3)),
                                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(
-                                                                3))).deadlineWith(new StartShooterWheels(
-                                                                                shooter,
-                                                                                shooter.calculateFPSFromDistance(
-                                                                                                ShootData.getShootDistance(
-                                                                                                                3)))),
+                                                                3))).deadlineWith(new RunShooter(
+                                                                                shooter)),
 
                                 new ParallelCommandGroup(new MessageCommand("Group2Started"),
                                                 new ShootCells(shooter, transport, compressor,
