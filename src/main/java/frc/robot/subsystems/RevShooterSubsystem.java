@@ -80,9 +80,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private int speedBaseAngle = 0;
     private int speedMaxAngle = 30;
 
-    public double[] speedBreakAngles = new double[] { 0, 6, 12, 18, 24, 30 };
-    public double[] speeedBreakOffset = new double[] { .1, 1, 2, 0, 0, 0 };
-    public double[] speedMPS = new double[] { 2, 5, 7, 15, 21, 32 };
+    public double[] speedBreakAngles = new double[] { 30, 20, 12, 6, 0 };
+    public double[] speeedBreakOffset = new double[] { 5, 4, 2, 0, 0 };
+    public double[] speedMPS = new double[] { 35, 30, 25, 20 };
 
     public double[] shooterMPSfromCameraAngle = new double[] { 50, 47.5, 45, 42.5, 40, 37.5, 35, 32.5, 30, 27.5, 25 };
 
@@ -135,7 +135,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
                     .withPosition(5, 3).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", 5)).getEntry();
 
             shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
-                    .withPosition(0, 3).withSize(5, 1).withProperties(Map.of("Min", 0, "Max", 50)).getEntry();
+                    .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 0, "Max", 40)).getEntry();
         }
         tuneGains();
         requiredMps = 12;
@@ -172,7 +172,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
         checkTune();
 
-        // calculateMPSandYOffset(shooterSpeed.getDouble(0));
+        calculateMPSandYOffset(shooterSpeed.getDouble(0));
 
     }
 
@@ -309,33 +309,33 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         double offset = 0;
         double angleRange = 0;
         double offsetRange = 0;
+        double offsetBaseValue = 0;
         double rangeBaseAngle = 0;
-        double speedRange = 0;
+        double offsetSlope = 0;
+        double distanceIntoRange = 0;
+
         int j = speedBreakAngles.length - 1;
         SmartDashboard.putNumber("ILGHT", j);
         for (int i = 0; i < j; i++) {
-            if (angle >= speedBreakAngles[i] && angle <= speedBreakAngles[i + 1]) {
+            if (angle >= speedBreakAngles[i + 1] && angle <= speedBreakAngles[i]) {
                 baseSpeed = speedMPS[i];
-                rangeBaseAngle = speedBreakAngles[i];
-                offsetRange = speeedBreakOffset[i];
+                offsetBaseValue = speeedBreakOffset[i];
+                offsetRange = speeedBreakOffset[i + 1] - speeedBreakOffset[i];
                 angleRange = speedBreakAngles[i + 1] - speedBreakAngles[i];
-                speedRange = speedMPS[i + 1] - speedMPS[i];
+                distanceIntoRange = angle- speedBreakAngles[i];
+                SmartDashboard.putNumber("IDIR", distanceIntoRange);
+                offsetSlope = offsetRange / angleRange;
+                SmartDashboard.putNumber("IOFFRGE", offsetRange);
+                offset = offsetBaseValue + offsetSlope*distanceIntoRange;
                 SmartDashboard.putNumber("I", i);
-                SmartDashboard.putNumber("IAR", angleRange);
-                SmartDashboard.putNumber("IOR", offsetRange);
-                SmartDashboard.putNumber("ISPR", speedRange);
+
                 break;
             }
         }
 
-        offset = (offsetRange * (angle - rangeBaseAngle)) / angleRange;
-        if (offsetRange != 0) {
-            temp[1] = offset;
-            temp[0] = baseSpeed;
-        } else {
-            temp[1] = 0;
-            temp[0] = baseSpeed + (speedRange * (angle - rangeBaseAngle)) / angleRange;
-        }
+        temp[1] = offset;
+        temp[0] = baseSpeed;
+
         SmartDashboard.putNumber("IOF", temp[1]);
         SmartDashboard.putNumber("ISPD", temp[0]);
 

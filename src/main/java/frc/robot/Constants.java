@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import com.fasterxml.jackson.databind.ser.impl.FailingSerializer;
+
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.system.LinearSystem;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
@@ -26,7 +28,7 @@ import edu.wpi.first.wpiutil.math.numbers.N2;
  */
 public final class Constants {
 
-   public final static boolean isMatch = true;
+   public final static boolean isMatch = false;
    public static final double inchToMetersConversionFactor = 0.0254;
    public static final double MINIMUM_TURN_SPEED = 0;
 
@@ -39,10 +41,10 @@ public final class Constants {
       public static final int DRIVETRAIN_RIGHT_MASTER = 4;
       public static final int DRIVETRAIN_RIGHT_FOLLOWER = 5;
 
-      public static final int LEFT_MOTOR = 8;
+      public static final int LEFT_MOTOR = 6;
       public static final int RIGHT_MOTOR = 7;
 
-      public static final int TURRET_ROTATE_MOTOR = 6;// turret
+      public static final int TURRET_ROTATE_MOTOR = 8;// turret
 
       public static final int TILT_MOTOR = 9;
 
