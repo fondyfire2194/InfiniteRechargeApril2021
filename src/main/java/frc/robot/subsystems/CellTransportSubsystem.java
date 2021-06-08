@@ -8,15 +8,19 @@
 package frc.robot.subsystems;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.sim.PhysicsSim;
 import frc.robot.sim.TalonSRXWrapper;
@@ -38,7 +42,10 @@ public class CellTransportSubsystem extends SubsystemBase {
   public boolean frontRollerMotorConnected;
   public boolean rearRollerMotorConnected;
   public boolean allConnected;
-
+  public NetworkTableEntry frontSpeed;
+  public NetworkTableEntry rearSpeed;
+  private double frontSpeedValue;
+  private double rearSpeedValue;
 
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
@@ -59,6 +66,16 @@ public class CellTransportSubsystem extends SubsystemBase {
       setFrontRollerBrakeOn(true);
       setRearRollerBrakeOn(true);
       setBeltBrakeOn(true);
+
+      if (!Constants.isMatch) {
+
+        frontSpeed = Shuffleboard.getTab("SetupTransport").addPersistent("FrontRollerSpeed", .5)
+            .withWidget("Number Slider").withPosition(2, 2).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", .75))
+            .getEntry();
+        rearSpeed = Shuffleboard.getTab("SetupTransport").addPersistent("RearRollerSpeed", .5)
+            .withWidget("Number Slider").withPosition(2, 3).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", .75))
+            .getEntry();
+      }
     }
 
   }
@@ -66,8 +83,8 @@ public class CellTransportSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-
+    rearSpeedValue = rearSpeed.getDouble(.5);
+    frontSpeedValue = frontSpeed.getDouble(.5);
   }
 
   public boolean checkCAN() {
@@ -92,7 +109,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   }
 
   public void runRightBeltMotor(double speed) {
-    m_rightBeltMotor.set(ControlMode.PercentOutput, speed);
+    m_rightBeltMotor.set(ControlMode.PercentOutput, -speed);
   }
 
   public double getRightBelt() {
@@ -140,12 +157,16 @@ public class CellTransportSubsystem extends SubsystemBase {
     }
   }
 
-  public void runFrontRollerMotor(double speed) {
-    m_frontRollerMotor.set(ControlMode.PercentOutput, -speed);
+  public void runFrontRollerMotor() {
+    m_frontRollerMotor.set(ControlMode.PercentOutput, frontSpeedValue);
   }
 
   public double getFrontRoller() {
     return m_frontRollerMotor.getMotorOutputPercent();
+  }
+
+  public void stopFrontRollerMotor() {
+    m_frontRollerMotor.set(ControlMode.PercentOutput, 0);
   }
 
   public void setFrontRollerBrakeOn(boolean on) {
@@ -156,12 +177,16 @@ public class CellTransportSubsystem extends SubsystemBase {
     }
   }
 
-  public void runRearRollerMotor(double speed) {
-    m_rearRollerMotor.set(ControlMode.PercentOutput, -speed);
+  public void runRearRollerMotor() {
+    m_rearRollerMotor.set(ControlMode.PercentOutput, -rearSpeedValue);
   }
 
   public double getRearRoller() {
     return m_rearRollerMotor.getMotorOutputPercent();
+  }
+
+  public void stopRearRollerMotor() {
+    m_rearRollerMotor.set(ControlMode.PercentOutput, 0);
   }
 
   public void setRearRollerBrakeOn(boolean on) {

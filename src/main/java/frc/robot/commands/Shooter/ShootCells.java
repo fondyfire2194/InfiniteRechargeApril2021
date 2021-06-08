@@ -64,8 +64,8 @@ public class ShootCells extends CommandBase {
     if (Timer.getFPGATimestamp() > startTime + 1) {
       double shooterOut = shooter.getLeftPctOut();
       double rollerMotorOut = shooterOut * rollerPctofShooter;
-      transport.runFrontRollerMotor(rollerMotorOut);
-      transport.runRearRollerMotor(-rollerMotorOut);
+      transport.runFrontRollerMotor();
+      transport.runRearRollerMotor();
       shooter.shootTimeRemaining = startTime + shooter.shootTime - Timer.getFPGATimestamp();
     }
 
@@ -75,8 +75,8 @@ public class ShootCells extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     // transport.runLeftBeltMotor(0.);
-    transport.runFrontRollerMotor(0.);
-    transport.runRearRollerMotor(0.);
+    transport.runFrontRollerMotor();
+    transport.runRearRollerMotor();
     shooter.stop();
     compressor.start();
   }

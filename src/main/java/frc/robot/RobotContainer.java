@@ -26,7 +26,6 @@ import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellTransport.CellBeltPulseSelect;
-import frc.robot.commands.CellTransport.RollersPulseSelect;
 import frc.robot.commands.Climber.JogClimber;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
 import frc.robot.commands.ControlPanel.PositionNumberRevs;
@@ -290,28 +289,27 @@ public class RobotContainer {
             // coDriverB.whenPressed
 
             /**
-             * 
              * Setup gamepad is used for testing functions
-             * 
-             * 
              */
-            setupDownButton.whileHeld(() -> m_transport.runFrontRollerMotor(-.5))
-                        .whileHeld(() -> m_transport.runRearRollerMotor(.5))
-                        .whenReleased(() -> m_transport.runFrontRollerMotor(0))
-                        .whenReleased(() -> m_transport.runRearRollerMotor(0));
+
+            setupDownButton.whileHeld(() -> m_transport.runFrontRollerMotor())
+                        .whileHeld(() -> m_transport.runRearRollerMotor())
+                        .whenReleased(() -> m_transport.stopFrontRollerMotor())
+                        .whenReleased(() -> m_transport.stopRearRollerMotor());
 
             setupUpButton.whileHeld(() -> m_transport.runLeftBeltMotor(.5))
                         .whileHeld(() -> m_transport.runRightBeltMotor(.5))
                         .whenReleased(() -> m_transport.runLeftBeltMotor(0))
                         .whenReleased(() -> m_transport.runRightBeltMotor(0));
 
-            setupLeftButton.whileHeld(new CellBeltPulseSelect(m_transport, true, 1, .25, 1, -.25));
+            setupLeftButton.whileHeld(new CellBeltPulseSelect(m_transport, true, .75, .25, .75, -.25))
+                        .whileHeld(new CellBeltPulseSelect(m_transport, false, .5, -.25, .5, .25));
 
-            setupRightButton.whileHeld(new CellBeltPulseSelect(m_transport, false, 1, .25, 1, -.25));
+            setupLeftTrigger.whileHeld(() -> m_transport.runFrontRollerMotor())
+                        .whenReleased(() -> m_transport.stopFrontRollerMotor());
 
-            setupLeftTrigger.whileHeld(new RollersPulseSelect(m_transport, .25, .5, .25, .15));
-
-            setupRightTrigger.whileHeld(new RollersPulseSelect(m_transport, .25, .5, .25, 0));
+            setupRightTrigger.whileHeld(() -> m_transport.runRearRollerMotor())
+                        .whenReleased(() -> m_transport.stopRearRollerMotor());
 
             setupBack.whileHeld(new StartIntake(m_intake)).whenReleased(new StopIntake(m_intake));
 
@@ -327,7 +325,7 @@ public class RobotContainer {
             setupB.whileHeld(getJogClimberCommand());
 
             // LiveWindow.disableAllTelemetry();
-            new CalculateSpeedAndOffset(m_shooter, m_tilt, m_limelight).schedule();
+            
 
       }
 

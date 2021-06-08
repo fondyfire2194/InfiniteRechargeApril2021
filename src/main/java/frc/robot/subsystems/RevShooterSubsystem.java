@@ -115,8 +115,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mRightMotor.restoreFactoryDefaults();
         mRightMotor.follow(mLeftMotor, true);
 
-        // Arrays.asList(mLeftMotor, mRightMotor).forEach((SimableCANSparkMax spark) ->
-        // spark.setSmartCurrentLimit(35));
+        Arrays.asList(mLeftMotor, mRightMotor).forEach((SimableCANSparkMax spark) -> spark.setSmartCurrentLimit(35));
 
         // Set motors to brake when idle. We don't want the drive train to coast.
         Arrays.asList(mLeftMotor, mRightMotor)
@@ -132,7 +131,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         if (!hideSliders) {
 
             setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetupVertOffset", 0).withWidget("Number Slider")
-                    .withPosition(5, 3).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", 5)).getEntry();
+                    .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -3, "Max", 5)).getEntry();
 
             shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
                     .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 0, "Max", 40)).getEntry();
@@ -322,11 +321,11 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
                 offsetBaseValue = speeedBreakOffset[i];
                 offsetRange = speeedBreakOffset[i + 1] - speeedBreakOffset[i];
                 angleRange = speedBreakAngles[i + 1] - speedBreakAngles[i];
-                distanceIntoRange = angle- speedBreakAngles[i];
+                distanceIntoRange = angle - speedBreakAngles[i];
                 SmartDashboard.putNumber("IDIR", distanceIntoRange);
                 offsetSlope = offsetRange / angleRange;
                 SmartDashboard.putNumber("IOFFRGE", offsetRange);
-                offset = offsetBaseValue + offsetSlope*distanceIntoRange;
+                offset = offsetBaseValue + offsetSlope * distanceIntoRange;
                 SmartDashboard.putNumber("I", i);
 
                 break;
