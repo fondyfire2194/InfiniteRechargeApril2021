@@ -23,11 +23,22 @@ public class ShootData {
     public static int trenchTwoBall = 3;
     public static int trench3Ball = 4;
 
+    public  static double lobShotMPS = 7.8;
+    public static double lobShotTime = 4;
+
+    public static double innerShotMPS = 8;
+    public static double innerTiltAngle = 12;
+
     private static final double shootTime = 5;
+
+    private static final double shootSpeed0 = 12;// mps
+
+    private static final double shootSpeed1 = 14;// mps
+    private static final double shootSpeed2 = 14;// mps
+
     private static final double xRetractDistance = -.75;
     private static final double xTrenchTwoBallPickup = -3;
     private static final double xLeftTwoBallPickup = -2;
-    private static final double xTrenchThreeBallPickup = -4;
 
     private static final double allowInnerPort = -2.5;
 
@@ -44,7 +55,7 @@ public class ShootData {
      * 
      * pipeline,
      * 
-     * first moveDistance, second moveDistance, shootdistance
+     * first moveDistance, second moveDistance, shoot speed
      * 
      * shoot time, turret angle, turret shift deg, tilt angle, tilt shift deg.
      * 
@@ -56,22 +67,14 @@ public class ShootData {
             // cross line 0 (not used but don't delete!
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 0 )
 
-            { 0, xRetractDistance, xRetractDistance,
-                    getShotDistance((initiationLine - xRetractDistance + innerWallFromOuter), 0), shootTime, 0, 0,
+            { 0, xRetractDistance, xRetractDistance, shootSpeed0, shootTime, 0, 0,
                     getOuterTiltAngle((initiationLine - xRetractDistance), 0), allowInnerPort },
 
-            { 0, xLeftTwoBallPickup, xLeftTwoBallPickup,
-                    getShotDistance((initiationLine - xLeftTwoBallPickup), yLeftPickupFromPort), shootTime,
+            { 0, xLeftTwoBallPickup, xLeftTwoBallPickup, shootSpeed1, shootTime,
                     getTurretAngleXY((initiationLine - xLeftTwoBallPickup), yLeftPickupFromPort), 0,
                     getOuterTiltAngle((initiationLine - xLeftTwoBallPickup), yLeftPickupFromPort), 0 },
 
-            { 0, xTrenchTwoBallPickup, xTrenchTwoBallPickup,
-                    getShotDistance((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), shootTime,
-                    -getTurretAngleXY((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), 0,
-                    getOuterTiltAngle((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), 0 },
-
-            { 0, xRetractDistance, xTrenchThreeBallPickup,
-                    getShotDistance((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), shootTime,
+            { 0, xTrenchTwoBallPickup, xTrenchTwoBallPickup, shootSpeed2, shootTime,
                     -getTurretAngleXY((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), 0,
                     getOuterTiltAngle((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), 0 }
 
@@ -95,7 +98,7 @@ public class ShootData {
         return shootValues[pointer][2];
     }
 
-    public static double getShootDistance(int pointer) {
+    public static double getShootSpeed(int pointer) {
         return shootValues[pointer][3];
     }
 
@@ -107,17 +110,17 @@ public class ShootData {
         return shootValues[pointer][5] + shootValues[pointer][6];
     }
 
-    // public static double getTurretOffset(int pointer) {
-    //     return shootValues[pointer][6];
-    // }
+    public static double getTurretOffset(int pointer) {
+        return shootValues[pointer][6];
+    }
 
     public static double getTiltAngle(int pointer) {
         return shootValues[pointer][7] + shootValues[pointer][8];
     }
 
-    // public static double getTiltOffset(int pointer) {
-    //     return shootValues[pointer][8];
-    // }
+    public static double getTiltOffset(int pointer) {
+        return shootValues[pointer][8];
+    }
 
     private static double getOuterTiltAngle(double x, double y) {
         return Math.toDegrees(Math.atan(shotHeight / getFloorDistance(x, y)));
@@ -144,7 +147,7 @@ public class ShootData {
 
         SD.putN1("TiltAngle " + String.valueOf(value), getTiltAngle(value));
         SD.putN1("TurretAngle " + String.valueOf(value), getTurretAngle(value));
-        SD.putN1("ShootDistance " + String.valueOf(value), getShootDistance(value));
+        SD.putN1("ShootSpeed " + String.valueOf(value), getShootSpeed(value));
 
     }
 

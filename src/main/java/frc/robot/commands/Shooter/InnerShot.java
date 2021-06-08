@@ -16,7 +16,6 @@ import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
-import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Vision.LimelightSetPipeline;
@@ -40,7 +39,7 @@ public class InnerShot extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new LimelightSetPipeline(limelight, ShootData.getPipeline(1)),
+                super(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
 
                                 new ParallelCommandGroup(
                                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(1)),
@@ -50,7 +49,7 @@ public class InnerShot extends SequentialCommandGroup {
                                                                                 .deadlineWith(new RunShooter(shooter)),
 
                                 new ParallelCommandGroup(new MessageCommand("Group2Started"),
-                                                new ShootCells(shooter, transport, compressor,
+                                                new ShootCells(shooter,limelight, transport, compressor,
                                                                 ShootData.getShootTime(1))),
 
                                 new ParallelCommandGroup(new MessageCommand("GroupStarted"),

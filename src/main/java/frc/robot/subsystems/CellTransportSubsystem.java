@@ -83,8 +83,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    rearSpeedValue = rearSpeed.getDouble(.5);
-    frontSpeedValue = frontSpeed.getDouble(.5);
+   
   }
 
   public boolean checkCAN() {
@@ -110,6 +109,19 @@ public class CellTransportSubsystem extends SubsystemBase {
 
   public void runRightBeltMotor(double speed) {
     m_rightBeltMotor.set(ControlMode.PercentOutput, -speed);
+  }
+
+  public void stopLeftBeltMotor() {
+    m_leftBeltMotor.stopMotor();
+  }
+
+  public void stopRightBeltMotor() {
+    m_rightBeltMotor.stopMotor();
+  }
+
+  public void stopBelts() {
+    m_leftBeltMotor.stopMotor();
+    m_rightBeltMotor.stopMotor();
   }
 
   public double getRightBelt() {
@@ -158,7 +170,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   }
 
   public void runFrontRollerMotor() {
-    m_frontRollerMotor.set(ControlMode.PercentOutput, frontSpeedValue);
+    m_frontRollerMotor.set(ControlMode.PercentOutput, frontSpeed.getDouble(.25));
   }
 
   public double getFrontRoller() {
@@ -178,7 +190,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   }
 
   public void runRearRollerMotor() {
-    m_rearRollerMotor.set(ControlMode.PercentOutput, -rearSpeedValue);
+    m_rearRollerMotor.set(ControlMode.PercentOutput, -rearSpeed.getDouble(.25));
   }
 
   public double getRearRoller() {
@@ -187,6 +199,11 @@ public class CellTransportSubsystem extends SubsystemBase {
 
   public void stopRearRollerMotor() {
     m_rearRollerMotor.set(ControlMode.PercentOutput, 0);
+  }
+
+  public void stopRollers() {
+    m_frontRollerMotor.stopMotor();
+    m_rearRollerMotor.stopMotor();
   }
 
   public void setRearRollerBrakeOn(boolean on) {

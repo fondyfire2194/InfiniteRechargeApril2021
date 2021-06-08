@@ -29,10 +29,8 @@ public class StopShoot extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_transport.runLeftBeltMotor(0.);
-    m_transport.runRightBeltMotor(0.);
-    m_transport.stopFrontRollerMotor();
-    m_transport.stopRearRollerMotor();
-    m_shooter.spinAtRpm(0);
+    m_transport.stopBelts();
+    m_transport.stopRollers();
+    m_shooter.stop();
   }
 }

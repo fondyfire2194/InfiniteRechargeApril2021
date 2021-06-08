@@ -8,8 +8,10 @@
 package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.LimeLight;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
 
@@ -18,29 +20,37 @@ public class ShootCells extends CommandBase {
    * Creates a new ShootCells
    * 
    */
-  private final RevShooterSubsystem shooter;
-  private final CellTransportSubsystem transport;
-  private final Compressor compressor;
+  private final RevShooterSubsystem m_shooter;
+  private final CellTransportSubsystem m_transport;
+  private final Compressor m_compressor;
+  private final LimeLight m_limelight;
   private double startTime;
-  private double time;
-  private final double rollerPctofShooter = .75;
+  private double m_time;
+  private double shooterAccTime = 1;
+  private boolean shootStarted;
 
-  public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor) {
+  public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, LimeLight limelight,
+      Compressor compressor) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.shooter = shooter;
-    this.transport = transport;
-    this.compressor = compressor;
-    this.time = 5;
+    m_shooter = shooter;
+    m_transport = transport;
+    m_compressor = compressor;
 
-    addRequirements(shooter, transport);
+    m_limelight = limelight;
+    m_time = 5;
+
+    addRequirements(m_shooter, m_transport);
   }
 
-  public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor, double time) {
+  public ShootCells(RevShooterSubsystem shooter, LimeLight limelight, CellTransportSubsystem transport,
+      Compressor compressor, double time) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.shooter = shooter;
-    this.transport = transport;
-    this.compressor = compressor;
-    this.time = time;
+    m_shooter = shooter;
+    m_transport = transport;
+    m_compressor = compressor;
+    m_limelight = limelight;
+
+    m_time = time;
 
     addRequirements(shooter, transport);
   }
@@ -49,9 +59,10 @@ public class ShootCells extends CommandBase {
   @Override
   public void initialize() {
     startTime = Timer.getFPGATimestamp();
-    shooter.requiredMpsLast = 0.;
-    shooter.shootTime = time;
-    compressor.stop();
+    m_shooter.requiredMpsLast = 0.;
+    m_shooter.shootTime = m_time;
+    m_compressor.stop();
+    shootStarted = false;
 
   }
 
@@ -59,31 +70,32 @@ public class ShootCells extends CommandBase {
   @Override
   public void execute() {
 
-    shooter.runShooter();
+    m_shooter.runShooter();
 
-    if (Timer.getFPGATimestamp() > startTime + 1) {
-      double shooterOut = shooter.getLeftPctOut();
-      double rollerMotorOut = shooterOut * rollerPctofShooter;
-      transport.runFrontRollerMotor();
-      transport.runRearRollerMotor();
-      shooter.shootTimeRemaining = startTime + shooter.shootTime - Timer.getFPGATimestamp();
+    if ((m_shooter.atSpeed() && m_limelight.getHorOnTarget() && m_limelight.getVertOnTarget())
+        || m_shooter.driverOKShoot || shootStarted == true) {
+
+      shootStarted = true;
+
+      m_transport.runFrontRollerMotor();
+      m_transport.runRearRollerMotor();
+      
+      m_shooter.shootTimeRemaining = startTime + m_shooter.shootTime - Timer.getFPGATimestamp();
     }
-
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // transport.runLeftBeltMotor(0.);
-    transport.runFrontRollerMotor();
-    transport.runRearRollerMotor();
-    shooter.stop();
-    compressor.start();
+    m_transport.stopBelts();
+    m_transport.stopRollers();
+    m_shooter.stop();
+    m_compressor.start();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Timer.getFPGATimestamp() > startTime + shooter.shootTime) && shooter.shootTime != 0;
+    return (Timer.getFPGATimestamp() > startTime + m_shooter.shootTime) && m_shooter.shootTime != 0;
   }
 }

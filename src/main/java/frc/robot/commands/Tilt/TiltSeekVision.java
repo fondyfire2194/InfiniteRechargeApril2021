@@ -15,7 +15,7 @@ import frc.robot.LimeLight;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.subsystems.RevTiltSubsystem;
 
-public class PositionTiltToVision extends CommandBase {
+public class TiltSeekVision extends CommandBase {
   /** Creates a new PositionTilttoVision. */
 
   private final RevTiltSubsystem m_tilt;
@@ -34,10 +34,15 @@ public class PositionTiltToVision extends CommandBase {
 
   private final int filterCount = 5;
 
-  public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double position) {
+  private int tryCounter;
+
+  private boolean targetFound;
+  private boolean noTargetFound;
+  private boolean failedToFind;
+
+  public TiltSeekVision(RevTiltSubsystem tilt, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
-    m_position = position;
     m_limelight = limelight;
     addRequirements(m_tilt);
   }
@@ -48,14 +53,12 @@ public class PositionTiltToVision extends CommandBase {
     m_endpoint = m_position;
     m_limelight.useVision = true;
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
-    m_tilt.targetAngle = m_endpoint;
+    m_tilt.targetAngle = m_tilt.tiltMinAngle;
     m_tilt.targetVerticalOffset = m_offset;
-    if (m_endpoint < HoodedShooterConstants.TILT_MIN_ANGLE)
-      m_endpoint = HoodedShooterConstants.TILT_MIN_ANGLE;
-    if (m_endpoint > HoodedShooterConstants.TILT_MAX_ANGLE)
-      m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE;
     motorDegrees = (m_tilt.tiltMaxAngle - m_endpoint);
     loopCtr = 0;
+    tryCounter = 0;
+    failedToFind = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -84,8 +87,17 @@ public class PositionTiltToVision extends CommandBase {
 
     m_tilt.goToPositionMotionMagic(motorDegrees);
 
-    endIt = m_tilt.validTargetSeen || (m_tilt.atTargetAngle() && loopCtr > 5) || loopCtr > 250;
+    noTargetFound = m_tilt.atTargetAngle() && loopCtr > 5;
 
+    if (noTargetFound && m_endpoint == m_tilt.tiltMinAngle) {
+      m_endpoint = m_tilt.tiltMaxAngle;
+      loopCtr = 0;
+    }
+
+    targetFound = m_tilt.validTargetSeen;
+
+    failedToFind = m_endpoint == m_tilt.tiltMaxAngle && (m_tilt.atTargetAngle() && loopCtr > 5);
+    endIt = targetFound || failedToFind;
   }
 
   // Called once the command ends or is interrupted.

@@ -99,6 +99,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean allConnected;
     public double cameraAngleCalculatedSpeed;
     public boolean hideSliders = Constants.isMatch;
+	public boolean driverOKShoot;
 
     public RevShooterSubsystem() {
 
@@ -219,9 +220,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     @Override
     public void stop() {
-        mLeftMotor.set(0);
-
-        mRightMotor.set(0);
+        mLeftMotor.stopMotor();
+        mRightMotor.stopMotor();
     }
 
     public double getLeftPctOut() {

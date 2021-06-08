@@ -143,8 +143,6 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Trench Start Two Pickup Shoot", 3);
 
-                        autoChooser.addOption("Trench Start Move Shoot Pickup", 4);
-
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
 
@@ -191,9 +189,8 @@ public class SetupShuffleboard {
                         intakeValues.add("ArmLower", new IntakeArm(m_intake, true));
 
                         Shuffleboard.getTab("Intake").add("Intake", intakeFeed).withWidget(BuiltInWidgets.kCameraStream)
-                        .withPosition(2, 0).withSize(6, 4)
-                        .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
-
+                                        .withPosition(2, 0).withSize(6, 4)
+                                        .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
 
                         Shuffleboard.getTab("Pre-Round").add("Intake", intakeFeed)
                                         .withWidget(BuiltInWidgets.kCameraStream).withPosition(4, 2).withSize(3, 2)
@@ -248,7 +245,6 @@ public class SetupShuffleboard {
 
                 }
 
-   
                 /**
                  * 
                  * Shooter Turret
@@ -414,7 +410,8 @@ public class SetupShuffleboard {
 
                         shooterCommands.add("Shooter Motor Start", new RunShooter(m_shooter));
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
-                        shooterCommands.add("Shoot", new ShootCells(m_shooter, m_transport, m_compressor, 0));
+                        shooterCommands.add("Shoot",
+                                        new ShootCells(m_shooter, m_limelight, m_transport, m_compressor, 0));
                         shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
                         shooterCommands.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter));
                         shooterCommands.add("Cmd", m_shooter);
@@ -451,7 +448,7 @@ public class SetupShuffleboard {
                         shooterValues1.addBoolean("AtSpeed", () -> m_shooter.atSpeed());
                         shooterValues1.addBoolean("TuneOn", () -> (m_shooter.tuneOn && m_shooter.lastTuneOn));
                         shooterValues1.addBoolean("BothConnected (6,7)", () -> m_shooter.allConnected);
-
+                        shooterValues1.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
                 }
 
                 if (m_showTransport && !liveMatch) {

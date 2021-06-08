@@ -56,7 +56,6 @@ public class Robot extends TimedRobot {
 
     Shuffleboard.selectTab("Pre-Round");
 
-
   }
 
   /**
@@ -111,7 +110,8 @@ public class Robot extends TimedRobot {
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
 
     m_robotContainer.m_turret.enableSofLimits(true);
-
+    new CalculateSpeedAndOffset(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_limelight)
+        .schedule(true);
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 
     Shuffleboard.selectTab("Competition");
@@ -129,7 +129,6 @@ public class Robot extends TimedRobot {
       case 0:// cross line
 
         setStartingPose(FieldMap.startPosition[0]);
-        m_robotContainer.m_limelight.useVision = false;
         m_autonomousCommand = new PositionRobot(m_robotContainer.m_robotDrive, -1);
 
         break;
@@ -138,6 +137,8 @@ public class Robot extends TimedRobot {
         setStartingPose(FieldMap.startPosition[1]);
         m_autoFactory.shootNumber = ShootData.retractOneStraight;
         m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
+        m_robotContainer.m_limelight.useVision = true;
+        m_robotContainer.m_limelight.setPipeline(m_robotContainer.m_limelight.noZoomPipeline);
         break;
 
       case 2:// Lined up with 2 balls on shield generator
@@ -145,6 +146,8 @@ public class Robot extends TimedRobot {
         setStartingPose(FieldMap.startPosition[2]);
         m_autoFactory.shootNumber = ShootData.leftTwoBall;
         m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
+        m_robotContainer.m_limelight.useVision = true;
+        m_robotContainer.m_limelight.setPipeline(m_robotContainer.m_limelight.noZoomPipeline);
 
         break;
 
@@ -152,16 +155,10 @@ public class Robot extends TimedRobot {
 
         setStartingPose(FieldMap.startPosition[3]);
         m_autoFactory.shootNumber = ShootData.trenchTwoBall;
-
         m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
-        break;
+        m_robotContainer.m_limelight.useVision = true;
+        m_robotContainer.m_limelight.setPipeline(m_robotContainer.m_limelight.noZoomPipeline);
 
-      case 4:// Trench shoot and picking up while moving
-
-        setStartingPose(FieldMap.startPosition[3]);
-        m_autoFactory.shootNumber = ShootData.trench3Ball;
-
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
         break;
 
       default:
@@ -211,11 +208,7 @@ public class Robot extends TimedRobot {
     autoHasRun = false;
     if (RobotBase.isReal() && !m_robotContainer.m_tilt.positionResetDone)
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
-    // CommandScheduler.getInstance().cancelAll();
 
-    // new CalculateTargetDistance(m_robotContainer.m_limelight,
-    // m_robotContainer.m_tilt, m_robotContainer.m_shooter)
-    // .schedule(true);
     // new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
     new CalculateSpeedAndOffset(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_limelight)
         .schedule(true);

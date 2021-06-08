@@ -17,6 +17,7 @@ import frc.robot.commands.MessageCommand;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.RunShooter;
+import frc.robot.commands.Shooter.SetShooterSpeed;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
@@ -47,15 +48,15 @@ public class AutoMode2 extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
 
-                super(new ParallelCommandGroup(
+                super(new ParallelCommandGroup(new SetShooterSpeed(shooter, ShootData.getShootSpeed(shootNumber)),
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)),
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)))
                                                 .deadlineWith(new RunShooter(shooter)),
 
                                 // shoot 6 while moving
 
-                                new ParallelCommandGroup(new StartIntake(intake), new ShootCells(shooter, transport,
-                                                compressor, ShootData.getShootTime(shootNumber))
+                                new ParallelCommandGroup(new StartIntake(intake), new ShootCells(shooter, limelight,
+                                                transport, compressor, ShootData.getShootTime(shootNumber))
                                                                 .deadlineWith(new PositionRobot(drive,
                                                                                 ShootData.getSecondDistance(
                                                                                                 shootNumber)))),
@@ -64,7 +65,8 @@ public class AutoMode2 extends SequentialCommandGroup {
 
                                                 new PositionRobot(drive, ShootData.getSecondDistance(shootNumber)),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),
-                                                new LimelightSetPipeline(limelight, 8), new PositionTurret(turret, 0)));
+                                                new LimelightSetPipeline(limelight, limelight.driverPipeline),
+                                                new PositionTurret(turret, 0)));
 
         }
 

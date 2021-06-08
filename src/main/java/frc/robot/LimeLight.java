@@ -28,6 +28,12 @@ public class LimeLight {
     public double verticalOffset;
     public boolean useVision;
 
+    public int driverPipeline = 0;
+    public int noZoomPipeline = 1;
+    public int twoTimesZoomPipeline = 2;
+    public int threeTimesZoomPipeline = 3;
+    public int ledsOffPipeline = 8;
+
     class PeriodicRunnable implements java.lang.Runnable {
         public void run() {
             resetPilelineLatency();

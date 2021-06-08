@@ -56,7 +56,7 @@ public class AutoMode3 extends SequentialCommandGroup {
                                 // shoot 5
 
                                 new ParallelCommandGroup(new StopIntake(intake),
-                                                new ShootCells(shooter, transport, compressor,
+                                                new ShootCells(shooter, limelight, transport, compressor,
                                                                 ShootData.getShootTime(shootNumber))),
 
                                 // pick up 3 move back under control panel
@@ -82,7 +82,7 @@ public class AutoMode3 extends SequentialCommandGroup {
 
                                 // // shoot 3
 
-                                new ShootCells(shooter, transport, compressor, ShootData.getShootTime(shootNumber + 1)),
+                                new ShootCells(shooter, limelight,transport, compressor, ShootData.getShootTime(shootNumber + 1)),
 
                                 // return tilt and turret
                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),

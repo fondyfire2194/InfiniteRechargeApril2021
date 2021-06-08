@@ -17,6 +17,7 @@ import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.RunShooter;
+import frc.robot.commands.Shooter.SetShooterSpeed;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
@@ -46,7 +47,8 @@ public class AutoMode1 extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
-                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
+                super(new ParallelCommandGroup(new SetShooterSpeed(shooter, ShootData.getShootSpeed(shootNumber)),
+                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
 
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)),
 
@@ -57,12 +59,12 @@ public class AutoMode1 extends SequentialCommandGroup {
                                 // shoot 5
 
                                 new ParallelCommandGroup(new StopIntake(intake),
-                                                new ShootCells(shooter, transport, compressor,
+                                                new ShootCells(shooter,limelight, transport, compressor,
                                                                 ShootData.getShootTime(shootNumber))),
 
                                 // return tilt and turret
-                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),
-                                new LimelightSetPipeline(limelight, 8), new PositionTurret(turret, 0));
+                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
+                                new LimelightSetPipeline(limelight, limelight.driverPipeline), new PositionTurret(turret, 0));
 
         }
 }
