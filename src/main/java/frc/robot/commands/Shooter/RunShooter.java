@@ -15,7 +15,7 @@ public class RunShooter extends CommandBase {
    * Creates a new StartShooter.
    */
   private RevShooterSubsystem m_shooter;
-  private double m_mpersec;
+  
 
   public RunShooter(RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -32,8 +32,8 @@ public class RunShooter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-   
-    m_shooter.runShooter();
+    if (m_shooter.startShooter)
+      m_shooter.runShooter();
   }
 
   // Called once the command ends or is interrupted.

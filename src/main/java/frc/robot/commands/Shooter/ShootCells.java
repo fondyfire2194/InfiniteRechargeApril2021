@@ -70,7 +70,7 @@ public class ShootCells extends CommandBase {
   @Override
   public void execute() {
 
-    m_shooter.runShooter();
+    m_shooter.startShooter = true;
 
     if ((m_shooter.atSpeed() && m_limelight.getHorOnTarget() && m_limelight.getVertOnTarget())
         || m_shooter.driverOKShoot || shootStarted == true) {
@@ -79,7 +79,7 @@ public class ShootCells extends CommandBase {
 
       m_transport.runFrontRollerMotor();
       m_transport.runRearRollerMotor();
-      
+
       m_shooter.shootTimeRemaining = startTime + m_shooter.shootTime - Timer.getFPGATimestamp();
     }
   }

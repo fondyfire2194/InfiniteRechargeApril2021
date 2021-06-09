@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants;
 import frc.robot.Pref;
-import frc.robot.Robot;
 import frc.robot.sim.ShooterSubsystem;
 
 public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsystem {
@@ -52,6 +51,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double useSetupOffset;
     public boolean useSetupSlider;
     public boolean useSetupVetOffset;
+    public boolean startShooter;
 
     private final int VELOCITY_SLOT = 0;
     /**
@@ -99,7 +99,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean allConnected;
     public double cameraAngleCalculatedSpeed;
     public boolean hideSliders = Constants.isMatch;
-	public boolean driverOKShoot;
+    public boolean driverOKShoot;
 
     public RevShooterSubsystem() {
 
@@ -222,6 +222,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public void stop() {
         mLeftMotor.stopMotor();
         mRightMotor.stopMotor();
+        startShooter = false;
     }
 
     public double getLeftPctOut() {

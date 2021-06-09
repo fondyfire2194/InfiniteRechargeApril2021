@@ -16,8 +16,8 @@ import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.RunShooter;
-import frc.robot.commands.Shooter.SetShooterSpeed;
 import frc.robot.commands.Shooter.ShootCells;
+import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Turret.PositionTurret;
@@ -45,11 +45,10 @@ public class AutoMode0 extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new ParallelCommandGroup(new SetShooterSpeed(shooter, ShootData.getShootSpeed(shootNumber)),
+                super(new ParallelCommandGroup(new StartShooter(shooter, ShootData.getShootSpeed(shootNumber)),
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)),
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)),
-                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)))
-                                                .deadlineWith(new RunShooter(shooter)),
+                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber))),
 
                                 new ParallelCommandGroup(new MessageCommand("Group2Started"),
                                                 new ShootCells(shooter, limelight, transport, compressor,

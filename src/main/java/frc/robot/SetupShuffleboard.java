@@ -42,6 +42,7 @@ import frc.robot.commands.RobotDrive.StopRobot;
 import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShootCells;
+import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.ToggleShooterSpeedSource;
 import frc.robot.commands.Tilt.ClearFaults;
@@ -408,7 +409,7 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
                                                                                            // commands
 
-                        shooterCommands.add("Shooter Motor Start", new RunShooter(m_shooter));
+                        shooterCommands.add("Shooter Motor Start", new StartShooter(m_shooter, 10));
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
                         shooterCommands.add("Shoot",
                                         new ShootCells(m_shooter, m_limelight, m_transport, m_compressor, 0));
@@ -449,6 +450,7 @@ public class SetupShuffleboard {
                         shooterValues1.addBoolean("TuneOn", () -> (m_shooter.tuneOn && m_shooter.lastTuneOn));
                         shooterValues1.addBoolean("BothConnected (6,7)", () -> m_shooter.allConnected);
                         shooterValues1.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
+                        shooterValues1.addBoolean("Shooter Running", () -> m_shooter.startShooter);
                 }
 
                 if (m_showTransport && !liveMatch) {

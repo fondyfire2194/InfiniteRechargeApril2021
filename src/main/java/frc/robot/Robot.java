@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.CalculateSpeedAndOffset;
+import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Vision.AutoSwitchZoom;
 import frc.robot.commands.Vision.CalculateTargetDistance;
@@ -112,6 +113,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.m_turret.enableSofLimits(true);
     new CalculateSpeedAndOffset(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_limelight)
         .schedule(true);
+    new RunShooter(m_robotContainer.m_shooter).schedule(true);
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 
     Shuffleboard.selectTab("Competition");
@@ -212,6 +214,8 @@ public class Robot extends TimedRobot {
     // new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
     new CalculateSpeedAndOffset(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_limelight)
         .schedule(true);
+    new RunShooter(m_robotContainer.m_shooter).schedule(true);
+
   }
 
   /**

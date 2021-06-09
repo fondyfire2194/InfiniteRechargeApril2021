@@ -26,7 +26,7 @@ public class LobShotSetup extends ParallelCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new LimelightSetPipeline(limelight, limelight.driverPipeline), new UseVision(limelight, false),
-        new SetShooterSpeed(shooter, ShootData.lobShotMPS),
+        new StartShooter(shooter, ShootData.lobShotMPS),
         new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE), new PositionTurret(turret, 0));
   }
 }

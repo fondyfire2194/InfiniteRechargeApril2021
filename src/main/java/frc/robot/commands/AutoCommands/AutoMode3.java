@@ -18,6 +18,7 @@ import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShootCells;
+import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Turret.PositionTurret;
@@ -47,11 +48,12 @@ public class AutoMode3 extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
 
-                super(new ParallelCommandGroup(new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
+                super(new ParallelCommandGroup(new StartShooter(shooter, ShootData.getShootSpeed(shootNumber)),
+                                new PositionRobot(drive, ShootData.getFirstDistance(shootNumber)),
                                 new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)),
 
                                 new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber)))
-                                                .deadlineWith(new StartIntake(intake), new RunShooter(shooter)),
+                                                .deadlineWith(new StartIntake(intake)),
 
                                 // shoot 5
 
@@ -82,7 +84,8 @@ public class AutoMode3 extends SequentialCommandGroup {
 
                                 // // shoot 3
 
-                                new ShootCells(shooter, limelight,transport, compressor, ShootData.getShootTime(shootNumber + 1)),
+                                new ShootCells(shooter, limelight, transport, compressor,
+                                                ShootData.getShootTime(shootNumber + 1)),
 
                                 // return tilt and turret
                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),
