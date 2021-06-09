@@ -84,7 +84,7 @@ public final class Constants {
        * 
        */
       // DIMENSIONS IN METERS
-
+      //max speed = .4788 *(5700 /(60 *10.2 )) = 4.5 mps (14.5 fps)
       public static double WHEEL_DIAMETER = .1524;// 6"
       public static double WHEEL_CIRCUMFERENCE = .4788;// meters
       public static double METERS_PER_MOTOR_REV = 0.0467;// pi * diameter /geaar ratio

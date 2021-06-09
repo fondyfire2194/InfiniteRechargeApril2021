@@ -33,16 +33,14 @@ public class CalculateSpeedAndOffset extends CommandBase {
   public void execute() {
     double[] temp = new double[] { 0, 0 };
     if (!m_shooter.useSetupSlider) {
-      temp = m_shooter.calculateMPSandYOffset(m_tilt.getCameraAngle() - m_tilt.targetVerticalOffset);
-      temp[0] = 0;
-      temp[1] = 0;
+      if (Math.abs(m_limelight.getdegVerticalToTarget()) < .5)
+        temp = m_shooter.calculateMPSandYOffset(
+            (m_tilt.getCameraAngle()) + m_limelight.getdegVerticalToTarget() - m_tilt.targetVerticalOffset);
     } else {
-      temp[0] = m_shooter.shooterSpeed.getDouble(2);
-      temp[1] = m_shooter.setupVertOffset.getDouble(0);
+      m_shooter.requiredMps = m_shooter.shooterSpeed.getDouble(2);
+      m_tilt.targetVerticalOffset = m_shooter.setupVertOffset.getDouble(0);
     }
 
-    m_tilt.targetVerticalOffset = temp[1];
-    m_shooter.requiredMps = temp[0];
   }
 
   // Called once the command ends or is interrupted.

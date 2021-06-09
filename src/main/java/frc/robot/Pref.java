@@ -68,7 +68,7 @@ public class Pref {
 
     // shooter velocity
 
-    prefDict.put("sHff", .02);
+    prefDict.put("sHff", .016);//=1/maxMPS = 1/(5700/60 * .638) .016
     prefDict.put("sHkp", .05);
     prefDict.put("sHkI", .0001);
     prefDict.put("sHkd", .5);

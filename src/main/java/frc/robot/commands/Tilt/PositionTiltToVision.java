@@ -30,8 +30,6 @@ public class PositionTiltToVision extends CommandBase {
   private int loopCtr;
   private double motorDegrees;
 
-  private double m_offset;
-
   private final int filterCount = 5;
 
   public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double position) {
@@ -46,10 +44,12 @@ public class PositionTiltToVision extends CommandBase {
   @Override
   public void initialize() {
     m_endpoint = m_position;
+
     m_limelight.useVision = true;
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_tilt.targetAngle = m_endpoint;
-    m_tilt.targetVerticalOffset = m_offset;
+    m_tilt.targetVerticalOffset = 0;
+    m_tilt.driverVerticalOffset = 0;
     if (m_endpoint < HoodedShooterConstants.TILT_MIN_ANGLE)
       m_endpoint = HoodedShooterConstants.TILT_MIN_ANGLE;
     if (m_endpoint > HoodedShooterConstants.TILT_MAX_ANGLE)

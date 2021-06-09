@@ -448,8 +448,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     private void fixedSettings() {
-        kFF = .0038;// 1/5,700 rpm = 1.75e-4 1 rev = .0467 meters so max mperm = 5700 * .0467 = 266
-                    // and 1/266 = .0038
+        kFF = .0038;//= 1/max MPM = 1/(4.4*60)
+
         kMaxOutput = .75;// 266 mpm = 4 mps limiting to 3mps
         kMinOutput = -.75;
 

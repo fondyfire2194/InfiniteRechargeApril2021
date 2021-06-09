@@ -343,7 +343,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     }
 
     private void fixedSettings() {
-        kFF = .00007;// 10000 rpm = 10000 * 1.42 deg / rev =14,200 1/14200 = 7e-5
+        kFF = .0004;// 10000 rpm = 10000 * 1.42 deg / rev =14,200/60 = 235 1/235 = .004
         kMaxOutput = .75;
         kMinOutput = -.75;
         maxRPM = 11000;// not used

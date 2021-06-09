@@ -13,6 +13,8 @@ public class PositionRobot extends CommandBase {
   private final RevDrivetrain m_drive;
   private double m_position;
   private double m_startTime;
+  private double m_startAngle;
+  private double m_angleError;
 
   public PositionRobot(RevDrivetrain m_robotDrive, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -27,12 +29,14 @@ public class PositionRobot extends CommandBase {
     m_startTime = Timer.getFPGATimestamp();
     m_drive.leftTargetPosition = m_position;
     m_drive.rightTargetPosition = m_position;
+    m_startAngle = m_drive.getYaw();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     m_drive.driveDistance(m_position, m_position);
+    m_angleError = m_drive.getYaw() - m_startAngle;//reverse motion + means left is behind
   }
 
   // Called once the command ends or is interrupted.

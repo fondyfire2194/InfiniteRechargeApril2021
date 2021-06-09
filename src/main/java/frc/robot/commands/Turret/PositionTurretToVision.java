@@ -42,6 +42,8 @@ public class PositionTurretToVision extends CommandBase {
     targetSeen = false;
     visionFoundCounter = 0;
     loopCtr = 0;
+    m_turret.driverHorizontalOffset = 0;
+    m_turret.targetHorizontalOffset = 0;
     m_limelight.useVision = true;
   }
 
