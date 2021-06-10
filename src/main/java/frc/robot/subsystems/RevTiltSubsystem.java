@@ -59,6 +59,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public final double degreesPerRev = HoodedShooterConstants.tiltDegreesPerRev;// degrees per motor turn
     public final double tiltMinAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
 
+    public double pset, iset, dset, ffset,izset;
+
     public boolean tuneOn = false;
     public boolean lastTuneOn;
 
@@ -442,6 +444,14 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         if (lastLockTuneOn)
             lastLockTuneOn = lockTuneOn;
 
+    }   public void getGains() {
+        ffset = mPidController.getFF(SMART_MOTION_SLOT);
+        pset = mPidController.getP(SMART_MOTION_SLOT);
+        iset = mPidController.getI(SMART_MOTION_SLOT);
+        dset = mPidController.getD(SMART_MOTION_SLOT);
+        izset = mPidController.getIZone(SMART_MOTION_SLOT);
+
     }
+
 
 }

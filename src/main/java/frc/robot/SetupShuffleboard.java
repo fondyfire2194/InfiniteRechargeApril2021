@@ -316,19 +316,16 @@ public class SetupShuffleboard {
 
                         turretValues2.addBoolean("OKTune", () -> (m_turret.tuneOn && m_turret.lastTuneOn));
 
-                        if (m_turretTune) {
+                        ShuffleboardLayout turretGains = Shuffleboard.getTab("SetupTurret")
 
-                                ShuffleboardLayout turretValues1 = Shuffleboard.getTab("SetupTurret")
-                                                .getLayout("Charts", BuiltInLayouts.kList).withPosition(4, 0)
-                                                .withSize(4, 5).withProperties(Map.of("Label position", "TOP")); // labels
+                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1, 2)
+                                        .withProperties(Map.of("Label position", "LEFT")); // labels
 
-                                turretValues1.addNumber("Speed", () -> m_turret.getSpeed())
-                                                .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
-                                turretValues1.addNumber("Position", () -> m_turret.getAngle())
-                                                .withWidget(BuiltInWidgets.kGraph).withSize(4, 2); //
-                                turretValues1.addNumber("Amps", () -> m_turret.getAmps())
-                                                .withWidget(BuiltInWidgets.kGraph).withSize(4, 2); //
-                        }
+                        turretGains.addNumber("FF", () -> m_turret.ffset);
+                        turretGains.addNumber("P", () -> m_turret.pset);
+                        turretGains.addNumber("I", () -> m_turret.iset);
+                        turretGains.addNumber("D", () -> m_turret.dset);
+                        turretGains.addNumber("IZ", () -> m_turret.izset);
                 }
                 /**
                  * Shooter Tilt
@@ -395,6 +392,18 @@ public class SetupShuffleboard {
                         tiltValues2.addBoolean("-SWLimit", () -> m_tilt.onMinusSoftwareLimit());
                         tiltValues2.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled());
                         tiltValues2.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget());
+
+                        ShuffleboardLayout tiltGains = Shuffleboard.getTab("SetupTilt")
+
+                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1,2)
+                                        .withProperties(Map.of("Label position", "LEFT")); // labels
+
+                        tiltGains.addNumber("FF", () -> m_tilt.ffset);
+                        tiltGains.addNumber("P", () -> m_tilt.pset);
+                        tiltGains.addNumber("I", () -> m_tilt.iset);
+                        tiltGains.addNumber("D", () -> m_tilt.dset);
+                        tiltGains.addNumber("IZ", () -> m_tilt.izset);
+
                 }
                 /**
                  * 
@@ -451,6 +460,18 @@ public class SetupShuffleboard {
                         shooterValues1.addBoolean("BothConnected (6,7)", () -> m_shooter.allConnected);
                         shooterValues1.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
                         shooterValues1.addBoolean("Shooter Running", () -> m_shooter.startShooter);
+
+                        ShuffleboardLayout shooterValues2 = Shuffleboard.getTab("SetupShooter")
+
+                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1,3)
+                                        .withProperties(Map.of("Label position", "LEFT")); // labels
+
+                        shooterValues2.addNumber("FF", () -> m_shooter.ffset);
+                        shooterValues2.addNumber("P", () -> m_shooter.pset);
+                        shooterValues2.addNumber("I", () -> m_shooter.iset);
+                        shooterValues2.addNumber("D", () -> m_shooter.dset);
+                        shooterValues2.addNumber("IZ", () -> m_shooter.izset);
+
                 }
 
                 if (m_showTransport && !liveMatch) {
@@ -544,20 +565,23 @@ public class SetupShuffleboard {
                         robotValues2.addBoolean("LFoll", () -> m_robotDrive.getLeftFollower());
                         robotValues2.addBoolean("RFoll", () -> m_robotDrive.getRightFollower());
 
-                        if (m_robotTune) {
+                        ShuffleboardLayout robotGains = Shuffleboard.getTab("SetupRobot")
 
-                                ShuffleboardLayout robotValues1 = Shuffleboard.getTab("SetupRobot")
-                                                .getLayout("Charts", BuiltInLayouts.kList).withPosition(4, 0)
-                                                .withSize(4, 4).withProperties(Map.of("Label position", "LEFT"));
+                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(4, 0).withSize(1, 3)
+                                        .withProperties(Map.of("Label position", "LEFT")); // labels
 
-                                robotValues1.addNumber("LeftSpeed", () -> m_robotDrive.getLeftRate())
-                                                .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
-                                robotValues1.addNumber("Position", () -> m_robotDrive.getAverageDistance())
-                                                .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
-                                robotValues1.addNumber("Amps", () -> m_robotDrive.getLeftAmps())
-                                                .withWidget(BuiltInWidgets.kGraph).withSize(4, 2);
+                        robotGains.addNumber("LFF", () -> m_robotDrive.ffset);
+                        robotGains.addNumber("LP", () -> m_robotDrive.pset);
+                        robotGains.addNumber("LI", () -> m_robotDrive.iset);
+                        robotGains.addNumber("LD", () -> m_robotDrive.dset);
+                        robotGains.addNumber("LIZ", () -> m_robotDrive.izset);
 
-                        }
+                        robotGains.addNumber("RFF", () -> m_robotDrive.rffset);
+                        robotGains.addNumber("RP", () -> m_robotDrive.rpset);
+                        robotGains.addNumber("RI", () -> m_robotDrive.riset);
+                        robotGains.addNumber("RD", () -> m_robotDrive.rdset);
+                        robotGains.addNumber("RIZ", () -> m_robotDrive.rizset);
+
                 }
                 /**
                  * 

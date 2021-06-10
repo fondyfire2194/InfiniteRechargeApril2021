@@ -45,6 +45,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, acc;
     public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastAcc;
     public double cameraCalculatedSpeed;
+    public double pset, iset, dset, ffset,izset;
     public boolean useCameraSpeed;
     public boolean useCameraAngleSpeed;
     public NetworkTableEntry shooterSpeed;
@@ -398,7 +399,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         double acc = 1;
 
         calibratePID(p, i, d, f, iz, acc, VELOCITY_SLOT);
- 
 
     }
 
@@ -417,8 +417,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             SmartDashboard.putBoolean("ShooterBurnOK", burnError == CANError.kOk);
         }
 
-
-
         tuneOn = Pref.getPref("sHTune") == 1.;
 
         if (tuneOn && !lastTuneOn) {
@@ -427,6 +425,15 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         }
         if (lastTuneOn)
             lastTuneOn = tuneOn;
+
+    }
+
+    public void getGains() {
+        ffset = mPidController.getFF(0);
+        pset = mPidController.getP(0);
+        iset = mPidController.getI(0);
+        dset = mPidController.getD(0);
+        izset = mPidController.getIZone();
 
     }
 }

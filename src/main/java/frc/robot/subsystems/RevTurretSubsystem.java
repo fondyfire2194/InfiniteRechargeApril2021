@@ -45,6 +45,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private double inPositionBandwidth = .25;
     public double targetHorizontalOffset;
     public double driverHorizontalOffset;
+    public double pset, iset, dset, ffset,izset;
 
     public boolean validTargetSeen;
     public double adjustedTargetAngle;
@@ -82,6 +83,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
             mEncoder.setPositionConversionFactor(DEG_PER_MOTOR_REV);
             mEncoder.setVelocityConversionFactor(DEG_PER_MOTOR_REV / 60);
+
         } else
 
         {
@@ -312,22 +314,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     }
 
-    private void setGains() {
-
-        fixedSettings();
-
-        kP = .00018;
-        kI = 0.001;
-        kD = .0002;
-        kIz = 1;
-
-        maxAcc = 850;
-        maxVel = 2500;
-
-        // set PID coefficients
-        calibratePID(kP, kI, kD, kFF, kIz, SMART_MOTION_SLOT);
-
-    }
 
     private void tuneGains() {
         fixedSettings();
@@ -402,6 +388,15 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public int getFaults() {
         return m_motor.getFaults();
+    }
+
+    public void getGains() {
+        ffset = mPidController.getFF(SMART_MOTION_SLOT);
+        pset = mPidController.getP(SMART_MOTION_SLOT);
+        iset = mPidController.getI(SMART_MOTION_SLOT);
+        dset = mPidController.getD(SMART_MOTION_SLOT);
+        izset = mPidController.getIZone(SMART_MOTION_SLOT);
+
     }
 
 }

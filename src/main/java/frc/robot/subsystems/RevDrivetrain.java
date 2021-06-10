@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
+import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -56,6 +57,9 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public double leftTargetPosition;
     public double rightTargetPosition;
+
+    public double pset, iset, dset, ffset, izset;
+    public double rpset, riset, rdset, rffset, rizset;
 
     public double startDistance;
 
@@ -114,8 +118,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mRightPidController = mLeadRight.getPIDController();
 
         mLeftPidController.setOutputRange(-.5, .5, POSITION_SLOT);
-
-        tuneGains();
 
         mLeftEncoder.setPosition(0);
         mRightEncoder.setPosition(0);
@@ -418,22 +420,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     }
 
-    private void setGains() {
-
-        fixedSettings();
-
-        kP = .1;
-
-        kI = 0;
-        kD = .0;
-        kIz = 0;
-
-        // set PID coefficients
-
-        calibratePID(kP, kI, kD, kIz, maxAcc, kFF, SMART_MOTION_SLOT);
-
-    }
-
     private void tuneGains() {
 
         fixedSettings();
@@ -448,7 +434,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     private void fixedSettings() {
-        kFF = .0038;//= 1/max MPM = 1/(4.4*60)
+        kFF = .0038;// = 1/max MPM = 1/(4.4*60)
 
         kMaxOutput = .75;// 266 mpm = 4 mps limiting to 3mps
         kMinOutput = -.75;
@@ -460,7 +446,23 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     private void checkTune() {
-        tuneOn = Pref.getPref("dRTune") != 0.;
+        CANError burnError = CANError.kError;
+
+        SmartDashboard.putBoolean("LeftBurnOK", false);
+        CANError rburnError = CANError.kError;
+        SmartDashboard.putBoolean("RightBurnOK", false);
+
+        if (Pref.getPref("dRTune") == 5.) {
+            burnError = mLeadLeft.burnFlash();
+
+            SmartDashboard.putBoolean("LeftBurnOK", burnError == CANError.kOk);
+            rburnError = mLeadRight.burnFlash();
+
+            SmartDashboard.putBoolean("RightBurnOK", burnError == CANError.kOk);
+
+        }
+
+        tuneOn = Pref.getPref("dRTune") == 1.;
 
         if (tuneOn && !lastTuneOn) {
 
@@ -470,6 +472,21 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         if (lastTuneOn)
             lastTuneOn = tuneOn;
+    }
+
+    public void getGains() {
+        ffset = mLeftPidController.getFF(0);
+        pset = mLeftPidController.getP(0);
+        iset = mLeftPidController.getI(0);
+        dset = mLeftPidController.getD(0);
+        izset = mLeftPidController.getIZone();
+
+        rffset = mRightPidController.getFF(0);
+        rpset = mRightPidController.getP(0);
+        riset = mRightPidController.getI(0);
+        rdset = mRightPidController.getD(0);
+        rizset = mRightPidController.getIZone();
+
     }
 
 }
