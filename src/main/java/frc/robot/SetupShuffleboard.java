@@ -26,6 +26,7 @@ import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.IntakeArm;
+import frc.robot.commands.CellTransport.MoveCellArm;
 import frc.robot.commands.Climber.ClimberArm;
 import frc.robot.commands.Climber.ClimberRatchet;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
@@ -288,7 +289,7 @@ public class SetupShuffleboard {
                         turretValues.addNumber("DriverOffset", () -> m_turret.driverHorizontalOffset);
 
                         ShuffleboardLayout turretValues3 = Shuffleboard.getTab("SetupTurret")
-                                        .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 3)
+                                        .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 2)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
 
                         turretValues3.addNumber("IAccum", () -> m_tilt.getIaccum());
@@ -315,6 +316,7 @@ public class SetupShuffleboard {
                         turretValues2.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget());
 
                         turretValues2.addBoolean("OKTune", () -> (m_turret.tuneOn && m_turret.lastTuneOn));
+                        turretValues2.addBoolean("Burn OK", () -> m_turret.burnOK);
 
                         ShuffleboardLayout turretGains = Shuffleboard.getTab("SetupTurret")
 
@@ -366,7 +368,7 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("DriverOffset", () -> m_tilt.driverVerticalOffset);
 
                         ShuffleboardLayout tiltValues3 = Shuffleboard.getTab("SetupTilt")
-                                        .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 3)
+                                        .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 2)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
 
                         tiltValues3.addNumber("IAccum", () -> m_tilt.getIaccum());
@@ -392,10 +394,11 @@ public class SetupShuffleboard {
                         tiltValues2.addBoolean("-SWLimit", () -> m_tilt.onMinusSoftwareLimit());
                         tiltValues2.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled());
                         tiltValues2.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget());
+                        tiltValues2.addBoolean("Burn OK", () -> m_tilt.burnOK);
 
                         ShuffleboardLayout tiltGains = Shuffleboard.getTab("SetupTilt")
 
-                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1,2)
+                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1, 2)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels
 
                         tiltGains.addNumber("FF", () -> m_tilt.ffset);
@@ -460,10 +463,11 @@ public class SetupShuffleboard {
                         shooterValues1.addBoolean("BothConnected (6,7)", () -> m_shooter.allConnected);
                         shooterValues1.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
                         shooterValues1.addBoolean("Shooter Running", () -> m_shooter.startShooter);
+                        shooterValues1.addBoolean("Burn OK", () -> m_shooter.burnOK);
 
                         ShuffleboardLayout shooterValues2 = Shuffleboard.getTab("SetupShooter")
 
-                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1,3)
+                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1, 2)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels
 
                         shooterValues2.addNumber("FF", () -> m_shooter.ffset);
@@ -477,9 +481,11 @@ public class SetupShuffleboard {
                 if (m_showTransport && !liveMatch) {
                         ShuffleboardLayout transportValues = Shuffleboard.getTab("SetupTransport")
                                         .getLayout("TransportValues", BuiltInLayouts.kList).withPosition(0, 0)
-                                        .withSize(2, 3).withProperties(Map.of("Label position", "LEFT")); // labels
+                                        .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels
                                                                                                           // for
-
+                        transportValues.add("Release Cell", new MoveCellArm(transport, transport.cellArmReleaseCell));
+                        transportValues.add("Hold Cell", new MoveCellArm(transport, transport.cellArmHoldCell));
+   
                         transportValues.addNumber("LeftBeltAmps", () -> m_transport.getLeftBeltMotorAmps());
                         transportValues.addNumber("RightBeltAmps", () -> m_transport.getRightBeltMotorAmps());
                         transportValues.addNumber("FrontRollerAmps", () -> m_transport.getFrontRollerMotorAmps());
@@ -552,7 +558,7 @@ public class SetupShuffleboard {
                         robotValues.addNumber("Target", () -> m_robotDrive.leftTargetPosition);
 
                         ShuffleboardLayout robotValues2 = Shuffleboard.getTab("SetupRobot")
-                                        .getLayout("States", BuiltInLayouts.kGrid).withPosition(8, 3).withSize(2, 2)
+                                        .getLayout("States", BuiltInLayouts.kGrid).withPosition(5, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         robotValues2.addBoolean("TuneOn", () -> (m_robotDrive.tuneOn && m_robotDrive.lastTuneOn));
@@ -564,6 +570,8 @@ public class SetupShuffleboard {
                         robotValues2.addBoolean("RInPosition", () -> m_robotDrive.getInPositionRight());
                         robotValues2.addBoolean("LFoll", () -> m_robotDrive.getLeftFollower());
                         robotValues2.addBoolean("RFoll", () -> m_robotDrive.getRightFollower());
+                        robotValues2.addBoolean("LBurnOK", () -> m_robotDrive.leftBurnOK);
+                        robotValues2.addBoolean("RBurnOK", () -> m_robotDrive.rightBurnOK);
 
                         ShuffleboardLayout robotGains = Shuffleboard.getTab("SetupRobot")
 

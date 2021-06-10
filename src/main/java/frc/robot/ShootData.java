@@ -4,7 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.util.Units;
+import com.kauailabs.navx.IMUProtocol.YPRUpdate;
+
 import frc.robot.Constants.FieldConstants;
 
 /** Add your docs here. */
@@ -12,118 +13,28 @@ public class ShootData {
 
     /**
      * 
-     * 
-     * 
-     * 
      */
+
     public static int crossLine = 0;
     public static int retractOneStraight = 1;
 
     public static int leftTwoBall = 2;
-    public static int trenchTwoBall = 3;
-    public static int trench3Ball = 4;
+    public static int trench3Ball = 3;
 
-    public  static double lobShotMPS = 7.8;
-    public static double lobShotTime = 4;
+    public static double lowShotMPS = 7.8;
+    public static double lowShotTime = 4;
 
     public static double innerShotMPS = 8;
     public static double innerTiltAngle = 12;
 
-    private static final double shootTime = 5;
-
-    private static final double shootSpeed0 = 12;// mps
-
-    private static final double shootSpeed1 = 14;// mps
-    private static final double shootSpeed2 = 14;// mps
-
-    private static final double xRetractDistance = -.75;
-    private static final double xTrenchTwoBallPickup = -3;
-    private static final double xLeftTwoBallPickup = -2;
-
-    private static final double allowInnerPort = -2.5;
-
-    private static double yTrenchCenterFromPort = FieldMap.trenchCLtoGoalY;
-    private static double yLeftPickupFromPort = Units.inchesToMeters(72.4);
-
-    private static double initiationLine = FieldConstants.initiationLine;
     private static double shotHeight = FieldConstants.SHOT_HEIGHT;
     private static double innerWallFromOuter = .74;
-
-    /**
-     * 
-     * array contents are
-     * 
-     * pipeline,
-     * 
-     * first moveDistance, second moveDistance, shoot speed
-     * 
-     * shoot time, turret angle, turret shift deg, tilt angle, tilt shift deg.
-     * 
-     * distances are absolute and need to be repeated if robot is to remain in place
-     */
-
-    private static double[][] shootValues = {
-
-            // cross line 0 (not used but don't delete!
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 0 )
-
-            { 0, xRetractDistance, xRetractDistance, shootSpeed0, shootTime, 0, 0,
-                    getOuterTiltAngle((initiationLine - xRetractDistance), 0), allowInnerPort },
-
-            { 0, xLeftTwoBallPickup, xLeftTwoBallPickup, shootSpeed1, shootTime,
-                    getTurretAngleXY((initiationLine - xLeftTwoBallPickup), yLeftPickupFromPort), 0,
-                    getOuterTiltAngle((initiationLine - xLeftTwoBallPickup), yLeftPickupFromPort), 0 },
-
-            { 0, xTrenchTwoBallPickup, xTrenchTwoBallPickup, shootSpeed2, shootTime,
-                    -getTurretAngleXY((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), 0,
-                    getOuterTiltAngle((initiationLine - xTrenchTwoBallPickup), yTrenchCenterFromPort), 0 }
-
-    };
-
-    // private static double positionRate = 3;
 
     public ShootData() {
     }
 
-    public static int getPipeline(int pointer) {
-        return (int) shootValues[pointer][0];
-    }
-
-    public static double getFirstDistance(int pointer) {
-        return shootValues[pointer][1];
-
-    }
-
-    public static double getSecondDistance(int pointer) {
-        return shootValues[pointer][2];
-    }
-
-    public static double getShootSpeed(int pointer) {
-        return shootValues[pointer][3];
-    }
-
-    public static double getShootTime(int pointer) {
-        return shootValues[pointer][4];
-    }
-
-    public static double getTurretAngle(int pointer) {
-        return shootValues[pointer][5] + shootValues[pointer][6];
-    }
-
-    public static double getTurretOffset(int pointer) {
-        return shootValues[pointer][6];
-    }
-
-    public static double getTiltAngle(int pointer) {
-        return shootValues[pointer][7] + shootValues[pointer][8];
-    }
-
-    public static double getTiltOffset(int pointer) {
-        return shootValues[pointer][8];
-    }
-
-    private static double getOuterTiltAngle(double x, double y) {
-        return Math.toDegrees(Math.atan(shotHeight / getFloorDistance(x, y)));
+    private static double getTiltAngle(double x) {
+        return Math.toDegrees(Math.tan(shotHeight / x));
     }
 
     private static double getTurretAngleXY(double x, double y) {
@@ -143,11 +54,53 @@ public class ShootData {
         return Math.sqrt((getFloorDistanceSqrd(x, y)) + (shotHeight * shotHeight));
     }
 
-    public static void showValues(int value) {
+    public final static class auto0Constants {
+        public static double retractDistance = -1;
+        public static double tiltAngle = getTiltAngle(4);
+        public static double turretAngle = 0;
+        public static double shootSpeed = 23;
+        public static double tiltOffset = -2;
+        public static double turretOffset = 0;
+        public static double shootTime = 5;
 
-        SD.putN1("TiltAngle " + String.valueOf(value), getTiltAngle(value));
-        SD.putN1("TurretAngle " + String.valueOf(value), getTurretAngle(value));
-        SD.putN1("ShootSpeed " + String.valueOf(value), getShootSpeed(value));
+    }
+
+    public final static class auto1Constants {
+        private static double yfromPort = 2;///?
+        public static double retractDistance = -1;
+        public static double tiltAngle = getTiltAngle(getFloorDistance(4, yfromPort));
+        public static double turretAngle = getTurretAngleXY(4, yfromPort);
+        public static double shootSpeed = 23;///?
+        public static double tiltOffset = 0;///?
+        public static double turretOffset = 0;///?
+        public static double shootTime = 5;
+
+        public static double retractDistance1 = -1;///?
+        public static double tiltAngle1 = getTiltAngle(getFloorDistance(5, yfromPort));
+        public static double turretAngle1 = getTurretAngleXY(5, yfromPort);;
+        public static double shootSpeed1 = 23;///?
+        public static double tiltOffset1 = 0;///?
+        public static double turretOffset1 = 0;///?
+        public static double shootTime1 = 5;
+
+    }
+
+    public final static class auto2Constants {
+        public static double retractDistance = -1;
+        public static double tiltAngle = 22;
+        public static double turretAngle = 0;
+        public static double shootSpeed = 23;
+        public static double tiltOffset = -2;
+        public static double turretOffset = 0;
+        public static double shootTime = 5;
+
+        public static double retractDistance1 = -1;
+        public static double tiltAngle1 = 22;
+        public static double turretAngle1 = 0;
+        public static double shootSpeed1 = 23;
+        public static double tiltOffset1 = -2;
+        public static double turretOffset1 = 0;
+        public static double shootTime1 = 5;
 
     }
 

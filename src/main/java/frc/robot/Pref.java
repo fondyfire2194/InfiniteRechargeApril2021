@@ -84,6 +84,15 @@ public class Pref {
 
     prefDict.put("dRTune", 0.);
 
+    //cell servo
+
+    prefDict.put("CellRelPosn",0.);
+    prefDict.put("CellHoldPosn",.4);
+    prefDict.put("CellReleaseTime",.5);
+
+    
+
+
   }
 
   public static void ensureRioPrefs() {

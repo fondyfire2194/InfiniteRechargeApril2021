@@ -25,7 +25,6 @@ import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
-import frc.robot.commands.CellTransport.CellBeltPulseSelect;
 import frc.robot.commands.CellTransport.JogLeftBelt;
 import frc.robot.commands.Climber.JogClimber;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
@@ -41,6 +40,7 @@ import frc.robot.commands.Shooter.OKToShoot;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShieldGeneratorShotSetup;
 import frc.robot.commands.Shooter.ShootCells;
+import frc.robot.commands.Shooter.ShootOne;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.TrenchShotSetup;
 import frc.robot.commands.Tilt.PositionHoldTilt;
@@ -62,8 +62,8 @@ import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 import frc.robot.trajectories.FondyFireTrajectory;
-import frc.robot.commands.CellTransport.JogLeftBelt;
 import frc.robot.commands.CellTransport.JogRightBelt;
+import frc.robot.commands.CellTransport.ReleaseOneCell;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -235,7 +235,7 @@ public class RobotContainer {
              * 
              */
 
-            new JoystickButton(m_driverController, 1).whileHeld(new StartIntake(m_intake));
+            new JoystickButton(m_driverController, 1).whileHeld(new StartIntake(m_intake,m_transport));
 
             new JoystickButton(m_driverController, 2)
                         .whileHeld(new ShootCells(m_shooter, m_limelight, m_transport, m_compressor, 100));
@@ -269,7 +269,8 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 11).whileHeld(getBypassShootInterlocks());
 
-            // new JoystickButton(m_driverController, 12).whenPressed(
+            new JoystickButton(m_driverController, 12)
+                        .whenPressed(new ShootOne(m_shooter, m_transport, m_compressor));
 
             driverUpButton.whenPressed(() -> m_tilt.aimHigher(.25));
 
@@ -310,7 +311,7 @@ public class RobotContainer {
                         .whenReleased(() -> m_transport.stopFrontRollerMotor())
                         .whenReleased(() -> m_transport.stopRearRollerMotor());
 
-            // setupLeftButton.whileHeld(
+            setupLeftButton.whenPressed(new ReleaseOneCell(m_transport));
 
             setupLeftTrigger.whileHeld(() -> runLeftBelt());
 
@@ -319,7 +320,7 @@ public class RobotContainer {
             setupRightTrigger.whileHeld(() -> m_transport.runRearRollerMotor())
                         .whenReleased(() -> m_transport.stopRearRollerMotor());
 
-            setupBack.whileHeld(new StartIntake(m_intake)).whenReleased(new StopIntake(m_intake));
+            setupBack.whileHeld(new StartIntake(m_intake,m_transport)).whenReleased(new StopIntake(m_intake));
 
             setupStart.whileHeld(() -> m_controlPanel.turnWheelMotor())
                         .whenReleased(() -> m_controlPanel.stopWheelMotor());

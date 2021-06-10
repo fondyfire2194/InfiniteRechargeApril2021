@@ -81,6 +81,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public boolean allConnected;
 
     public boolean lockedForVision;
+    public boolean leftBurnOK;
+    public boolean rightBurnOK;
 
     @Override
     public void close() {
@@ -447,26 +449,24 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     private void checkTune() {
         CANError burnError = CANError.kError;
-
-        SmartDashboard.putBoolean("LeftBurnOK", false);
         CANError rburnError = CANError.kError;
-        SmartDashboard.putBoolean("RightBurnOK", false);
 
-        if (Pref.getPref("dRTune") == 5.) {
+        if (Pref.getPref("dRTune") == 5. && allConnected) {
             burnError = mLeadLeft.burnFlash();
-
-            SmartDashboard.putBoolean("LeftBurnOK", burnError == CANError.kOk);
+            leftBurnOK = false;
+            leftBurnOK = burnError == CANError.kOk;
+            rightBurnOK = false;
             rburnError = mLeadRight.burnFlash();
-
-            SmartDashboard.putBoolean("RightBurnOK", burnError == CANError.kOk);
-
+            rightBurnOK = rburnError == CANError.kOk;
+            getGains();
         }
 
-        tuneOn = Pref.getPref("dRTune") == 1.;
+        tuneOn = Pref.getPref("dRTune") == 1. && allConnected;
 
         if (tuneOn && !lastTuneOn) {
 
             tuneGains();
+            getGains();
             lastTuneOn = true;
         }
 

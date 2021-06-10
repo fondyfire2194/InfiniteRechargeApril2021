@@ -15,15 +15,18 @@ import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.CellIntake.StartIntake;
+import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
-import frc.robot.commands.Shooter.RunShooter;
-import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Shooter.ShootCells;
+import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
+import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
+import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.LimelightSetPipeline;
+import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -40,32 +43,59 @@ public class AutoMode2 extends SequentialCommandGroup {
          * 
          * Start in front of power port and shoot
          */
+        static double retractDistance = ShootData.auto2Constants.retractDistance;
+        static double tiltAngle = ShootData.auto2Constants.tiltAngle;
+        static double turretAngle = ShootData.auto2Constants.turretAngle;
+        static double shootSpeed = ShootData.auto2Constants.shootSpeed;
+        static double tiltOffset = ShootData.auto2Constants.tiltOffset;
+        static double turretOffset = ShootData.auto2Constants.turretOffset;
+        static double shootTime = ShootData.auto2Constants.shootTime;
+
+        static double retractDistance1 = ShootData.auto2Constants.retractDistance1;
+        static double tiltAngle1 = ShootData.auto2Constants.tiltAngle1;
+        static double turretAngle1 = ShootData.auto2Constants.turretAngle1;
+        static double shootSpeed1 = ShootData.auto2Constants.shootSpeed1;
+        static double tiltOffset1 = ShootData.auto2Constants.tiltOffset1;
+        static double turretOffset1 = ShootData.auto2Constants.turretOffset1;
+        static double shootTime1 = ShootData.auto2Constants.shootTime1;
 
         public AutoMode2(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
-                        Compressor compressor, RearIntakeSubsystem intake, int shootNumber) {
+                        Compressor compressor, RearIntakeSubsystem intake) {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
-                // move back and pickup 2
+                //
 
-                super(new ParallelCommandGroup(new StartShooter(shooter, ShootData.getShootSpeed(shootNumber)),
-                                new PositionTiltToVision(tilt, limelight, ShootData.getTiltAngle(shootNumber)),
-                                new PositionTurretToVision(turret, limelight, ShootData.getTurretAngle(shootNumber))),
+                super(new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
+                                new UseVision(limelight, true), new StartShooter(shooter, shootSpeed),
+                                new SetTiltOffset(tilt, tiltOffset),
+                                new PositionTiltToVision(tilt, limelight, tiltAngle),
+                                new SetTurretOffset(turret, turretOffset),
+                                new PositionTurretToVision(turret, limelight, turretAngle),
+                                new PositionRobot(drive, retractDistance)),
 
-                                // shoot 6 while moving
+                                new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
+                                                new ShootCells(shooter, limelight, transport, compressor, shootTime)),
 
-                                new ParallelCommandGroup(new StartIntake(intake), new ShootCells(shooter, limelight,
-                                                transport, compressor, ShootData.getShootTime(shootNumber))
-                                                                .deadlineWith(new PositionRobot(drive,
-                                                                                ShootData.getSecondDistance(
-                                                                                                shootNumber)))),
+                                new ParallelCommandGroup(new MessageCommand("Pickup Started"), new StartIntake(intake,transport))
+                                                .deadlineWith(new PositionRobot(drive, retractDistance1)),
 
-                                new ParallelCommandGroup(new MessageCommand("GroupStarted"),
+                                new ParallelCommandGroup(new StartShooter(shooter, shootSpeed1),
+                                                new SetTiltOffset(tilt, tiltOffset1),
+                                                new PositionTiltToVision(tilt, limelight, tiltAngle1),
+                                                new SetTurretOffset(turret, turretOffset1),
+                                                new PositionTurretToVision(turret, limelight, turretAngle1)),
 
-                                                new PositionRobot(drive, ShootData.getSecondDistance(shootNumber)),
-                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MID_ANGLE),
+                                new ParallelCommandGroup(new MessageCommand("Shoot2Started"),
+                                                new StartShooter(shooter, shootSpeed1),
+                                                new ShootCells(shooter, limelight, transport, compressor, shootTime)
+                                                                .deadlineWith(new StopIntake(intake))),
+
+                                new ParallelCommandGroup(new MessageCommand("Group3Started"),
+
+                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new LimelightSetPipeline(limelight, limelight.driverPipeline),
-                                                new PositionTurret(turret, 0)));
+                                                new UseVision(limelight, false), new PositionTurret(turret, 0)));
 
         }
 

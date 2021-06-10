@@ -29,6 +29,10 @@ public class ShootCells extends CommandBase {
   private double shooterAccTime = 1;
   private boolean shootStarted;
   private boolean temp;
+  private double temp1;
+  private double position1 = 0;
+  private double position2 = .2;
+  private int loopCtr;
 
   public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, LimeLight limelight,
       Compressor compressor) {
@@ -79,21 +83,32 @@ public class ShootCells extends CommandBase {
 
       shootStarted = true;
 
-      m_transport.runFrontRollerMotor();
-      m_transport.runRearRollerMotor();
-
-      m_shooter.shootTimeRemaining = startTime + m_shooter.shootTime - Timer.getFPGATimestamp();
+      if (loopCtr == 0)
+        temp1 = position1;
+      m_transport.moveCellArm(temp1);
+      loopCtr++;
+      if (loopCtr > 5)
+        temp1 = position2;
+      if (loopCtr > 10)
+        loopCtr = 0;
     }
+
+    m_transport.runFrontRollerMotor();
+    m_transport.runRearRollerMotor();
+
+    m_shooter.shootTimeRemaining = startTime + m_shooter.shootTime - Timer.getFPGATimestamp();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_transport.moveCellArm(position1);
     m_transport.stopBelts();
     m_transport.stopRollers();
     m_shooter.stop();
     m_limelight.useVision = temp;
     m_compressor.start();
+
   }
 
   // Returns true when the command should end.

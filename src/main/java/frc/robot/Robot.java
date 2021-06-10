@@ -138,8 +138,7 @@ public class Robot extends TimedRobot {
       case 1:// in front of power port, move back use shooter data index 1
 
         setStartingPose(FieldMap.startPosition[1]);
-        m_autoFactory.shootNumber = ShootData.retractOneStraight;
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand0();
+        m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
         m_robotContainer.m_limelight.useVision = true;
         m_robotContainer.m_limelight.setPipeline(m_robotContainer.m_limelight.noZoomPipeline);
         break;
@@ -148,7 +147,7 @@ public class Robot extends TimedRobot {
 
         setStartingPose(FieldMap.startPosition[2]);
         m_autoFactory.shootNumber = ShootData.leftTwoBall;
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
+        m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
         m_robotContainer.m_limelight.useVision = true;
         m_robotContainer.m_limelight.setPipeline(m_robotContainer.m_limelight.noZoomPipeline);
 
@@ -157,8 +156,8 @@ public class Robot extends TimedRobot {
       case 3:// Trench
 
         setStartingPose(FieldMap.startPosition[3]);
-        m_autoFactory.shootNumber = ShootData.trenchTwoBall;
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
+
+        m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
         m_robotContainer.m_limelight.useVision = true;
         m_robotContainer.m_limelight.setPipeline(m_robotContainer.m_limelight.noZoomPipeline);
 

@@ -59,7 +59,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public final double degreesPerRev = HoodedShooterConstants.tiltDegreesPerRev;// degrees per motor turn
     public final double tiltMinAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
 
-    public double pset, iset, dset, ffset,izset;
+    public double pset, iset, dset, ffset, izset;
 
     public boolean tuneOn = false;
     public boolean lastTuneOn;
@@ -73,6 +73,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public int faultSeen;
     public double lockPIDOut;
     public boolean visionOnTarget;
+    public boolean burnOK;
 
     /**
      * 
@@ -414,17 +415,20 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private void checkTune() {
 
         CANError burnError = CANError.kError;
-        SmartDashboard.putBoolean("TiltBurnOK", false);
-        if (Pref.getPref("tITune") == 5.) {
+
+        if (Pref.getPref("tITune") == 5. && tiltMotorConnected) {
+            burnOK = false;
             burnError = m_motor.burnFlash();
-            SmartDashboard.putBoolean("TiltBurnOK", burnError == CANError.kOk);
+            burnOK = burnError == CANError.kOk;
+            getGains();
         }
 
-        tuneOn = Pref.getPref("tITune") == 1.;
+        tuneOn = Pref.getPref("tITune") == 1. && tiltMotorConnected;
 
         if (tuneOn && !lastTuneOn) {
 
             tuneGains();
+            getGains();
             lastTuneOn = true;
         }
 
@@ -444,7 +448,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         if (lastLockTuneOn)
             lastLockTuneOn = lockTuneOn;
 
-    }   public void getGains() {
+    }
+
+    public void getGains() {
         ffset = mPidController.getFF(SMART_MOTION_SLOT);
         pset = mPidController.getP(SMART_MOTION_SLOT);
         iset = mPidController.getI(SMART_MOTION_SLOT);
@@ -452,6 +458,5 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         izset = mPidController.getIZone(SMART_MOTION_SLOT);
 
     }
-
 
 }

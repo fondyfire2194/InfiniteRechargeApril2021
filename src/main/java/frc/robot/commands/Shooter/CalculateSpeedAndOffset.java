@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Shooter;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -32,15 +33,17 @@ public class CalculateSpeedAndOffset extends CommandBase {
   @Override
   public void execute() {
     double[] temp = new double[] { 0, 0 };
-    if (!m_shooter.useSetupSlider) {
-      if (Math.abs(m_limelight.getdegVerticalToTarget()) < .5)
-        temp = m_shooter.calculateMPSandYOffset(
-            (m_tilt.getCameraAngle()) + m_limelight.getdegVerticalToTarget() - m_tilt.targetVerticalOffset);
-    } else {
-      m_shooter.requiredMps = m_shooter.shooterSpeed.getDouble(2);
-      m_tilt.targetVerticalOffset = m_shooter.setupVertOffset.getDouble(0);
-    }
 
+    if (!DriverStation.getInstance().isAutonomous()) {
+      if (!m_shooter.useSetupSlider) {
+        if (Math.abs(m_limelight.getdegVerticalToTarget()) < .5)
+          temp = m_shooter.calculateMPSandYOffset(
+              (m_tilt.getCameraAngle()) + m_limelight.getdegVerticalToTarget() - m_tilt.targetVerticalOffset);
+      } else {
+        m_shooter.requiredMps = m_shooter.shooterSpeed.getDouble(2);
+        m_tilt.targetVerticalOffset = m_shooter.setupVertOffset.getDouble(0);
+      }
+    }
   }
 
   // Called once the command ends or is interrupted.

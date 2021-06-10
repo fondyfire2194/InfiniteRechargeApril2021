@@ -2,59 +2,45 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.CellIntake;
+package frc.robot.commands.CellTransport;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.CellTransportSubsystem;
-import frc.robot.subsystems.RearIntakeSubsystem;
 
-public class StartIntake extends CommandBase {
-  /** Creates a new RunIntake. */
-  private final RearIntakeSubsystem m_rearIntake;
+public class ReleaseOneCell extends CommandBase {
+  /** Creates a new ReleaseOneCell. */
   private final CellTransportSubsystem m_transport;
+  private double startTime;
 
-  public StartIntake(RearIntakeSubsystem rearIntake, CellTransportSubsystem transport) {
+  public ReleaseOneCell(CellTransportSubsystem transport) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_rearIntake = rearIntake;
     m_transport = transport;
-
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(rearIntake);
-
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Timer.getFPGATimestamp();
-    Shuffleboard.selectTab("Intake");
+    startTime = Timer.getFPGATimestamp();
     m_transport.moveCellArm(m_transport.cellArmReleaseCell);
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    m_rearIntake.runIntakeMotor();
-    m_rearIntake.lowerArm();
-
+    if (Timer.getFPGATimestamp() > startTime + m_transport.cellReleaseTime) {
+      m_transport.moveCellArm(m_transport.cellArmHoldCell);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_rearIntake.stopIntakeMotor();
-    m_rearIntake.raiseArm();
-    Shuffleboard.selectTab("Competition");
-
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Timer.getFPGATimestamp() > (startTime + m_transport.cellReleaseTime +.1);
   }
 }

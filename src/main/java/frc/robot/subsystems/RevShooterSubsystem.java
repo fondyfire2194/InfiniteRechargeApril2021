@@ -33,6 +33,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private final CANEncoder mEncoder;
     private final CANEncoder mRightEncoder;
     private final CANPIDController mPidController;
+
     private ISimWrapper mSimulator;
     public double requiredMpsLast;
     public double requiredMps;
@@ -45,7 +46,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, acc;
     public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastAcc;
     public double cameraCalculatedSpeed;
-    public double pset, iset, dset, ffset,izset;
+    public double pset, iset, dset, ffset, izset;
     public boolean useCameraSpeed;
     public boolean useCameraAngleSpeed;
     public NetworkTableEntry shooterSpeed;
@@ -102,6 +103,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double cameraAngleCalculatedSpeed;
     public boolean hideSliders = Constants.isMatch;
     public boolean driverOKShoot;
+    public boolean burnOK;
 
     public RevShooterSubsystem() {
 
@@ -139,7 +141,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
                     .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 0, "Max", 45)).getEntry();
         }
-        // tuneGains();
+        getGains();
         requiredMps = 12;
     }
 
@@ -411,16 +413,19 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     private void checkTune() {
         CANError burnError = CANError.kError;
-        SmartDashboard.putBoolean("ShooterBurnOK", false);
-        if (Pref.getPref("sHTune") == 5.) {
+
+        if (Pref.getPref("sHTune") == 5. && leftMotorConnected) {
+            burnOK = false;
             burnError = mLeftMotor.burnFlash();
-            SmartDashboard.putBoolean("ShooterBurnOK", burnError == CANError.kOk);
+            burnOK = burnError == CANError.kOk;
+            getGains();
         }
 
-        tuneOn = Pref.getPref("sHTune") == 1.;
+        tuneOn = Pref.getPref("sHTune") == 1.&& leftMotorConnected;
 
         if (tuneOn && !lastTuneOn) {
             tuneGains();
+            getGains();
             lastTuneOn = true;
         }
         if (lastTuneOn)

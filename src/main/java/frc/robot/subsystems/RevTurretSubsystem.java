@@ -45,7 +45,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private double inPositionBandwidth = .25;
     public double targetHorizontalOffset;
     public double driverHorizontalOffset;
-    public double pset, iset, dset, ffset,izset;
+    public double pset, iset, dset, ffset, izset;
 
     public boolean validTargetSeen;
     public double adjustedTargetAngle;
@@ -62,6 +62,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public double pidLockOut;
     public boolean visionOnTarget;
+    public boolean burnOK;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -314,7 +315,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     }
 
-
     private void tuneGains() {
         fixedSettings();
 
@@ -350,17 +350,19 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private void checkTune() {
 
         CANError burnError = CANError.kError;
-        SmartDashboard.putBoolean("TurretBurnOK", false);
-        if (Pref.getPref("tURTune") == 5.) {
-            burnError = m_motor.burnFlash();
 
-            SmartDashboard.putBoolean("TurretBurnOK", burnError == CANError.kOk);
+        if (Pref.getPref("tURTune") == 5. && turretMotorConnected) {
+            burnOK = false;
+            burnError = m_motor.burnFlash();
+            burnOK = burnError == CANError.kOk;
+            getGains();
         }
 
-        tuneOn = Pref.getPref("tURTune") == 1.;
+        tuneOn = Pref.getPref("tURTune") == 1. && turretMotorConnected;
 
         if (tuneOn && !lastTuneOn) {
             tuneGains();
+            getGains();
             lastTuneOn = true;
         }
 

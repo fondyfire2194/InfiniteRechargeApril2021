@@ -43,21 +43,21 @@ public class AutoFactory {
     }
 
     // front of power port move and shoot
-    public SequentialCommandGroup getAutonomousCommand0() {
-        return new AutoMode0(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor,
-                shootNumber);
+    public SequentialCommandGroup getAutonomousCommand1() {
+        return new AutoMode0(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor
+            );
     }
 
     // front of trench or left of center move pickup and and shoot
-    public SequentialCommandGroup getAutonomousCommand1() {
+    public SequentialCommandGroup getAutonomousCommand2() {
         return new AutoMode1(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor,
-                m_intake, shootNumber);
+                m_intake);
     }
 
     // front of trench or left of center move pickup and and shoot together
-    public SequentialCommandGroup getAutonomousCommand2() {
+    public SequentialCommandGroup getAutonomousCommand3() {
         return new AutoMode2(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor,
-                m_intake, shootNumber);
+                m_intake);
     }
 
 }

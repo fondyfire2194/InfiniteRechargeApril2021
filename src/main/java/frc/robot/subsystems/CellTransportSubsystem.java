@@ -16,11 +16,13 @@ import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants;
+import frc.robot.Pref;
 import frc.robot.Robot;
 import frc.robot.sim.PhysicsSim;
 import frc.robot.sim.TalonSRXWrapper;
@@ -44,14 +46,19 @@ public class CellTransportSubsystem extends SubsystemBase {
   public boolean allConnected;
   public NetworkTableEntry frontSpeed;
   public NetworkTableEntry rearSpeed;
-  private double frontSpeedValue;
-  private double rearSpeedValue;
+
+  private final Servo cellArm;
+  public double cellArmReleaseCell = 0;
+  public double cellArmHoldCell = .4;
+  public boolean startRollers;
+  public double cellReleaseTime = .5;
 
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
     m_rightBeltMotor = new TalonSRXWrapper(CANConstants.RIGHT_BELT_MOTOR);
     m_frontRollerMotor = new TalonSRXWrapper(CANConstants.FRONT_ROLLER);
     m_rearRollerMotor = new TalonSRXWrapper(CANConstants.REAR_ROLLER);
+    cellArm = new Servo(0);
 
     if (Robot.isReal()) {
       m_leftBeltMotor.configFactoryDefault();
@@ -83,7 +90,10 @@ public class CellTransportSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-   
+    cellArmReleaseCell = Pref.getPref("CellRelPosn");
+    cellArmHoldCell = Pref.getPref("CellHoldPosn");
+    cellArmReleaseCell = Pref.getPref("CellReleaseTime");
+
   }
 
   public boolean checkCAN() {
@@ -220,6 +230,10 @@ public class CellTransportSubsystem extends SubsystemBase {
 
   public double getRearRollerMotorAmps() {
     return m_frontRollerMotor.getStatorCurrent();
+  }
+
+  public void moveCellArm(double position) {
+    cellArm.set(position);
   }
 
   public void simulationInit() {
