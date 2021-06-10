@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANEncoder;
+import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -19,6 +20,7 @@ import org.snobotv2.sim_wrappers.ISimWrapper;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
@@ -98,7 +100,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         }
 
-        tuneGains();
         setTiltLockGains();
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
@@ -375,24 +376,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         }
     }
 
-    private void setGains() {
-
-        fixedSettings();
-
-        kP = .001;
-        kI = 0.001;
-        kD = .000;
-        kIz = 1;
-
-        maxVel = 1000;
-        maxAcc = 1250;
-
-        // set PID coefficients
-        calibratePID(kP, kI, kD, kFF, kIz, SMART_MOTION_SLOT);
-
-    }
-
     private void tuneGains() {
+
         fixedSettings();
 
         double p = Pref.getPref("tIKp");
@@ -425,7 +410,15 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     private void checkTune() {
-        tuneOn = Pref.getPref("tITune") != 0.;
+
+        CANError burnError = CANError.kError;
+        SmartDashboard.putBoolean("TiltBurnOK", false);
+        if (Pref.getPref("tITune") == 5.) {
+            burnError = m_motor.burnFlash();
+            SmartDashboard.putBoolean("TiltBurnOK", burnError == CANError.kOk);
+        }
+
+        tuneOn = Pref.getPref("tITune") == 1.;
 
         if (tuneOn && !lastTuneOn) {
 

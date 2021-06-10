@@ -26,6 +26,7 @@ import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellTransport.CellBeltPulseSelect;
+import frc.robot.commands.CellTransport.JogLeftBelt;
 import frc.robot.commands.Climber.JogClimber;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
 import frc.robot.commands.ControlPanel.PositionNumberRevs;
@@ -35,15 +36,15 @@ import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
 import frc.robot.commands.Shooter.InnerShotSetup;
 import frc.robot.commands.Shooter.JogShooter;
-import frc.robot.commands.Shooter.LobShotSetup;
+import frc.robot.commands.Shooter.LowShotSetup;
 import frc.robot.commands.Shooter.OKToShoot;
+import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShieldGeneratorShotSetup;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.TrenchShotSetup;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
-import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Tilt.TiltSeekVision;
 import frc.robot.commands.Tilt.TiltWaitForStop;
@@ -61,6 +62,8 @@ import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 import frc.robot.trajectories.FondyFireTrajectory;
+import frc.robot.commands.CellTransport.JogLeftBelt;
+import frc.robot.commands.CellTransport.JogRightBelt;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -158,8 +161,8 @@ public class RobotContainer {
 
             prefs = Preferences.getInstance();
             // Pref.deleteAllPrefs();
-            Pref.deleteUnused();
-            Pref.addMissing();
+            // Pref.deleteUnused();
+            // Pref.addMissing();
             m_robotDrive = new RevDrivetrain();
 
             m_climber = new ClimberSubsystem();
@@ -188,7 +191,7 @@ public class RobotContainer {
 
             m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
 
-            // m_shooter.setDefaultCommand(getJogShooterCommand());
+            m_shooter.setDefaultCommand(new RunShooter(m_shooter));
 
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
                         m_limelight, m_controlPanel, m_intake, m_trajectory, m_climber, isMatch);
@@ -249,7 +252,7 @@ public class RobotContainer {
             // setup for lob shoot inside init line no vision
 
             new JoystickButton(m_driverController, 7)
-                        .whenPressed(new LobShotSetup(m_shooter, m_turret, m_tilt, m_limelight));
+                        .whenPressed(new LowShotSetup(m_shooter, m_turret, m_tilt, m_limelight));
 
             // Shoot for inner goal from 1 meter behind intiation line
             new JoystickButton(m_driverController, 8)
@@ -300,21 +303,18 @@ public class RobotContainer {
              * Setup gamepad is used for testing functions
              */
 
-            setupDownButton.whileHeld(() -> m_transport.runFrontRollerMotor())
+            // setupDownButton.whileHeld(
+
+            setupUpButton.whileHeld(() -> m_transport.runFrontRollerMotor())
                         .whileHeld(() -> m_transport.runRearRollerMotor())
                         .whenReleased(() -> m_transport.stopFrontRollerMotor())
                         .whenReleased(() -> m_transport.stopRearRollerMotor());
 
-            setupUpButton.whileHeld(() -> m_transport.runLeftBeltMotor(.5))
-                        .whileHeld(() -> m_transport.runRightBeltMotor(.5))
-                        .whenReleased(() -> m_transport.runLeftBeltMotor(0))
-                        .whenReleased(() -> m_transport.runRightBeltMotor(0));
+            // setupLeftButton.whileHeld(
 
-            setupLeftButton.whileHeld(new CellBeltPulseSelect(m_transport, true, .75, .25, .75, -.25))
-                        .whileHeld(new CellBeltPulseSelect(m_transport, false, .5, -.25, .5, .25));
+            setupLeftTrigger.whileHeld(() -> runLeftBelt());
 
-            setupLeftTrigger.whileHeld(() -> m_transport.runFrontRollerMotor())
-                        .whenReleased(() -> m_transport.stopFrontRollerMotor());
+            setupRightTrigger.whileHeld(() -> runRightBelt());
 
             setupRightTrigger.whileHeld(() -> m_transport.runRearRollerMotor())
                         .whenReleased(() -> m_transport.stopRearRollerMotor());
@@ -380,4 +380,11 @@ public class RobotContainer {
             return (1 - m_driverController.getThrottle()) / 2;
       }
 
+      public Command runLeftBelt() {
+            return new JogLeftBelt(m_transport, () -> setupGamepad.getRawAxis(0));
+      }
+
+      public Command runRightBelt() {
+            return new JogRightBelt(m_transport, () -> setupGamepad.getRawAxis(4));
+      }
 }

@@ -28,6 +28,7 @@ public class ShootCells extends CommandBase {
   private double m_time;
   private double shooterAccTime = 1;
   private boolean shootStarted;
+  private boolean temp;
 
   public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, LimeLight limelight,
       Compressor compressor) {
@@ -39,7 +40,7 @@ public class ShootCells extends CommandBase {
     m_limelight = limelight;
     m_time = 5;
 
-    addRequirements(m_shooter, m_transport);
+    addRequirements(m_transport);
   }
 
   public ShootCells(RevShooterSubsystem shooter, LimeLight limelight, CellTransportSubsystem transport,
@@ -49,7 +50,7 @@ public class ShootCells extends CommandBase {
     m_transport = transport;
     m_compressor = compressor;
     m_limelight = limelight;
-
+    temp = m_limelight.useVision;
     m_time = time;
 
     addRequirements(shooter, transport);
@@ -63,6 +64,7 @@ public class ShootCells extends CommandBase {
     m_shooter.shootTime = m_time;
     m_compressor.stop();
     shootStarted = false;
+    m_limelight.useVision = false;
 
   }
 
@@ -90,6 +92,7 @@ public class ShootCells extends CommandBase {
     m_transport.stopBelts();
     m_transport.stopRollers();
     m_shooter.stop();
+    m_limelight.useVision = temp;
     m_compressor.start();
   }
 

@@ -774,7 +774,7 @@ public class SetupShuffleboard {
                          */
 
                         ShuffleboardLayout climberCommands = Shuffleboard.getTab("SetupClimber_CP")
-                                        .getLayout("Climber", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 3)
+                                        .getLayout("Climber", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "TOP"));
 
                         climberCommands.add("ArmRaise", new ClimberArm(m_climber, false));

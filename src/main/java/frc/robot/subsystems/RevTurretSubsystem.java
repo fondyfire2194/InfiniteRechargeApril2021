@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANEncoder;
+import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -362,7 +363,15 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     private void checkTune() {
 
-        tuneOn = Pref.getPref("tURTune") != 0.;
+        CANError burnError = CANError.kError;
+        SmartDashboard.putBoolean("TurretBurnOK", false);
+        if (Pref.getPref("tURTune") == 5.) {
+            burnError = m_motor.burnFlash();
+
+            SmartDashboard.putBoolean("TurretBurnOK", burnError == CANError.kOk);
+        }
+
+        tuneOn = Pref.getPref("tURTune") == 1.;
 
         if (tuneOn && !lastTuneOn) {
             tuneGains();
@@ -374,7 +383,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
         // lock controller
 
-        lockTuneOn = Pref.getPref("tULTune") != 0.;
+        lockTuneOn = Pref.getPref("tuLTune") != 0.;
 
         if (lockTuneOn && !lastLockTuneOn) {
 

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.revrobotics.CANEncoder;
+import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -132,12 +133,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         if (!hideSliders) {
 
             setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetupVertOffset", 0).withWidget("Number Slider")
-                    .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -3, "Max", 5)).getEntry();
+                    .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -10, "Max", 10)).getEntry();
 
             shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
-                    .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 0, "Max", 40)).getEntry();
+                    .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 0, "Max", 45)).getEntry();
         }
-        tuneGains();
+        // tuneGains();
         requiredMps = 12;
     }
 
@@ -387,19 +388,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     }
 
-    private void setGains() {
-        fixedSettings();
-
-        kFF = .0003;// 1/3000
-        kP = 3e-4;
-        kI = 0.0001;
-        kD = 0;
-        kIz = 500;
-        acc = 500;
-
-        calibratePID(kP, kI, kD, kFF, kIz, acc, VELOCITY_SLOT);
-    }
-
     private void tuneGains() {
         fixedSettings();
         double f = Pref.getPref("sHff");
@@ -407,9 +395,11 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         double i = Pref.getPref("sHki");
         double d = Pref.getPref("sHkd");
         double iz = Pref.getPref("sHkiz");
-        double acc = Pref.getPref("sHkacc");
+        double acc = 1;
 
         calibratePID(p, i, d, f, iz, acc, VELOCITY_SLOT);
+ 
+
     }
 
     private void fixedSettings() {
@@ -420,7 +410,16 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     }
 
     private void checkTune() {
-        tuneOn = Pref.getPref("sHTune") != 0.;
+        CANError burnError = CANError.kError;
+        SmartDashboard.putBoolean("ShooterBurnOK", false);
+        if (Pref.getPref("sHTune") == 5.) {
+            burnError = mLeftMotor.burnFlash();
+            SmartDashboard.putBoolean("ShooterBurnOK", burnError == CANError.kOk);
+        }
+
+
+
+        tuneOn = Pref.getPref("sHTune") == 1.;
 
         if (tuneOn && !lastTuneOn) {
             tuneGains();

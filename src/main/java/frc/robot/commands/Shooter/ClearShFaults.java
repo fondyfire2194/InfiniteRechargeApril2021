@@ -17,7 +17,7 @@ public class ClearShFaults extends InstantCommand {
   public ClearShFaults(RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
-    addRequirements(m_shooter);
+
   }
 
   // Called when the command is initially scheduled.
