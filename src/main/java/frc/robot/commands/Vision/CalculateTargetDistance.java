@@ -11,12 +11,14 @@ import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
+import frc.robot.subsystems.RevTurretSubsystem;
 
 public class CalculateTargetDistance extends CommandBase {
   /** Creates a new CalculateTargetDistance. */
   private final LimeLight m_limelight;
   private final RevTiltSubsystem m_tilt;
   private final RevShooterSubsystem m_shooter;
+  private final RevTurretSubsystem m_turret;
 
   private double baseCameraHeight = FieldConstants.BASE_CAMERA_HEIGHT;
   private double maxCameraHeight = FieldConstants.MAX_CAMERA_HEIGHT;
@@ -27,11 +29,13 @@ public class CalculateTargetDistance extends CommandBase {
   private double cameraAngle;
   private double cameraHeightSlope = (maxCameraHeight - baseCameraHeight) / 30;// inches per tilt degree
 
-  public CalculateTargetDistance(LimeLight limelight, RevTiltSubsystem tilt, RevShooterSubsystem shooter) {
+
+  public CalculateTargetDistance(LimeLight limelight, RevTiltSubsystem tilt, RevTurretSubsystem  turret,RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_limelight = limelight;
     m_tilt = tilt;
     m_shooter = shooter;
+    m_turret=turret;
   }
 
   // Called when the command is initially scheduled.
@@ -78,7 +82,7 @@ public class CalculateTargetDistance extends CommandBase {
 
     if (m_limelight.useVision && (m_limelight.getIsTargetFound() || RobotBase.isSimulation())) {
 
-      m_limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
+      m_limelightVerticalAngle = m_limelight.getdegVerticalToTarget() - m_limelight.verticalOffset;
 
       if (RobotBase.isSimulation()) {
         m_limelightVerticalAngle = 0;
@@ -91,16 +95,22 @@ public class CalculateTargetDistance extends CommandBase {
 
       m_shooter.calculatedCameraDistance = (heightDifference) / tanAngleSum;
 
+      m_tilt.driverAdjustAngle = Math.toDegrees(Math.atan(m_tilt.adjustMeters/m_shooter.calculatedCameraDistance));
+      m_turret.driverAdjustAngle = Math.toDegrees(Math.atan(m_turret.adjustMeters/m_shooter.calculatedCameraDistance));
+
+
     } else
 
     {
 
-      m_shooter.calculatedCameraDistance = 3;
+      m_shooter.calculatedCameraDistance = 59;
+      m_tilt.driverAdjustAngle = .1;
+      m_turret.driverAdjustAngle =.1;
 
     }
     m_shooter.shotDistance = Math.sqrt((m_shooter.calculatedCameraDistance * m_shooter.calculatedCameraDistance)
         + (FieldConstants.SHOT_HEIGHT_SQUARED));
-        
+
   }
 
   // Called once the command ends or is interrupted.

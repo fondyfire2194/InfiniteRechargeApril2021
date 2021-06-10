@@ -272,13 +272,13 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 12)
                         .whenPressed(new ShootOne(m_shooter, m_transport, m_compressor));
 
-            driverUpButton.whenPressed(() -> m_tilt.aimHigher(.25));
+            driverUpButton.whenPressed(() -> m_tilt.aimHigher());
 
-            driverDownButton.whenPressed(() -> m_tilt.aimLower(.25));
+            driverDownButton.whenPressed(() -> m_tilt.aimLower());
 
-            driverLeftButton.whenPressed(() -> m_turret.aimFurtherLeft(.25));// shoot right
+            driverLeftButton.whenPressed(() -> m_turret.aimFurtherLeft());// shoot right
 
-            driverRightButton.whenPressed(() -> m_turret.aimFurtherRight(.25));// shoot left
+            driverRightButton.whenPressed(() -> m_turret.aimFurtherRight());// shoot left
 
             /**
              * Co driver has miscellaneous functions

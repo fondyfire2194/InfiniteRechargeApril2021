@@ -58,11 +58,13 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public boolean turretMotorConnected;
 
-    private double maxAdjustShoot = .5;
+    private double maxAdjustShoot = 1.5;
 
     public double pidLockOut;
     public boolean visionOnTarget;
     public boolean burnOK;
+	public double driverAdjustAngle;
+	public double adjustMeters =.1;//4"
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -219,14 +221,14 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         return m_motor.getFault(FaultID.kSoftLimitRev);
     }
 
-    public void aimFurtherLeft(double angle) {
+    public void aimFurtherLeft() {
         if (driverHorizontalOffset > -maxAdjustShoot)
-            driverHorizontalOffset -= angle;
+            driverHorizontalOffset -= driverAdjustAngle;
     }
 
-    public void aimFurtherRight(double angle) {
+    public void aimFurtherRight() {
         if (driverHorizontalOffset < maxAdjustShoot)
-            driverHorizontalOffset += angle;
+            driverHorizontalOffset += driverAdjustAngle;
     }
 
     public void aimCenter() {

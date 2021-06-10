@@ -92,7 +92,6 @@ public class Robot extends TimedRobot {
     // ShootData.showValues(1);
     // ShootData.showValues(2);
     // ShootData.showValues(3);
-  
 
   }
 
@@ -114,6 +113,10 @@ public class Robot extends TimedRobot {
     m_robotContainer.m_turret.enableSofLimits(true);
     new CalculateSpeedAndOffset(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_limelight)
         .schedule(true);
+
+    new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
+        m_robotContainer.m_shooter).schedule(true);
+
     new RunShooter(m_robotContainer.m_shooter).schedule(true);
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 
@@ -214,7 +217,9 @@ public class Robot extends TimedRobot {
     // new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
     new CalculateSpeedAndOffset(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_limelight)
         .schedule(true);
-    
+
+    new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
+        m_robotContainer.m_shooter).schedule(true);
 
   }
 

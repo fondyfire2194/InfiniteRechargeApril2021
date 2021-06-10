@@ -74,6 +74,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double lockPIDOut;
     public boolean visionOnTarget;
     public boolean burnOK;
+    public double driverAdjustAngle;
+	public double adjustMeters = .1;//4"
 
     /**
      * 
@@ -297,14 +299,15 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         return m_motor.getFaults();
     }
 
-    public void aimLower(double angle) {
+    public void aimLower() {
+
         if (driverVerticalOffset < maxAdjustShoot)
-            driverVerticalOffset += angle;
+            driverVerticalOffset += driverAdjustAngle;
     }
 
-    public void aimHigher(double angle) {
+    public void aimHigher() {
         if (driverVerticalOffset > -maxAdjustShoot)
-            driverVerticalOffset -= angle;
+            driverVerticalOffset -= driverAdjustAngle;
     }
 
     public void aimCenter() {
