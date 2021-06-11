@@ -16,7 +16,7 @@ import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StartShooter;
+import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
@@ -56,7 +56,7 @@ public class AutoMode0 extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
 
                 super(new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
-                                new UseVision(limelight, true), new StartShooter(shooter, shootSpeed),
+                                new UseVision(limelight, true), new StartShooterWheels(shooter, shootSpeed),
                                 new SetTiltOffset(tilt, tiltOffset),
                                 new PositionTiltToVision(tilt, limelight, tiltAngle),
                                 new SetTurretOffset(turret, turretOffset),

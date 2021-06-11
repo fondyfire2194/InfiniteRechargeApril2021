@@ -8,7 +8,6 @@
 package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
@@ -26,13 +25,10 @@ public class ShootCells extends CommandBase {
   private final LimeLight m_limelight;
   private double startTime;
   private double m_time;
-  private double shooterAccTime = 1;
+
   private boolean shootStarted;
   private boolean temp;
-  private double temp1;
-  private double position1 = 0;
-  private double position2 = .2;
-  private int loopCtr;
+  private int cellsShot;
 
   public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, LimeLight limelight,
       Compressor compressor) {
@@ -55,6 +51,7 @@ public class ShootCells extends CommandBase {
     m_compressor = compressor;
     m_limelight = limelight;
     temp = m_limelight.useVision;
+    startTime = 0;
     m_time = time;
 
     addRequirements(shooter, transport);
@@ -69,6 +66,8 @@ public class ShootCells extends CommandBase {
     m_compressor.stop();
     shootStarted = false;
     m_limelight.useVision = false;
+    m_transport.holdCell();
+    cellsShot = 1;
 
   }
 
@@ -77,32 +76,38 @@ public class ShootCells extends CommandBase {
   public void execute() {
 
     m_shooter.startShooter = true;
+    m_transport.runFrontRollerMotor();
+    m_transport.runRearRollerMotor();
 
     if ((m_shooter.atSpeed() && m_limelight.getHorOnTarget() && m_limelight.getVertOnTarget())
         || m_shooter.driverOKShoot || shootStarted == true) {
 
       shootStarted = true;
-
-      if (loopCtr == 0)
-        temp1 = position1;
-      m_transport.moveCellArm(temp1);
-      loopCtr++;
-      if (loopCtr > 5)
-        temp1 = position2;
-      if (loopCtr > 10)
-        loopCtr = 0;
     }
 
-    m_transport.runFrontRollerMotor();
-    m_transport.runRearRollerMotor();
+    if (!m_shooter.shootOne && shootStarted && startTime == 0) {
+      startTime = Timer.getFPGATimestamp();
+    }
+
+    if (!m_shooter.shootOne && startTime != 0 && Timer.getFPGATimestamp() > startTime + m_shooter.shooterRecoverTime) {
+      m_transport.releaseCell();
+
+    }
+    if (startTime != 0
+        && Timer.getFPGATimestamp() > startTime + m_shooter.shooterRecoverTime + m_transport.cellReleaseTime) {
+      m_transport.holdCell();
+      startTime = 0;
+      cellsShot++;
+    }
 
     m_shooter.shootTimeRemaining = startTime + m_shooter.shootTime - Timer.getFPGATimestamp();
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_transport.moveCellArm(position1);
+    m_transport.releaseCell();
     m_transport.stopBelts();
     m_transport.stopRollers();
     m_shooter.stop();
@@ -114,6 +119,7 @@ public class ShootCells extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Timer.getFPGATimestamp() > startTime + m_shooter.shootTime) && m_shooter.shootTime != 0;
+    return cellsShot > 7;
   }
+
 }

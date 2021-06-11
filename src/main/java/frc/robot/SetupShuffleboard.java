@@ -43,7 +43,7 @@ import frc.robot.commands.RobotDrive.StopRobot;
 import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StartShooter;
+import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.ToggleShooterSpeedSource;
 import frc.robot.commands.Tilt.ClearFaults;
@@ -421,7 +421,7 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
                                                                                            // commands
 
-                        shooterCommands.add("Shooter Motor Start", new StartShooter(m_shooter, 10));
+                        shooterCommands.add("Shooter Motor Start", new StartShooterWheels(m_shooter, 10));
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
                         shooterCommands.add("Shoot",
                                         new ShootCells(m_shooter, m_limelight, m_transport, m_compressor, 0));

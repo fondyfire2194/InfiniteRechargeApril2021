@@ -18,7 +18,7 @@ import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StartShooter;
+import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
@@ -69,7 +69,7 @@ public class AutoMode1 extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
                 super(new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
-                                new UseVision(limelight, true), new StartShooter(shooter, shootSpeed),
+                                new UseVision(limelight, true), new StartShooterWheels(shooter, shootSpeed),
                                 new SetTiltOffset(tilt, tiltOffset),
                                 new PositionTiltToVision(tilt, limelight, tiltAngle),
                                 new SetTurretOffset(turret, turretOffset),
@@ -81,14 +81,14 @@ public class AutoMode1 extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new MessageCommand("Pickup Started"), new StartIntake(intake,transport),
                                                 new PositionRobot(drive, retractDistance1),
-                                                new StartShooter(shooter, shootSpeed1),
+                                                new StartShooterWheels(shooter, shootSpeed1),
                                                 new SetTiltOffset(tilt, tiltOffset1),
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle1),
                                                 new SetTurretOffset(turret, turretOffset1),
                                                 new PositionTurretToVision(turret, limelight, turretAngle1)),
 
                                 new ParallelCommandGroup(new MessageCommand("Shoot2Started"),
-                                                new StartShooter(shooter, shootSpeed1),
+                                                new StartShooterWheels(shooter, shootSpeed1),
                                                 new ShootCells(shooter, limelight, transport, compressor, shootTime),
                                                 new StopIntake(intake)),
 

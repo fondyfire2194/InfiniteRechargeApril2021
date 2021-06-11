@@ -104,6 +104,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean hideSliders = Constants.isMatch;
     public boolean driverOKShoot;
     public boolean burnOK;
+    public double shooterRecoverTime = .75;
+    public boolean shootOne;
 
     public RevShooterSubsystem() {
 
@@ -143,6 +145,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         }
         getGains();
         requiredMps = 12;
+        shootOne = true;
     }
 
     @Override
@@ -421,7 +424,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             getGains();
         }
 
-        tuneOn = Pref.getPref("sHTune") == 1.&& leftMotorConnected;
+        tuneOn = Pref.getPref("sHTune") == 1. && leftMotorConnected;
 
         if (tuneOn && !lastTuneOn) {
             tuneGains();
@@ -441,4 +444,13 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         izset = mPidController.getIZone();
 
     }
+
+    public void shootOne() {
+        shootOne = true;
+    }
+
+    public void shootAll() {
+        shootOne = false;
+    }
+
 }
