@@ -26,6 +26,8 @@ public class ShootCells extends CommandBase {
   private final LimeLight m_limelight;
   private double startTime;
   private double m_time;
+  private double shootOneTime;
+  private double cellReleaseStartTime;
 
   private boolean shootStarted;
   private boolean temp;
@@ -64,11 +66,14 @@ public class ShootCells extends CommandBase {
     startTime = Timer.getFPGATimestamp();
     m_shooter.requiredMpsLast = 0.;
     m_shooter.shootTime = m_time;
+    shootOneTime = 0;
     m_compressor.stop();
     shootStarted = false;
+    m_shooter.shootOne = true;
     m_limelight.useVision = false;
     m_transport.holdCell();
     cellsShot = 1;
+    cellReleaseStartTime = 0;
 
   }
 
@@ -76,31 +81,32 @@ public class ShootCells extends CommandBase {
   @Override
   public void execute() {
 
-    m_shooter.startShooter = true;
-    m_transport.runFrontRollerMotor();
-    m_transport.runRearRollerMotor();
-
     if ((m_shooter.atSpeed() && m_limelight.getHorOnTarget() && m_limelight.getVertOnTarget())
         || m_shooter.driverOKShoot || shootStarted == true) {
 
       shootStarted = true;
     }
+    if (m_shooter.startShooter = true) {
+      m_transport.runFrontRollerMotor();
+      m_transport.runRearRollerMotor();
+    }
+
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
-    if ((inAuto || !m_shooter.shootOne) && shootStarted && startTime == 0) {
-      startTime = Timer.getFPGATimestamp();
+    if ((inAuto || !m_shooter.shootOne) && shootStarted && shootOneTime == 0) {
+      shootOneTime = Timer.getFPGATimestamp();
     }
 
-    if ((inAuto || !m_shooter.shootOne) && startTime != 0
-        && Timer.getFPGATimestamp() > startTime + m_shooter.shooterRecoverTime) {
+    if ((inAuto || !m_shooter.shootOne) && shootOneTime != 0
+        && Timer.getFPGATimestamp() > (shootOneTime + m_shooter.shooterRecoverTime) && m_shooter.atSpeed()) {
       m_transport.releaseCell();
-
+      cellReleaseStartTime = Timer.getFPGATimestamp();
     }
-    if (startTime != 0
-        && Timer.getFPGATimestamp() > startTime + m_shooter.shooterRecoverTime + m_transport.cellReleaseTime) {
+    if (shootOneTime != 0 && Timer.getFPGATimestamp() > (cellReleaseStartTime + m_transport.cellReleasedTime)) {
       m_transport.holdCell();
-      startTime = 0;
+      shootOneTime = 0;
       cellsShot++;
+      cellReleaseStartTime = 0;
     }
 
     m_shooter.shootTimeRemaining = startTime + m_shooter.shootTime - Timer.getFPGATimestamp();

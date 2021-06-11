@@ -104,7 +104,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean hideSliders = Constants.isMatch;
     public boolean driverOKShoot;
     public boolean burnOK;
-    public double shooterRecoverTime = .75;
+    public double shooterRecoverTime = .25;
     public boolean shootOne;
 
     public RevShooterSubsystem() {

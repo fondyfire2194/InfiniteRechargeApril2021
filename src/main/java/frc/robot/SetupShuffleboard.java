@@ -27,6 +27,7 @@ import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.IntakeArm;
 import frc.robot.commands.CellTransport.MoveCellArm;
+import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.Climber.ClimberArm;
 import frc.robot.commands.Climber.ClimberRatchet;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
@@ -485,7 +486,8 @@ public class SetupShuffleboard {
                                                                                                           // for
                         transportValues.add("Release Cell", new MoveCellArm(transport, transport.cellArmReleaseCell));
                         transportValues.add("Hold Cell", new MoveCellArm(transport, transport.cellArmHoldCell));
-   
+                        transportValues.add("ReleaseOneCell", new ReleaseOneCell(transport));
+
                         transportValues.addNumber("LeftBeltAmps", () -> m_transport.getLeftBeltMotorAmps());
                         transportValues.addNumber("RightBeltAmps", () -> m_transport.getRightBeltMotorAmps());
                         transportValues.addNumber("FrontRollerAmps", () -> m_transport.getFrontRollerMotorAmps());

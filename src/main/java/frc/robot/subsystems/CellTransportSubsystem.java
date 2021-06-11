@@ -51,7 +51,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   public double cellArmReleaseCell = 0;
   public double cellArmHoldCell = .4;
   public boolean startRollers;
-  public double cellReleaseTime = .5;
+  public double cellReleasedTime = .25;
 
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
