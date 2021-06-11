@@ -8,6 +8,7 @@
 package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
@@ -84,12 +85,14 @@ public class ShootCells extends CommandBase {
 
       shootStarted = true;
     }
+    boolean inAuto = DriverStation.getInstance().isAutonomous();
 
-    if (!m_shooter.shootOne && shootStarted && startTime == 0) {
+    if ((inAuto || !m_shooter.shootOne) && shootStarted && startTime == 0) {
       startTime = Timer.getFPGATimestamp();
     }
 
-    if (!m_shooter.shootOne && startTime != 0 && Timer.getFPGATimestamp() > startTime + m_shooter.shooterRecoverTime) {
+    if ((inAuto || !m_shooter.shootOne) && startTime != 0
+        && Timer.getFPGATimestamp() > startTime + m_shooter.shooterRecoverTime) {
       m_transport.releaseCell();
 
     }
