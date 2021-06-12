@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.LimeLight;
-import frc.robot.ShootData;
+import frc.robot.Pref;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
@@ -29,13 +29,13 @@ public class CalculateTargetDistance extends CommandBase {
   private double cameraAngle;
   private double cameraHeightSlope = (maxCameraHeight - baseCameraHeight) / 30;// inches per tilt degree
 
-
-  public CalculateTargetDistance(LimeLight limelight, RevTiltSubsystem tilt, RevTurretSubsystem  turret,RevShooterSubsystem shooter) {
+  public CalculateTargetDistance(LimeLight limelight, RevTiltSubsystem tilt, RevTurretSubsystem turret,
+      RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_limelight = limelight;
     m_tilt = tilt;
     m_shooter = shooter;
-    m_turret=turret;
+    m_turret = turret;
   }
 
   // Called when the command is initially scheduled.
@@ -75,6 +75,12 @@ public class CalculateTargetDistance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    baseCameraHeight= Pref.getPref("LimelightHeight");
+
+    maxCameraHeight = Pref.getPref("LimelightMaxHeight");
+
+    cameraHeightSlope = (maxCameraHeight - baseCameraHeight) / 30;
 
     double cameraHeight = baseCameraHeight + (cameraHeightSlope * m_tilt.getMotorDegrees());
 

@@ -85,15 +85,15 @@ public class SetupShuffleboard {
         private final RearIntakeSubsystem m_intake;
         private final FondyFireTrajectory m_traj;
         private final ClimberSubsystem m_climber;
-        private boolean m_showTurret = true;
+        private boolean m_showTurret = false;
         private boolean m_turretTune = false;
-        private boolean m_showTilt = true;
+        private boolean m_showTilt = false;
         private boolean m_showShooter = true;
-        private boolean m_showRobot = true;
+        private boolean m_showRobot = false;
         private boolean m_showTransport = true;
         private boolean m_robotTune = false;
-        private boolean m_showClimberControlPanel = true;
-        private boolean m_showVision = true;
+        private boolean m_showClimberControlPanel = false;
+        private boolean m_showVision = false;
         private boolean m_showTrajectory = false;
         private boolean m_showSubsystems = true;
         private boolean m_showPower = false;
@@ -221,8 +221,8 @@ public class SetupShuffleboard {
                                         .getLayout("Shoot", BuiltInLayouts.kList).withPosition(1, 0).withSize(2, 1)
                                         .withProperties(Map.of("Label position", "HIDDEN"));
 
-                        shoot.addBoolean("SHOOT", () -> (m_shooter.atSpeed() && m_turret.atTargetAngle()
-                                        && m_tilt.atTargetAngle()));
+                        shoot.addBoolean("SHOOT", () -> ((m_shooter.atSpeed() && m_turret.atTargetAngle()
+                                        && m_tilt.atTargetAngle()) || m_shooter.driverOKShoot));
 
                         ShuffleboardLayout competition = Shuffleboard.getTab("Competition")
                                         .getLayout("Values", BuiltInLayouts.kList).withPosition(1, 1).withSize(1, 4)
@@ -463,6 +463,7 @@ public class SetupShuffleboard {
                         shooterValues1.addBoolean("TuneOn", () -> (m_shooter.tuneOn && m_shooter.lastTuneOn));
                         shooterValues1.addBoolean("BothConnected (6,7)", () -> m_shooter.allConnected);
                         shooterValues1.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
+                        shooterValues1.addBoolean("ShootOne", () -> m_shooter.shootOne);
                         shooterValues1.addBoolean("Shooter Running", () -> m_shooter.startShooter);
                         shooterValues1.addBoolean("Burn OK", () -> m_shooter.burnOK);
 

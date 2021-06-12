@@ -26,6 +26,8 @@ import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellTransport.JogLeftBelt;
+import frc.robot.commands.CellTransport.JogRightBelt;
+import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.Climber.JogClimber;
 import frc.robot.commands.ControlPanel.ControlPanelArm;
 import frc.robot.commands.ControlPanel.PositionNumberRevs;
@@ -36,10 +38,10 @@ import frc.robot.commands.RobotDrive.DriveStraightJoystick;
 import frc.robot.commands.Shooter.InnerShotSetup;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Shooter.LowShotSetup;
-import frc.robot.commands.Shooter.OKToShoot;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShieldGeneratorShotSetup;
 import frc.robot.commands.Shooter.ShootCells;
+import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.TrenchShotSetup;
 import frc.robot.commands.Tilt.PositionHoldTilt;
@@ -61,8 +63,6 @@ import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 import frc.robot.trajectories.FondyFireTrajectory;
-import frc.robot.commands.CellTransport.JogRightBelt;
-import frc.robot.commands.CellTransport.ReleaseOneCell;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -239,16 +239,15 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 2)
                         .whileHeld(new ShootCells(m_shooter, m_limelight, m_transport, m_compressor, 100));
 
-            new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport));
+            new JoystickButton(m_driverController, 3).whenPressed(new StartShooterWheels(m_shooter, 10));
 
-            new JoystickButton(m_driverController, 4).whenPressed(new ToggleCamera(m_limelight));
+            new JoystickButton(m_driverController, 4).whenPressed(new StopShoot(m_shooter, m_transport));
 
             new JoystickButton(m_driverController, 5).whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
                         .whenPressed(new PositionTurret(m_turret, 0));
 
             new JoystickButton(m_driverController, 6).whenPressed(new TiltSeekVision(m_tilt, m_limelight));
 
-            // setup for lob shoot inside init line no vision
 
             new JoystickButton(m_driverController, 7)
                         .whenPressed(new LowShotSetup(m_shooter, m_turret, m_tilt, m_limelight));
@@ -266,9 +265,10 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 10)
                         .whenPressed(new ShieldGeneratorShotSetup(m_shooter, m_turret, m_tilt, m_limelight));
 
-            new JoystickButton(m_driverController, 11).whileHeld(getBypassShootInterlocks());
+            new JoystickButton(m_driverController, 12).whileHeld(() -> m_shooter.setOKShootDriver())
+                        .whenReleased(() -> m_shooter.notOKShootDriver());
 
-            new JoystickButton(m_driverController, 12).whenPressed(() -> m_shooter.shootAll())
+            new JoystickButton(m_driverController, 11).whileHeld(() -> m_shooter.shootAll())
                         .whenReleased(() -> m_shooter.shootOne());
 
             driverUpButton.whenPressed(() -> m_tilt.aimHigher());
@@ -366,10 +366,6 @@ public class RobotContainer {
 
       public Command getJogShooterCommand() {
             return new JogShooter(m_shooter, () -> setupGamepad.getRawAxis(4));
-      }
-
-      public Command getBypassShootInterlocks() {
-            return new OKToShoot(m_shooter);
       }
 
       public Command getJogClimberCommand() {

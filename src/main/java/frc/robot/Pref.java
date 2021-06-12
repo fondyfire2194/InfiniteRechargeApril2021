@@ -87,9 +87,13 @@ public class Pref {
     //cell servo
 
     prefDict.put("CellRelPosn",0.);
-    prefDict.put("CellHoldPosn",.4);
+    prefDict.put("CellHoldPosn",1.);
     prefDict.put("CellReleaseTime",.5);
 
+    //camera
+
+    prefDict.put("LimelightHeight",.66);
+    prefDict.put("LimelightMaxHeight",.686);
     
 
 

@@ -10,6 +10,7 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.CellTransportSubsystem;
@@ -24,14 +25,22 @@ public class ShootCells extends CommandBase {
   private final CellTransportSubsystem m_transport;
   private final Compressor m_compressor;
   private final LimeLight m_limelight;
-  private double startTime;
   private double m_time;
-  private double shootOneTime;
-  private double cellReleaseStartTime;
+  private double shotTime = 1;
+  private double shotStartTime;
+
+  private boolean okToShoot;
 
   private boolean shootStarted;
   private boolean temp;
   private int cellsShot;
+  private boolean shotInProgress;
+  private double startTime;
+  private boolean getNextCell;
+  private boolean cellAvailable;
+  private int loopCtr;
+  private boolean cellReleased;
+  private double cellReleasedStartTime;
 
   public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, LimeLight limelight,
       Compressor compressor) {
@@ -54,7 +63,6 @@ public class ShootCells extends CommandBase {
     m_compressor = compressor;
     m_limelight = limelight;
     temp = m_limelight.useVision;
-    startTime = 0;
     m_time = time;
 
     addRequirements(shooter, transport);
@@ -64,54 +72,64 @@ public class ShootCells extends CommandBase {
   @Override
   public void initialize() {
     startTime = Timer.getFPGATimestamp();
-    m_shooter.requiredMpsLast = 0.;
     m_shooter.shootTime = m_time;
-    shootOneTime = 0;
     m_compressor.stop();
     shootStarted = false;
-    m_shooter.shootOne = true;
     m_limelight.useVision = false;
     m_transport.holdCell();
-    cellsShot = 1;
-    cellReleaseStartTime = 0;
-
+    cellsShot = 0;
+    shotStartTime = 0;
+    cellAvailable = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
+    boolean inAuto = DriverStation.getInstance().isAutonomous();
+
     if ((m_shooter.atSpeed() && m_limelight.getHorOnTarget() && m_limelight.getVertOnTarget())
         || m_shooter.driverOKShoot || shootStarted == true) {
 
       shootStarted = true;
+
     }
-    if (m_shooter.startShooter = true) {
+
+    if (shootStarted) {
       m_transport.runFrontRollerMotor();
       m_transport.runRearRollerMotor();
+
     }
 
-    boolean inAuto = DriverStation.getInstance().isAutonomous();
-
-    if ((inAuto || !m_shooter.shootOne) && shootStarted && shootOneTime == 0) {
-      shootOneTime = Timer.getFPGATimestamp();
-    }
-
-    if ((inAuto || !m_shooter.shootOne) && shootOneTime != 0
-        && Timer.getFPGATimestamp() > (shootOneTime + m_shooter.shooterRecoverTime) && m_shooter.atSpeed()) {
-      m_transport.releaseCell();
-      cellReleaseStartTime = Timer.getFPGATimestamp();
-    }
-    if (shootOneTime != 0 && Timer.getFPGATimestamp() > (cellReleaseStartTime + m_transport.cellReleasedTime)) {
-      m_transport.holdCell();
-      shootOneTime = 0;
+    if (shootStarted && cellAvailable && !shotInProgress) {
+      shotStartTime = Timer.getFPGATimestamp();
+      shotInProgress = true;
       cellsShot++;
-      cellReleaseStartTime = 0;
+      cellAvailable = false;
     }
 
-    m_shooter.shootTimeRemaining = startTime + m_shooter.shootTime - Timer.getFPGATimestamp();
+    if (shotInProgress && Timer.getFPGATimestamp() > (shotStartTime + shotTime)) {
+      shotInProgress = false;
+    }
+
+    okToShoot = shootStarted && (inAuto || !m_shooter.shootOne);
+
+    getNextCell = okToShoot && !shotInProgress && !cellAvailable;
+
+    if (getNextCell || cellReleased)
+      releaseOneCell();
+
+    // SmartDashboard.putBoolean("OKShoot", okToShoot);
+    // SmartDashboard.putBoolean("SHIP", shotInProgress);
+    // SmartDashboard.putBoolean("SHSTD", shootStarted);
+    // SmartDashboard.putBoolean("CAvail ", cellAvailable);
+    // SmartDashboard.putNumber("CLSSHT", cellsShot);
+    // SmartDashboard.putNumber("LPCTR", loopCtr);
+    // SmartDashboard.putBoolean("GNXC ", getNextCell);
 
   }
+
+  // m_shooter.shootTimeRemaining=startTime+m_shooter.shootTime-Timer.getFPGATimestamp();
 
   // Called once the command ends or is interrupted.
   @Override
@@ -122,13 +140,43 @@ public class ShootCells extends CommandBase {
     m_shooter.stop();
     m_limelight.useVision = temp;
     m_compressor.start();
+    shootStarted = false;
+    shotInProgress = false;
 
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return cellsShot > 7;
+    return false;
   }
 
+  public void releaseACell() {
+    loopCtr++;
+    if (loopCtr < 2)
+      m_transport.releaseCell();
+    if (loopCtr > 50 && loopCtr < 52)
+      m_transport.holdCell();
+    if (loopCtr > 100) {
+      cellAvailable = true;
+      loopCtr = 0;
+    }
+
+  }
+
+  public void releaseOneCell() {
+    if (!cellReleased) {
+      m_transport.releaseCell();
+      cellReleased = true;
+      cellReleasedStartTime = Timer.getFPGATimestamp();
+    }
+    if (cellReleased && Timer.getFPGATimestamp() > cellReleasedStartTime + m_transport.cellReleasedTime) {
+      m_transport.holdCell();
+      cellReleasedStartTime = 0;
+
+      cellAvailable = true;
+      cellReleased = false;
+    }
+
+  }
 }

@@ -49,7 +49,7 @@ public class CellTransportSubsystem extends SubsystemBase {
 
   private final Servo cellArm;
   public double cellArmReleaseCell = 0;
-  public double cellArmHoldCell = .4;
+  public double cellArmHoldCell = .9;
   public boolean startRollers;
   public double cellReleasedTime = .25;
 
@@ -92,7 +92,7 @@ public class CellTransportSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     cellArmReleaseCell = Pref.getPref("CellRelPosn");
     cellArmHoldCell = Pref.getPref("CellHoldPosn");
-    cellArmReleaseCell = Pref.getPref("CellReleaseTime");
+    cellReleasedTime = Pref.getPref("CellReleaseTime");
 
   }
 

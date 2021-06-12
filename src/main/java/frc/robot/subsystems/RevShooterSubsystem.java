@@ -104,7 +104,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean hideSliders = Constants.isMatch;
     public boolean driverOKShoot;
     public boolean burnOK;
-    public double shooterRecoverTime = .25;
+    public double shooterRecoverTime = 5;
     public boolean shootOne;
 
     public RevShooterSubsystem() {
@@ -204,7 +204,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     }
 
     public boolean atSpeed() {
-        return requiredMps > 0 && Math.abs(requiredMps - getMPS()) < requiredMps * .1;
+        return startShooter && requiredMps > 0 && Math.abs(requiredMps - getMPS()) < requiredMps * .1;
 
     }
 
@@ -451,6 +451,14 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     public void shootAll() {
         shootOne = false;
+    }
+
+    public void setOKShootDriver() {
+        driverOKShoot = true;
+    }
+
+    public void notOKShootDriver() {
+        driverOKShoot = false;
     }
 
 }
