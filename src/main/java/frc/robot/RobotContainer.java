@@ -53,7 +53,6 @@ import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretWaitForStop;
-import frc.robot.commands.Vision.ToggleCamera;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ControlPanelSubsystem;
@@ -311,13 +310,12 @@ public class RobotContainer {
 
             setupLeftButton.whenPressed(new ReleaseOneCell(m_transport));
 
-            setupLeftTrigger.whileHeld(() -> m_transport.runLeftBeltMotor(-.5))
+            setupLeftTrigger.whileHeld(() -> m_transport.pulseLeftBelt(.5, .5, .5))
                         .whenReleased(() -> m_transport.stopLeftBeltMotor());
 
-            setupRightTrigger.whileHeld(() -> m_transport.runRightBeltMotor(-.5))
+            setupRightTrigger.whileHeld(() -> m_transport.pulseRightBelt(.55, .25, .4))
                         .whenReleased(() -> m_transport.stopRightBeltMotor());
 
-     
             setupBack.whileHeld(new StartIntake(m_intake, m_transport)).whenReleased(new StopIntake(m_intake));
 
             setupStart.whileHeld(() -> m_controlPanel.turnWheelMotor())
@@ -375,11 +373,4 @@ public class RobotContainer {
             return (1 - m_driverController.getThrottle()) / 2;
       }
 
-      public Command runLeftBelt() {
-            return new JogLeftBelt(m_transport, () -> setupGamepad.getRawAxis(0));
-      }
-
-      public Command runRightBelt() {
-            return new JogRightBelt(m_transport, () -> setupGamepad.getRawAxis(4));
-      }
 }

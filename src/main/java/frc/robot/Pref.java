@@ -68,7 +68,7 @@ public class Pref {
 
     // shooter velocity
 
-    prefDict.put("sHff", .016);//=1/maxMPS = 1/(5700/60 * .638) .016
+    prefDict.put("sHff", .016);// =1/maxMPS = 1/(5700/60 * .638) .016
     prefDict.put("sHkp", .01);
     prefDict.put("sHkI", .0001);
     prefDict.put("sHkd", 50.);
@@ -76,26 +76,27 @@ public class Pref {
     prefDict.put("sHTune", 0.);
 
     // Drive
+
+    prefDict.put("dRKff", .1);
     prefDict.put("dRKp", .1);
     prefDict.put("dRKi", .0);
     prefDict.put("dRKd", .0);
     prefDict.put("dRKiz", .0);
     prefDict.put("dRStKp", .1);
+    prefDict.put("dRacc", .1);
 
     prefDict.put("dRTune", 0.);
 
-    //cell servo
+    // cell servo
 
-    prefDict.put("CellRelPosn",0.);
-    prefDict.put("CellHoldPosn",1.);
-    prefDict.put("CellReleaseTime",.5);
+    prefDict.put("CellRelPosn", .7);
+    prefDict.put("CellHoldPosn", .5);
+    prefDict.put("CellReleaseTime", .25);
 
-    //camera
+    // camera
 
-    prefDict.put("LimelightHeight",.66);
-    prefDict.put("LimelightMaxHeight",.686);
-    
-
+    prefDict.put("LimelightHeight", .66);
+    prefDict.put("LimelightMaxHeight", .686);
 
   }
 

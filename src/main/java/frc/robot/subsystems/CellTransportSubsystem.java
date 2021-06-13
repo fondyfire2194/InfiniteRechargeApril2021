@@ -19,6 +19,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants;
@@ -48,17 +49,17 @@ public class CellTransportSubsystem extends SubsystemBase {
   public NetworkTableEntry rearSpeed;
 
   private final Servo cellArm;
-  public double cellArmReleaseCell = 0;
-  public double cellArmHoldCell = .9;
+  public double cellArmReleaseCell = .7;
+  public double cellArmHoldCell = .5;
   public boolean startRollers;
-  public double cellReleasedTime = .25;
+  public double cellReleasedTime = .5;
 
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
     m_rightBeltMotor = new TalonSRXWrapper(CANConstants.RIGHT_BELT_MOTOR);
     m_frontRollerMotor = new TalonSRXWrapper(CANConstants.FRONT_ROLLER);
     m_rearRollerMotor = new TalonSRXWrapper(CANConstants.REAR_ROLLER);
-    cellArm = new Servo(0);
+    cellArm = new Servo(9);
 
     if (Robot.isReal()) {
       m_leftBeltMotor.configFactoryDefault();
@@ -93,7 +94,8 @@ public class CellTransportSubsystem extends SubsystemBase {
     cellArmReleaseCell = Pref.getPref("CellRelPosn");
     cellArmHoldCell = Pref.getPref("CellHoldPosn");
     cellReleasedTime = Pref.getPref("CellReleaseTime");
-
+    SmartDashboard.putNumber("CAR", cellArmReleaseCell);
+    SmartDashboard.putNumber("CAH", cellArmHoldCell);
   }
 
   public boolean checkCAN() {
@@ -150,19 +152,34 @@ public class CellTransportSubsystem extends SubsystemBase {
     }
   }
 
-  public void pulseBelt(double speed, double onTime, double offTime) {
-    if (beltPulseStartTime == 0)
+  public void pulseLeftBelt(double speed, double onTime, double offTime) {
+    if (beltPulseStartTime == 0) {
       beltPulseStartTime = Timer.getFPGATimestamp();
-
+    }
     if (Timer.getFPGATimestamp() < beltPulseStartTime + onTime) {
       runLeftBeltMotor(-speed);
     }
-
     if (Timer.getFPGATimestamp() > beltPulseStartTime + onTime
         && Timer.getFPGATimestamp() < beltPulseStartTime + onTime + offTime) {
-      runLeftBeltMotor(0);
+      stopLeftBeltMotor();
+    }
+    if (Timer.getFPGATimestamp() > beltPulseStartTime + onTime + offTime) {
+      beltPulseStartTime = 0;
     }
 
+  }
+
+  public void pulseRightBelt(double speed, double onTime, double offTime) {
+    if (beltPulseStartTime == 0) {
+      beltPulseStartTime = Timer.getFPGATimestamp();
+    }
+    if (Timer.getFPGATimestamp() < beltPulseStartTime + onTime) {
+      runRightBeltMotor(-speed);
+    }
+    if (Timer.getFPGATimestamp() > beltPulseStartTime + onTime
+        && Timer.getFPGATimestamp() < beltPulseStartTime + onTime + offTime) {
+      stopRightBeltMotor();
+    }
     if (Timer.getFPGATimestamp() > beltPulseStartTime + onTime + offTime) {
       beltPulseStartTime = 0;
     }
@@ -177,7 +194,7 @@ public class CellTransportSubsystem extends SubsystemBase {
     moveCellArm(cellArmReleaseCell);
   }
 
-  public void parkArm(){
+  public void parkArm() {
     moveCellArm(0);
   }
 

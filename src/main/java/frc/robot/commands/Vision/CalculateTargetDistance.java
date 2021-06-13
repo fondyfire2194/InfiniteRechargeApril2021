@@ -76,9 +76,9 @@ public class CalculateTargetDistance extends CommandBase {
   @Override
   public void execute() {
 
-    baseCameraHeight= Pref.getPref("LimelightHeight");
+    // baseCameraHeight= Pref.getPref("LimelightHeight");
 
-    maxCameraHeight = Pref.getPref("LimelightMaxHeight");
+    // maxCameraHeight = Pref.getPref("LimelightMaxHeight");
 
     cameraHeightSlope = (maxCameraHeight - baseCameraHeight) / 30;
 

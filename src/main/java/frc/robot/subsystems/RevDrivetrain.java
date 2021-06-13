@@ -52,7 +52,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public Field2d fieldSim;
 
     private final DifferentialDrive mDrive;
- //   private final DifferentialDriveOdometry mOdometry;
+    // private final DifferentialDriveOdometry mOdometry;
     private DifferentialDrivetrainSimWrapper mSimulator;
 
     public double leftTargetPosition;
@@ -61,10 +61,12 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public double pset, iset, dset, ffset, izset;
     public double rpset, riset, rdset, rffset, rizset;
 
+    private int abc;
+
     public double startDistance;
 
-    private int POSITION_SLOT = 0;
-    private int SMART_MOTION_SLOT = 1;
+    private int POSITION_SLOT = 1;
+    private int SMART_MOTION_SLOT = 0;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxVel, minVel, maxAcc, allowedErr;
 
     public double lastkP, lastkp, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastMaxVel,
@@ -119,7 +121,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mLeftPidController = mLeadLeft.getPIDController();
         mRightPidController = mLeadRight.getPIDController();
 
-        mLeftPidController.setOutputRange(-.5, .5, POSITION_SLOT);
+        // mLeftPidController.setOutputRange(-.5, .5, POSITION_SLOT);
 
         mLeftEncoder.setPosition(0);
         mRightEncoder.setPosition(0);
@@ -140,7 +142,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mDrive.setSafetyEnabled(false);
 
         tuneGains();
-        
+
         getGains();
         if (RobotBase.isSimulation()) {
             mSimulator = new DifferentialDrivetrainSimWrapper(DRIVETRAIN_CONSTANTS.createSim(),
@@ -154,7 +156,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
                     PDPConstants.DRIVETRAIN_RIGHT_MOTOR_B_PDP);
             // the Field2d class lets us visualize our robot in the simulation GUI.
             fieldSim = new Field2d();
-    //        mOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
+            // mOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
             SmartDashboard.putData("Field", fieldSim);
         }
 
@@ -164,7 +166,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         // Set motors to brake when idle. We don't want the drive train to coast.
         Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
-                .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kBrake));
+                .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kCoast));
 
     }
 
@@ -274,7 +276,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public void resetEncoders() {
         mLeftEncoder.setPosition(0);
         mRightEncoder.setPosition(0);
-        resetSimOdometry(getPose());
+        // resetSimOdometry(getPose());
     }
 
     public double getX() {
@@ -319,14 +321,14 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     protected void resetSimOdometry(Pose2d pose) {
         mSimulator.resetOdometry(pose);
     }
-//  /**
-//     * Updates the field-relative position.
-//     */
-//     public void updateOdometry() {
-//         var gyroAngle = getYaw();
-//         mOdometry.update(gyroAngle, getLeftDistance(), getRightDistance());
-  
-//      }
+    // /**
+    // * Updates the field-relative position.
+    // */
+    // public void updateOdometry() {
+    // var gyroAngle = getYaw();
+    // mOdometry.update(gyroAngle, getLeftDistance(), getRightDistance());
+
+    // }
 
     @Override
     public double getHeadingDegrees() {
@@ -394,11 +396,11 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public void calibratePID(final double p, final double i, final double d, double kIz, double acc, double kFF,
             int slotNumber) {
+
         if (p != lastkP) {
             mLeftPidController.setP(p, slotNumber);
             mRightPidController.setP(p, slotNumber);
             lastkP = p;
-
         }
 
         if (i != lastkI) {
@@ -408,29 +410,28 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         }
 
         if (d != lastkD) {
-            mLeftPidController.setI(d, slotNumber);
+            mLeftPidController.setD(d, slotNumber);
             mRightPidController.setD(d, slotNumber);
             lastkD = d;
-
-            if (kIz != lastkIz) {
-                mLeftPidController.setIZone(kIz, slotNumber);
-                mRightPidController.setIZone(kIz, slotNumber);
-                lastkIz = kIz;
-            }
-
-            mLeftPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
-            mLeftPidController.setSmartMotionMinOutputVelocity(minVel, SMART_MOTION_SLOT);
-            mLeftPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
-            mLeftPidController.setSmartMotionAllowedClosedLoopError(allowedErr, SMART_MOTION_SLOT);
-            mLeftPidController.setFF(kFF, SMART_MOTION_SLOT);
-            mLeftPidController.setOutputRange(kMinOutput, kMaxOutput);
-            mRightPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
-            mRightPidController.setSmartMotionMinOutputVelocity(minVel, SMART_MOTION_SLOT);
-            mRightPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
-            mRightPidController.setSmartMotionAllowedClosedLoopError(allowedErr, SMART_MOTION_SLOT);
-            mRightPidController.setFF(kFF, SMART_MOTION_SLOT);
-            mRightPidController.setOutputRange(kMinOutput, kMaxOutput);
         }
+        if (kIz != lastkIz) {
+            mLeftPidController.setIZone(kIz, slotNumber);
+            mRightPidController.setIZone(kIz, slotNumber);
+            lastkIz = kIz;
+        }
+
+        mLeftPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
+        mLeftPidController.setSmartMotionMinOutputVelocity(minVel, SMART_MOTION_SLOT);
+        mLeftPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
+        mLeftPidController.setSmartMotionAllowedClosedLoopError(allowedErr, SMART_MOTION_SLOT);
+        mLeftPidController.setFF(kFF, SMART_MOTION_SLOT);
+        mLeftPidController.setOutputRange(kMinOutput, kMaxOutput);
+        mRightPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
+        mRightPidController.setSmartMotionMinOutputVelocity(minVel, SMART_MOTION_SLOT);
+        mRightPidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_SLOT);
+        mRightPidController.setSmartMotionAllowedClosedLoopError(allowedErr, SMART_MOTION_SLOT);
+        mRightPidController.setFF(kFF, SMART_MOTION_SLOT);
+        mRightPidController.setOutputRange(kMinOutput, kMaxOutput);
 
     }
 
@@ -442,20 +443,22 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         double i = Pref.getPref("dRKi");
         double d = Pref.getPref("dRKd");
         double iz = Pref.getPref("dRKiz");
+        double ff = Pref.getPref("dRKff");
+        double acc = Pref.getPref("dRacc");
 
-        calibratePID(kp, i, d, iz, maxAcc, kFF, SMART_MOTION_SLOT);
+        calibratePID(kp, i, d, iz, acc, ff, SMART_MOTION_SLOT);
 
     }
 
     private void fixedSettings() {
-        kFF = .0038;// = 1/max MPM = 1/(4.4*60)
+        kFF = .2;// = 1/max mps =1/2
 
         kMaxOutput = .75;// 266 mpm = 4 mps limiting to 3mps
         kMinOutput = -.75;
 
-        maxVel = 180;// mpm 3/sec
-        maxAcc = 10;// mpmpsec
-        allowedErr = .1;
+        maxVel = 3;// mps
+        maxAcc = 6;// mpmpsec
+        allowedErr = 0;
 
     }
 
@@ -487,17 +490,18 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     public void getGains() {
-        ffset = mLeftPidController.getFF(0);
-        pset = mLeftPidController.getP(0);
-        iset = mLeftPidController.getI(0);
-        dset = mLeftPidController.getD(0);
-        izset = mLeftPidController.getIZone();
 
-        rffset = mRightPidController.getFF(0);
-        rpset = mRightPidController.getP(0);
-        riset = mRightPidController.getI(0);
-        rdset = mRightPidController.getD(0);
-        rizset = mRightPidController.getIZone();
+        ffset = mLeftPidController.getFF(SMART_MOTION_SLOT);
+        pset = mLeftPidController.getP(SMART_MOTION_SLOT);
+        iset = mLeftPidController.getI(SMART_MOTION_SLOT);
+        dset = mLeftPidController.getD(SMART_MOTION_SLOT);
+        izset = mLeftPidController.getIZone(SMART_MOTION_SLOT);
+
+        rffset = mRightPidController.getFF(SMART_MOTION_SLOT);
+        rpset = mRightPidController.getP(SMART_MOTION_SLOT);
+        riset = mRightPidController.getI(SMART_MOTION_SLOT);
+        rdset = mRightPidController.getD(SMART_MOTION_SLOT);
+        rizset = mRightPidController.getIZone(SMART_MOTION_SLOT);
 
     }
 

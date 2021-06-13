@@ -88,7 +88,7 @@ public class ShootCells extends CommandBase {
   public void execute() {
     m_shooter.runShooter();
     boolean inAuto = DriverStation.getInstance().isAutonomous();
-    
+
     m_limelight.useVision = !m_shooter.driverOKShoot;
 
     if ((m_shooter.atSpeed() && m_limelight.getHorOnTarget() && m_limelight.getVertOnTarget())
@@ -101,12 +101,8 @@ public class ShootCells extends CommandBase {
     if (shootStarted) {
       m_transport.runFrontRollerMotor();
       m_transport.runRearRollerMotor();
-      if (cellsShot < 3) {
-        m_transport.runLeftBeltMotor(.5);
-        m_transport.runRightBeltMotor(-.5);
-      } else {
-        m_transport.stopBelts();
-      }
+      m_transport.pulseLeftBelt(.5, .2, .2);
+      m_transport.pulseRightBelt(.23, .25, .5);
     }
 
     if (shootStarted && cellAvailable && !shotInProgress) {

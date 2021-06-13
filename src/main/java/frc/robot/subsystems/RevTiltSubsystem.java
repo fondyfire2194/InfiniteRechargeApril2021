@@ -75,7 +75,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public boolean visionOnTarget;
     public boolean burnOK;
     public double driverAdjustAngle;
-	public double adjustMeters = .1;//4"
+    public double adjustMeters = .1;// 4"
 
     /**
      * 
@@ -104,7 +104,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
             mEncoder.setVelocityConversionFactor(degreesPerRev * 3 / 60);
 
         }
-
+        tuneGains();
         setTiltLockGains();
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
