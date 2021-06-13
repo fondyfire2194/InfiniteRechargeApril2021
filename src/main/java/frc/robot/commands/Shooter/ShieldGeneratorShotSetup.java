@@ -10,8 +10,10 @@ import frc.robot.ShootData;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
+import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
+import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.LimelightSetPipeline;
 import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -28,8 +30,10 @@ public class ShieldGeneratorShotSetup extends ParallelCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new LimelightSetPipeline(limelight, limelight.noZoomPipeline), new UseVision(limelight, true),
-        new StartShooterWheels(shooter, ShootData.innerShotMPS),
-        new PositionTiltToVision(tilt, limelight, ShootData.innerTiltAngle),
+        new StartShooterWheels(shooter, ShootData.auto1Constants.shootSpeed1),
+        new SetTiltOffset(tilt, ShootData.auto0Constants.tiltOffset),
+        new PositionTiltToVision(tilt, limelight, ShootData.auto1Constants.tiltAngle),
+        new SetTurretOffset(turret, ShootData.auto1Constants.turretOffset1),
         new PositionTurretToVision(turret, limelight, 0));
   }
 }

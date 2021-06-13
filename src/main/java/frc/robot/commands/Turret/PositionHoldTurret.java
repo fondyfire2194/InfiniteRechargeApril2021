@@ -78,23 +78,28 @@ public class PositionHoldTurret extends CommandBase {
       visionFoundCounter++;
     }
 
-    if (visionFoundCounter >= filterCount)
+    if (m_limelight.useVision && visionFoundCounter >= filterCount)
       m_turret.validTargetSeen = true;
 
     if (!targetSeen && m_turret.validTargetSeen) {
       visionFoundCounter--;
     }
 
-    if (!targetSeen && visionFoundCounter <= 0) {
+    if (!m_limelight.useVision || !targetSeen && visionFoundCounter <= 0) {
       m_turret.validTargetSeen = false;
       visionFoundCounter = 0;
       limelightHorizontalAngle = 0;
     }
 
-    if (!m_turret.validTargetSeen)
+    if (!m_turret.validTargetSeen) {
+
       m_turret.goToPositionMotionMagic(m_endpoint);
-    else
+    }
+
+    else {
       m_turret.visionOnTarget = m_turret.lockTurretToVision(-m_turret.adjustedTargetAngle);
+      m_turret.targetAngle = m_turret.getAngle();
+    }
   }
 
   // Called once the command ends or is interrupted.

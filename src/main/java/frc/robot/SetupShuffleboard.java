@@ -39,10 +39,10 @@ import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.RobotDrive.PositionRobotInc;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
-import frc.robot.commands.RobotDrive.ResetPose;
 import frc.robot.commands.RobotDrive.StopRobot;
 import frc.robot.commands.Shooter.ClearShFaults;
-import frc.robot.commands.Shooter.RunShooter;
+import frc.robot.commands.Shooter.EndLogData;
+import frc.robot.commands.Shooter.LogDistanceData;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
@@ -85,15 +85,15 @@ public class SetupShuffleboard {
         private final RearIntakeSubsystem m_intake;
         private final FondyFireTrajectory m_traj;
         private final ClimberSubsystem m_climber;
-        private boolean m_showTurret = false;
+        private boolean m_showTurret = true;
         private boolean m_turretTune = false;
-        private boolean m_showTilt = false;
+        private boolean m_showTilt = true;
         private boolean m_showShooter = true;
         private boolean m_showRobot = false;
         private boolean m_showTransport = true;
         private boolean m_robotTune = false;
         private boolean m_showClimberControlPanel = false;
-        private boolean m_showVision = false;
+        private boolean m_showVision = true;
         private boolean m_showTrajectory = false;
         private boolean m_showSubsystems = true;
         private boolean m_showPower = false;
@@ -429,7 +429,9 @@ public class SetupShuffleboard {
                         shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
                         shooterCommands.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter));
                         shooterCommands.add("Cmd", m_shooter);
-
+                        shooterCommands.add("LogDataRun",
+                                        new LogDistanceData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
+                        shooterCommands.add("EndLog", new EndLogData(m_shooter));
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
                                         .getLayout("ShooterValues", BuiltInLayouts.kList).withPosition(2, 0)
                                         .withSize(2, 3).withProperties(Map.of("Label position", "LEFT")); // labels
@@ -531,7 +533,6 @@ public class SetupShuffleboard {
 
                         robotCommands.add("Reset Enc", new ResetEncoders(m_robotDrive));
                         robotCommands.add("Reset Gyro", new ResetGyro(m_robotDrive));
-                        robotCommands.add("Reset Pose", new ResetPose(m_robotDrive));
                         robotCommands.add("Pos to 10M", new PositionRobot(m_robotDrive, 10.));
                         robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0));
                         robotCommands.add("Pos +1", new PositionRobotInc(m_robotDrive, 1));

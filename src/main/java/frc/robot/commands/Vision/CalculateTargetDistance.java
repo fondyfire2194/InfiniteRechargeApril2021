@@ -102,6 +102,7 @@ public class CalculateTargetDistance extends CommandBase {
       m_shooter.calculatedCameraDistance = (heightDifference) / tanAngleSum;
 
       m_tilt.driverAdjustAngle = Math.toDegrees(Math.atan(m_tilt.adjustMeters/m_shooter.calculatedCameraDistance));
+  
       m_turret.driverAdjustAngle = Math.toDegrees(Math.atan(m_turret.adjustMeters/m_shooter.calculatedCameraDistance));
 
 

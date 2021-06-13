@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import java.security.spec.MGF1ParameterSpec;
 import java.util.Arrays;
 
 //import com.kauailabs.navx.frc.AHRS;
@@ -24,6 +23,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.CANConstants;
@@ -52,7 +52,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public Field2d fieldSim;
 
     private final DifferentialDrive mDrive;
-
+ //   private final DifferentialDriveOdometry mOdometry;
     private DifferentialDrivetrainSimWrapper mSimulator;
 
     public double leftTargetPosition;
@@ -138,6 +138,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mDrive.setRightSideInverted(false);
 
         mDrive.setSafetyEnabled(false);
+
+        tuneGains();
+        
+        getGains();
         if (RobotBase.isSimulation()) {
             mSimulator = new DifferentialDrivetrainSimWrapper(DRIVETRAIN_CONSTANTS.createSim(),
                     new RevMotorControllerSimWrapper(mLeadLeft), new RevMotorControllerSimWrapper(mLeadRight),
@@ -150,7 +154,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
                     PDPConstants.DRIVETRAIN_RIGHT_MOTOR_B_PDP);
             // the Field2d class lets us visualize our robot in the simulation GUI.
             fieldSim = new Field2d();
-
+    //        mOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
             SmartDashboard.putData("Field", fieldSim);
         }
 
@@ -315,6 +319,14 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     protected void resetSimOdometry(Pose2d pose) {
         mSimulator.resetOdometry(pose);
     }
+//  /**
+//     * Updates the field-relative position.
+//     */
+//     public void updateOdometry() {
+//         var gyroAngle = getYaw();
+//         mOdometry.update(gyroAngle, getLeftDistance(), getRightDistance());
+  
+//      }
 
     @Override
     public double getHeadingDegrees() {

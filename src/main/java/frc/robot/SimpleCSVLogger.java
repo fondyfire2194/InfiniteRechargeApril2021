@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /*
  *******************************************************************************************
  * Copyright (C) 2017 FRC Team 1736 Robot Casserole - www.robotcasserole.org
@@ -79,11 +81,14 @@ public class SimpleCSVLogger {
 		}
 		output_dir = "/media/sda1" + "/data_captures/";
 	//	output_dir += subDir + "/";
-		File file = new File(output_dir);
+	SmartDashboard.putString("NAME", output_dir + name);
+		File file = new File(output_dir + name);
+	
 		if (!file.exists()) {
 			if (file.mkdir()) {
 				System.out.println("Directory is created!");
 			} else {
+				SmartDashboard.putString("DF", "Failed to create directory!");
 				System.out.println("Failed to create directory!");
 			}
 		}

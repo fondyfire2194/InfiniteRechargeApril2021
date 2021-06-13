@@ -68,7 +68,7 @@ public class AutoMode0 extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
                                                 new StopShoot(shooter, transport),
-                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
+                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MIN_ANGLE),
                                                 new LimelightSetPipeline(limelight, limelight.driverPipeline),
                                                 new UseVision(limelight, false), new PositionTurret(turret, 0)));
 

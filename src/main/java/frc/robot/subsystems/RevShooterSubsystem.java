@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants;
 import frc.robot.Pref;
+import frc.robot.SimpleCSVLogger;
 import frc.robot.sim.ShooterSubsystem;
 
 public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsystem {
@@ -49,12 +50,15 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double pset, iset, dset, ffset, izset;
     public boolean useCameraSpeed;
     public boolean useCameraAngleSpeed;
+       public boolean useSetupSlider; 
     public NetworkTableEntry shooterSpeed;
     public NetworkTableEntry setupVertOffset;
     public double useSetupOffset;
-    public boolean useSetupSlider;
-    public boolean useSetupVetOffset;
+
+    public boolean useSetupVertOffset;
     public boolean startShooter;
+
+    public SimpleCSVLogger simpleCSVLogger;
 
     private final int VELOCITY_SLOT = 0;
     /**
@@ -106,7 +110,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean burnOK;
     public double shooterRecoverTime = 5;
     public boolean shootOne;
+    public boolean endFile;
 
+    
     public RevShooterSubsystem() {
 
         mLeftMotor = new SimableCANSparkMax(CANConstants.LEFT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -141,11 +147,13 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
                     .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -10, "Max", 10)).getEntry();
 
             shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
-                    .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 0, "Max", 45)).getEntry();
+                    .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 20, "Max", 45)).getEntry();
         }
+        tuneGains();
         getGains();
         requiredMps = 12;
         shootOne = true;
+        simpleCSVLogger = new SimpleCSVLogger();
     }
 
     @Override
@@ -204,7 +212,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     }
 
     public boolean atSpeed() {
-        return startShooter && requiredMps > 0 && Math.abs(requiredMps - getMPS()) < requiredMps * .1;
+        return startShooter  && Math.abs(requiredMps + getMPS()) < (requiredMps * .1);
 
     }
 

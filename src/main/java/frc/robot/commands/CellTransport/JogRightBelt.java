@@ -25,7 +25,7 @@ public class JogRightBelt extends CommandBase {
 
     m_transport = transport;
     m_xaxisSpeedSupplier = xaxisSpeedSupplier;
-    addRequirements(m_transport);
+  //  addRequirements(m_transport);
   }
 
   // Called when the command is initially scheduled.

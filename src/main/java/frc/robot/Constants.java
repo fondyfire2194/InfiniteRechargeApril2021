@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import com.fasterxml.jackson.databind.ser.impl.FailingSerializer;
-
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.system.LinearSystem;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;

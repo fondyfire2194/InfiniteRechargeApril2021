@@ -65,12 +65,13 @@ public class ShootCells extends CommandBase {
     temp = m_limelight.useVision;
     m_time = time;
 
-    addRequirements(shooter, transport);
+  //  addRequirements(shooter, transport);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+
     startTime = Timer.getFPGATimestamp();
     m_shooter.shootTime = m_time;
     m_compressor.stop();
@@ -85,11 +86,11 @@ public class ShootCells extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+    m_shooter.runShooter();
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
     if ((m_shooter.atSpeed() && m_limelight.getHorOnTarget() && m_limelight.getVertOnTarget())
-        || m_shooter.driverOKShoot || shootStarted == true) {
+        || (m_shooter.driverOKShoot && m_shooter.atSpeed()) || shootStarted == true) {
 
       shootStarted = true;
 
@@ -98,7 +99,12 @@ public class ShootCells extends CommandBase {
     if (shootStarted) {
       m_transport.runFrontRollerMotor();
       m_transport.runRearRollerMotor();
-
+      if (cellsShot < 3) {
+        m_transport.runLeftBeltMotor(.5);
+        m_transport.runRightBeltMotor(-.5);
+      } else {
+        m_transport.stopBelts();
+      }
     }
 
     if (shootStarted && cellAvailable && !shotInProgress) {
@@ -116,14 +122,16 @@ public class ShootCells extends CommandBase {
 
     getNextCell = okToShoot && !shotInProgress && !cellAvailable;
 
-    if (getNextCell || cellReleased)
-      releaseOneCell();
+    if (getNextCell || loopCtr != 0) {
+      releaseACell();
 
-    // SmartDashboard.putBoolean("OKShoot", okToShoot);
-    // SmartDashboard.putBoolean("SHIP", shotInProgress);
-    // SmartDashboard.putBoolean("SHSTD", shootStarted);
-    // SmartDashboard.putBoolean("CAvail ", cellAvailable);
-    // SmartDashboard.putNumber("CLSSHT", cellsShot);
+    }
+
+    SmartDashboard.putBoolean("OKShoot", okToShoot);
+    SmartDashboard.putBoolean("SHIP", shotInProgress);
+    SmartDashboard.putBoolean("SHSTD", shootStarted);
+    SmartDashboard.putBoolean("CAvail ", cellAvailable);
+    SmartDashboard.putNumber("CLSSHT", cellsShot);
     // SmartDashboard.putNumber("LPCTR", loopCtr);
     // SmartDashboard.putBoolean("GNXC ", getNextCell);
 
@@ -137,10 +145,8 @@ public class ShootCells extends CommandBase {
     m_transport.releaseCell();
     m_transport.stopBelts();
     m_transport.stopRollers();
-    m_shooter.stop();
     m_limelight.useVision = temp;
     m_compressor.start();
-    shootStarted = false;
     shotInProgress = false;
 
   }

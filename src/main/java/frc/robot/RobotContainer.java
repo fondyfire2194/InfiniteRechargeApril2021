@@ -239,15 +239,14 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 2)
                         .whileHeld(new ShootCells(m_shooter, m_limelight, m_transport, m_compressor, 100));
 
-            new JoystickButton(m_driverController, 3).whenPressed(new StartShooterWheels(m_shooter, 10));
+            new JoystickButton(m_driverController, 5).whenPressed(new StartShooterWheels(m_shooter, 10));
 
-            new JoystickButton(m_driverController, 4).whenPressed(new StopShoot(m_shooter, m_transport));
+            new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport));
 
-            new JoystickButton(m_driverController, 5).whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
+            new JoystickButton(m_driverController, 4).whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
                         .whenPressed(new PositionTurret(m_turret, 0));
 
             new JoystickButton(m_driverController, 6).whenPressed(new TiltSeekVision(m_tilt, m_limelight));
-
 
             new JoystickButton(m_driverController, 7)
                         .whenPressed(new LowShotSetup(m_shooter, m_turret, m_tilt, m_limelight));
@@ -312,13 +311,13 @@ public class RobotContainer {
 
             setupLeftButton.whenPressed(new ReleaseOneCell(m_transport));
 
-            setupLeftTrigger.whileHeld(() -> runLeftBelt());
+            setupLeftTrigger.whileHeld(() -> m_transport.runLeftBeltMotor(-.5))
+                        .whenReleased(() -> m_transport.stopLeftBeltMotor());
 
-            setupRightTrigger.whileHeld(() -> runRightBelt());
+            setupRightTrigger.whileHeld(() -> m_transport.runRightBeltMotor(-.5))
+                        .whenReleased(() -> m_transport.stopRightBeltMotor());
 
-            setupRightTrigger.whileHeld(() -> m_transport.runRearRollerMotor())
-                        .whenReleased(() -> m_transport.stopRearRollerMotor());
-
+     
             setupBack.whileHeld(new StartIntake(m_intake, m_transport)).whenReleased(new StopIntake(m_intake));
 
             setupStart.whileHeld(() -> m_controlPanel.turnWheelMotor())

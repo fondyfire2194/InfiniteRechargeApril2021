@@ -44,11 +44,15 @@ public class PositionHoldTilt extends CommandBase {
   @Override
   public void execute() {
 
+    if (!m_limelight.useVision)
+      visionFoundCounter = 0;
+
     targetSeen = m_limelight.getIsTargetFound() && m_limelight.useVision;
 
     if (targetSeen && m_tilt.validTargetSeen) {
 
       limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
+
       m_tilt.adjustedTargetAngle = limelightVerticalAngle + m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffset;
 
       m_limelight.setVerticalOffset(m_tilt.targetVerticalOffset);
@@ -66,14 +70,14 @@ public class PositionHoldTilt extends CommandBase {
       visionFoundCounter++;
     }
 
-    if (visionFoundCounter >= filterCount)
+    if (m_limelight.useVision && visionFoundCounter >= filterCount)
       m_tilt.validTargetSeen = true;
 
     if (!targetSeen && m_tilt.validTargetSeen) {
       visionFoundCounter--;
     }
 
-    if (!targetSeen && visionFoundCounter < 0) {
+    if (!m_limelight.useVision || !targetSeen && visionFoundCounter < 0) {
       m_tilt.validTargetSeen = false;
       visionFoundCounter = 0;
       limelightVerticalAngle = 0;
