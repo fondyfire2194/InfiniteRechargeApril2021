@@ -65,7 +65,7 @@ public class ShootCells extends CommandBase {
     temp = m_limelight.useVision;
     m_time = time;
 
-  //  addRequirements(shooter, transport);
+    // addRequirements(shooter, transport);
   }
 
   // Called when the command is initially scheduled.
@@ -88,6 +88,8 @@ public class ShootCells extends CommandBase {
   public void execute() {
     m_shooter.runShooter();
     boolean inAuto = DriverStation.getInstance().isAutonomous();
+    
+    m_limelight.useVision = !m_shooter.driverOKShoot;
 
     if ((m_shooter.atSpeed() && m_limelight.getHorOnTarget() && m_limelight.getVertOnTarget())
         || (m_shooter.driverOKShoot && m_shooter.atSpeed()) || shootStarted == true) {

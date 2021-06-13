@@ -177,6 +177,10 @@ public class CellTransportSubsystem extends SubsystemBase {
     moveCellArm(cellArmReleaseCell);
   }
 
+  public void parkArm(){
+    moveCellArm(0);
+  }
+
   public void setBeltBrakeOn(boolean on) {
     if (on) {
       m_leftBeltMotor.setNeutralMode(NeutralMode.Brake);

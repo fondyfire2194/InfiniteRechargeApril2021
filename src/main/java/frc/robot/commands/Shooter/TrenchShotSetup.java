@@ -32,8 +32,7 @@ public class TrenchShotSetup extends ParallelCommandGroup {
     addCommands(new LimelightSetPipeline(limelight, limelight.noZoomPipeline), new UseVision(limelight, true),
         new StartShooterWheels(shooter, ShootData.auto2Constants.shootSpeed1),
         new SetTiltOffset(tilt, ShootData.auto0Constants.tiltOffset),
-        new PositionTiltToVision(tilt, limelight, ShootData.auto2Constants.tiltAngle),
-        new SetTurretOffset(turret, ShootData.auto2Constants.turretOffset1),
-        new PositionTurretToVision(turret, limelight, 0));
+        new PositionTilt(tilt, ShootData.auto2Constants.tiltAngle),
+        new SetTurretOffset(turret, ShootData.auto2Constants.turretOffset1), new PositionTurret(turret, 0));
   }
 }

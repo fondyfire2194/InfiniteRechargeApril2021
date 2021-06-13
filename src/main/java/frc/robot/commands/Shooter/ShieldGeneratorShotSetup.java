@@ -32,8 +32,7 @@ public class ShieldGeneratorShotSetup extends ParallelCommandGroup {
     addCommands(new LimelightSetPipeline(limelight, limelight.noZoomPipeline), new UseVision(limelight, true),
         new StartShooterWheels(shooter, ShootData.auto1Constants.shootSpeed1),
         new SetTiltOffset(tilt, ShootData.auto0Constants.tiltOffset),
-        new PositionTiltToVision(tilt, limelight, ShootData.auto1Constants.tiltAngle),
-        new SetTurretOffset(turret, ShootData.auto1Constants.turretOffset1),
-        new PositionTurretToVision(turret, limelight, 0));
+        new PositionTilt(tilt, ShootData.auto1Constants.tiltAngle),
+        new SetTurretOffset(turret, ShootData.auto1Constants.turretOffset1), new PositionTurret(turret, 0));
   }
 }

@@ -86,12 +86,10 @@ public class SetupShuffleboard {
         private final FondyFireTrajectory m_traj;
         private final ClimberSubsystem m_climber;
         private boolean m_showTurret = true;
-        private boolean m_turretTune = false;
         private boolean m_showTilt = true;
         private boolean m_showShooter = true;
-        private boolean m_showRobot = false;
+        private boolean m_showRobot = true;
         private boolean m_showTransport = true;
-        private boolean m_robotTune = false;
         private boolean m_showClimberControlPanel = false;
         private boolean m_showVision = true;
         private boolean m_showTrajectory = false;

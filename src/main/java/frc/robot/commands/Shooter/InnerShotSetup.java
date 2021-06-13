@@ -8,8 +8,10 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.ShootData.auto0Constants;
+import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
+import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.LimelightSetPipeline;
@@ -30,7 +32,7 @@ public class InnerShotSetup extends ParallelCommandGroup {
     addCommands(new LimelightSetPipeline(limelight, limelight.noZoomPipeline), new UseVision(limelight, true),
         new StartShooterWheels(shooter, ShootData.innerShotMPS),
         new SetTiltOffset(tilt, ShootData.auto0Constants.tiltOffset),
-        new PositionTiltToVision(tilt, limelight, ShootData.auto0Constants.tiltAngle),
-        new SetTurretOffset(turret, auto0Constants.turretOffset), new PositionTurretToVision(turret, limelight, 0));
+        new PositionTilt(tilt, ShootData.auto0Constants.tiltAngle),
+        new SetTurretOffset(turret, auto0Constants.turretOffset), new PositionTurret(turret, 0));
   }
 }
