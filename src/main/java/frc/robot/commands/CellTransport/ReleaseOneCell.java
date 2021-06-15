@@ -28,7 +28,7 @@ public class ReleaseOneCell extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Timer.getFPGATimestamp() > startTime + m_transport.cellReleasedTime) {
+    if (Timer.getFPGATimestamp() > startTime + m_transport.cellPassTime) {
       m_transport.moveCellArm(m_transport.cellArmHoldCell);
     }
   }
@@ -41,6 +41,6 @@ public class ReleaseOneCell extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Timer.getFPGATimestamp() > (startTime + m_transport.cellReleasedTime +.1);
+    return Timer.getFPGATimestamp() > (startTime + m_transport.cellPassTime +.1);
   }
 }

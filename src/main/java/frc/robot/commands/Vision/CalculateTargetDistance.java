@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.LimeLight;
-import frc.robot.Pref;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
@@ -101,18 +100,18 @@ public class CalculateTargetDistance extends CommandBase {
 
       m_shooter.calculatedCameraDistance = (heightDifference) / tanAngleSum;
 
-      m_tilt.driverAdjustAngle = Math.toDegrees(Math.atan(m_tilt.adjustMeters/m_shooter.calculatedCameraDistance));
-  
-      m_turret.driverAdjustAngle = Math.toDegrees(Math.atan(m_turret.adjustMeters/m_shooter.calculatedCameraDistance));
+      m_tilt.driverAdjustAngle = Math.toDegrees(Math.atan(m_tilt.adjustMeters / m_shooter.calculatedCameraDistance));
 
+      m_turret.driverAdjustAngle = Math
+          .toDegrees(Math.atan(m_turret.adjustMeters / m_shooter.calculatedCameraDistance));
 
     } else
 
     {
 
-      m_shooter.calculatedCameraDistance = 59;
-      m_tilt.driverAdjustAngle = .1;
-      m_turret.driverAdjustAngle =.1;
+      m_shooter.calculatedCameraDistance = -1;
+      m_tilt.driverAdjustAngle = 0.1;
+      m_turret.driverAdjustAngle = 0.1;
 
     }
     m_shooter.shotDistance = Math.sqrt((m_shooter.calculatedCameraDistance * m_shooter.calculatedCameraDistance)

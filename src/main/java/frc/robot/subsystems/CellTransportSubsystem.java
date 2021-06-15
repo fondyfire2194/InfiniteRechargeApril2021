@@ -52,7 +52,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   public double cellArmReleaseCell = .7;
   public double cellArmHoldCell = .5;
   public boolean startRollers;
-  public double cellReleasedTime = .5;
+  public double cellPassTime = .5;
 
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
@@ -93,7 +93,7 @@ public class CellTransportSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     cellArmReleaseCell = Pref.getPref("CellRelPosn");
     cellArmHoldCell = Pref.getPref("CellHoldPosn");
-    cellReleasedTime = Pref.getPref("CellReleaseTime");
+    cellPassTime = Pref.getPref("CellReleaseTime");
     SmartDashboard.putNumber("CAR", cellArmReleaseCell);
     SmartDashboard.putNumber("CAH", cellArmHoldCell);
   }

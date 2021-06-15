@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RobotDrive.PositionRobot;
-import frc.robot.commands.Shooter.CalculateSpeedAndOffset;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Vision.AutoSwitchZoom;
@@ -111,8 +110,6 @@ public class Robot extends TimedRobot {
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
 
     m_robotContainer.m_turret.enableSofLimits(true);
-    new CalculateSpeedAndOffset(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_limelight)
-        .schedule(true);
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
         m_robotContainer.m_shooter).schedule(true);
@@ -215,9 +212,7 @@ public class Robot extends TimedRobot {
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
 
     // new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
-    new CalculateSpeedAndOffset(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_limelight)
-        .schedule(true);
-
+ 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
         m_robotContainer.m_shooter).schedule(true);
 

@@ -16,15 +16,15 @@ import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 
-public class LogDistanceData extends CommandBase {
+public class LogShootData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Step", "LeftMeters", "RightMeters", "AveMeters", "CameraDistance", "BBHeight",
-      "BBWidth", "TargetArea", "RobotSpeed", "TiltAngle", "VertToTarget", "Tilt+Vert", "TurretAngle", "HorToTarget",
-      "Turret+Hor", "GyroYaw" };
-  public static String[] units = { "Number", "Meters", "Meters", "Meters", "Meters", "Pixels", "Pixels", "SqPixels",
-      "MPS", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees" };
+  public final String[] names = { "Step", "CameraDistance", "BBHeight", "BBWidth", "TargetArea", "RobotSpeed",
+      "TiltAngle", "VertToTarget", "Tilt+Vert", "TargetVOff", "DriverVOff", "TurretAngle", "HorToTarget", "Turret+Hor",
+      "TargetHOff", "DriverVOff", "ReqdSpeed", "ActSpeed" };
+  public static String[] units = { "Number", "Meters", "Pixels", "Pixels", "SqPixels", "MPS", "Degrees", "Degrees",
+      "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "MPS", "MPS" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -35,7 +35,7 @@ public class LogDistanceData extends CommandBase {
   private final RevTiltSubsystem m_tilt;
   private final RevShooterSubsystem m_shooter;
 
-  public LogDistanceData(RevDrivetrain drive, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+  public LogShootData(RevDrivetrain drive, RevTurretSubsystem turret, RevTiltSubsystem tilt,
       RevShooterSubsystem shooter, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_drive = drive;
@@ -49,8 +49,8 @@ public class LogDistanceData extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    int ope = m_shooter.simpleCSVLogger.init("TestRun", "Data", names, units);
-    SmartDashboard.putNumber("OPE", ope);
+    int ope1 = m_shooter.simpleCSVLogger.init("TestRun", "Shoot", names, units);
+    SmartDashboard.putNumber("OPE1", ope1);
     loopCtr = 0;
     fileOpenNow = false;
     step = 0;
@@ -68,18 +68,19 @@ public class LogDistanceData extends CommandBase {
       fileOpenNow = true;
       loopCtr = 0;
     }
-    // log data every 2 pixels
+    // log data every shot
     if (fileOpenNow)
       loopCtr++;
-    if (loopCtr >= 25) {
+    if (m_shooter.logTrigger && loopCtr >= 5) {
       loopCtr = 0;
       step++;
-      m_shooter.simpleCSVLogger.writeData((double) step, -m_drive.getLeftDistance(), -m_drive.getRightDistance(),
-          -m_drive.getAverageDistance(), m_shooter.calculatedCameraDistance, m_limelight.getBoundingBoxHeight(),
-          m_limelight.getBoundingBoxWidth(), m_limelight.getTargetArea(), m_drive.getLeftRate(), m_tilt.getAngle(),
-          m_limelight.getdegVerticalToTarget(), m_tilt.getAngle() + m_limelight.getdegVerticalToTarget(),
-          m_turret.getAngle(), m_limelight.getdegRotationToTarget(),
-          m_turret.getAngle() + m_limelight.getdegRotationToTarget(), m_drive.getYaw());
+      m_shooter.shootLogger.writeData((double) step, m_shooter.calculatedCameraDistance,
+          m_limelight.getBoundingBoxHeight(), m_limelight.getBoundingBoxWidth(), m_limelight.getTargetArea(),
+          m_drive.getLeftRate(), m_tilt.getAngle(), m_limelight.getdegVerticalToTarget(),
+          m_tilt.getAngle() + m_limelight.getdegVerticalToTarget(), m_tilt.targetVerticalOffset,
+          m_tilt.driverVerticalOffset, m_turret.getAngle(), m_limelight.getdegRotationToTarget(),
+          m_turret.getAngle() + m_limelight.getdegRotationToTarget(), m_turret.targetHorizontalOffset,
+          m_turret.driverHorizontalOffset, m_shooter.requiredMps, m_shooter.getMPS(), m_shooter.getLeftAmps());
     }
 
   }

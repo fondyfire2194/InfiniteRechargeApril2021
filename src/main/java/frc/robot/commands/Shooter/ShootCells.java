@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
+import frc.robot.LimelightControlMode.Snapshot;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
 
@@ -86,6 +87,7 @@ public class ShootCells extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
     m_shooter.runShooter();
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
@@ -110,6 +112,15 @@ public class ShootCells extends CommandBase {
       shotInProgress = true;
       cellsShot++;
       cellAvailable = false;
+
+    }
+
+    m_shooter.logTrigger = shotInProgress;
+
+    if (shotInProgress) {
+      m_limelight.setSnapshot(Snapshot.kon);
+    } else {
+      m_limelight.setSnapshot(Snapshot.koff);
     }
 
     if (shotInProgress && Timer.getFPGATimestamp() > (shotStartTime + shotTime)) {
@@ -174,7 +185,7 @@ public class ShootCells extends CommandBase {
       cellReleased = true;
       cellReleasedStartTime = Timer.getFPGATimestamp();
     }
-    if (cellReleased && Timer.getFPGATimestamp() > cellReleasedStartTime + m_transport.cellReleasedTime) {
+    if (cellReleased && Timer.getFPGATimestamp() > cellReleasedStartTime + m_transport.cellPassTime) {
       m_transport.holdCell();
       cellReleasedStartTime = 0;
 

@@ -36,13 +36,13 @@ public class PositionRobot extends CommandBase {
   @Override
   public void execute() {
     m_drive.driveDistance(m_position, m_position);
-    m_angleError = m_drive.getYaw() - m_startAngle;//reverse motion + means left is behind
+    m_angleError = m_drive.getYaw() - m_startAngle;// reverse motion + means left is behind
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    m_drive.arcadeDrive(0, 0);
   }
 
   // Returns true when the command should end.

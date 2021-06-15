@@ -35,15 +35,16 @@ import frc.robot.commands.ControlPanel.PositionToColor;
 import frc.robot.commands.ControlPanel.TurnControlPanel;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
-import frc.robot.commands.Shooter.InnerShotSetup;
+import frc.robot.commands.Shooter.SetupInnerShot;
+import frc.robot.commands.Shooter.SetupLowShot;
 import frc.robot.commands.Shooter.JogShooter;
-import frc.robot.commands.Shooter.LowShotSetup;
+import frc.robot.commands.Shooter.LockAndShoot;
 import frc.robot.commands.Shooter.RunShooter;
-import frc.robot.commands.Shooter.ShieldGeneratorShotSetup;
+import frc.robot.commands.Shooter.SetupShieldGeneratorShot;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
-import frc.robot.commands.Shooter.TrenchShotSetup;
+import frc.robot.commands.Shooter.SetupTrenchShot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.TiltJog;
@@ -160,7 +161,7 @@ public class RobotContainer {
             prefs = Preferences.getInstance();
             // Pref.deleteAllPrefs();
             // Pref.deleteUnused();
-            // Pref.addMissing();
+            Pref.addMissing();
             m_robotDrive = new RevDrivetrain();
 
             m_climber = new ClimberSubsystem();
@@ -242,29 +243,34 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport));
 
-            new JoystickButton(m_driverController, 4).whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
-                        .whenPressed(new PositionTurret(m_turret, 0));
+            new JoystickButton(m_driverController, 4).whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMinAngle))
+                        .whenPressed(new PositionTurret(m_turret, 0))
+                        .whenPressed(() -> m_limelight.setPipeline(m_limelight.driverPipeline));
 
             new JoystickButton(m_driverController, 6).whenPressed(new TiltSeekVision(m_tilt, m_limelight));
 
             new JoystickButton(m_driverController, 7)
-                        .whenPressed(new LowShotSetup(m_shooter, m_turret, m_tilt, m_limelight));
+                        .whenPressed(new SetupLowShot(m_shooter, m_turret, m_tilt, m_limelight));
 
             // Shoot for inner goal from 1 meter behind intiation line
             new JoystickButton(m_driverController, 8)
-                        .whenPressed(new InnerShotSetup(m_shooter, m_turret, m_tilt, m_limelight));
+                        .whenPressed(new SetupInnerShot(m_shooter, m_turret, m_tilt, m_limelight));
 
             // Trench Shot drive under and just beyond the control panel robot parallel to
             // side wall
 
             new JoystickButton(m_driverController, 9)
-                        .whenPressed(new TrenchShotSetup(m_shooter, m_turret, m_tilt, m_limelight));
+                        .whenPressed(new SetupTrenchShot(m_shooter, m_turret, m_tilt, m_limelight));
 
             new JoystickButton(m_driverController, 10)
-                        .whenPressed(new ShieldGeneratorShotSetup(m_shooter, m_turret, m_tilt, m_limelight));
+                        .whenPressed(new SetupShieldGeneratorShot(m_shooter, m_turret, m_tilt, m_limelight));
 
-            new JoystickButton(m_driverController, 12).whileHeld(() -> m_shooter.setOKShootDriver())
-                        .whenReleased(() -> m_shooter.notOKShootDriver());
+            // new JoystickButton(m_driverController, 12).whileHeld(() ->
+            // m_shooter.setOKShootDriver())
+            // .whenReleased(() -> m_shooter.notOKShootDriver());
+
+            new JoystickButton(m_driverController, 12).whileHeld(new LockAndShoot(m_shooter, m_turret, m_tilt,
+                        m_transport, m_robotDrive, m_limelight, m_compressor));
 
             new JoystickButton(m_driverController, 11).whileHeld(() -> m_shooter.shootAll())
                         .whenReleased(() -> m_shooter.shootOne());

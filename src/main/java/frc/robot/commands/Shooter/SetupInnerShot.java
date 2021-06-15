@@ -7,7 +7,7 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
-import frc.robot.Constants.HoodedShooterConstants;
+import frc.robot.ShootData.auto0Constants;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
@@ -23,16 +23,16 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ShieldGeneratorShotSetup extends ParallelCommandGroup {
-  /** Creates a new LobShot1. */
-  public ShieldGeneratorShotSetup(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+public class SetupInnerShot extends ParallelCommandGroup {
+  /** Creates a new inner port short. */
+  public SetupInnerShot(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
       LimeLight limelight) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new LimelightSetPipeline(limelight, limelight.noZoomPipeline), new UseVision(limelight, true),
-        new StartShooterWheels(shooter, ShootData.auto1Constants.shootSpeed1),
+    addCommands(new SetTeleopSetupNumber(shooter, 0),
+        new SetTeleopShooterSpeed(shooter, ShootData.auto0Constants.shootSpeed),
         new SetTiltOffset(tilt, ShootData.auto0Constants.tiltOffset),
-        new PositionTilt(tilt, ShootData.auto1Constants.tiltAngle),
-        new SetTurretOffset(turret, ShootData.auto1Constants.turretOffset1), new PositionTurret(turret, 0));
+        new PositionTilt(tilt, ShootData.auto0Constants.tiltAngle),
+        new SetTurretOffset(turret, ShootData.auto0Constants.turretOffset), new PositionTurret(turret, 0));
   }
 }

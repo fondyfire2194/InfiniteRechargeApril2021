@@ -7,11 +7,10 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
-import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.commands.Tilt.PositionTilt;
+import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
-import frc.robot.commands.Vision.LimelightSetPipeline;
-import frc.robot.commands.Vision.UseVision;
+import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
@@ -19,14 +18,17 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class LowShotSetup extends ParallelCommandGroup {
+public class SetupTrenchShot extends ParallelCommandGroup {
   /** Creates a new LobShot1. */
-  public LowShotSetup(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+  public SetupTrenchShot(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
       LimeLight limelight) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new LimelightSetPipeline(limelight, limelight.driverPipeline), new UseVision(limelight, false),
-        new StartShooterWheels(shooter, ShootData.lowShotMPS),
-        new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE), new PositionTurret(turret, 0));
+    addCommands(new SetTeleopSetupNumber(shooter, 2),
+        new SetTeleopShooterSpeed(shooter, ShootData.auto2Constants.shootSpeed1),
+        new SetTiltOffset(tilt, ShootData.auto2Constants.tiltOffset),
+        new PositionTilt(tilt, ShootData.auto2Constants.tiltAngle),
+        new SetTurretOffset(turret, ShootData.auto2Constants.turretOffset1),
+        new PositionTurret(turret, ShootData.auto2Constants.turretAngle1));
   }
 }
