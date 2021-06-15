@@ -38,36 +38,35 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class AutoMode1 extends SequentialCommandGroup {
+public class AutoModeTrench extends SequentialCommandGroup {
         /**
-         * Creates a new Auto1.
+         * Creates a new Auto0.
          * 
-         * Start in line with balls on shield generator, retract and shoot, retract wile
-         * picking up then shoot
+         * Start in front of power port and shoot
          */
+        static double retractDistance = ShootData.trenchShotConstants.retractDistance;
+        static double tiltAngle = ShootData.trenchShotConstants.tiltAngle;
+        static double turretAngle = ShootData.trenchShotConstants.turretAngle;
+        static double shootSpeed = ShootData.trenchShotConstants.shootSpeed;
+        static double tiltOffset = ShootData.trenchShotConstants.tiltOffset;
+        static double turretOffset = ShootData.trenchShotConstants.turretOffset;
+        static double shootTime = ShootData.trenchShotConstants.shootTime;
 
-        static double retractDistance = ShootData.auto1Constants.retractDistance;
-        static double tiltAngle = ShootData.auto1Constants.tiltAngle;
-        static double turretAngle = ShootData.auto1Constants.turretAngle;
-        static double shootSpeed = ShootData.auto1Constants.shootSpeed;
-        static double tiltOffset = ShootData.auto1Constants.tiltOffset;
-        static double turretOffset = ShootData.auto1Constants.turretOffset;
-        static double shootTime = ShootData.auto1Constants.shootTime;
+        static double retractDistance1 = ShootData.trenchShotConstants.retractDistance1;
+        static double tiltAngle1 = ShootData.trenchShotConstants.tiltAngle1;
+        static double turretAngle1 = ShootData.trenchShotConstants.turretAngle1;
+        static double shootSpeed1 = ShootData.trenchShotConstants.shootSpeed1;
+        static double tiltOffset1 = ShootData.trenchShotConstants.tiltOffset1;
+        static double turretOffset1 = ShootData.trenchShotConstants.turretOffset1;
+        static double shootTime1 = ShootData.trenchShotConstants.shootTime1;
 
-        static double retractDistance1 = ShootData.auto1Constants.retractDistance1;
-        static double tiltAngle1 = ShootData.auto1Constants.tiltAngle1;
-        static double turretAngle1 = ShootData.auto1Constants.turretAngle1;
-        static double shootSpeed1 = ShootData.auto1Constants.shootSpeed1;
-        static double tiltOffset1 = ShootData.auto1Constants.tiltOffset1;
-        static double turretOffset1 = ShootData.auto1Constants.turretOffset1;
-        static double shootTime1 = ShootData.auto1Constants.shootTime1;
-
-        public AutoMode1(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+        public AutoModeTrench(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
                         Compressor compressor, RearIntakeSubsystem intake) {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
-                // move back and pickup 2
+                //
+
                 super(new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
                                 new UseVision(limelight, true), new StartShooterWheels(shooter, shootSpeed),
                                 new SetTiltOffset(tilt, tiltOffset),
@@ -79,7 +78,8 @@ public class AutoMode1 extends SequentialCommandGroup {
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
                                                 new ShootCells(shooter, limelight, transport, compressor, shootTime)),
 
-                                new ParallelCommandGroup(new MessageCommand("Pickup Started"), new StartIntake(intake,transport),
+                                new ParallelCommandGroup(new MessageCommand("Pickup Started"),
+                                                new StartIntake(intake, transport),
                                                 new PositionRobot(drive, retractDistance1),
                                                 new StartShooterWheels(shooter, shootSpeed1),
                                                 new SetTiltOffset(tilt, tiltOffset1),

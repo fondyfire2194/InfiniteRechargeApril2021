@@ -4,8 +4,7 @@
 
 package frc.robot;
 
-import com.kauailabs.navx.IMUProtocol.YPRUpdate;
-
+import edu.wpi.first.wpilibj.util.Units;
 import frc.robot.Constants.FieldConstants;
 
 /** Add your docs here. */
@@ -54,7 +53,7 @@ public class ShootData {
         return Math.sqrt((getFloorDistanceSqrd(x, y)) + (shotHeight * shotHeight));
     }
 
-    public final static class auto0Constants {
+    public final static class centerPowerPortConstants {
         public static double retractDistance = -1;
         public static double tiltAngle = getTiltAngle(4);
         public static double turretAngle = 0;
@@ -65,8 +64,8 @@ public class ShootData {
 
     }
 
-    public final static class auto1Constants {
-        private static double yfromPort = 2;///?
+    public final static class shieldGenConstants {
+        private static double yfromPort = Units.inchesToMeters((74));
         public static double retractDistance = -1;
         public static double tiltAngle = getTiltAngle(getFloorDistance(4, yfromPort));
         public static double turretAngle = getTurretAngleXY(4, yfromPort);
@@ -85,7 +84,7 @@ public class ShootData {
 
     }
 
-    public final static class auto2Constants {
+    public final static class trenchShotConstants {
         public static double retractDistance = -1;
         public static double tiltAngle = 22;
         public static double turretAngle = 0;

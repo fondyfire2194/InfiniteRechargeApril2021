@@ -7,7 +7,7 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
-import frc.robot.ShootData.auto0Constants;
+import frc.robot.ShootData.centerPowerPortConstants;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
@@ -30,9 +30,9 @@ public class SetupInnerShot extends ParallelCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new SetTeleopSetupNumber(shooter, 0),
-        new SetTeleopShooterSpeed(shooter, ShootData.auto0Constants.shootSpeed),
-        new SetTiltOffset(tilt, ShootData.auto0Constants.tiltOffset),
-        new PositionTilt(tilt, ShootData.auto0Constants.tiltAngle),
-        new SetTurretOffset(turret, ShootData.auto0Constants.turretOffset), new PositionTurret(turret, 0));
+        new SetTeleopShooterSpeed(shooter, ShootData.centerPowerPortConstants.shootSpeed),
+        new SetTiltOffset(tilt, ShootData.centerPowerPortConstants.tiltOffset),
+        new PositionTilt(tilt, ShootData.centerPowerPortConstants.tiltAngle),
+        new SetTurretOffset(turret, ShootData.centerPowerPortConstants.turretOffset), new PositionTurret(turret, 0));
   }
 }

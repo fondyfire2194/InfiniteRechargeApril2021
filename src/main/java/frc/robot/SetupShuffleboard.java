@@ -141,9 +141,9 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Center Start Retract Shoot", 1);
 
-                        autoChooser.addOption("Left Start Retract Pickup Shoot", 2);
+                        autoChooser.addOption("Left Start Move Shoot Move Pickup Shoot", 2);
 
-                        autoChooser.addOption("Trench Start Two Pickup Shoot", 3);
+                        autoChooser.addOption("Trench Start Move Shoot  Move Pickup Shoot", 3);
 
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //

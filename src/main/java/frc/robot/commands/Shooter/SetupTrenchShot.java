@@ -25,10 +25,10 @@ public class SetupTrenchShot extends ParallelCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new SetTeleopSetupNumber(shooter, 2),
-        new SetTeleopShooterSpeed(shooter, ShootData.auto2Constants.shootSpeed1),
-        new SetTiltOffset(tilt, ShootData.auto2Constants.tiltOffset),
-        new PositionTilt(tilt, ShootData.auto2Constants.tiltAngle),
-        new SetTurretOffset(turret, ShootData.auto2Constants.turretOffset1),
-        new PositionTurret(turret, ShootData.auto2Constants.turretAngle1));
+        new SetTeleopShooterSpeed(shooter, ShootData.trenchShotConstants.shootSpeed1),
+        new SetTiltOffset(tilt, ShootData.trenchShotConstants.tiltOffset),
+        new PositionTilt(tilt, ShootData.trenchShotConstants.tiltAngle),
+        new SetTurretOffset(turret, ShootData.trenchShotConstants.turretOffset1),
+        new PositionTurret(turret, ShootData.trenchShotConstants.turretAngle1));
   }
 }

@@ -25,10 +25,10 @@ public class SetupShieldGeneratorShot extends ParallelCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new SetTeleopSetupNumber(shooter, 1),
-        new SetTeleopShooterSpeed(shooter, ShootData.auto1Constants.shootSpeed1),
-        new SetTiltOffset(tilt, ShootData.auto1Constants.tiltOffset),
-        new PositionTilt(tilt, ShootData.auto1Constants.tiltAngle),
-        new SetTurretOffset(turret, ShootData.auto1Constants.turretOffset1),
-        new PositionTurret(turret, ShootData.auto1Constants.turretAngle1));
+        new SetTeleopShooterSpeed(shooter, ShootData.shieldGenConstants.shootSpeed1),
+        new SetTiltOffset(tilt, ShootData.shieldGenConstants.tiltOffset),
+        new PositionTilt(tilt, ShootData.shieldGenConstants.tiltAngle),
+        new SetTurretOffset(turret, ShootData.shieldGenConstants.turretOffset1),
+        new PositionTurret(turret, ShootData.shieldGenConstants.turretAngle1));
   }
 }

@@ -37,12 +37,12 @@ public class LockAndShoot extends SequentialCommandGroup {
      * 
      * Start in front of power port, retract and shoot
      */
-    static double tiltAngle = ShootData.auto0Constants.tiltAngle;
-    static double turretAngle = ShootData.auto0Constants.turretAngle;
-    static double shootSpeed = ShootData.auto0Constants.shootSpeed;
-    static double tiltOffset = ShootData.auto0Constants.tiltOffset;
-    static double turretOffset = ShootData.auto0Constants.turretOffset;
-    static double shootTime = ShootData.auto0Constants.shootTime;
+    static double tiltAngle = ShootData.centerPowerPortConstants.tiltAngle;
+    static double turretAngle = ShootData.centerPowerPortConstants.turretAngle;
+    static double shootSpeed = ShootData.centerPowerPortConstants.shootSpeed;
+    static double tiltOffset = ShootData.centerPowerPortConstants.tiltOffset;
+    static double turretOffset = ShootData.centerPowerPortConstants.turretOffset;
+    static double shootTime = ShootData.centerPowerPortConstants.shootTime;
 
     public LockAndShoot(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
             CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight, Compressor compressor) {
