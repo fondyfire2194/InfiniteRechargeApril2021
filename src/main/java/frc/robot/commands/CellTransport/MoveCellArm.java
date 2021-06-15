@@ -6,14 +6,11 @@ package frc.robot.commands.CellTransport;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.CellTransportSubsystem;
-import frc.robot.subsystems.RevShooterSubsystem;
 
 public class MoveCellArm extends CommandBase {
   /** Creates a new MoveCellArm. */
   private final CellTransportSubsystem m_transport;
   private double m_position;
-
-  private int loopCtr;
 
   public MoveCellArm(CellTransportSubsystem transport, double position) {
     // Use addRequirements() here to declare subsystem dependencies.

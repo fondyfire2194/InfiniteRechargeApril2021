@@ -58,7 +58,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean useSetupVertOffset;
     public boolean startShooter;
 
-    public int teleopSetupIndex = 2;
+    public int teleopSetupIndex = 3;
+    public String[] teleopSetupPosition = new String[] { "InitLineStraightOn", "ShieldGenerator", "RearTrench",
+            "Driver", " ", "Low Goal ", " ", " " };
 
     public double teleopSetupShooterSpeed;
 
@@ -125,9 +127,11 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean hideSliders = Constants.isMatch;
     public boolean driverOKShoot;
     public boolean burnOK;
-    public double shooterRecoverTime = 2;
+    public double shooterRecoverTime = .5;
     public boolean shootOne;
     public boolean endFile;
+    public boolean endShootFile;
+
     private boolean interpolateSpeed = true;
     private boolean interpolateOffsets = true;
     public boolean logTrigger;
@@ -206,10 +210,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         // This method will be called once per scheduler run
 
         checkTune();
-
-        double[] abc = calculateMPFromDistance(setupVertOffset.getDouble(10));
-        SmartDashboard.putNumber("Speed", abc[0]);
-        SmartDashboard.putNumber("Offset", abc[1]);
 
     }
 

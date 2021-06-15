@@ -82,7 +82,7 @@ public final class Constants {
        * 
        */
       // DIMENSIONS IN METERS
-      //max speed = .4788 *(5700 /(60 *10.2 )) = 4.5 mps (14.5 fps)
+      // max speed = .4788 *(5700 /(60 *10.2 )) = 4.5 mps (14.5 fps)
       public static double WHEEL_DIAMETER = .1524;// 6"
       public static double WHEEL_CIRCUMFERENCE = .4788;// meters
       public static double METERS_PER_MOTOR_REV = 0.0467;// pi * diameter /geaar ratio
@@ -97,7 +97,6 @@ public final class Constants {
 
       public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
             WHEELBASE_WIDTH);
-      public static final double kMaxSpeedMetersPerSecond = 8.0;
       public static final boolean kGyroReversed = false;
       /**
        * 
@@ -120,7 +119,8 @@ public final class Constants {
       public static double kPositionI = 0.;
       public static double kPositionP = .1;
       public static double kPositionD = .5;
-      public static double kMaxPositionAccelerationMetersPerSSquared = 100;
+      public static final double kMaxSpeedMetersPerSecond = 2.0;
+      public static double kMaxPositionAccelerationMetersPerSSquared = 6;
 
       /**
        * 

@@ -91,9 +91,19 @@ public class CellTransportSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    cellArmReleaseCell = Pref.getPref("CellRelPosn");
-    cellArmHoldCell = Pref.getPref("CellHoldPosn");
+
+    if (Pref.getPref("CellRelPosn") != cellArmReleaseCell) {
+      cellArmReleaseCell = Pref.getPref("CellRelPosn");
+      releaseCell();
+    }
+
+    if (Pref.getPref("CellHoldPosn") != cellArmHoldCell) {
+      cellArmHoldCell = Pref.getPref("CellHoldPosn");
+      holdCell();
+    }
+
     cellPassTime = Pref.getPref("CellReleaseTime");
+    
     SmartDashboard.putNumber("CAR", cellArmReleaseCell);
     SmartDashboard.putNumber("CAH", cellArmHoldCell);
   }

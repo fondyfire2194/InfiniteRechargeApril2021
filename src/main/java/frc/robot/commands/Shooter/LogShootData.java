@@ -49,7 +49,7 @@ public class LogShootData extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    int ope1 = m_shooter.simpleCSVLogger.init("TestRun", "Shoot", names, units);
+    int ope1 = m_shooter.shootLogger.init("TestRun", "Shoot", names, units);
     SmartDashboard.putNumber("OPE1", ope1);
     loopCtr = 0;
     fileOpenNow = false;
@@ -88,14 +88,14 @@ public class LogShootData extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    int sd = m_shooter.simpleCSVLogger.close();
-    m_shooter.endFile = false;
+    int sd = m_shooter.shootLogger.close();
+    m_shooter.endShootFile = false;
     SmartDashboard.putNumber("Close", sd);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_shooter.endFile;
+    return m_shooter.endShootFile;
   }
 }

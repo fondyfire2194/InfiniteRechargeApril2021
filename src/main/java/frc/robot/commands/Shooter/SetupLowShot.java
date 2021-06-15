@@ -25,8 +25,8 @@ public class SetupLowShot extends ParallelCommandGroup {
       LimeLight limelight) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new LimelightSetPipeline(limelight, limelight.driverPipeline), new UseVision(limelight, false),
-        new StartShooterWheels(shooter, ShootData.lowShotMPS),
+    addCommands(new LimelightSetPipeline(limelight, limelight.driverPipeline), new SetTeleopSetupNumber(shooter,5),new UseVision(limelight, false),
+        new SetTeleopShooterSpeed(shooter, ShootData.lowShotMPS),
         new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE), new PositionTurret(turret, 0));
   }
 }

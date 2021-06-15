@@ -48,8 +48,7 @@ public class PositionRobot extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Timer.getFPGATimestamp() > m_startTime + .25
-        && (m_drive.getInPositionLeft() && Math.abs(m_drive.getLeftRate()) < .1)
-        && (m_drive.getInPositionRight() && Math.abs(m_drive.getRightRate()) < .1);
+    return Timer.getFPGATimestamp() > m_startTime + .25 && m_drive.getInPosition() && m_drive.getStopped();
+
   }
 }

@@ -381,6 +381,14 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         return Math.abs(rightTargetPosition - getRightDistance()) < allowedErr;
     }
 
+    public boolean getInPosition() {
+        return getInPositionLeft() && getInPositionRight();
+    }
+
+    public boolean getStopped() {
+        return Math.abs(getLeftRate()) < .1 && Math.abs(getRightRate()) < .1;
+    }
+
     public void setMaxVel(double maxVel) {
         mLeftPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
         mRightPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);

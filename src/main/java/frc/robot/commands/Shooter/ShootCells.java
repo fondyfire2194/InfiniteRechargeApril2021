@@ -157,6 +157,7 @@ public class ShootCells extends CommandBase {
     m_limelight.useVision = temp;
     m_compressor.start();
     shotInProgress = false;
+    m_shooter.endShootFile = true;
 
   }
 

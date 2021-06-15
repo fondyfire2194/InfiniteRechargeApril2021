@@ -35,6 +35,7 @@ import frc.robot.commands.ControlPanel.PositionNumberRevs;
 import frc.robot.commands.ControlPanel.PositionToColor;
 import frc.robot.commands.ControlPanel.ToggleLookForColor;
 import frc.robot.commands.RobotDrive.ClearRobFaults;
+import frc.robot.commands.RobotDrive.PositionOneSideProfiled;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.RobotDrive.PositionRobotInc;
 import frc.robot.commands.RobotDrive.ResetEncoders;
@@ -222,11 +223,16 @@ public class SetupShuffleboard {
                         shoot.addBoolean("SHOOT", () -> ((m_shooter.atSpeed() && m_turret.atTargetAngle()
                                         && m_tilt.atTargetAngle()) || m_shooter.driverOKShoot));
 
-                        ShuffleboardLayout competition = Shuffleboard.getTab("Competition")
-                                        .getLayout("Values", BuiltInLayouts.kList).withPosition(1, 1).withSize(1, 4)
+                        ShuffleboardLayout setup = Shuffleboard.getTab("Competition")
+                                        .getLayout("Setup", BuiltInLayouts.kList).withPosition(1, 1).withSize(2, 1)
                                         .withProperties(Map.of("Label position", "TOP"));
 
-                        competition.addBoolean("IntakeArm Up", () -> m_intake.getArmRaised());
+                        setup.addString("PositionforShot",
+                                        () -> m_shooter.teleopSetupPosition[m_shooter.teleopSetupIndex]);
+                        ShuffleboardLayout competition = Shuffleboard.getTab("Competition")
+                                        .getLayout("Values", BuiltInLayouts.kGrid).withPosition(1, 2).withSize(2, 3)
+                                        .withProperties(Map.of("Label position", "TOP"));
+
                         competition.addBoolean("IntakeArm Down", () -> m_intake.getArmLowered());
                         competition.addBoolean("TiltOnTarget", () -> m_tilt.atTargetAngle());
                         competition.addBoolean("TurretOnTarget", () -> m_turret.atTargetAngle());
@@ -531,11 +537,11 @@ public class SetupShuffleboard {
 
                         robotCommands.add("Reset Enc", new ResetEncoders(m_robotDrive));
                         robotCommands.add("Reset Gyro", new ResetGyro(m_robotDrive));
-                        robotCommands.add("Pos to 3M", new PositionRobot(m_robotDrive, 3.));
+                        robotCommands.add("Pos -2M", new PositionRobotInc(m_robotDrive, -2));
                         robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0));
-                        robotCommands.add("Pos +1", new PositionRobotInc(m_robotDrive, 1));
-                        robotCommands.add("Pos -1", new PositionRobotInc(m_robotDrive, -1));
-                        // robotCommands.add("Rot to 90", new TurnToAngleProfiled(m_robotDrive, 90));
+                        robotCommands.add("Pos +1M", new PositionRobotInc(m_robotDrive, 1));
+                        robotCommands.add("Pos -1M", new PositionRobotInc(m_robotDrive, -1));
+                        robotCommands.add("ProfPos 1", new PositionOneSideProfiled(m_robotDrive, 1));
                         // robotCommands.add("Rot to 0", new TurnToAngleProfiled(m_robotDrive, 0));
                         // robotCommands.add("Rot to -90", new TurnToAngleProfiled(m_robotDrive, -90));
                         robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
