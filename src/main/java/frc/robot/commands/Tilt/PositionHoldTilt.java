@@ -15,7 +15,6 @@ public class PositionHoldTilt extends CommandBase {
   private final LimeLight m_limelight;
 
   private boolean targetSeen;
-  private double m_endpoint;
   private int visionFoundCounter;
   private double limelightVerticalAngle;
   private final int filterCount = 3;
@@ -32,8 +31,7 @@ public class PositionHoldTilt extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_endpoint = m_tilt.targetAngle;
-
+   
     if (m_tilt.validTargetSeen && m_limelight.useVision)
       visionFoundCounter = filterCount;
     else
@@ -83,7 +81,7 @@ public class PositionHoldTilt extends CommandBase {
       limelightVerticalAngle = 0;
     }
 
-    double motorTurns = m_tilt.tiltMaxAngle - m_endpoint;
+    double motorTurns = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
     m_tilt.motorEndpointDegrees = motorTurns;
 
     if (!m_tilt.validTargetSeen) {
