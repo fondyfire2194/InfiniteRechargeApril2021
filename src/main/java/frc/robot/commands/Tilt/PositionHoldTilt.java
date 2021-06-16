@@ -31,7 +31,7 @@ public class PositionHoldTilt extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-   
+
     if (m_tilt.validTargetSeen && m_limelight.useVision)
       visionFoundCounter = filterCount;
     else
@@ -51,9 +51,11 @@ public class PositionHoldTilt extends CommandBase {
 
       limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
 
-      m_tilt.adjustedTargetAngle = limelightVerticalAngle + m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffset;
+      m_tilt.adjustedTargetAngle = limelightVerticalAngle + m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffset
+          + m_tilt.testVerticalOffset;
 
-      m_limelight.setVerticalOffset(m_tilt.targetVerticalOffset);
+      m_limelight
+          .setVerticalOffset(-(m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffset + m_tilt.testVerticalOffset));
 
     } else {
       limelightVerticalAngle = 0;

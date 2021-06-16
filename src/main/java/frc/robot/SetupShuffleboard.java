@@ -10,6 +10,7 @@ import edu.wpi.cscore.HttpCamera;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -44,6 +45,7 @@ import frc.robot.commands.RobotDrive.StopRobot;
 import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.EndLogData;
 import frc.robot.commands.Shooter.LogDistanceData;
+import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
@@ -325,7 +327,7 @@ public class SetupShuffleboard {
 
                         ShuffleboardLayout turretGains = Shuffleboard.getTab("SetupTurret")
 
-                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1, 2)
+                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1, 1)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels
 
                         turretGains.addNumber("FF", () -> m_turret.ffset);
@@ -333,6 +335,15 @@ public class SetupShuffleboard {
                         turretGains.addNumber("I", () -> m_turret.iset);
                         turretGains.addNumber("D", () -> m_turret.dset);
                         turretGains.addNumber("IZ", () -> m_turret.izset);
+
+                        ShuffleboardLayout turretLockGains = Shuffleboard.getTab("SetupTurret")
+
+                                        .getLayout("LockGains", BuiltInLayouts.kList).withPosition(6, 1).withSize(1, 1)
+                                        .withProperties(Map.of("Label position", "LEFT")); // labels
+                        turretLockGains.addNumber("LP", () -> m_turret.lpset);
+                        turretLockGains.addNumber("LI", () -> m_turret.liset);
+                        turretLockGains.addNumber("LD", () -> m_turret.ldset);
+                        turretGains.addNumber("LIZ", () -> m_turret.lizset);
                 }
                 /**
                  * Shooter Tilt
@@ -403,7 +414,7 @@ public class SetupShuffleboard {
 
                         ShuffleboardLayout tiltGains = Shuffleboard.getTab("SetupTilt")
 
-                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1, 2)
+                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1, 1)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels
 
                         tiltGains.addNumber("FF", () -> m_tilt.ffset);
@@ -411,6 +422,16 @@ public class SetupShuffleboard {
                         tiltGains.addNumber("I", () -> m_tilt.iset);
                         tiltGains.addNumber("D", () -> m_tilt.dset);
                         tiltGains.addNumber("IZ", () -> m_tilt.izset);
+
+                        ShuffleboardLayout tiltLockGains = Shuffleboard.getTab("SetupTilt")
+
+                                        .getLayout("LockGains", BuiltInLayouts.kList).withPosition(6, 1).withSize(1, 1)
+                                        .withProperties(Map.of("Label position", "LEFT")); // labels
+
+                        tiltLockGains.addNumber("LP", () -> m_tilt.lpset);
+                        tiltLockGains.addNumber("LI", () -> m_tilt.liset);
+                        tiltLockGains.addNumber("LD", () -> m_tilt.ldset);
+                        tiltLockGains.addNumber("LIZ", () -> m_tilt.lizset);
 
                 }
                 /**
@@ -431,11 +452,14 @@ public class SetupShuffleboard {
                         shooterCommands.add("Shoot",
                                         new ShootCells(m_shooter, m_limelight, m_transport, m_compressor, 0));
                         shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
-                        shooterCommands.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter));
+                        shooterCommands.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter, tilt));
                         shooterCommands.add("Cmd", m_shooter);
                         shooterCommands.add("LogDataRun",
                                         new LogDistanceData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
-                        shooterCommands.add("EndLog", new EndLogData(m_shooter));
+                        shooterCommands.add("EndLogs", new EndLogData(m_shooter));
+                        shooterCommands.add("LogShootRun",
+                                        new LogShootData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
+
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
                                         .getLayout("ShooterValues", BuiltInLayouts.kList).withPosition(2, 0)
                                         .withSize(2, 3).withProperties(Map.of("Label position", "LEFT")); // labels
@@ -855,6 +879,14 @@ public class SetupShuffleboard {
                 m_transport.checkCAN();
                 m_controlPanel.checkCAN();
                 m_climber.checkCAN();
+        }
+
+        public void checkLimits() {
+                if (m_tilt.onMinusSoftwareLimit() || m_tilt.onPlusSoftwareLimit() || m_tilt.onMinusHardwarLimit()
+                                || m_turret.onPlusSoftwareLimit() || m_turret.onMinusSoftwareLimit()
+                                || DriverStation.getInstance().isDisabled())
+                        m_limelight.useVision = false;
+
         }
 
 }

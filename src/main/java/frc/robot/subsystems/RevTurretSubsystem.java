@@ -46,6 +46,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double targetHorizontalOffset;
     public double driverHorizontalOffset;
     public double pset, iset, dset, ffset, izset;
+    public double lpset, liset, ldset, lizset;
 
     public boolean validTargetSeen;
     public double adjustedTargetAngle;
@@ -58,7 +59,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public boolean turretMotorConnected;
 
-    private double maxAdjustShoot = 1.5;
+    private double maxAdjustShoot = 5;
 
     public double pidLockOut;
     public boolean visionOnTarget;
@@ -79,6 +80,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
         tuneGains();
         setTurretLockGains();
+        m_turretLockController.setTolerance(.5);
         setSoftwareLimits();
 
         if (RobotBase.isReal()) {
@@ -344,8 +346,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         m_turretLockController.setP(Pref.getPref("TuLkP"));
         m_turretLockController.setI(Pref.getPref("TuLkI"));
         m_turretLockController.setD(Pref.getPref("TuLkD"));
-        double Izone = Pref.getPref("TuLkIZ");
-        m_turretLockController.setIntegratorRange(-Izone, Izone);
+        lizset = Pref.getPref("TuLkIZ");
+        m_turretLockController.setIntegratorRange(-lizset, lizset);
         m_turretLockController.setTolerance(.1);
     }
 
@@ -402,5 +404,12 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         izset = mPidController.getIZone(SMART_MOTION_SLOT);
 
     }
+
+    public void getLockGains() {
+        lpset = m_turretLockController.getP();
+        iset = m_turretLockController.getI();
+        dset = m_turretLockController.getD();
+    }
+
 
 }

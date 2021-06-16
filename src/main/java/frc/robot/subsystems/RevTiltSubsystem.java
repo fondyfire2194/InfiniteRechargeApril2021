@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANEncoder;
@@ -17,9 +19,11 @@ import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -60,6 +64,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public final double tiltMinAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
 
     public double pset, iset, dset, ffset, izset;
+    public double lpset, liset, ldset, lizset;
 
     public boolean tuneOn = false;
     public boolean lastTuneOn;
@@ -68,7 +73,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public boolean lastLockTuneOn;
 
     public boolean tiltMotorConnected;
-    private double maxAdjustShoot = .45;
+    private double maxAdjustShoot = 5;
+    private double minAdjustShoot = -4;
     public double motorEndpointDegrees;
     public int faultSeen;
     public double lockPIDOut;
@@ -76,6 +82,12 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public boolean burnOK;
     public double driverAdjustAngle;
     public double adjustMeters = .1;// 4"
+    public NetworkTableEntry setupVertOffset;
+
+    public double tiltSetupOffset;
+
+    public boolean useSetupVertOffset;
+    public double testVerticalOffset;
 
     /**
      * 
@@ -106,6 +118,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         }
         tuneGains();
         setTiltLockGains();
+        getGains();
+        getLockGains();
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
 
@@ -133,6 +147,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         }
 
+        setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetupVertOffset", 0).withWidget("Number Slider")
+                .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -10, "Max", 10)).getEntry();
+
     }
 
     @Override
@@ -148,6 +165,12 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         if (faultSeen != 0)
             faultSeen = getFaults();
+
+        if (useSetupVertOffset) {
+            testVerticalOffset = setupVertOffset.getDouble(0);
+        } else {
+            testVerticalOffset = 0;
+        }
 
     }
 
@@ -301,13 +324,13 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public void aimLower() {
 
-        if (driverVerticalOffset < maxAdjustShoot)
-            driverVerticalOffset += driverAdjustAngle;
+        if (driverVerticalOffset > minAdjustShoot)
+            driverVerticalOffset -= driverAdjustAngle;
     }
 
     public void aimHigher() {
-        if (driverVerticalOffset > -maxAdjustShoot)
-            driverVerticalOffset -= driverAdjustAngle;
+        if (driverVerticalOffset < maxAdjustShoot)
+            driverVerticalOffset += driverAdjustAngle;
     }
 
     public void aimCenter() {
@@ -410,9 +433,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         tiltLockController.setP(Pref.getPref("TiLkP"));
         tiltLockController.setI(Pref.getPref("TiLkI"));
         tiltLockController.setD(Pref.getPref("TiLkD"));
-        double Izone = Pref.getPref("TiLkIZ");
-        tiltLockController.setIntegratorRange(-Izone, Izone);
-        tiltLockController.setTolerance(.1);
+        lizset = Pref.getPref("TiLkIZ");
+        tiltLockController.setIntegratorRange(-lizset, lizset);
+        tiltLockController.setTolerance(.5);
     }
 
     private void checkTune() {
@@ -460,6 +483,12 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         dset = mPidController.getD(SMART_MOTION_SLOT);
         izset = mPidController.getIZone(SMART_MOTION_SLOT);
 
+    }
+
+    public void getLockGains() {
+        lpset = tiltLockController.getP();
+        iset = tiltLockController.getI();
+        dset = tiltLockController.getD();
     }
 
 }

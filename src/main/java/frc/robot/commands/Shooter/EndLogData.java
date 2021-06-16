@@ -19,12 +19,13 @@ public class EndLogData extends InstantCommand {
 
   public EndLogData(RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_shooter=shooter;
+    m_shooter = shooter;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     m_shooter.endFile = true;
+    m_shooter.endShootFile = true;
   }
 }

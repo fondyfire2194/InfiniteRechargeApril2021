@@ -81,7 +81,7 @@ public class ShootCells extends CommandBase {
     m_transport.holdCell();
     cellsShot = 0;
     shotStartTime = 0;
-    cellAvailable = true;
+    cellAvailable = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -131,9 +131,11 @@ public class ShootCells extends CommandBase {
 
     getNextCell = okToShoot && !shotInProgress && !cellAvailable;
 
-    if (getNextCell || loopCtr != 0) {
-      releaseACell();
+    // if (getNextCell || loopCtr != 0) {
+    // releaseACell();
 
+    if (getNextCell || !cellAvailable) {
+      releaseOneCell();
     }
 
     SmartDashboard.putBoolean("OKShoot", okToShoot);
@@ -141,6 +143,7 @@ public class ShootCells extends CommandBase {
     SmartDashboard.putBoolean("SHSTD", shootStarted);
     SmartDashboard.putBoolean("CAvail ", cellAvailable);
     SmartDashboard.putNumber("CLSSHT", cellsShot);
+
     // SmartDashboard.putNumber("LPCTR", loopCtr);
     // SmartDashboard.putBoolean("GNXC ", getNextCell);
 

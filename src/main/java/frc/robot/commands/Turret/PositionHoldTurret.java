@@ -43,7 +43,7 @@ public class PositionHoldTurret extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
+
     if (m_turret.validTargetSeen && m_limelight.useVision)
       visionFoundCounter = filterCount;
     else
@@ -61,7 +61,7 @@ public class PositionHoldTurret extends CommandBase {
       limelightHorizontalAngle = m_limelight.getdegRotationToTarget();
       m_turret.adjustedTargetAngle = limelightHorizontalAngle + m_turret.targetHorizontalOffset
           + m_turret.driverHorizontalOffset;
-      m_limelight.setHorizontalOffset(m_turret.targetHorizontalOffset);
+      m_limelight.setHorizontalOffset(-(m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffset));
 
     } else {
       limelightHorizontalAngle = 0;

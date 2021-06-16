@@ -98,6 +98,6 @@ public class PositionTiltToVision extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return endIt;
+    return endIt || m_limelight.useVision;
   }
 }

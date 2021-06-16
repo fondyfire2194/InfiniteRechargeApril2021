@@ -49,10 +49,10 @@ public class CellTransportSubsystem extends SubsystemBase {
   public NetworkTableEntry rearSpeed;
 
   private final Servo cellArm;
-  public double cellArmReleaseCell = .7;
-  public double cellArmHoldCell = .5;
+  public double cellArmReleaseCell = .25;
+  public double cellArmHoldCell = .1;
   public boolean startRollers;
-  public double cellPassTime = .5;
+  public double cellPassTime = .25;
 
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
@@ -74,7 +74,7 @@ public class CellTransportSubsystem extends SubsystemBase {
       setFrontRollerBrakeOn(true);
       setRearRollerBrakeOn(true);
       setBeltBrakeOn(true);
-
+      holdCell();
       if (!Constants.isMatch) {
 
         frontSpeed = Shuffleboard.getTab("SetupTransport").addPersistent("FrontRollerSpeed", .5)
@@ -103,7 +103,7 @@ public class CellTransportSubsystem extends SubsystemBase {
     }
 
     cellPassTime = Pref.getPref("CellReleaseTime");
-    
+
     SmartDashboard.putNumber("CAR", cellArmReleaseCell);
     SmartDashboard.putNumber("CAH", cellArmHoldCell);
   }

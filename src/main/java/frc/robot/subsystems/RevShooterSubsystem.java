@@ -17,6 +17,7 @@ import org.snobotv2.sim_wrappers.FlywheelSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,13 +50,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double cameraCalculatedSpeed;
     public double pset, iset, dset, ffset, izset;
     public boolean useCameraSpeed;
-    public boolean useCameraAngleSpeed;
     public boolean useSetupSlider;
     public NetworkTableEntry shooterSpeed;
-    public NetworkTableEntry setupVertOffset;
-    public double useSetupOffset;
 
-    public boolean useSetupVertOffset;
     public boolean startShooter;
 
     public int teleopSetupIndex = 3;
@@ -135,6 +132,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private boolean interpolateSpeed = true;
     private boolean interpolateOffsets = true;
     public boolean logTrigger;
+    public double testVertOffset;
 
     public RevShooterSubsystem() {
 
@@ -165,9 +163,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mEncoder.setVelocityConversionFactor(metersPerRev / 60);
 
         if (!hideSliders) {
-
-            setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetupVertOffset", 0).withWidget("Number Slider")
-                    .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -10, "Max", 10)).getEntry();
 
             shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
                     .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 15, "Max", 50)).getEntry();
@@ -210,7 +205,15 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         // This method will be called once per scheduler run
 
         checkTune();
+        if (useSetupSlider) {
+            requiredMps = shooterSpeed.getDouble(20);
+        }
+        if (DriverStation.getInstance().isOperatorControlEnabled()) {
+            if (useCameraSpeed) {
+                requiredMps = cameraCalculatedSpeed;
+            }
 
+        }
     }
 
     public boolean checkCAN() {

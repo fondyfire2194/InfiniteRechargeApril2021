@@ -89,8 +89,8 @@ public class Pref {
 
     // cell servo
 
-    prefDict.put("CellRelPosn", .7);
-    prefDict.put("CellHoldPosn", .5);
+    prefDict.put("CellRelPosn", .25);
+    prefDict.put("CellHoldPosn", .1);
     prefDict.put("CellReleaseTime", .25);
 
     // camera
