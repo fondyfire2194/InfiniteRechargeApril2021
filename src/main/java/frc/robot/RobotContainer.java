@@ -139,6 +139,11 @@ public class RobotContainer {
 
       JoystickButton setupBack = new JoystickButton(setupGamepad, 7);
       JoystickButton setupStart = new JoystickButton(setupGamepad, 8);
+ 
+      JoystickButton setupLeftStick = new JoystickButton(setupGamepad, 9);
+      JoystickButton setupRightStick = new JoystickButton(setupGamepad, 10);
+
+
 
       public POVButton setupUpButton = new POVButton(setupGamepad, 0);
       public POVButton setupRightButton = new POVButton(setupGamepad, 90);
@@ -319,7 +324,7 @@ public class RobotContainer {
             setupLeftTrigger.whileHeld(() -> m_transport.pulseLeftBelt(.5, .5, .5))
                         .whenReleased(() -> m_transport.stopLeftBeltMotor());
 
-            setupRightTrigger.whileHeld(() -> m_transport.pulseRightBelt(.55, .25, .4))
+            setupRightTrigger.whileHeld(() -> m_transport.pulseRightBelt(-.55, .25, .4))
                         .whenReleased(() -> m_transport.stopRightBeltMotor());
 
             setupBack.whileHeld(new StartIntake(m_intake, m_transport)).whenReleased(new StopIntake(m_intake));
@@ -334,6 +339,12 @@ public class RobotContainer {
             setupA.whileHeld(getJogTurretCommand()).whenReleased(new TurretWaitForStop(m_turret));
 
             setupB.whileHeld(getJogClimberCommand());
+
+            setupLeftStick.whileHeld(getJogLeftBeltCommand());
+
+            setupRightStick.whileHeld(getJogRightBeltCommand());
+
+
 
             // LiveWindow.disableAllTelemetry();
 
@@ -375,8 +386,18 @@ public class RobotContainer {
             return new JogClimber(m_climber, () -> -setupGamepad.getRawAxis(5) / 2);
       }
 
+      public Command getJogLeftBeltCommand() {
+            return new JogLeftBelt(m_transport, () -> setupGamepad.getRawAxis(1));
+      }
+
+      public Command getJogRightBeltCommand() {
+            return new JogRightBelt(m_transport, () -> setupGamepad.getRawAxis(5));
+      }
+
       public double getThrottle() {
             return (1 - m_driverController.getThrottle()) / 2;
       }
+
+
 
 }

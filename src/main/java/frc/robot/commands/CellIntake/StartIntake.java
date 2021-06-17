@@ -30,7 +30,7 @@ public class StartIntake extends CommandBase {
   public void initialize() {
     Timer.getFPGATimestamp();
     Shuffleboard.selectTab("Intake");
-    m_transport.moveCellArm(m_transport.cellArmReleaseCell);
+    m_transport.moveCellArm(m_transport.cellArmHoldCell);
 
   }
 

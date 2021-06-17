@@ -80,10 +80,10 @@ public class SimpleCSVLogger {
 			return 0;
 		}
 		output_dir = "/media/sda1" + "/data_captures/";
-	//	output_dir += subDir + "/";
-	SmartDashboard.putString("NAME", output_dir + name);
+		output_dir += subDir + "/";
+		SmartDashboard.putString("NAME", output_dir + name);
 		File file = new File(output_dir + name);
-	
+
 		if (!file.exists()) {
 			if (file.mkdir()) {
 				System.out.println("Directory is created!");

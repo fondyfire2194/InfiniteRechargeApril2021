@@ -46,6 +46,7 @@ import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.EndLogData;
 import frc.robot.commands.Shooter.LogDistanceData;
 import frc.robot.commands.Shooter.LogShootData;
+import frc.robot.commands.Shooter.LogShooterSetup;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
@@ -93,7 +94,7 @@ public class SetupShuffleboard {
         private boolean m_showShooter = true;
         private boolean m_showRobot = true;
         private boolean m_showTransport = true;
-        private boolean m_showClimberControlPanel = false;
+        private boolean m_showClimberControlPanel = true;
         private boolean m_showVision = true;
         private boolean m_showTrajectory = false;
         private boolean m_showSubsystems = true;
@@ -452,7 +453,6 @@ public class SetupShuffleboard {
                         shooterCommands.add("Shoot",
                                         new ShootCells(m_shooter, m_limelight, m_transport, m_compressor, 0));
                         shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
-                        shooterCommands.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter, tilt));
                         shooterCommands.add("Cmd", m_shooter);
                         shooterCommands.add("LogDataRun",
                                         new LogDistanceData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
@@ -474,7 +474,6 @@ public class SetupShuffleboard {
                         shooterValues.addNumber("LeftFaults", () -> m_shooter.getLeftFaults());
                         shooterValues.addNumber("RightFaults", () -> m_shooter.getRightFaults());
                         shooterValues.addBoolean("CameraHasSpeed", () -> m_shooter.useCameraSpeed);
-                        shooterValues.addBoolean("SpeedFromSlider", () -> m_shooter.useSetupSlider);
 
                         ShuffleboardLayout shooterValues1 = Shuffleboard.getTab("SetupShooter")
 
@@ -508,6 +507,33 @@ public class SetupShuffleboard {
                         shooterValues2.addNumber("D", () -> m_shooter.dset);
                         shooterValues2.addNumber("IZ", () -> m_shooter.izset);
 
+                        ShuffleboardLayout shooterSetup = Shuffleboard.getTab("SetupShooter")
+
+                                        .getLayout("ShooterSetup", BuiltInLayouts.kList).withPosition(6, 2)
+                                        .withSize(2, 2).withProperties(Map.of("Label position", "LEFT")); // labels
+
+                        shooterSetup.add("StartSetupLog",
+                                        new LogShooterSetup(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
+                        shooterSetup.add("EndLogs", new EndLogData(m_shooter));
+                        shooterSetup.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter, tilt));
+                        shooterSetup.addBoolean("UsingSliders", () -> m_shooter.useSetupSlider);
+                        shooterSetup.addBoolean("LogFileOpen", () -> m_shooter.logSetupFileOpen);
+
+                        ShuffleboardLayout shooterSetupData = Shuffleboard.getTab("SetupShooter")
+
+                                        .getLayout("ShooterSetupData", BuiltInLayouts.kList).withPosition(8, 0)
+                                        .withSize(2, 3).withProperties(Map.of("Label position", "LEFT")); // labels
+
+                        shooterSetupData.addNumber("LeftMeters", () -> m_robotDrive.getLeftDistance());
+                        shooterSetupData.addNumber("RightMeters", () -> m_robotDrive.getRightDistance());
+                        shooterSetupData.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
+                        shooterSetupData.addNumber("CameraAngle", () -> m_tilt.getAngle());
+                        shooterSetupData.addNumber("DegVertToTarget", () -> m_limelight.getdegVerticalToTarget());
+                        shooterSetupData.addNumber("LeftMPS", () -> m_shooter.getMPS());
+                        shooterSetupData.addNumber("SpeedCommand MPS", () -> m_shooter.requiredMps);
+                        shooterSetupData.addNumber("Setup Offset", () -> m_tilt.setupVertOffset.getDouble(0));
+                        shooterSetupData.addNumber("# Logged", () -> m_shooter.itemsLogged);
+                        shooterSetupData.addBoolean("LogFileOpen", () -> m_shooter.logSetupFileOpen);
                 }
 
                 if (m_showTransport && !liveMatch) {
