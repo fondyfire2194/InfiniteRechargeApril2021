@@ -70,7 +70,7 @@ public class LogShooterSetup extends CommandBase {
     // log data every shot
     if (m_shooter.logSetupFileOpen)
 
-      if (m_shooter.logOneEntry.getBoolean(false)) {
+      if (true) {
 
         m_shooter.itemsLogged++;
         m_shooter.shootLogger.writeData((double) m_shooter.itemsLogged, m_shooter.calculatedCameraDistance,
@@ -80,7 +80,7 @@ public class LogShooterSetup extends CommandBase {
             m_tilt.testVerticalOffset, m_turret.getAngle(), m_limelight.getdegRotationToTarget(),
             m_turret.getAngle() + m_limelight.getdegRotationToTarget(), m_turret.targetHorizontalOffset,
             m_shooter.requiredMps, m_shooter.getMPS(), m_shooter.getLeftAmps());
-        m_shooter.logOneEntry.setBoolean(false);
+        
       }
 
   }

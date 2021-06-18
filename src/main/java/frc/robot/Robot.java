@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.RunShooter;
+import frc.robot.commands.Shooter.SetActiveTeleopShootData;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Vision.AutoSwitchZoom;
 import frc.robot.commands.Vision.CalculateTargetDistance;
@@ -133,7 +134,7 @@ public class Robot extends TimedRobot {
       case 0:// cross line
 
         setStartingPose(FieldMap.startPosition[0]);
-        m_autonomousCommand = new PositionRobot(m_robotContainer.m_robotDrive, -1);
+        m_autonomousCommand = new PositionRobot(m_robotContainer.m_robotDrive, -1,3);
 
         break;
       case 1:// in front of power port, move back use shooter data index 1
@@ -216,6 +217,9 @@ public class Robot extends TimedRobot {
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
         m_robotContainer.m_shooter).schedule(true);
+    new SetActiveTeleopShootData(2).schedule(true);
+
+    
 
   }
 

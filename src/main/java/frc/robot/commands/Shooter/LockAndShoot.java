@@ -32,35 +32,37 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
 public class LockAndShoot extends SequentialCommandGroup {
-    /**
-     * Creates a new Auto0.
-     * 
-     * Start in front of power port, retract and shoot
-     */
-    static double tiltAngle = ShootData.centerPowerPortConstants.tiltAngle;
-    static double turretAngle = ShootData.centerPowerPortConstants.turretAngle;
-    static double shootSpeed = ShootData.centerPowerPortConstants.shootSpeed;
-    static double tiltOffset = ShootData.centerPowerPortConstants.tiltOffset;
-    static double turretOffset = ShootData.centerPowerPortConstants.turretOffset;
-    static double shootTime = ShootData.centerPowerPortConstants.shootTime;
+        /**
+         * Creates a new Auto0.
+         * 
+         * Start in front of power port, retract and shoot
+         */
+        static double tiltAngle = ShootData.activeTeleopTiltAngle;
+        static double turretAngle = ShootData.activeTeleopTurretAngle;
+        static double shootSpeed = ShootData.activeTeleopShootSpeed;
+        static double tiltOffset = ShootData.activeTeleopTiltOffset;
+        static double turretOffset = ShootData.activeTeleopTurretOffset;
 
-    public LockAndShoot(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
-            CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight, Compressor compressor) {
-        // Add your commands in the super() call, e.g.
-        // super(new FooCommand(), new BarCommand());
+        public LockAndShoot(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+                        CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
+                        Compressor compressor) {
+                // Add your commands in the super() call, e.g.
+                // super(new FooCommand(), new BarCommand());
 
-        super(new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
-                new UseVision(limelight, true), new StartShooterWheels(shooter, shooter.teleopSetupShooterSpeed),
-                new SetTiltOffset(tilt, tiltOffset), new PositionTiltToVision(tilt, limelight, tiltAngle),
-                new SetTurretOffset(turret, turretOffset), new PositionTurretToVision(turret, limelight, turretAngle)),
+                super(new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
+                                new UseVision(limelight, true),
+                                new StartShooterWheels(shooter, shooter.teleopSetupShooterSpeed),
+                                new SetTiltOffset(tilt, tiltOffset), new PositionTilt(tilt, tiltAngle),
+                                new SetTurretOffset(turret, turretOffset), new PositionTurret(turret, turretAngle)),
 
-                new ParallelCommandGroup(new MessageCommand("ShootStarted"),
-                        new ShootCells(shooter, limelight, transport, compressor, shootTime)),
+                                new ParallelCommandGroup(new MessageCommand("ShootStarted"),
+                                                new ShootCells(shooter, limelight, transport, compressor, 0)),
 
-                new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"), new StopShoot(shooter, transport),
-                        new PositionTilt(tilt, HoodedShooterConstants.TILT_MIN_ANGLE),
-                        new LimelightSetPipeline(limelight, limelight.driverPipeline), new UseVision(limelight, false),
-                        new PositionTurret(turret, 0)));
+                                new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
+                                                new StopShoot(shooter, transport),
+                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MIN_ANGLE),
+                                                new LimelightSetPipeline(limelight, limelight.driverPipeline),
+                                                new UseVision(limelight, false), new PositionTurret(turret, 0)));
 
-    }
+        }
 }

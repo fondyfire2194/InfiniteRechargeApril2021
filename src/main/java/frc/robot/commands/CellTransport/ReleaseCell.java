@@ -7,27 +7,29 @@ package frc.robot.commands.CellTransport;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.CellTransportSubsystem;
 
-public class MoveCellArm extends CommandBase {
+public class ReleaseCell extends CommandBase {
   /** Creates a new MoveCellArm. */
   private final CellTransportSubsystem m_transport;
-  private double m_position;
 
-  public MoveCellArm(CellTransportSubsystem transport, double position) {
+  private int loopCr;
+
+  public ReleaseCell(CellTransportSubsystem transport) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_transport = transport;
-    m_position = position;
 
   };
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_transport.moveCellArm(m_position);
+    m_transport.moveCellArm(m_transport.cellArmReleaseCell);
+    loopCr = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    loopCr++;
 
   }
 
@@ -39,6 +41,6 @@ public class MoveCellArm extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return loopCr > 0;
   }
 }

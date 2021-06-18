@@ -35,16 +35,13 @@ import frc.robot.commands.ControlPanel.PositionToColor;
 import frc.robot.commands.ControlPanel.TurnControlPanel;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
-import frc.robot.commands.Shooter.SetupInnerShot;
-import frc.robot.commands.Shooter.SetupLowShot;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Shooter.LockAndShoot;
 import frc.robot.commands.Shooter.RunShooter;
-import frc.robot.commands.Shooter.SetupShieldGeneratorShot;
+import frc.robot.commands.Shooter.SetActiveTeleopShootData;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
-import frc.robot.commands.Shooter.SetupTrenchShot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.TiltJog;
@@ -139,11 +136,9 @@ public class RobotContainer {
 
       JoystickButton setupBack = new JoystickButton(setupGamepad, 7);
       JoystickButton setupStart = new JoystickButton(setupGamepad, 8);
- 
-      JoystickButton setupLeftStick = new JoystickButton(setupGamepad, 9);
-      JoystickButton setupRightStick = new JoystickButton(setupGamepad, 10);
 
-
+      JoystickButton setupLeftStick = new JoystickButton(setupGamepad, 11);
+      JoystickButton setupRightStick = new JoystickButton(setupGamepad, 12);
 
       public POVButton setupUpButton = new POVButton(setupGamepad, 0);
       public POVButton setupRightButton = new POVButton(setupGamepad, 90);
@@ -183,7 +178,7 @@ public class RobotContainer {
             m_limelight.setStream((StreamType.kStandard));
 
             m_limelight.setPipeline(m_limelight.ledsOffPipeline);
-
+            m_limelight.useVision = false;
             m_compressor = new Compressor();
 
             m_autoFactory = new AutoFactory(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
@@ -244,6 +239,9 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 2)
                         .whileHeld(new ShootCells(m_shooter, m_limelight, m_transport, m_compressor, 100));
 
+            // new JoystickButton(m_driverController, 2).whenPressed(new LockAndShoot(m_shooter, m_turret, m_tilt,
+            //             m_transport, m_robotDrive, m_limelight, m_compressor));
+
             new JoystickButton(m_driverController, 5).whenPressed(new StartShooterWheels(m_shooter, 10));
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport));
@@ -254,21 +252,17 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 6).whenPressed(new TiltSeekVision(m_tilt, m_limelight));
 
-            new JoystickButton(m_driverController, 7)
-                        .whenPressed(new SetupLowShot(m_shooter, m_turret, m_tilt, m_limelight));
+            new JoystickButton(m_driverController, 7).whenPressed(new SetActiveTeleopShootData(4));
 
             // Shoot for inner goal from 1 meter behind intiation line
-            new JoystickButton(m_driverController, 8)
-                        .whenPressed(new SetupInnerShot(m_shooter, m_turret, m_tilt, m_limelight));
+            new JoystickButton(m_driverController, 8).whenPressed(new SetActiveTeleopShootData(1));
 
             // Trench Shot drive under and just beyond the control panel robot parallel to
             // side wall
 
-            new JoystickButton(m_driverController, 9)
-                        .whenPressed(new SetupTrenchShot(m_shooter, m_turret, m_tilt, m_limelight));
+            new JoystickButton(m_driverController, 9).whenPressed(new SetActiveTeleopShootData(1));
 
-            new JoystickButton(m_driverController, 10)
-                        .whenPressed(new SetupShieldGeneratorShot(m_shooter, m_turret, m_tilt, m_limelight));
+            new JoystickButton(m_driverController, 10).whenPressed(new SetActiveTeleopShootData(1));
 
             // new JoystickButton(m_driverController, 12).whileHeld(() ->
             // m_shooter.setOKShootDriver())
@@ -344,8 +338,6 @@ public class RobotContainer {
 
             setupRightStick.whileHeld(getJogRightBeltCommand());
 
-
-
             // LiveWindow.disableAllTelemetry();
 
       }
@@ -391,13 +383,11 @@ public class RobotContainer {
       }
 
       public Command getJogRightBeltCommand() {
-            return new JogRightBelt(m_transport, () -> setupGamepad.getRawAxis(5));
+            return new JogRightBelt(m_transport, () -> setupGamepad.getRawAxis(3));
       }
 
       public double getThrottle() {
             return (1 - m_driverController.getThrottle()) / 2;
       }
-
-
 
 }

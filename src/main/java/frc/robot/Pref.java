@@ -77,7 +77,7 @@ public class Pref {
 
     // Drive
 
-    prefDict.put("dRKff", .1);
+    prefDict.put("dRKff", .22);
     prefDict.put("dRKp", .1);
     prefDict.put("dRKi", .0);
     prefDict.put("dRKd", .0);

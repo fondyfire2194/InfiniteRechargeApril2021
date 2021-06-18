@@ -60,8 +60,9 @@ public class PositionHoldTurret extends CommandBase {
     if (targetSeen && m_turret.validTargetSeen) {
       limelightHorizontalAngle = m_limelight.getdegRotationToTarget();
       m_turret.adjustedTargetAngle = limelightHorizontalAngle + m_turret.targetHorizontalOffset
-          + m_turret.driverHorizontalOffset;
-      m_limelight.setHorizontalOffset(-(m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffset));
+          + m_turret.driverHorizontalOffset + m_turret.testHorOffset;
+      m_limelight.setHorizontalOffset(
+          -(m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffset + m_turret.testHorOffset));
 
     } else {
       limelightHorizontalAngle = 0;

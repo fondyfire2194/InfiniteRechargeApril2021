@@ -29,6 +29,13 @@ public class ShootData {
     private static double shotHeight = FieldConstants.SHOT_HEIGHT;
     private static double innerWallFromOuter = .74;
 
+    public static double activeTeleopShootSpeed;
+    public static double activeTeleopTiltAngle;
+    public static double activeTeleopTiltOffset;
+    public static double activeTeleopTurretAngle;
+    public static double activeTeleopTurretOffset;
+    
+
     public ShootData() {
     }
 
@@ -63,6 +70,7 @@ public class ShootData {
         public static double shootTime = 5;
 
     }
+    
 
     public final static class shieldGenConstants {
         private static double yfromPort = Units.inchesToMeters((74));
@@ -102,5 +110,14 @@ public class ShootData {
         public static double shootTime1 = 5;
 
     }
+
+    public final static class lowShotConstants {
+     
+        public static double tiltAngle = 29;
+        public static double turretAngle = 0;
+        public static double shootSpeed = 23;
+
+    }
+    
 
 }

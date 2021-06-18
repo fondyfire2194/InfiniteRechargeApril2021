@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
@@ -15,9 +17,11 @@ import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
 import org.snobotv2.sim_wrappers.ISimWrapper;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -64,8 +68,15 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double pidLockOut;
     public boolean visionOnTarget;
     public boolean burnOK;
-	public double driverAdjustAngle;
-	public double adjustMeters =.1;//4"
+    public double driverAdjustAngle;
+    public double adjustMeters = .1;// 4"
+
+    public NetworkTableEntry setupHorOffset;
+
+    public double turretSetupOffset;
+
+    public boolean useSetupHorOffset;
+    public double testHorOffset;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -119,6 +130,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
         }
 
+        setupHorOffset = Shuffleboard.getTab("SetupShooter").add("SetupHorOffset", 0).withWidget("Number Slider")
+                .withPosition(6,3).withSize(2, 1).withProperties(Map.of("Min", -5, "Max", 5)).getEntry();
+
     }
 
     @Override
@@ -131,6 +145,12 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
         if (DriverStation.getInstance().isDisabled())
             targetAngle = getAngle();
+
+        if (useSetupHorOffset) {
+            testHorOffset = setupHorOffset.getDouble(0);
+        } else {
+            testHorOffset = 0;
+        }
 
     }
 
@@ -410,6 +430,5 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         iset = m_turretLockController.getI();
         dset = m_turretLockController.getD();
     }
-
 
 }

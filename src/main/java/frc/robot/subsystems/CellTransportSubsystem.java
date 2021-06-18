@@ -8,21 +8,17 @@
 package frc.robot.subsystems;
 
 import java.util.List;
-import java.util.Map;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
-import frc.robot.Constants;
 import frc.robot.Pref;
 import frc.robot.Robot;
 import frc.robot.sim.PhysicsSim;
@@ -45,8 +41,6 @@ public class CellTransportSubsystem extends SubsystemBase {
   public boolean frontRollerMotorConnected;
   public boolean rearRollerMotorConnected;
   public boolean allConnected;
-  public NetworkTableEntry frontSpeed;
-  public NetworkTableEntry rearSpeed;
 
   private final Servo cellArm;
   public double cellArmReleaseCell = .25;
@@ -75,15 +69,6 @@ public class CellTransportSubsystem extends SubsystemBase {
       setRearRollerBrakeOn(true);
       setBeltBrakeOn(true);
       holdCell();
-      if (!Constants.isMatch) {
-
-        frontSpeed = Shuffleboard.getTab("SetupTransport").addPersistent("FrontRollerSpeed", .5)
-            .withWidget("Number Slider").withPosition(2, 2).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", .75))
-            .getEntry();
-        rearSpeed = Shuffleboard.getTab("SetupTransport").addPersistent("RearRollerSpeed", .5)
-            .withWidget("Number Slider").withPosition(2, 3).withSize(2, 1).withProperties(Map.of("Min", 0, "Max", .75))
-            .getEntry();
-      }
     }
 
   }
@@ -106,6 +91,11 @@ public class CellTransportSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("CAR", cellArmReleaseCell);
     SmartDashboard.putNumber("CAH", cellArmHoldCell);
+
+    SmartDashboard.putNumber("CAA", getArmAngle());
+    SmartDashboard.putNumber("CAP", getArmPosition());
+    SmartDashboard.putNumber("CAT", getArmType());
+
   }
 
   public boolean checkCAN() {
@@ -208,6 +198,18 @@ public class CellTransportSubsystem extends SubsystemBase {
     moveCellArm(0);
   }
 
+  public double getArmAngle() {
+    return cellArm.getAngle();
+  }
+
+  public double getArmPosition() {
+    return cellArm.getPosition();
+  }
+
+  public int getArmType() {
+    return cellArm.getRaw();
+  }
+
   public void setBeltBrakeOn(boolean on) {
     if (on) {
       m_leftBeltMotor.setNeutralMode(NeutralMode.Brake);
@@ -219,7 +221,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   }
 
   public void runFrontRollerMotor() {
-    m_frontRollerMotor.set(ControlMode.PercentOutput, frontSpeed.getDouble(.25));
+    m_frontRollerMotor.set(ControlMode.PercentOutput, .75);
   }
 
   public double getFrontRoller() {
@@ -239,7 +241,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   }
 
   public void runRearRollerMotor() {
-    m_rearRollerMotor.set(ControlMode.PercentOutput, -rearSpeed.getDouble(.25));
+    m_rearRollerMotor.set(ControlMode.PercentOutput, -.75);
   }
 
   public double getRearRoller() {

@@ -139,12 +139,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean endFile;
     public boolean endShootFile;
 
-    private boolean interpolateSpeed = true;
+    private boolean interpolateSpeed = false;
     private boolean interpolateOffsets = true;
     public boolean logTrigger;
     public double testVertOffset;
     public int itemsLogged;
-    public NetworkTableEntry logOneEntry;
+
     public boolean logSetupFileOpen;
 
     public RevShooterSubsystem() {
@@ -179,9 +179,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
             shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
                     .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 15, "Max", 50)).getEntry();
-            logOneEntry = Shuffleboard.getTab("SetupShooter").add("LogOne", false).withWidget("Toggle Switch")
-                    .withPosition(8, 3).withSize(1, 1).getEntry();
-
+         
         }
         tuneGains();
         getGains();

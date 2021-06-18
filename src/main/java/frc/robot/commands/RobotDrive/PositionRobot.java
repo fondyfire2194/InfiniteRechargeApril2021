@@ -14,12 +14,13 @@ public class PositionRobot extends CommandBase {
   private double m_position;
   private double m_startTime;
   private double m_startAngle;
-  private double m_angleError;
+  private double m_maxSpeed;
 
-  public PositionRobot(RevDrivetrain m_robotDrive, double position) {
+  public PositionRobot(RevDrivetrain m_robotDrive, double position, double maxSpeed) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_drive = m_robotDrive;
     m_position = position;
+    m_maxSpeed = maxSpeed;
     addRequirements(m_drive);
   }
 
@@ -30,13 +31,14 @@ public class PositionRobot extends CommandBase {
     m_drive.leftTargetPosition = m_position;
     m_drive.rightTargetPosition = m_position;
     m_startAngle = m_drive.getYaw();
+    m_drive.setMaxVel(m_maxSpeed);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     m_drive.driveDistance(m_position, m_position);
-    m_angleError = m_drive.getYaw() - m_startAngle;// reverse motion + means left is behind
+  
   }
 
   // Called once the command ends or is interrupted.

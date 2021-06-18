@@ -27,7 +27,8 @@ import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.IntakeArm;
-import frc.robot.commands.CellTransport.MoveCellArm;
+import frc.robot.commands.CellTransport.HoldCell;
+import frc.robot.commands.CellTransport.ReleaseCell;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.Climber.ClimberArm;
 import frc.robot.commands.Climber.ClimberRatchet;
@@ -36,7 +37,6 @@ import frc.robot.commands.ControlPanel.PositionNumberRevs;
 import frc.robot.commands.ControlPanel.PositionToColor;
 import frc.robot.commands.ControlPanel.ToggleLookForColor;
 import frc.robot.commands.RobotDrive.ClearRobFaults;
-import frc.robot.commands.RobotDrive.PositionOneSideProfiled;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.RobotDrive.PositionRobotInc;
 import frc.robot.commands.RobotDrive.ResetEncoders;
@@ -46,7 +46,6 @@ import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.EndLogData;
 import frc.robot.commands.Shooter.LogDistanceData;
 import frc.robot.commands.Shooter.LogShootData;
-import frc.robot.commands.Shooter.LogShooterSetup;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
@@ -459,6 +458,7 @@ public class SetupShuffleboard {
                         shooterCommands.add("EndLogs", new EndLogData(m_shooter));
                         shooterCommands.add("LogShootRun",
                                         new LogShootData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
+                        shooterCommands.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter, tilt, turret));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
                                         .getLayout("ShooterValues", BuiltInLayouts.kList).withPosition(2, 0)
@@ -494,7 +494,7 @@ public class SetupShuffleboard {
                         shooterValues1.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
                         shooterValues1.addBoolean("ShootOne", () -> m_shooter.shootOne);
                         shooterValues1.addBoolean("Shooter Running", () -> m_shooter.startShooter);
-                        shooterValues1.addBoolean("Burn OK", () -> m_shooter.burnOK);
+                        shooterValues1.addBoolean("UsingSliders", () -> m_shooter.useSetupSlider);
 
                         ShuffleboardLayout shooterValues2 = Shuffleboard.getTab("SetupShooter")
 
@@ -506,34 +506,6 @@ public class SetupShuffleboard {
                         shooterValues2.addNumber("I", () -> m_shooter.iset);
                         shooterValues2.addNumber("D", () -> m_shooter.dset);
                         shooterValues2.addNumber("IZ", () -> m_shooter.izset);
-
-                        ShuffleboardLayout shooterSetup = Shuffleboard.getTab("SetupShooter")
-
-                                        .getLayout("ShooterSetup", BuiltInLayouts.kList).withPosition(6, 2)
-                                        .withSize(2, 2).withProperties(Map.of("Label position", "LEFT")); // labels
-
-                        shooterSetup.add("StartSetupLog",
-                                        new LogShooterSetup(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
-                        shooterSetup.add("EndLogs", new EndLogData(m_shooter));
-                        shooterSetup.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter, tilt));
-                        shooterSetup.addBoolean("UsingSliders", () -> m_shooter.useSetupSlider);
-                        shooterSetup.addBoolean("LogFileOpen", () -> m_shooter.logSetupFileOpen);
-
-                        ShuffleboardLayout shooterSetupData = Shuffleboard.getTab("SetupShooter")
-
-                                        .getLayout("ShooterSetupData", BuiltInLayouts.kList).withPosition(8, 0)
-                                        .withSize(2, 3).withProperties(Map.of("Label position", "LEFT")); // labels
-
-                        shooterSetupData.addNumber("LeftMeters", () -> m_robotDrive.getLeftDistance());
-                        shooterSetupData.addNumber("RightMeters", () -> m_robotDrive.getRightDistance());
-                        shooterSetupData.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
-                        shooterSetupData.addNumber("CameraAngle", () -> m_tilt.getAngle());
-                        shooterSetupData.addNumber("DegVertToTarget", () -> m_limelight.getdegVerticalToTarget());
-                        shooterSetupData.addNumber("LeftMPS", () -> m_shooter.getMPS());
-                        shooterSetupData.addNumber("SpeedCommand MPS", () -> m_shooter.requiredMps);
-                        shooterSetupData.addNumber("Setup Offset", () -> m_tilt.setupVertOffset.getDouble(0));
-                        shooterSetupData.addNumber("# Logged", () -> m_shooter.itemsLogged);
-                        shooterSetupData.addBoolean("LogFileOpen", () -> m_shooter.logSetupFileOpen);
                 }
 
                 if (m_showTransport && !liveMatch) {
@@ -541,8 +513,8 @@ public class SetupShuffleboard {
                                         .getLayout("TransportValues", BuiltInLayouts.kList).withPosition(0, 0)
                                         .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels
                                                                                                           // for
-                        transportValues.add("Release Cell", new MoveCellArm(transport, transport.cellArmReleaseCell));
-                        transportValues.add("Hold Cell", new MoveCellArm(transport, transport.cellArmHoldCell));
+                        transportValues.add("Release Cell", new ReleaseCell(transport));
+                        transportValues.add("Hold Cell", new HoldCell(transport));
                         transportValues.add("ReleaseOneCell", new ReleaseOneCell(transport));
 
                         transportValues.addNumber("LeftBeltAmps", () -> m_transport.getLeftBeltMotorAmps());
@@ -588,12 +560,9 @@ public class SetupShuffleboard {
                         robotCommands.add("Reset Enc", new ResetEncoders(m_robotDrive));
                         robotCommands.add("Reset Gyro", new ResetGyro(m_robotDrive));
                         robotCommands.add("Pos -2M", new PositionRobotInc(m_robotDrive, -2));
-                        robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0));
+                        robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0, 2));
                         robotCommands.add("Pos +1M", new PositionRobotInc(m_robotDrive, 1));
                         robotCommands.add("Pos -1M", new PositionRobotInc(m_robotDrive, -1));
-                        robotCommands.add("ProfPos 1", new PositionOneSideProfiled(m_robotDrive, 1));
-                        // robotCommands.add("Rot to 0", new TurnToAngleProfiled(m_robotDrive, 0));
-                        // robotCommands.add("Rot to -90", new TurnToAngleProfiled(m_robotDrive, -90));
                         robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
                         robotCommands.add("Stop Robot", new StopRobot(m_robotDrive));
                         robotCommands.add("Cmd", m_robotDrive);

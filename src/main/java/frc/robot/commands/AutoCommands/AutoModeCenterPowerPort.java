@@ -61,7 +61,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                 new PositionTiltToVision(tilt, limelight, tiltAngle),
                                 new SetTurretOffset(turret, turretOffset),
                                 new PositionTurretToVision(turret, limelight, turretAngle),
-                                new PositionRobot(drive, retractDistance)),
+                                new PositionRobot(drive, retractDistance,3)),
 
                                 new ParallelCommandGroup(new MessageCommand("ShootStarted"),
                                                 new ShootCells(shooter, limelight, transport, compressor, shootTime)),

@@ -74,13 +74,14 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                                 new PositionTiltToVision(tilt, limelight, tiltAngle),
                                 new SetTurretOffset(turret, turretOffset),
                                 new PositionTurretToVision(turret, limelight, turretAngle),
-                                new PositionRobot(drive, retractDistance)),
+                                new PositionRobot(drive, retractDistance, 3)),
 
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
                                                 new ShootCells(shooter, limelight, transport, compressor, shootTime)),
 
-                                new ParallelCommandGroup(new MessageCommand("Pickup Started"), new StartIntake(intake,transport),
-                                                new PositionRobot(drive, retractDistance1),
+                                new ParallelCommandGroup(new MessageCommand("Pickup Started"),
+                                                new StartIntake(intake, transport),
+                                                new PositionRobot(drive, retractDistance1, 2),
                                                 new StartShooterWheels(shooter, shootSpeed1),
                                                 new SetTiltOffset(tilt, tiltOffset1),
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle1),

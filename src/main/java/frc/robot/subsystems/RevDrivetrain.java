@@ -374,11 +374,11 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     public boolean getInPositionLeft() {
-        return Math.abs(leftTargetPosition - getLeftDistance()) < allowedErr;
+        return Math.abs(leftTargetPosition - getLeftDistance()) < .15;
     }
 
     public boolean getInPositionRight() {
-        return Math.abs(rightTargetPosition - getRightDistance()) < allowedErr;
+        return Math.abs(rightTargetPosition - getRightDistance()) < .15;
     }
 
     public boolean getInPosition() {
@@ -386,7 +386,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     public boolean getStopped() {
-        return Math.abs(getLeftRate()) < .1 && Math.abs(getRightRate()) < .1;
+        return Math.abs(getLeftRate()) < .25 && Math.abs(getRightRate()) < .25;
     }
 
     public void setMaxVel(double maxVel) {
@@ -464,9 +464,9 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         kMaxOutput = .75;// 266 mpm = 4 mps limiting to 3mps
         kMinOutput = -.75;
 
-        maxVel = 3;// mps
+        maxVel = 3;// mps and ff = 1/4.5 = .22
         maxAcc = 6;// mpmpsec
-        allowedErr = 0;
+        allowedErr = 0.01;
 
     }
 
