@@ -70,10 +70,8 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                 // move back and pickup 2
                 super(new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
                                 new UseVision(limelight, true), new StartShooterWheels(shooter, shootSpeed),
-                                new SetTiltOffset(tilt, tiltOffset),
-                                new PositionTiltToVision(tilt, limelight, tiltAngle),
-                                new SetTurretOffset(turret, turretOffset),
-                                new PositionTurretToVision(turret, limelight, turretAngle),
+                                new SetTiltOffset(tilt, tiltOffset), new PositionTilt(tilt, tiltAngle),
+                                new SetTurretOffset(turret, turretOffset), new PositionTurret(turret, turretAngle),
                                 new PositionRobot(drive, retractDistance, 3)),
 
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
@@ -84,9 +82,10 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                                                 new PositionRobot(drive, retractDistance1, 2),
                                                 new StartShooterWheels(shooter, shootSpeed1),
                                                 new SetTiltOffset(tilt, tiltOffset1),
-                                                new PositionTiltToVision(tilt, limelight, tiltAngle1),
+                                                new PositionTilt(tilt, tiltAngle1),
                                                 new SetTurretOffset(turret, turretOffset1),
-                                                new PositionTurretToVision(turret, limelight, turretAngle1)),
+                                                new PositionTurret(turret, turretAngle1)),
+                                                new UseVision(limelight, true),
 
                                 new ParallelCommandGroup(new MessageCommand("Shoot2Started"),
                                                 new StartShooterWheels(shooter, shootSpeed1),
