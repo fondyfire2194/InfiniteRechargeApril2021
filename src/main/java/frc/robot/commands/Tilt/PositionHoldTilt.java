@@ -6,6 +6,7 @@ package frc.robot.commands.Tilt;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
+import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 
 public class PositionHoldTilt extends CommandBase {
@@ -13,17 +14,17 @@ public class PositionHoldTilt extends CommandBase {
 
   private final RevTiltSubsystem m_tilt;
   private final LimeLight m_limelight;
-
+private final RevShooterSubsystem m_shooter;
   private boolean targetSeen;
   private int visionFoundCounter;
   private double limelightVerticalAngle;
   private final int filterCount = 3;
   private double deadband = .01;
 
-  public PositionHoldTilt(RevTiltSubsystem tilt, LimeLight limelight) {
+  public PositionHoldTilt(RevTiltSubsystem tilt, RevShooterSubsystem shooter, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
-    
+    m_shooter = shooter;
     m_limelight = limelight;
 
     addRequirements(m_tilt);
@@ -90,7 +91,7 @@ public class PositionHoldTilt extends CommandBase {
     double motorTurns = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
     m_tilt.motorEndpointDegrees = motorTurns;
 
-    if (!m_tilt.validTargetSeen) {
+    if (!m_tilt.validTargetSeen ||m_shooter.isShooting) {
       m_tilt.goToPositionMotionMagic(motorTurns);
     } else {
       m_tilt.visionOnTarget = m_tilt.lockTiltToVision(m_tilt.adjustedTargetAngle);

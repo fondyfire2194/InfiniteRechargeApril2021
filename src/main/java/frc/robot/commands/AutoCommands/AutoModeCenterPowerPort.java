@@ -62,7 +62,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                                 new TiltSeekVision(tilt, limelight)),
 
                                 new ParallelCommandGroup(new MessageCommand("ShootStarted"),
-                                                new ShootCells(shooter, limelight, transport, compressor, shootTime)),
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor, shootTime)),
 
                                 new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
                                                 new StopShoot(shooter, transport),

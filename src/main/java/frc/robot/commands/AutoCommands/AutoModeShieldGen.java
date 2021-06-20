@@ -69,10 +69,12 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
-                super(new ParallelCommandGroup(new ParallelCommandGroup(new StartIntake(intake, transport),
-                                new PositionRobot(drive, -3, 2), new PositionTurret(turret, turretAngle))),
+                super(new ParallelCommandGroup(
+                                new ParallelCommandGroup(new StartIntake(intake, transport),
+                                                new PositionRobot(drive, -3, 2)),
 
-                                new PositionRobot(drive, -2, 2),
+                                new ParallelCommandGroup(new PositionTurret(turret, turretAngle),
+                                                new PositionRobot(drive, -2, 2), new StopIntake(intake)),
 
                                 new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
                                                 new UseVision(limelight, true), new TiltSeekVision(tilt, limelight)),
@@ -81,13 +83,14 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                                                 new SetTurretOffset(turret, turretOffset),
                                                 new StartShooterWheels(shooter, shootSpeed)),
                                 new ParallelCommandGroup(new MessageCommand("ShootStarted"),
-                                                new ShootCells(shooter, limelight, transport, compressor, shootTime)),
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
+                                                                shootTime)),
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
                                                 new StopShoot(shooter, transport),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MIN_ANGLE),
                                                 new LimelightSetPipeline(limelight, limelight.driverPipeline),
-                                                new UseVision(limelight, false), new PositionTurret(turret, 0)));
+                                                new UseVision(limelight, false), new PositionTurret(turret, 0))));
 
         }
 }

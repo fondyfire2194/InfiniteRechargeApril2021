@@ -56,7 +56,7 @@ public class LockAndShoot extends SequentialCommandGroup {
                                 new SetTurretOffset(turret, turretOffset), new PositionTurret(turret, turretAngle)),
 
                                 new ParallelCommandGroup(new MessageCommand("ShootStarted"),
-                                                new ShootCells(shooter, limelight, transport, compressor, 0)),
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor, 0)),
 
                                 new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
                                                 new StopShoot(shooter, transport),

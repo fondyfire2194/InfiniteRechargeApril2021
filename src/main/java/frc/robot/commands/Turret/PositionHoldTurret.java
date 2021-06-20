@@ -19,6 +19,7 @@ package frc.robot.commands.Turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
+import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 
 public class PositionHoldTurret extends CommandBase {
@@ -26,23 +27,24 @@ public class PositionHoldTurret extends CommandBase {
 
   private final RevTurretSubsystem m_turret;
   private final LimeLight m_limelight;
+  private final RevShooterSubsystem m_shooter;
   private boolean targetSeen;
   private double limelightHorizontalAngle;
   private int visionFoundCounter;
   private final int filterCount = 3;
   private double deadband = .01;
 
-  public PositionHoldTurret(RevTurretSubsystem turret, LimeLight limelight) {
+  public PositionHoldTurret(RevTurretSubsystem turret, RevShooterSubsystem shooter, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
     m_limelight = limelight;
+    m_shooter = shooter;
     addRequirements(m_turret);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
 
     if (m_turret.validTargetSeen && m_limelight.useVision)
       visionFoundCounter = filterCount;
@@ -54,7 +56,7 @@ public class PositionHoldTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
+
     if (!m_limelight.useVision)
       visionFoundCounter = 0;
 
@@ -93,7 +95,7 @@ public class PositionHoldTurret extends CommandBase {
       limelightHorizontalAngle = 0;
     }
 
-    if (!m_turret.validTargetSeen) {
+    if (!m_turret.validTargetSeen || m_shooter.isShooting) {
 
       m_turret.goToPositionMotionMagic(m_turret.targetAngle);
     }

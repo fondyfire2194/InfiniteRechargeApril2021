@@ -138,6 +138,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean shootOne;
     public boolean endFile;
     public boolean endShootFile;
+    public boolean isShooting;
 
     private boolean interpolateSpeed = false;
     private boolean interpolateOffsets = true;

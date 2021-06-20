@@ -243,6 +243,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         return mEncoder.getPosition();
     }
 
+    public boolean isStopped() {
+        return Math.abs(mEncoder.getVelocity()) < .05;
+    }
+
     public double getAngle() {
         return tiltMaxAngle - getMotorDegrees();
     }

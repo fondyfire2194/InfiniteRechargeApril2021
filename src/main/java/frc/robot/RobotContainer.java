@@ -186,9 +186,9 @@ public class RobotContainer {
 
             m_trajectory = new FondyFireTrajectory(m_robotDrive);
 
-            m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_limelight));
+            m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_shooter, m_limelight));
 
-            m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_limelight));
+            m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_shooter, m_limelight));
 
             m_shooter.setDefaultCommand(new RunShooter(m_shooter));
 
@@ -236,8 +236,8 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 1).whileHeld(new StartIntake(m_intake, m_transport));
 
-            new JoystickButton(m_driverController, 2)
-                        .whileHeld(new ShootCells(m_shooter, m_limelight, m_transport, m_compressor, 100));
+            new JoystickButton(m_driverController, 2).whileHeld(
+                        new ShootCells(m_shooter, m_tilt, m_turret, m_limelight, m_transport, m_compressor, 100));
 
             // new JoystickButton(m_driverController, 2).whenPressed(new
             // LockAndShoot(m_shooter, m_turret, m_tilt,

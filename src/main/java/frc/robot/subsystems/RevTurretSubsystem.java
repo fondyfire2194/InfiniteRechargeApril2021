@@ -204,6 +204,11 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         return m_motor.get();
     }
 
+    public boolean isStopped() {
+        return Math.abs(mEncoder.getVelocity()) < .05;
+    }
+
+
     public double getAmps() {
         return m_motor.getOutputCurrent();
     }

@@ -15,6 +15,8 @@ import frc.robot.LimeLight;
 import frc.robot.LimelightControlMode.Snapshot;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
+import frc.robot.subsystems.RevTiltSubsystem;
+import frc.robot.subsystems.RevTurretSubsystem;
 
 public class ShootCells extends CommandBase {
   /**
@@ -22,6 +24,8 @@ public class ShootCells extends CommandBase {
    * 
    */
   private final RevShooterSubsystem m_shooter;
+  private final RevTiltSubsystem m_tilt;
+  private final RevTurretSubsystem m_turret;
   private final CellTransportSubsystem m_transport;
   private final Compressor m_compressor;
   private final LimeLight m_limelight;
@@ -31,7 +35,6 @@ public class ShootCells extends CommandBase {
 
   private boolean okToShoot;
 
-  private boolean shootingStarted;
   private boolean temp;
   private int cellsShot;
   private boolean shotInProgress;
@@ -42,26 +45,15 @@ public class ShootCells extends CommandBase {
   private boolean cellReleased;
   private double cellReleasedStartTime;
 
-  public ShootCells(RevShooterSubsystem shooter, CellTransportSubsystem transport, LimeLight limelight,
-      Compressor compressor) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    m_shooter = shooter;
-    m_transport = transport;
-    m_compressor = compressor;
-
-    m_limelight = limelight;
-    m_time = 5;
-
-    addRequirements(m_transport);
-  }
-
-  public ShootCells(RevShooterSubsystem shooter, LimeLight limelight, CellTransportSubsystem transport,
-      Compressor compressor, double time) {
+  public ShootCells(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret, LimeLight limelight,
+      CellTransportSubsystem transport, Compressor compressor, double time) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
     m_transport = transport;
     m_compressor = compressor;
     m_limelight = limelight;
+    m_tilt = tilt;
+    m_turret = turret;
     temp = m_limelight.useVision;
     m_time = time;
 
@@ -74,7 +66,7 @@ public class ShootCells extends CommandBase {
     startTime = Timer.getFPGATimestamp();
     m_shooter.shootTime = m_time;
     m_compressor.stop();
-    shootingStarted = false;
+    m_shooter.isShooting = false;
     m_transport.holdCell();
     cellsShot = 0;
     shotStartTime = 0;
@@ -87,16 +79,18 @@ public class ShootCells extends CommandBase {
   public void execute() {
 
     m_shooter.startShooter = true;
+
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
-    if ((m_shooter.atSpeed() && m_limelight.getHorOnTarget(.5) && m_limelight.getVertOnTarget(.5))
-        || (m_shooter.driverOKShoot && m_shooter.atSpeed()) || shootingStarted == true) {
+    if ((m_shooter.atSpeed() && m_tilt.isStopped() && m_turret.isStopped() && m_limelight.getHorOnTarget(.5)
+        && m_limelight.getVertOnTarget(.5)) || (m_shooter.driverOKShoot && m_shooter.atSpeed())
+        || m_shooter.isShooting == true) {
 
-      shootingStarted = true;
+      m_shooter.isShooting = true;
 
     }
 
-    if (shootingStarted) {
+    if (m_shooter.isShooting) {
       m_transport.runFrontRollerMotor();
       m_transport.runRearRollerMotor();
       m_transport.runLeftBeltMotor(.5);
@@ -104,7 +98,7 @@ public class ShootCells extends CommandBase {
       m_limelight.useVision = false;
     }
 
-    if (shootingStarted && cellAvailable && !shotInProgress) {
+    if (m_shooter.isShooting && cellAvailable && !shotInProgress) {
       shotStartTime = Timer.getFPGATimestamp();
       shotInProgress = true;
       cellsShot++;
@@ -112,17 +106,17 @@ public class ShootCells extends CommandBase {
 
     }
 
-    if (shotInProgress) {
-      m_limelight.setSnapshot(Snapshot.kon);
-    } else {
-      m_limelight.setSnapshot(Snapshot.koff);
-    }
+    // if (shotInProgress) {
+    //   m_limelight.setSnapshot(Snapshot.kon);
+    // } else {
+    //   m_limelight.setSnapshot(Snapshot.koff);
+    // }
 
     if (shotInProgress && Timer.getFPGATimestamp() > (shotStartTime + shotTime) && m_shooter.atSpeed()) {
       shotInProgress = false;
     }
 
-    okToShoot = shootingStarted && (inAuto || !m_shooter.shootOne);
+    okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
 
     getNextCell = okToShoot && !shotInProgress && !cellAvailable && m_shooter.atSpeed();
 
@@ -147,6 +141,7 @@ public class ShootCells extends CommandBase {
     m_compressor.start();
     shotInProgress = false;
     m_shooter.endShootFile = true;
+    m_shooter.isShooting = false;
 
   }
 
