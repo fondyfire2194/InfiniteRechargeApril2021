@@ -17,6 +17,8 @@ import frc.robot.commands.MessageCommand;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.RobotDrive.ResetEncoders;
+import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
@@ -69,7 +71,7 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
-                super(new ParallelCommandGroup(
+                super(new ParallelCommandGroup(new ResetEncoders(drive), new ResetGyro(drive),
                                 new ParallelCommandGroup(new StartIntake(intake, transport),
                                                 new PositionRobot(drive, -3, 2)),
 

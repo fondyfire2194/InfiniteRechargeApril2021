@@ -15,6 +15,8 @@ import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.RobotDrive.ResetEncoders;
+import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionTilt;
@@ -52,7 +54,8 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new ParallelCommandGroup(new PositionRobot(drive, retractDistance, 3)),
+                super(new ResetEncoders(drive), new ResetGyro(drive),
+                                new ParallelCommandGroup(new PositionRobot(drive, retractDistance, 3)),
 
                                 new ParallelCommandGroup(new UseVision(limelight, true),
                                                 new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
@@ -62,7 +65,8 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                                 new TiltSeekVision(tilt, limelight)),
 
                                 new ParallelCommandGroup(new MessageCommand("ShootStarted"),
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor, shootTime)),
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
+                                                                shootTime)),
 
                                 new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
                                                 new StopShoot(shooter, transport),

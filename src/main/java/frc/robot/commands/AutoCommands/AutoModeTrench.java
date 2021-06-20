@@ -16,6 +16,8 @@ import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.RobotDrive.ResetEncoders;
+import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
@@ -57,8 +59,10 @@ public class AutoModeTrench extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 //
 
-                super(new ParallelCommandGroup(new ParallelCommandGroup(new StartIntake(intake, transport),
-                                new PositionRobot(drive, -3, 2), new PositionTurret(turret, -turretAngle))),
+                super(new ResetEncoders(drive), new ResetGyro(drive),
+                                new ParallelCommandGroup(new ParallelCommandGroup(new StartIntake(intake, transport),
+                                                new PositionRobot(drive, -3, 2),
+                                                new PositionTurret(turret, -turretAngle))),
 
                                 new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
                                                 new UseVision(limelight, true), new TiltSeekVision(tilt, limelight)),
@@ -67,7 +71,8 @@ public class AutoModeTrench extends SequentialCommandGroup {
                                                 new SetTurretOffset(turret, turretOffset),
                                                 new StartShooterWheels(shooter, shootSpeed)),
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor, shootTime)),
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
+                                                                shootTime)),
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
                                                 new StopShoot(shooter, transport),
