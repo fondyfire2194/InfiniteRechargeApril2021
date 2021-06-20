@@ -125,7 +125,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         mFollowerLeft.follow(mLeadLeft, false);
         mFollowerRight.follow(mLeadRight, false);
-
+mLeadLeft.setClosedLoopRampRate(.25);
+mLeadRight.setClosedLoopRampRate(.25);
         mGyro = new AHRS();
 
         mDrive = new DifferentialDrive(mLeadLeft, mLeadRight);
@@ -158,7 +159,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         // Set motors to brake when idle. We don't want the drive train to coast.
         Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
-                .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kCoast));
+                .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kBrake));
 
     }
 
@@ -259,8 +260,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public void positionDistance(double leftPosition, double rightPosition) {
 
-        mLeftPidController.setReference(leftPosition, ControlType.kPosition, POSITION_SLOT);
-        mRightPidController.setReference(rightPosition, ControlType.kPosition, POSITION_SLOT);
+        mLeftPidController.setReference(leftPosition, ControlType.kPosition, SMART_MOTION_SLOT);
+        mRightPidController.setReference(rightPosition, ControlType.kPosition, SMART_MOTION_SLOT);
         mDrive.feed();
     }
 
@@ -374,11 +375,11 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     public boolean getInPositionLeft() {
-        return Math.abs(leftTargetPosition - getLeftDistance()) < .15;
+        return Math.abs(leftTargetPosition - getLeftDistance()) < .25;
     }
 
     public boolean getInPositionRight() {
-        return Math.abs(rightTargetPosition - getRightDistance()) < .15;
+        return Math.abs(rightTargetPosition - getRightDistance()) < .25;
     }
 
     public boolean getInPosition() {
@@ -386,7 +387,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     public boolean getStopped() {
-        return Math.abs(getLeftRate()) < .25 && Math.abs(getRightRate()) < .25;
+        return Math.abs(getLeftRate()) < .5 && Math.abs(getRightRate()) < .5;
     }
 
     public void setMaxVel(double maxVel) {
@@ -461,8 +462,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     private void fixedSettings() {
 
-        kMaxOutput = .75;// 266 mpm = 4 mps limiting to 3mps
-        kMinOutput = -.75;
+        kMaxOutput = .5;// 266 mpm = 4 mps limiting to 3mps
+        kMinOutput = -.5;
 
         maxVel = 3;// mps and ff = 1/4.5 = .22
         maxAcc = 6;// mpmpsec

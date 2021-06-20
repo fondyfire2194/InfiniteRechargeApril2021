@@ -36,13 +36,13 @@ public class PositionHoldTurret extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
     m_limelight = limelight;
-
     addRequirements(m_turret);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+
 
     if (m_turret.validTargetSeen && m_limelight.useVision)
       visionFoundCounter = filterCount;
@@ -54,13 +54,16 @@ public class PositionHoldTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    
+    if (!m_limelight.useVision)
+      visionFoundCounter = 0;
 
     targetSeen = m_limelight.getIsTargetFound() && m_limelight.useVision;
 
     if (targetSeen && m_turret.validTargetSeen) {
       limelightHorizontalAngle = m_limelight.getdegRotationToTarget();
-      m_turret.adjustedTargetAngle = limelightHorizontalAngle + m_turret.targetHorizontalOffset
-          + m_turret.driverHorizontalOffset + m_turret.testHorOffset;
+      m_turret.adjustedTargetAngle = limelightHorizontalAngle
+          - (m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffset + m_turret.testHorOffset);
       m_limelight.setHorizontalOffset(
           -(m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffset + m_turret.testHorOffset));
 

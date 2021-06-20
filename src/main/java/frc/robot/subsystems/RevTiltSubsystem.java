@@ -48,7 +48,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private ISimWrapper mElevatorSim;
     public boolean positionResetDone;
     public double targetAngle;
-    private double inPositionBandwidth = .2;
+    private double inPositionBandwidth = 1;
     public double targetVerticalOffset;
     public double driverVerticalOffset;
     public boolean validTargetSeen;
@@ -337,7 +337,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     /**
-     * The angle should be goverened by angle =(2*(ASIN(distance between
+     * The angle should be governed by angle =(2*(ASIN(distance between
      * pins/2)/10.5)) this will be in radians.
      * 
      * 

@@ -73,7 +73,7 @@ public class RobotContainer {
 
       // The driver's controller
       public final Joystick m_driverController = new Joystick(OIConstants.kDriverControllerPort);
-      public final XboxController coDriverGamepad = new XboxController(OIConstants.kCoDriverControllerPort);
+      public final ButtonBox coDriverBox = new ButtonBox(OIConstants.kCoDriverControllerPort);
       public final XboxController setupGamepad = new XboxController(OIConstants.kSetupControllerPort);
 
       public final RevDrivetrain m_robotDrive;
@@ -111,20 +111,20 @@ public class RobotContainer {
       public boolean clickUp;
 
       // Setup gamepad XBox 1
-      JoystickButton coDriverA = new JoystickButton(coDriverGamepad, 1);
-      JoystickButton coDriverB = new JoystickButton(coDriverGamepad, 2);
-      JoystickButton coDriverX = new JoystickButton(coDriverGamepad, 3);
-      JoystickButton coDriverY = new JoystickButton(coDriverGamepad, 4);
-      JoystickButton coDriverLeftTrigger = new JoystickButton(coDriverGamepad, 5);
-      JoystickButton coDriverRightTrigger = new JoystickButton(coDriverGamepad, 6);
+      JoystickButton coDriverA = new JoystickButton(coDriverBox, 1);
+      JoystickButton coDriverB = new JoystickButton(coDriverBox, 2);
+      JoystickButton coDriverX = new JoystickButton(coDriverBox, 3);
+      JoystickButton coDriverY = new JoystickButton(coDriverBox, 4);
+      JoystickButton coDriverLeftTrigger = new JoystickButton(coDriverBox, 5);
+      JoystickButton coDriverRightTrigger = new JoystickButton(coDriverBox, 6);
 
-      JoystickButton coDriverBack = new JoystickButton(coDriverGamepad, 7);
-      JoystickButton coDriverStart = new JoystickButton(coDriverGamepad, 8);
+      JoystickButton coDriverBack = new JoystickButton(coDriverBox, 7);
+      JoystickButton coDriverStart = new JoystickButton(coDriverBox, 8);
 
-      public POVButton coDriverUpButton = new POVButton(coDriverGamepad, 0);
-      public POVButton coDriverRightButton = new POVButton(coDriverGamepad, 90);
-      public POVButton coDriverDownButton = new POVButton(coDriverGamepad, 180);
-      public POVButton coDriverLeftButton = new POVButton(coDriverGamepad, 270);
+      public POVButton coDriverUpButton = new POVButton(coDriverBox, 0);
+      public POVButton coDriverRightButton = new POVButton(coDriverBox, 90);
+      public POVButton coDriverDownButton = new POVButton(coDriverBox, 180);
+      public POVButton coDriverLeftButton = new POVButton(coDriverBox, 270);
 
       // Setup gamepad XBox 3
       JoystickButton setupA = new JoystickButton(setupGamepad, 1);
@@ -239,8 +239,9 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 2)
                         .whileHeld(new ShootCells(m_shooter, m_limelight, m_transport, m_compressor, 100));
 
-            // new JoystickButton(m_driverController, 2).whenPressed(new LockAndShoot(m_shooter, m_turret, m_tilt,
-            //             m_transport, m_robotDrive, m_limelight, m_compressor));
+            // new JoystickButton(m_driverController, 2).whenPressed(new
+            // LockAndShoot(m_shooter, m_turret, m_tilt,
+            // m_transport, m_robotDrive, m_limelight, m_compressor));
 
             new JoystickButton(m_driverController, 5).whenPressed(new StartShooterWheels(m_shooter, 10));
 
@@ -251,18 +252,6 @@ public class RobotContainer {
                         .whenPressed(() -> m_limelight.setPipeline(m_limelight.driverPipeline));
 
             new JoystickButton(m_driverController, 6).whenPressed(new TiltSeekVision(m_tilt, m_limelight));
-
-            new JoystickButton(m_driverController, 7).whenPressed(new SetActiveTeleopShootData(4));
-
-            // Shoot for inner goal from 1 meter behind intiation line
-            new JoystickButton(m_driverController, 8).whenPressed(new SetActiveTeleopShootData(1));
-
-            // Trench Shot drive under and just beyond the control panel robot parallel to
-            // side wall
-
-            new JoystickButton(m_driverController, 9).whenPressed(new SetActiveTeleopShootData(1));
-
-            new JoystickButton(m_driverController, 10).whenPressed(new SetActiveTeleopShootData(1));
 
             // new JoystickButton(m_driverController, 12).whileHeld(() ->
             // m_shooter.setOKShootDriver())
@@ -288,19 +277,24 @@ public class RobotContainer {
              * 
              * 
              */
+
+            coDriverA.whenPressed(new SetActiveTeleopShootData(4));
+
+            // Shoot for inner goal from 1 meter behind intiation line
+            coDriverB.whenPressed(new SetActiveTeleopShootData(1));
+
+            // Trench Shot drive under and just beyond the control panel robot parallel to
+            // side wall
+
+            coDriverBack.whenPressed(new SetActiveTeleopShootData(2));
+
+            coDriverBack.whenPressed(new SetActiveTeleopShootData(1));
+
             coDriverDownButton.whenPressed(new ControlPanelArm(m_controlPanel, true));
             coDriverUpButton.whenPressed(new ControlPanelArm(m_controlPanel, false));
             coDriverLeftButton.whileHeld(new TurnControlPanel(m_controlPanel));
             coDriverRightButton.whenPressed(new PositionToColor(m_controlPanel));
             coDriverStart.whenPressed(new PositionNumberRevs(m_controlPanel, 3));
-
-            // coDriverB.whenPressed(
-
-            // coDriverX.whenPressed(
-
-            // coDriverB.whenPressed(
-
-            // coDriverB.whenPressed
 
             /**
              * Setup gamepad is used for testing functions

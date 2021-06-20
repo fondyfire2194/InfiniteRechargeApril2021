@@ -10,7 +10,6 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.LimelightControlMode.Snapshot;
@@ -32,7 +31,7 @@ public class ShootCells extends CommandBase {
 
   private boolean okToShoot;
 
-  private boolean shootStarted;
+  private boolean shootingStarted;
   private boolean temp;
   private int cellsShot;
   private boolean shotInProgress;
@@ -75,37 +74,37 @@ public class ShootCells extends CommandBase {
     startTime = Timer.getFPGATimestamp();
     m_shooter.shootTime = m_time;
     m_compressor.stop();
-    shootStarted = false;
+    shootingStarted = false;
     m_transport.holdCell();
     cellsShot = 0;
     shotStartTime = 0;
     cellAvailable = false;
+    m_limelight.useVision = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    m_shooter.runShooter();
+    m_shooter.startShooter = true;
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
-    m_limelight.useVision = true;
+    if ((m_shooter.atSpeed() && m_limelight.getHorOnTarget(.5) && m_limelight.getVertOnTarget(.5))
+        || (m_shooter.driverOKShoot && m_shooter.atSpeed()) || shootingStarted == true) {
 
-    if ((m_shooter.atSpeed() && m_limelight.getHorOnTarget() && m_limelight.getVertOnTarget())
-        || (m_shooter.driverOKShoot && m_shooter.atSpeed()) || shootStarted == true) {
-
-      shootStarted = true;
+      shootingStarted = true;
 
     }
 
-    if (shootStarted) {
+    if (shootingStarted) {
       m_transport.runFrontRollerMotor();
       m_transport.runRearRollerMotor();
       m_transport.runLeftBeltMotor(.5);
       m_transport.runRightBeltMotor(-.5);
+      m_limelight.useVision = false;
     }
 
-    if (shootStarted && cellAvailable && !shotInProgress) {
+    if (shootingStarted && cellAvailable && !shotInProgress) {
       shotStartTime = Timer.getFPGATimestamp();
       shotInProgress = true;
       cellsShot++;
@@ -123,7 +122,7 @@ public class ShootCells extends CommandBase {
       shotInProgress = false;
     }
 
-    okToShoot = shootStarted && (inAuto || !m_shooter.shootOne);
+    okToShoot = shootingStarted && (inAuto || !m_shooter.shootOne);
 
     getNextCell = okToShoot && !shotInProgress && !cellAvailable && m_shooter.atSpeed();
 

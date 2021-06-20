@@ -37,7 +37,7 @@ public class PositionRobot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.driveDistance(m_position, m_position);
+    m_drive.positionDistance(m_position, m_position);
   
   }
 

@@ -46,7 +46,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public final PIDController m_turretLockController = new PIDController(.03, 0, 0);
     private ISimWrapper mElevatorSim;
     public double targetAngle;
-    private double inPositionBandwidth = .25;
+    private double inPositionBandwidth = 2;
     public double targetHorizontalOffset;
     public double driverHorizontalOffset;
     public double pset, iset, dset, ffset, izset;

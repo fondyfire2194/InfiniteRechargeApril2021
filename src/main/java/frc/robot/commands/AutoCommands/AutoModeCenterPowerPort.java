@@ -16,14 +16,11 @@ import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionTilt;
-import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
+import frc.robot.commands.Tilt.TiltSeekVision;
 import frc.robot.commands.Turret.PositionTurret;
-import frc.robot.commands.Turret.PositionTurretToVision;
-import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.LimelightSetPipeline;
 import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
@@ -55,11 +52,14 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
-                                new UseVision(limelight, true), new StartShooterWheels(shooter, shootSpeed),
-                                new SetTiltOffset(tilt, tiltOffset), new PositionTilt(tilt, tiltAngle),
-                                new SetTurretOffset(turret, turretOffset), new PositionTurret(turret, turretAngle),
-                                new PositionRobot(drive, retractDistance, 3)), new UseVision(limelight, true),
+                super(new ParallelCommandGroup(new PositionRobot(drive, retractDistance, 3)),
+
+                                new ParallelCommandGroup(new UseVision(limelight, true),
+                                                new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
+                                                new UseVision(limelight, true),
+                                                // new StartShooterWheels(shooter, shootSpeed),
+                                                new SetTiltOffset(tilt, tiltOffset),
+                                                new TiltSeekVision(tilt, limelight)),
 
                                 new ParallelCommandGroup(new MessageCommand("ShootStarted"),
                                                 new ShootCells(shooter, limelight, transport, compressor, shootTime)),

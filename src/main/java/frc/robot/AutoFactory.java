@@ -6,9 +6,10 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.AutoCommands.AutoModeCenterPowerPort;
+import frc.robot.commands.AutoCommands.PowerPortVisionTest;
 import frc.robot.commands.AutoCommands.AutoModeShieldGen;
 import frc.robot.commands.AutoCommands.AutoModeTrench;
+import frc.robot.commands.AutoCommands.AutoModeTrenchTestVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -44,8 +45,9 @@ public class AutoFactory {
 
     // front of power port move and shoot
     public SequentialCommandGroup getAutonomousCommand1() {
-        return new AutoModeCenterPowerPort(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor
-            );
+        // return new AutoModeCenterPowerPort(m_shooter, m_turret, m_tilt, m_transport,
+        // m_robotDrive, m_limelight, m_compressor
+        return new PowerPortVisionTest(m_shooter, m_turret, m_tilt, m_limelight);
     }
 
     // front of trench or left of center move pickup and and shoot
@@ -56,8 +58,11 @@ public class AutoFactory {
 
     // front of trench or left of center move pickup and and shoot together
     public SequentialCommandGroup getAutonomousCommand3() {
-        return new AutoModeTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor,
-                m_intake);
+        // return new AutoModeTrench(m_shooter, m_turret, m_tilt, m_transport,
+        // m_robotDrive, m_limelight, m_compressor,
+        // m_intake);
+        return new AutoModeTrenchTestVision(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
+                m_compressor, m_intake);
     }
 
 }

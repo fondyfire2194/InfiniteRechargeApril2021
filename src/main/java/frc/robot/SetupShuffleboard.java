@@ -55,6 +55,7 @@ import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.StopTilt;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
+import frc.robot.commands.Tilt.TiltSeekVision;
 import frc.robot.commands.Turret.ClearTurFaults;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
@@ -92,11 +93,11 @@ public class SetupShuffleboard {
         private boolean m_showTilt = true;
         private boolean m_showShooter = true;
         private boolean m_showRobot = true;
-        private boolean m_showTransport = true;
-        private boolean m_showClimberControlPanel = true;
+        private boolean m_showTransport = false;
+        private boolean m_showClimberControlPanel = false;
         private boolean m_showVision = true;
         private boolean m_showTrajectory = false;
-        private boolean m_showSubsystems = true;
+        private boolean m_showSubsystems = false;
         private boolean m_showPower = false;
         private HttpCamera LLFeed;
         private UsbCamera intakeFeed;
@@ -273,6 +274,7 @@ public class SetupShuffleboard {
                         turretCommands.add("Position To 30", new PositionTurret(m_turret, 30));
                         turretCommands.add("PositionToVision", new PositionTurretToVision(m_turret, m_limelight,
                                         HoodedShooterConstants.TURRET_MAX_ANGLE));
+ 
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
                         turretCommands.add("Cmd", m_turret);
@@ -320,7 +322,7 @@ public class SetupShuffleboard {
                         turretValues2.addBoolean("InPosition", () -> m_turret.atTargetAngle());
 
                         turretValues2.addBoolean("BrakeMode", () -> m_turret.isBrake());
-                        turretValues2.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget());
+                        turretValues2.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget(.5));
 
                         turretValues2.addBoolean("OKTune", () -> (m_turret.tuneOn && m_turret.lastTuneOn));
                         turretValues2.addBoolean("Burn OK", () -> m_turret.burnOK);
@@ -356,9 +358,10 @@ public class SetupShuffleboard {
                         tiltCommands.add("Position To 25", new PositionTilt(m_tilt, 25));
                         tiltCommands.add("Position To 15", new PositionTilt(m_tilt, 15));
                         tiltCommands.add("Position To 5", new PositionTilt(m_tilt, 5));
-                        tiltCommands.add("PositionToVision", new PositionTiltToVision(m_tilt, m_limelight,
-                                        HoodedShooterConstants.TILT_MIN_ANGLE));
-
+                        // tiltCommands.add("PositionToVision", new PositionTiltToVision(m_tilt,
+                        // m_limelight,
+                        // HoodedShooterConstants.TILT_MIN_ANGLE));
+                        tiltCommands.add(new TiltSeekVision(tilt, limelight));
                         tiltCommands.add("PositionToSwitch", new TiltMoveToReverseLimit(m_tilt));
                         tiltCommands.add("StopTilt", new StopTilt(m_tilt));
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
@@ -409,7 +412,7 @@ public class SetupShuffleboard {
                         tiltValues2.addBoolean("+SWLimit", () -> m_tilt.onPlusSoftwareLimit());
                         tiltValues2.addBoolean("-SWLimit", () -> m_tilt.onMinusSoftwareLimit());
                         tiltValues2.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled());
-                        tiltValues2.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget());
+                        tiltValues2.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget(.5));
                         tiltValues2.addBoolean("Burn OK", () -> m_tilt.burnOK);
 
                         ShuffleboardLayout tiltGains = Shuffleboard.getTab("SetupTilt")
@@ -559,10 +562,10 @@ public class SetupShuffleboard {
 
                         robotCommands.add("Reset Enc", new ResetEncoders(m_robotDrive));
                         robotCommands.add("Reset Gyro", new ResetGyro(m_robotDrive));
-                        robotCommands.add("Pos -2M", new PositionRobotInc(m_robotDrive, -2));
+                        robotCommands.add("Pos -2M", new PositionRobot(m_robotDrive, -2, 1));
                         robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0, 2));
-                        robotCommands.add("Pos +1M", new PositionRobotInc(m_robotDrive, 1));
-                        robotCommands.add("Pos -1M", new PositionRobotInc(m_robotDrive, -1));
+                        robotCommands.add("Pos +1M", new PositionRobot(m_robotDrive, 1, 1));
+                        robotCommands.add("Pos -1M", new PositionRobot(m_robotDrive, -1, 1));
                         robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
                         robotCommands.add("Stop Robot", new StopRobot(m_robotDrive));
                         robotCommands.add("Cmd", m_robotDrive);
@@ -765,9 +768,9 @@ public class SetupShuffleboard {
 
                         visionBools.addBoolean("Connected", () -> m_limelight.isConnected());
 
-                        visionBools.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget());
+                        visionBools.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget(.5));
 
-                        visionBools.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget());
+                        visionBools.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget(.5));
 
                         visionBools.addBoolean("TargetFound", () -> m_limelight.getIsTargetFound());
 

@@ -23,6 +23,7 @@ public class PositionHoldTilt extends CommandBase {
   public PositionHoldTilt(RevTiltSubsystem tilt, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
+    
     m_limelight = limelight;
 
     addRequirements(m_tilt);
@@ -31,6 +32,9 @@ public class PositionHoldTilt extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+
+    if (!m_limelight.useVision)
+    visionFoundCounter = 0;
 
     if (m_tilt.validTargetSeen && m_limelight.useVision)
       visionFoundCounter = filterCount;

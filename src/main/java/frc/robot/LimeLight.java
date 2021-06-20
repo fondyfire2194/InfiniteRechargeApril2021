@@ -94,7 +94,7 @@ public class LimeLight {
     public boolean getIsTargetFound() {
         NetworkTableEntry tv = m_table.getEntry("tv");
         double v = tv.getDouble(0);
-        if (v == 0.0f ) {
+        if (v == 0.0f) {
             return false;
         } else {
             return true;
@@ -117,8 +117,8 @@ public class LimeLight {
      * 
      * @return
      */
-    public boolean getHorOnTarget() {
-        return getIsTargetFound() && Math.abs(getdegRotationToTarget() + horizontalOffset) < .5;
+    public boolean getHorOnTarget(double bandwidth) {
+        return getIsTargetFound() && Math.abs(getdegRotationToTarget() - horizontalOffset) < bandwidth;
     }
 
     /**
@@ -145,8 +145,8 @@ public class LimeLight {
      * 
      * @return
      */
-    public boolean getVertOnTarget() {
-        return getIsTargetFound() && Math.abs(getdegVerticalToTarget() - verticalOffset) < .5;
+    public boolean getVertOnTarget(double bandwith) {
+        return getIsTargetFound() && Math.abs(getdegVerticalToTarget() - verticalOffset) < bandwith;
     }
 
     /**

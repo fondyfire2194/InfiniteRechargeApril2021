@@ -84,31 +84,25 @@ public class TiltSeekVision extends CommandBase {
       visionFoundCounter = 0;
     }
 
-    m_tilt.goToPositionMotionMagic(motorDegrees);
+    m_tilt.moveManually(.3);
 
-    noTargetFound = m_tilt.atTargetAngle() && loopCtr > 5;
+    m_tilt.targetAngle = m_tilt.getAngle();
 
-    if (noTargetFound && m_endpoint == m_tilt.tiltMinAngle) {
-      m_endpoint = m_tilt.tiltMaxAngle;
-      loopCtr = 0;
-    }
+    targetFound = m_tilt.validTargetSeen && m_limelight.getVertOnTarget(3);
 
-    targetFound = m_tilt.validTargetSeen;
+    failedToFind = m_tilt.onPlusSoftwareLimit();
 
-    failedToFind = m_endpoint == m_tilt.tiltMaxAngle && (m_tilt.atTargetAngle() && loopCtr > 5);
-    endIt = targetFound || failedToFind;
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (!endIt)
-      m_tilt.targetAngle = m_tilt.getAngle();
+
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return endIt;
+    return targetFound || failedToFind;
   }
 }

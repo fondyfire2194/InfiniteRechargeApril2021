@@ -84,7 +84,7 @@ public class PositionTiltToVision extends CommandBase {
 
     m_tilt.goToPositionMotionMagic(motorDegrees);
 
-    endIt = m_tilt.validTargetSeen || (m_tilt.atTargetAngle() && loopCtr > 5) || loopCtr > 250;
+    endIt = m_limelight.getHorOnTarget(5) || m_tilt.atTargetAngle() && loopCtr > 5 || loopCtr > 250;
 
   }
 

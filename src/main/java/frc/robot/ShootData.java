@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import frc.robot.Constants.FieldConstants;
 
@@ -34,7 +35,8 @@ public class ShootData {
     public static double activeTeleopTiltOffset;
     public static double activeTeleopTurretAngle;
     public static double activeTeleopTurretOffset;
-    
+
+    public static double frontOfRobotToCenterofTiltTurret = .25;// meters
 
     public ShootData() {
     }
@@ -62,29 +64,30 @@ public class ShootData {
 
     public final static class centerPowerPortConstants {
         public static double retractDistance = -1;
-        public static double tiltAngle = getTiltAngle(4);
+        public static double tiltAngle = getTiltAngle(4 + frontOfRobotToCenterofTiltTurret);// 22.7;//
         public static double turretAngle = 0;
-        public static double shootSpeed = 23;
-        public static double tiltOffset = -2;
+        public static double shootSpeed = 33;
+        public static double tiltOffset = 0;
         public static double turretOffset = 0;
-        public static double shootTime = 5;
+        public static double shootTime = 3;
 
     }
-    
 
     public final static class shieldGenConstants {
         private static double yfromPort = Units.inchesToMeters((74));
         public static double retractDistance = -1;
-        public static double tiltAngle = getTiltAngle(getFloorDistance(4, yfromPort));
-        public static double turretAngle = getTurretAngleXY(4, yfromPort);
+        public static double tiltAngle = getTiltAngle(
+                getFloorDistance(4 + frontOfRobotToCenterofTiltTurret, yfromPort));// 18
+        public static double turretAngle = getTurretAngleXY(4 + frontOfRobotToCenterofTiltTurret, yfromPort);// 32
         public static double shootSpeed = 23;/// ?
         public static double tiltOffset = 0;/// ?
         public static double turretOffset = 0;/// ?
         public static double shootTime = 5;
 
         public static double retractDistance1 = -1.5;/// ?
-        public static double tiltAngle1 = getTiltAngle(getFloorDistance(5.5, yfromPort));
-        public static double turretAngle1 = getTurretAngleXY(5.5, yfromPort);;
+        public static double tiltAngle1 = getTiltAngle(
+                getFloorDistance(5.5 + frontOfRobotToCenterofTiltTurret, yfromPort));// 16.8
+        public static double turretAngle1 = getTurretAngleXY(5.5 + frontOfRobotToCenterofTiltTurret, yfromPort);// 33.75
         public static double shootSpeed1 = 23;/// ?
         public static double tiltOffset1 = 0;/// ?
         public static double turretOffset1 = 0;/// ?
@@ -94,8 +97,10 @@ public class ShootData {
 
     public final static class trenchShotConstants {
         public static double retractDistance = -1.5;
-        public static double tiltAngle = getTiltAngle(getFloorDistance(5, FieldMap.trenchCLtoGoalY));
-        public static double turretAngle = getTurretAngleXY(4.5, FieldMap.trenchCLtoGoalY);
+        public static double tiltAngle = getTiltAngle(
+                getFloorDistance(5 + frontOfRobotToCenterofTiltTurret, FieldMap.trenchCLtoGoalY));
+        public static double turretAngle = getTurretAngleXY(4.5 + frontOfRobotToCenterofTiltTurret,
+                FieldMap.trenchCLtoGoalY);
         public static double shootSpeed = 23;// ** */
         public static double tiltOffset = 0;//
         public static double turretOffset = 0;//
@@ -103,7 +108,7 @@ public class ShootData {
 
         public static double retractDistance1 = -2.5;
         public static double tiltAngle1 = getTiltAngle(getFloorDistance(7.5, FieldMap.trenchCLtoGoalY));
-        public static double turretAngle1 =  getTurretAngleXY(7.5, FieldMap.trenchCLtoGoalY);
+        public static double turretAngle1 = getTurretAngleXY(7.5, FieldMap.trenchCLtoGoalY);
         public static double shootSpeed1 = 23;//
         public static double tiltOffset1 = -2;//
         public static double turretOffset1 = 0;//
@@ -112,12 +117,20 @@ public class ShootData {
     }
 
     public final static class lowShotConstants {
-     
+
         public static double tiltAngle = 29;
         public static double turretAngle = 0;
         public static double shootSpeed = 23;
 
     }
-    
+
+    public static void showValues() {
+        SmartDashboard.putNumber("TA", centerPowerPortConstants.tiltAngle);
+        SmartDashboard.putNumber("TATS", trenchShotConstants.tiltAngle);
+        SmartDashboard.putNumber("TUTS", trenchShotConstants.turretAngle);
+
+
+
+    }
 
 }
