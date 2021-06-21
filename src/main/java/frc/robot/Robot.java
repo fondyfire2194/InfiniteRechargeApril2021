@@ -101,10 +101,10 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
 
     // run can check on switch
-    if (m_robotContainer.m_setup.runCan.getBoolean(false)) {
-      m_robotContainer.m_setup.checkCANDevices();
-      m_robotContainer.m_setup.runCan.setBoolean(false);
-    }
+    // if (m_robotContainer.m_setup.runCan.getBoolean(false)) {
+    //   m_robotContainer.m_setup.checkCANDevices();
+    //   m_robotContainer.m_setup.runCan.setBoolean(false);
+    // }
   }
 
   public void autonomousInit() {

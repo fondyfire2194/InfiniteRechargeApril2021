@@ -23,7 +23,9 @@ import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Tilt.TiltSeekVision;
 import frc.robot.commands.Turret.PositionTurret;
+import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.LimelightSetPipeline;
+import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -55,14 +57,13 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
 
                 super(new ResetEncoders(drive), new ResetGyro(drive),
-                                new ParallelCommandGroup(new PositionRobot(drive, retractDistance, 3)),
+                                new ParallelCommandGroup(new PositionRobot(drive, retractDistance, 3),
+                                                new PositionTilt(tilt, tiltAngle),
+                                                new PositionTurret(turret, turretAngle)),
 
-                                new ParallelCommandGroup(new UseVision(limelight, true),
-                                                new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
-                                                new UseVision(limelight, true),
-                                                // new StartShooterWheels(shooter, shootSpeed),
+                                new ParallelCommandGroup(new SetUpLimelightForTarget(limelight),
                                                 new SetTiltOffset(tilt, tiltOffset),
-                                                new TiltSeekVision(tilt, limelight)),
+                                                new SetTurretOffset(turret, turretOffset)),
 
                                 new ParallelCommandGroup(new MessageCommand("ShootStarted"),
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, compressor,

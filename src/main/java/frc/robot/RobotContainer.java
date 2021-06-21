@@ -28,11 +28,7 @@ import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellTransport.JogLeftBelt;
 import frc.robot.commands.CellTransport.JogRightBelt;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
-import frc.robot.commands.Climber.JogClimber;
-import frc.robot.commands.ControlPanel.ControlPanelArm;
-import frc.robot.commands.ControlPanel.PositionNumberRevs;
-import frc.robot.commands.ControlPanel.PositionToColor;
-import frc.robot.commands.ControlPanel.TurnControlPanel;
+
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
 import frc.robot.commands.Shooter.JogShooter;
@@ -51,9 +47,8 @@ import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretWaitForStop;
+import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.subsystems.CellTransportSubsystem;
-import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.ControlPanelSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -77,10 +72,6 @@ public class RobotContainer {
       public final XboxController setupGamepad = new XboxController(OIConstants.kSetupControllerPort);
 
       public final RevDrivetrain m_robotDrive;
-
-      public final ClimberSubsystem m_climber;
-
-      public final ControlPanelSubsystem m_controlPanel;
 
       public final RearIntakeSubsystem m_intake;
 
@@ -150,9 +141,6 @@ public class RobotContainer {
       public POVButton driverDownButton = new POVButton(m_driverController, 180);
       public POVButton driverLeftButton = new POVButton(m_driverController, 270);
 
-      // AutoCommands ac;// = new AutoCommands(m_robotDrive);
-      public int shootPosition;
-
       /**
        * The container for the robot. Contains subsysems, OI devices, and commands.
        */
@@ -163,10 +151,7 @@ public class RobotContainer {
             // Pref.deleteUnused();
             Pref.addMissing();
             m_robotDrive = new RevDrivetrain();
-
-            m_climber = new ClimberSubsystem();
             m_transport = new CellTransportSubsystem();
-            m_controlPanel = new ControlPanelSubsystem();
             m_intake = new RearIntakeSubsystem();
             m_shooter = new RevShooterSubsystem();
             m_turret = new RevTurretSubsystem();
@@ -193,7 +178,7 @@ public class RobotContainer {
             m_shooter.setDefaultCommand(new RunShooter(m_shooter));
 
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
-                        m_limelight, m_controlPanel, m_intake, m_trajectory, m_climber, isMatch);
+                        m_limelight, m_intake, m_trajectory, isMatch);
 
             m_robotDrive.setDefaultCommand(getArcadeDriveCommand());
 
@@ -239,9 +224,6 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 2).whileHeld(
                         new ShootCells(m_shooter, m_tilt, m_turret, m_limelight, m_transport, m_compressor, 100));
 
-            // new JoystickButton(m_driverController, 2).whenPressed(new
-            // LockAndShoot(m_shooter, m_turret, m_tilt,
-            // m_transport, m_robotDrive, m_limelight, m_compressor));
 
             new JoystickButton(m_driverController, 5).whenPressed(new StartShooterWheels(m_shooter, 10));
 
@@ -253,12 +235,10 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 6).whenPressed(new TiltSeekVision(m_tilt, m_limelight));
 
-            // new JoystickButton(m_driverController, 12).whileHeld(() ->
-            // m_shooter.setOKShootDriver())
-            // .whenReleased(() -> m_shooter.notOKShootDriver());
+            new JoystickButton(m_driverController, 12).whileHeld(() -> m_shooter.setOKShootDriver())
+                        .whenReleased(() -> m_shooter.notOKShootDriver());
 
-            new JoystickButton(m_driverController, 12).whileHeld(new LockAndShoot(m_shooter, m_turret, m_tilt,
-                        m_transport, m_robotDrive, m_limelight, m_compressor));
+            // new JoystickButton(m_driverController, 12).whileHeld(
 
             new JoystickButton(m_driverController, 11).whileHeld(() -> m_shooter.shootAll())
                         .whenReleased(() -> m_shooter.shootOne());
@@ -290,11 +270,11 @@ public class RobotContainer {
 
             coDriverBack.whenPressed(new SetActiveTeleopShootData(1));
 
-            coDriverDownButton.whenPressed(new ControlPanelArm(m_controlPanel, true));
-            coDriverUpButton.whenPressed(new ControlPanelArm(m_controlPanel, false));
-            coDriverLeftButton.whileHeld(new TurnControlPanel(m_controlPanel));
-            coDriverRightButton.whenPressed(new PositionToColor(m_controlPanel));
-            coDriverStart.whenPressed(new PositionNumberRevs(m_controlPanel, 3));
+            // coDriverDownButton.whenPressed(
+            // coDriverUpButton.whenPressed(
+            // coDriverLeftButton.whileHeld(
+            // coDriverRightButton.whenPressed(
+            // coDriverStart.whenPressed(
 
             /**
              * Setup gamepad is used for testing functions
@@ -317,8 +297,8 @@ public class RobotContainer {
 
             setupBack.whileHeld(new StartIntake(m_intake, m_transport)).whenReleased(new StopIntake(m_intake));
 
-            setupStart.whileHeld(() -> m_controlPanel.turnWheelMotor())
-                        .whenReleased(() -> m_controlPanel.stopWheelMotor());
+            // setupStart.whileHeld(() -> m_controlPanel.turnWheelMotor())
+            // .whenReleased(() -> m_controlPanel.stopWheelMotor());
 
             setupX.whileHeld(getJogShooterCommand());
 
@@ -326,7 +306,7 @@ public class RobotContainer {
 
             setupA.whileHeld(getJogTurretCommand()).whenReleased(new TurretWaitForStop(m_turret));
 
-            setupB.whileHeld(getJogClimberCommand());
+            setupB.whenPressed(new SetUpLimelightForTarget(m_limelight));
 
             setupLeftStick.whileHeld(getJogLeftBeltCommand());
 
@@ -366,10 +346,6 @@ public class RobotContainer {
 
       public Command getJogShooterCommand() {
             return new JogShooter(m_shooter, () -> setupGamepad.getRawAxis(4));
-      }
-
-      public Command getJogClimberCommand() {
-            return new JogClimber(m_climber, () -> -setupGamepad.getRawAxis(5) / 2);
       }
 
       public Command getJogLeftBeltCommand() {

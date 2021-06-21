@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AutoCommands.PowerPortVisionTest;
 import frc.robot.commands.AutoCommands.AutoModeShieldGen;
-import frc.robot.commands.AutoCommands.AutoModeTrench;
+import frc.robot.commands.AutoCommands.AutoModeShieldGenTestVision;
 import frc.robot.commands.AutoCommands.AutoModeTrenchTestVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
@@ -52,7 +52,7 @@ public class AutoFactory {
 
     // front of trench or left of center move pickup and and shoot
     public SequentialCommandGroup getAutonomousCommand2() {
-        return new AutoModeShieldGen(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor,
+        return new AutoModeShieldGenTestVision(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor,
                 m_intake);
     }
 

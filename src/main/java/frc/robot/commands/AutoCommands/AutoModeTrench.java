@@ -27,6 +27,7 @@ import frc.robot.commands.Tilt.TiltSeekVision;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.LimelightSetPipeline;
+import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
@@ -61,11 +62,10 @@ public class AutoModeTrench extends SequentialCommandGroup {
 
                 super(new ResetEncoders(drive), new ResetGyro(drive),
                                 new ParallelCommandGroup(new ParallelCommandGroup(new StartIntake(intake, transport),
-                                                new PositionRobot(drive, -3, 2),
+                                                new PositionRobot(drive, -3, 2), new PositionTilt(tilt, tiltAngle),
                                                 new PositionTurret(turret, -turretAngle))),
 
-                                new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
-                                                new UseVision(limelight, true), new TiltSeekVision(tilt, limelight)),
+                                new SetUpLimelightForTarget(limelight),
 
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),

@@ -11,10 +11,13 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
+import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Tilt.TiltSeekVision;
+import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.LimelightSetPipeline;
+import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
@@ -42,19 +45,12 @@ public class PowerPortVisionTest extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new ParallelCommandGroup(new UseVision(limelight, true),
+                super(new ParallelCommandGroup(
 
-                                new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
+                                new PositionTurret(turret, turretAngle), new PositionTilt(tilt, tiltAngle)),
 
-                                new UseVision(limelight, true),
-
-                                new TiltSeekVision(tilt, limelight),
-
-                                new SetTiltOffset(tilt, tiltOffset),
-
-                                new SetTurretOffset(turret, turretOffset)
-
-                ));
-
+                                new ParallelCommandGroup(new SetUpLimelightForTarget(limelight),
+                                                new SetTiltOffset(tilt, tiltOffset),
+                                                new SetTurretOffset(turret, turretOffset)));
         }
 }

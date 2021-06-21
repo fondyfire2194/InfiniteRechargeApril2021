@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
-import frc.robot.LimelightControlMode.Snapshot;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
@@ -35,13 +34,11 @@ public class ShootCells extends CommandBase {
 
   private boolean okToShoot;
 
-  private boolean temp;
   private int cellsShot;
   private boolean shotInProgress;
   private double startTime;
   private boolean getNextCell;
   private boolean cellAvailable;
-  private int loopCtr;
   private boolean cellReleased;
   private double cellReleasedStartTime;
 
@@ -54,7 +51,6 @@ public class ShootCells extends CommandBase {
     m_limelight = limelight;
     m_tilt = tilt;
     m_turret = turret;
-    temp = m_limelight.useVision;
     m_time = time;
 
   }

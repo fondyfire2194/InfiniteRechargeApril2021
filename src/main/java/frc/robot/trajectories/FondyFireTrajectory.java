@@ -133,17 +133,7 @@ public class FondyFireTrajectory {
                                 // pass config
                                 configForward);
 
-                // controlPanelStartOne = TrajectoryGenerator.generateTrajectory(
-                // List.of(new Pose2d(13, .71, new Rotation2d(0)), new Pose2d(12, .71, new
-                // Rotation2d(0))),
-                // configPickupReversed);
-
-                // controlPanelStartTwo = TrajectoryGenerator.generateTrajectory(
-                // // Start at the origin facing the +X direction
-                // List.of(new Pose2d(12, .71, new Rotation2d(0)), new Pose2d(12, 6, new
-                // Rotation2d(.2))),
-                // // Pass config
-                // configForward);
+ 
 
         }
 

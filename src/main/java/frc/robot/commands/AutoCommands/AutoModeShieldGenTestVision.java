@@ -12,12 +12,11 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
+import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
-import frc.robot.commands.Tilt.TiltSeekVision;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.SetTurretOffset;
-import frc.robot.commands.Vision.LimelightSetPipeline;
-import frc.robot.commands.Vision.UseVision;
+import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -57,12 +56,12 @@ public class AutoModeShieldGenTestVision extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 //
 
-                super(new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
-                                new UseVision(limelight, true),
+                super(new ParallelCommandGroup(
 
-                                new PositionTurret(turret, turretAngle)),
+                        new PositionTurret(turret, turretAngle), new PositionTilt(tilt, tiltAngle)),
 
-                                new TiltSeekVision(tilt, limelight), new SetTiltOffset(tilt, tiltOffset),
-                                new SetTurretOffset(turret, turretOffset));
-        }
+                        new ParallelCommandGroup(new SetUpLimelightForTarget(limelight),
+                                        new SetTiltOffset(tilt, tiltOffset),
+                                        new SetTurretOffset(turret, turretOffset)));
+}
 }
