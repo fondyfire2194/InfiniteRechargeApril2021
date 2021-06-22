@@ -14,7 +14,6 @@ import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
-import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.PositionRobot;
@@ -28,7 +27,6 @@ import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
-import frc.robot.commands.Tilt.TiltSeekVision;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.SetTurretOffset;
@@ -61,7 +59,6 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
         static double turretOffset = ShootData.shieldGenConstants.turretOffset;
         static double shootTime = ShootData.shieldGenConstants.shootTime;
 
-
         public AutoModeShieldGen(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
                         Compressor compressor, RearIntakeSubsystem intake) {
@@ -70,8 +67,8 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                 // move back and pickup 2
                 super(new ResetEncoders(drive), new ResetGyro(drive), new PickupMove(drive, retractDistance, -.4),
                                 new ParallelCommandGroup(new PositionRobot(drive, -3, 1), new StopIntake(intake),
-                                                new PositionTilt(tilt, tiltAngle),
-                                                new PositionTurret(turret, turretAngle),
+                                                new PositionTilt(tilt, tiltAngle + tiltOffset),
+                                                new PositionTurret(turret, turretAngle + turretOffset),
                                                 new LogShootData(drive, turret, tilt, shooter, limelight)),
 
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),

@@ -99,16 +99,22 @@ public class RobotContainer {
 
       public boolean clickUp;
 
-      // Setup gamepad XBox 1
-      JoystickButton coDriverA = new JoystickButton(coDriverBox, 1);
-      JoystickButton coDriverB = new JoystickButton(coDriverBox, 2);
-      JoystickButton coDriverX = new JoystickButton(coDriverBox, 3);
+      // Co driver button box
+      JoystickButton coDriverX = new JoystickButton(coDriverBox, 1);
+      JoystickButton coDriverA = new JoystickButton(coDriverBox, 2);
+      JoystickButton coDriverB = new JoystickButton(coDriverBox, 3);
       JoystickButton coDriverY = new JoystickButton(coDriverBox, 4);
-      JoystickButton coDriverLeftTrigger = new JoystickButton(coDriverBox, 5);
-      JoystickButton coDriverRightTrigger = new JoystickButton(coDriverBox, 6);
+      JoystickButton coDriverLB = new JoystickButton(coDriverBox, 5);
+      JoystickButton coDriverRB = new JoystickButton(coDriverBox, 6);
 
       JoystickButton coDriverBack = new JoystickButton(coDriverBox, 7);
       JoystickButton coDriverStart = new JoystickButton(coDriverBox, 8);
+
+      JoystickButton coDriverLT = coDriverBox.getButtonLT();
+      JoystickButton coDriverR1 = coDriverBox.getButtonR1();
+      JoystickButton coDriverRT = coDriverBox.getButtonRT();
+      JoystickButton coDriverL1 = coDriverBox.getButtonL1();
+
 
       public POVButton coDriverUpButton = new POVButton(coDriverBox, 0);
       public POVButton coDriverRightButton = new POVButton(coDriverBox, 90);
@@ -233,20 +239,15 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 6).whileHeld(() -> m_shooter.setOKShootDriver())
                         .whenReleased(() -> m_shooter.notOKShootDriver());
 
-            // front of power port one meter back
-            new JoystickButton(m_driverController, 7).whenPressed(new SetActiveTeleopShootData(0));
+            // new JoystickButton(m_driverController, 7).whenPressed(
 
-            // on center line 1 meter behind initiation line
-            new JoystickButton(m_driverController, 8).whenPressed(new SetActiveTeleopShootData(1));
+            // new JoystickButton(m_driverController, 8).whenPressed(
 
-            // trench in front of control panel
-            new JoystickButton(m_driverController, 9).whenPressed(new SetActiveTeleopShootData(2));
+            // new JoystickButton(m_driverController, 9).whenPressed(
 
-            // trench behind control panel
-            new JoystickButton(m_driverController, 10).whenPressed(new SetActiveTeleopShootData(3));
+            // new JoystickButton(m_driverController, 10).whenPressed(
 
-            // low goal shot
-            new JoystickButton(m_driverController, 11).whenPressed(new SetActiveTeleopShootData(4));
+            // new JoystickButton(m_driverController, 11).whenPressed(
 
             // Hold to shoot all
             new JoystickButton(m_driverController, 12).whileHeld(() -> m_shooter.shootAll())
@@ -261,11 +262,25 @@ public class RobotContainer {
             driverRightButton.whenPressed(() -> m_turret.aimFurtherRight());// shoot left
 
             /**
-             * Co driver has miscellaneous functions
-             * 
+             * co driver sets the tilt and turret for shoot positions
              * 
              * 
              */
+
+            // front of power port one meter back
+            coDriverBack.whenPressed(new SetActiveTeleopShootData(m_shooter, 0));
+
+            // on center line 1 meter behind initiation line (shield gen)
+            coDriverA.whenPressed(new SetActiveTeleopShootData(m_shooter, 1));
+
+            // trench in front of control panel
+            coDriverY.whenPressed(new SetActiveTeleopShootData(m_shooter, 2));
+
+            // trench behind control panel
+            coDriverR1.whenPressed(new SetActiveTeleopShootData(m_shooter, 3));
+
+            // low goal shot
+            coDriverL1.whenPressed(new SetActiveTeleopShootData(m_shooter, 4));
 
             /**
              * Setup gamepad is used for testing functions

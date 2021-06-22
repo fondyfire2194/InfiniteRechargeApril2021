@@ -66,9 +66,10 @@ public class AutoModeTrench extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 //
 
-                super(new ResetEncoders(drive), new ResetGyro(drive), new ParallelCommandGroup(new ParallelCommandGroup(
-                                new PickupMove(drive, retractDistance, -.4), new PositionTilt(tilt, tiltAngle),
-                                new PositionTurret(turret, turretAngle))),
+                super(new ResetEncoders(drive), new ResetGyro(drive), new ParallelCommandGroup(
+                                new ParallelCommandGroup(new PickupMove(drive, retractDistance, -.4),
+                                                new PositionTilt(tilt, tiltAngle + tiltOffset),
+                                                new PositionTurret(turret, turretAngle + turretOffset))),
 
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),

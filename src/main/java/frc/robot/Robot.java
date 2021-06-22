@@ -222,7 +222,7 @@ public class Robot extends TimedRobot {
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
         m_robotContainer.m_shooter).schedule(true);
-    new SetActiveTeleopShootData(2).schedule(true);
+    new SetActiveTeleopShootData(m_robotContainer.m_shooter, 2).schedule(true);
 
   }
 
