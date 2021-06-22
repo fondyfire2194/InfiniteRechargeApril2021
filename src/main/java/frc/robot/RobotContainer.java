@@ -32,7 +32,6 @@ import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
 import frc.robot.commands.Shooter.JogShooter;
-import frc.robot.commands.Shooter.LockAndShoot;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.SetActiveTeleopShootData;
 import frc.robot.commands.Shooter.ShootCells;
@@ -41,7 +40,6 @@ import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.TiltJog;
-import frc.robot.commands.Tilt.TiltSeekVision;
 import frc.robot.commands.Tilt.TiltWaitForStop;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
@@ -224,7 +222,6 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 2).whileHeld(
                         new ShootCells(m_shooter, m_tilt, m_turret, m_limelight, m_transport, m_compressor, 100));
 
-
             new JoystickButton(m_driverController, 5).whenPressed(new StartShooterWheels(m_shooter, 10));
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport));
@@ -233,14 +230,26 @@ public class RobotContainer {
                         .whenPressed(new PositionTurret(m_turret, 0))
                         .whenPressed(() -> m_limelight.setPipeline(m_limelight.driverPipeline));
 
-            new JoystickButton(m_driverController, 6).whenPressed(new TiltSeekVision(m_tilt, m_limelight));
-
-            new JoystickButton(m_driverController, 12).whileHeld(() -> m_shooter.setOKShootDriver())
+            new JoystickButton(m_driverController, 6).whileHeld(() -> m_shooter.setOKShootDriver())
                         .whenReleased(() -> m_shooter.notOKShootDriver());
 
-            // new JoystickButton(m_driverController, 12).whileHeld(
+            // front of power port one meter back
+            new JoystickButton(m_driverController, 7).whenPressed(new SetActiveTeleopShootData(0));
 
-            new JoystickButton(m_driverController, 11).whileHeld(() -> m_shooter.shootAll())
+            // on center line 1 meter behind initiation line
+            new JoystickButton(m_driverController, 8).whenPressed(new SetActiveTeleopShootData(1));
+
+            // trench in front of control panel
+            new JoystickButton(m_driverController, 9).whenPressed(new SetActiveTeleopShootData(2));
+
+            // trench behind control panel
+            new JoystickButton(m_driverController, 10).whenPressed(new SetActiveTeleopShootData(3));
+
+            // low goal shot
+            new JoystickButton(m_driverController, 11).whenPressed(new SetActiveTeleopShootData(4));
+
+            // Hold to shoot all
+            new JoystickButton(m_driverController, 12).whileHeld(() -> m_shooter.shootAll())
                         .whenReleased(() -> m_shooter.shootOne());
 
             driverUpButton.whenPressed(() -> m_tilt.aimHigher());
@@ -257,24 +266,6 @@ public class RobotContainer {
              * 
              * 
              */
-
-            coDriverA.whenPressed(new SetActiveTeleopShootData(4));
-
-            // Shoot for inner goal from 1 meter behind intiation line
-            coDriverB.whenPressed(new SetActiveTeleopShootData(1));
-
-            // Trench Shot drive under and just beyond the control panel robot parallel to
-            // side wall
-
-            coDriverBack.whenPressed(new SetActiveTeleopShootData(2));
-
-            coDriverBack.whenPressed(new SetActiveTeleopShootData(1));
-
-            // coDriverDownButton.whenPressed(
-            // coDriverUpButton.whenPressed(
-            // coDriverLeftButton.whileHeld(
-            // coDriverRightButton.whenPressed(
-            // coDriverStart.whenPressed(
 
             /**
              * Setup gamepad is used for testing functions
@@ -296,9 +287,6 @@ public class RobotContainer {
                         .whenReleased(() -> m_transport.stopRightBeltMotor());
 
             setupBack.whileHeld(new StartIntake(m_intake, m_transport)).whenReleased(new StopIntake(m_intake));
-
-            // setupStart.whileHeld(() -> m_controlPanel.turnWheelMotor())
-            // .whenReleased(() -> m_controlPanel.stopWheelMotor());
 
             setupX.whileHeld(getJogShooterCommand());
 

@@ -4,7 +4,7 @@
 
 package frc.robot.commands.Shooter;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand; 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.ShootData;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -24,30 +24,42 @@ public class SetActiveTeleopShootData extends InstantCommand {
   public void initialize() {
     switch (m_value) {
       case 0:
-      ShootData.activeTeleopShootSpeed = ShootData.centerPowerPortConstants.shootSpeed;
-      ShootData.activeTeleopTurretAngle = ShootData.centerPowerPortConstants.turretAngle;
-      ShootData.activeTeleopTurretOffset = ShootData.centerPowerPortConstants.turretOffset;
-      ShootData.activeTeleopTiltAngle = ShootData.centerPowerPortConstants.tiltAngle;
-      ShootData.activeTeleopTiltOffset = ShootData.centerPowerPortConstants.tiltOffset;
-      break;
-  
+        ShootData.activeTeleopShootSpeed = ShootData.centerPowerPortConstants.shootSpeed;
+        ShootData.activeTeleopTurretAngle = ShootData.centerPowerPortConstants.turretAngle;
+        ShootData.activeTeleopTurretOffset = ShootData.centerPowerPortConstants.turretOffset;
+        ShootData.activeTeleopTiltAngle = ShootData.centerPowerPortConstants.tiltAngle;
+        ShootData.activeTeleopTiltOffset = ShootData.centerPowerPortConstants.tiltOffset;
+        break;
+
       case 1:
-        ShootData.activeTeleopShootSpeed = ShootData.shieldGenConstants.shootSpeed1;
-        ShootData.activeTeleopTurretAngle = ShootData.shieldGenConstants.turretAngle1;
-        ShootData.activeTeleopTurretOffset = ShootData.shieldGenConstants.turretOffset1;
-        ShootData.activeTeleopTiltAngle = ShootData.shieldGenConstants.tiltAngle1;
-        ShootData.activeTeleopTiltOffset = ShootData.shieldGenConstants.tiltOffset1;
+        ShootData.activeTeleopShootSpeed = ShootData.shieldGenConstants.shootSpeed;
+        ShootData.activeTeleopTurretAngle = ShootData.shieldGenConstants.turretAngle;
+        ShootData.activeTeleopTurretOffset = ShootData.shieldGenConstants.turretOffset;
+        ShootData.activeTeleopTiltAngle = ShootData.shieldGenConstants.tiltAngle;
+        ShootData.activeTeleopTiltOffset = ShootData.shieldGenConstants.tiltOffset;
         break;
 
-        case 2:
-        ShootData.activeTeleopShootSpeed = ShootData.trenchShotConstants.shootSpeed1;
-        ShootData.activeTeleopTurretAngle = ShootData.trenchShotConstants.turretAngle1;
-        ShootData.activeTeleopTurretOffset = ShootData.trenchShotConstants.turretOffset1;
-        ShootData.activeTeleopTiltAngle = ShootData.trenchShotConstants.tiltAngle1;
-        ShootData.activeTeleopTiltOffset = ShootData.trenchShotConstants.tiltOffset1;
+      case 2:
+        ShootData.activeTeleopShootSpeed = ShootData.trenchShotConstants.shootSpeed;
+        ShootData.activeTeleopTurretAngle = ShootData.trenchShotConstants.turretAngle;
+        ShootData.activeTeleopTurretOffset = ShootData.trenchShotConstants.turretOffset;
+        ShootData.activeTeleopTiltAngle = ShootData.trenchShotConstants.tiltAngle;
+        ShootData.activeTeleopTiltOffset = ShootData.trenchShotConstants.tiltOffset;
         break;
 
-  
+      case 3:
+        ShootData.activeTeleopShootSpeed = ShootData.behindControlPanelShotConstants.shootSpeed;
+        ShootData.activeTeleopTurretAngle = ShootData.behindControlPanelShotConstants.turretAngle;
+        ShootData.activeTeleopTurretOffset = ShootData.behindControlPanelShotConstants.turretOffset;
+        ShootData.activeTeleopTiltAngle = ShootData.behindControlPanelShotConstants.tiltAngle;
+        ShootData.activeTeleopTiltOffset = ShootData.behindControlPanelShotConstants.tiltOffset;
+        break;
+
+      case 4:
+
+        ShootData.activeTeleopShootSpeed = ShootData.lowShotConstants.shootSpeed;
+        ShootData.activeTeleopTurretAngle = ShootData.lowShotConstants.turretAngle;
+        ShootData.activeTeleopTurretAngle = ShootData.lowShotConstants.tiltAngle;
 
       default:
         break;

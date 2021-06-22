@@ -25,7 +25,7 @@ public class CalculateTargetDistance extends CommandBase {
   private double targetHeight = FieldConstants.PORT_CENTER_HEIGHT;
   private double heightDifference;
 
-  private double m_limelightVerticalAngle;
+  private double m_cameraVerticalError;
   private double cameraAngle;
   private double cameraHeightSlope = (maxCameraHeight - baseCameraHeight) / 30;// inches per tilt degree
 
@@ -88,16 +88,16 @@ public class CalculateTargetDistance extends CommandBase {
 
     if (m_limelight.useVision && (m_limelight.getIsTargetFound() || RobotBase.isSimulation())) {
 
-      m_limelightVerticalAngle = m_limelight.getdegVerticalToTarget() - m_limelight.verticalOffset;
+      m_cameraVerticalError = m_limelight.getdegVerticalToTarget() - m_limelight.verticalOffset;
 
       if (RobotBase.isSimulation()) {
-        m_limelightVerticalAngle = 0;
+        m_cameraVerticalError = 0;
 
       }
       // tilt counts up camera angle counts down
       cameraAngle = m_tilt.getCameraAngle();
 
-      double tanAngleSum = Math.tan((Math.toRadians(m_limelightVerticalAngle + cameraAngle)));
+      double tanAngleSum = Math.tan((Math.toRadians(m_cameraVerticalError + cameraAngle)));
 
       m_shooter.calculatedCameraDistance = (heightDifference) / tanAngleSum;
 

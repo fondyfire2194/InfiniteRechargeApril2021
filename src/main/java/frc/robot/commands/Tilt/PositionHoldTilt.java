@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Tilt;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -14,28 +15,30 @@ public class PositionHoldTilt extends CommandBase {
 
   private final RevTiltSubsystem m_tilt;
   private final LimeLight m_limelight;
-private final RevShooterSubsystem m_shooter;
+  private final RevShooterSubsystem m_shooter;
   private boolean targetSeen;
   private int visionFoundCounter;
-  private double limelightVerticalAngle;
+  private double cameraVerticalError;
   private final int filterCount = 3;
   private double deadband = .01;
+  private int loopctr;
+  private double lastVerticalError;
 
   public PositionHoldTilt(RevTiltSubsystem tilt, RevShooterSubsystem shooter, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
     m_shooter = shooter;
     m_limelight = limelight;
-
+    visionFoundCounter = 0;
     addRequirements(m_tilt);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    // m_tilt.tiltLockController.reset();
     if (!m_limelight.useVision)
-    visionFoundCounter = 0;
+      visionFoundCounter = 0;
 
     if (m_tilt.validTargetSeen && m_limelight.useVision)
       visionFoundCounter = filterCount;
@@ -47,6 +50,12 @@ private final RevShooterSubsystem m_shooter;
   @Override
   public void execute() {
 
+    if (visionFoundCounter < 0)
+      visionFoundCounter = 0;
+    if (visionFoundCounter > filterCount)
+      visionFoundCounter = filterCount;
+    loopctr++;
+    SmartDashboard.putNumber("PHTLC", loopctr);
     if (!m_limelight.useVision)
       visionFoundCounter = 0;
 
@@ -54,26 +63,29 @@ private final RevShooterSubsystem m_shooter;
 
     if (targetSeen && m_tilt.validTargetSeen) {
 
-      limelightVerticalAngle = m_limelight.getdegVerticalToTarget();
+      cameraVerticalError = m_limelight.getdegVerticalToTarget();
 
-      m_tilt.adjustedTargetAngle = limelightVerticalAngle + m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffset
+      m_tilt.adjustedVerticalError = cameraVerticalError + m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffset
           + m_tilt.testVerticalOffset;
 
       m_limelight
           .setVerticalOffset(-(m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffset + m_tilt.testVerticalOffset));
 
     } else {
-      limelightVerticalAngle = 0;
-      m_tilt.adjustedTargetAngle = 0;
+      cameraVerticalError = 0;
+      m_tilt.adjustedVerticalError = 0;
       m_limelight.setVerticalOffset(0);
     }
 
-    if (Math.abs(m_tilt.adjustedTargetAngle) < deadband)
-      m_tilt.adjustedTargetAngle = 0;
+    if (Math.abs(m_tilt.adjustedVerticalError) < deadband)
+      m_tilt.adjustedVerticalError = 0;
 
     if (targetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
     }
+
+    SmartDashboard.putNumber("VC", visionFoundCounter);
+    SmartDashboard.putBoolean("targetSeen", targetSeen);
 
     if (m_limelight.useVision && visionFoundCounter >= filterCount)
       m_tilt.validTargetSeen = true;
@@ -85,16 +97,19 @@ private final RevShooterSubsystem m_shooter;
     if (!m_limelight.useVision || !targetSeen && visionFoundCounter < 0) {
       m_tilt.validTargetSeen = false;
       visionFoundCounter = 0;
-      limelightVerticalAngle = 0;
+      cameraVerticalError = 0;
     }
 
     double motorTurns = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
     m_tilt.motorEndpointDegrees = motorTurns;
 
-    if (!m_tilt.validTargetSeen ||m_shooter.isShooting) {
+    if (!m_shooter.shotInProgress)
+      lastVerticalError = m_tilt.adjustedVerticalError;
+
+    if (!m_tilt.validTargetSeen) {
       m_tilt.goToPositionMotionMagic(motorTurns);
     } else {
-      m_tilt.visionOnTarget = m_tilt.lockTiltToVision(m_tilt.adjustedTargetAngle);
+      m_tilt.visionOnTarget = m_tilt.lockTiltToVision(lastVerticalError);
       m_tilt.targetAngle = m_tilt.getAngle();
     }
 

@@ -64,55 +64,48 @@ public class ShootData {
 
     public final static class centerPowerPortConstants {
         public static double retractDistance = -1;
-        public static double tiltAngle = getTiltAngle(4 + frontOfRobotToCenterofTiltTurret);// 22.7;//
+        public static double tiltAngle = 21.6;// getTiltAngle(4 + frontOfRobotToCenterofTiltTurret);// 22.7;//
         public static double turretAngle = 0;
         public static double shootSpeed = 33;
-        public static double tiltOffset = 0;
+        public static double tiltOffset = 2;
         public static double turretOffset = 0;
-        public static double shootTime = 3;
+        public static double shootTime = 4;
 
     }
 
     public final static class shieldGenConstants {
         private static double yfromPort = Units.inchesToMeters((74));
-        public static double retractDistance = -1;
-        public static double tiltAngle = getTiltAngle(
-                getFloorDistance(4 + frontOfRobotToCenterofTiltTurret, yfromPort));// 18
-        public static double turretAngle = getTurretAngleXY(4 + frontOfRobotToCenterofTiltTurret, yfromPort);// 32
-        public static double shootSpeed = 23;/// ?
+        public static double retractDistance = -4;
+        public static double tiltAngle = 25;
+        public static double turretAngle = 39;
+        public static double shootSpeed = 38;/// ?
         public static double tiltOffset = 0;/// ?
         public static double turretOffset = 0;/// ?
         public static double shootTime = 5;
 
-        public static double retractDistance1 = -1.5;/// ?
-        public static double tiltAngle1 = getTiltAngle(
-                getFloorDistance(5.5 + frontOfRobotToCenterofTiltTurret, yfromPort));// 16.8
-        public static double turretAngle1 = getTurretAngleXY(5.5 + frontOfRobotToCenterofTiltTurret, yfromPort);// 33.75
-        public static double shootSpeed1 = 23;/// ?
-        public static double tiltOffset1 = 0;/// ?
-        public static double turretOffset1 = 0;/// ?
-        public static double shootTime1 = 5;
-
     }
 
     public final static class trenchShotConstants {
-        public static double retractDistance = -1.5;
-        public static double tiltAngle = getTiltAngle(
-                getFloorDistance(5 + frontOfRobotToCenterofTiltTurret, FieldMap.trenchCLtoGoalY));
-        public static double turretAngle = getTurretAngleXY(4.5 + frontOfRobotToCenterofTiltTurret,
-                FieldMap.trenchCLtoGoalY);
-        public static double shootSpeed = 23;// ** */
-        public static double tiltOffset = 0;//
-        public static double turretOffset = 0;//
+        public static double retractDistance = -4;
+        public static double tiltAngle = 15;
+
+        public static double turretAngle = -21;
+        public static double shootSpeed = 35;
+        public static double tiltOffset = 7;
+        public static double turretOffset = 1;
         public static double shootTime = 5;
 
-        public static double retractDistance1 = -2.5;
-        public static double tiltAngle1 = getTiltAngle(getFloorDistance(7.5, FieldMap.trenchCLtoGoalY));
-        public static double turretAngle1 = getTurretAngleXY(7.5, FieldMap.trenchCLtoGoalY);
-        public static double shootSpeed1 = 23;//
-        public static double tiltOffset1 = -2;//
-        public static double turretOffset1 = 0;//
-        public static double shootTime1 = 5;
+    }
+
+    public final static class behindControlPanelShotConstants {
+        
+        public static double tiltAngle = 15;
+
+        public static double turretAngle = -15;
+        public static double shootSpeed = 40;
+        public static double tiltOffset = 7;
+        public static double turretOffset = 1;
+        public static double shootTime = 5;
 
     }
 
@@ -128,8 +121,6 @@ public class ShootData {
         SmartDashboard.putNumber("TA", centerPowerPortConstants.tiltAngle);
         SmartDashboard.putNumber("TATS", trenchShotConstants.tiltAngle);
         SmartDashboard.putNumber("TUTS", trenchShotConstants.turretAngle);
-
-
 
     }
 

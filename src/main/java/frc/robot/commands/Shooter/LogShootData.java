@@ -10,7 +10,6 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
-import frc.robot.Robot;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
@@ -22,9 +21,11 @@ public class LogShootData extends CommandBase {
    */
   public final String[] names = { "Step", "CameraDistance", "BBHeight", "BBWidth", "TargetArea", "RobotSpeed",
       "TiltAngle", "VertToTarget", "Tilt+Vert", "TargetVOff", "DriverVOff", "TurretAngle", "HorToTarget", "Turret+Hor",
-      "TargetHOff", "DriverVOff", "ReqdSpeed", "ActSpeed" };
+      "TargetHOff", "DriverVOff", "ReqdSpeed", "ActSpeed", "Battery", "TurretInPosition", "TiltInPosition", "VertOK",
+      "HorOK", "ShooterAtSpeed", "IsShooting", "ValidTargetSeen" };
   public static String[] units = { "Number", "Meters", "Pixels", "Pixels", "SqPixels", "MPS", "Degrees", "Degrees",
-      "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "MPS", "MPS" };
+      "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "MPS", "MPS", "Volts",
+      "Bool", "Bool", "Bool", "Bool", "Bool", "Bool", "Bool" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -34,6 +35,14 @@ public class LogShootData extends CommandBase {
   private final RevTurretSubsystem m_turret;
   private final RevTiltSubsystem m_tilt;
   private final RevShooterSubsystem m_shooter;
+
+  private double tiltOnTarget;
+  private double turretOnTarget;
+  private double vertOnTarget;
+  private double horOnTarget;
+  private double isShooting;
+  private double validTargetSeen;
+  private double shooterAtSpeed;
 
   public LogShootData(RevDrivetrain drive, RevTurretSubsystem turret, RevTiltSubsystem tilt,
       RevShooterSubsystem shooter, LimeLight limelight) {
@@ -74,13 +83,45 @@ public class LogShootData extends CommandBase {
     if (m_shooter.logTrigger && loopCtr >= 5) {
       loopCtr = 0;
       step++;
+      if (m_tilt.atTargetAngle())
+        tiltOnTarget = 1;
+      else
+        tiltOnTarget = 0;
+
+      if (m_turret.atTargetAngle())
+        turretOnTarget = 1;
+      else
+        turretOnTarget = 0;
+
+      if (m_limelight.getHorOnTarget(1))
+        horOnTarget = 1;
+      else
+        horOnTarget = 0;
+
+      if (m_limelight.getVertOnTarget(1))
+        vertOnTarget = 1;
+      else
+        vertOnTarget = 0;
+
+      if (m_tilt.validTargetSeen)
+        validTargetSeen = 1;
+      else
+        validTargetSeen = 0;
+
+      if (m_shooter.atSpeed())
+        shooterAtSpeed = 1;
+      else
+        shooterAtSpeed = 0;
+
       m_shooter.shootLogger.writeData((double) step, m_shooter.calculatedCameraDistance,
           m_limelight.getBoundingBoxHeight(), m_limelight.getBoundingBoxWidth(), m_limelight.getTargetArea(),
           m_drive.getLeftRate(), m_tilt.getAngle(), m_limelight.getdegVerticalToTarget(),
           m_tilt.getAngle() + m_limelight.getdegVerticalToTarget(), m_tilt.targetVerticalOffset,
           m_tilt.driverVerticalOffset, m_turret.getAngle(), m_limelight.getdegRotationToTarget(),
           m_turret.getAngle() + m_limelight.getdegRotationToTarget(), m_turret.targetHorizontalOffset,
-          m_turret.driverHorizontalOffset, m_shooter.requiredMps, m_shooter.getMPS(), m_shooter.getLeftAmps());
+          m_turret.driverHorizontalOffset, m_shooter.requiredMps, m_shooter.getMPS(), m_shooter.getLeftAmps(),
+          m_shooter.getBatteryVoltage(), turretOnTarget, tiltOnTarget, horOnTarget, vertOnTarget, shooterAtSpeed,
+          isShooting, validTargetSeen);
     }
 
   }

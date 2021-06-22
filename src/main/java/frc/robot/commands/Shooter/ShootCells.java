@@ -7,11 +7,15 @@
 
 package frc.robot.commands.Shooter;
 
+import org.photonvision.LEDMode;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
+import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
@@ -35,12 +39,15 @@ public class ShootCells extends CommandBase {
   private boolean okToShoot;
 
   private int cellsShot;
-  private boolean shotInProgress;
   private double startTime;
   private boolean getNextCell;
   private boolean cellAvailable;
   private boolean cellReleased;
   private double cellReleasedStartTime;
+  private double[] speedAndOffsetFromCamera;
+  private double speedFromCamera;
+  private double offsetFromCamera;
+  private int loopctr;
 
   public ShootCells(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret, LimeLight limelight,
       CellTransportSubsystem transport, Compressor compressor, double time) {
@@ -58,7 +65,7 @@ public class ShootCells extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    SmartDashboard.putBoolean("SHC", true);
     startTime = Timer.getFPGATimestamp();
     m_shooter.shootTime = m_time;
     m_compressor.stop();
@@ -67,22 +74,34 @@ public class ShootCells extends CommandBase {
     cellsShot = 0;
     shotStartTime = 0;
     cellAvailable = false;
+    m_limelight.setLEDMode(LedMode.kpipeLine);
+    m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.useVision = true;
+    m_shooter.startShooter = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    SmartDashboard.putBoolean("VALTAR", m_tilt.validTargetSeen);
 
-    m_shooter.startShooter = true;
-
+    loopctr++;
+    SmartDashboard.putNumber("SHOOTWK", loopctr);
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
-    if ((m_shooter.atSpeed() && m_tilt.isStopped() && m_turret.isStopped() && m_limelight.getHorOnTarget(.5)
-        && m_limelight.getVertOnTarget(.5)) || (m_shooter.driverOKShoot && m_shooter.atSpeed())
+    if (!inAuto) {
+      speedAndOffsetFromCamera = m_shooter.calculateMPSFromDistance(m_shooter.calculatedCameraDistance);
+      m_shooter.cameraCalculatedSpeed = speedAndOffsetFromCamera[0];
+      offsetFromCamera = speedAndOffsetFromCamera[1];
+    }
+
+    if (m_shooter.atSpeed()
+        && ((m_limelight.getHorOnTarget(1.) && m_limelight.getVertOnTarget(1.)) || m_shooter.driverOKShoot)
         || m_shooter.isShooting == true) {
 
       m_shooter.isShooting = true;
+
+      SmartDashboard.putBoolean("SHIS", m_shooter.isShooting);
 
     }
 
@@ -94,34 +113,34 @@ public class ShootCells extends CommandBase {
       m_limelight.useVision = false;
     }
 
-    if (m_shooter.isShooting && cellAvailable && !shotInProgress) {
+    if (m_shooter.isShooting && cellAvailable && !m_shooter.shotInProgress) {
       shotStartTime = Timer.getFPGATimestamp();
-      shotInProgress = true;
+      m_shooter.shotInProgress = true;
       cellsShot++;
       cellAvailable = false;
 
     }
 
     // if (shotInProgress) {
-    //   m_limelight.setSnapshot(Snapshot.kon);
+    // m_limelight.setSnapshot(Snapshot.kon);
     // } else {
-    //   m_limelight.setSnapshot(Snapshot.koff);
+    // m_limelight.setSnapshot(Snapshot.koff);
     // }
 
-    if (shotInProgress && Timer.getFPGATimestamp() > (shotStartTime + shotTime) && m_shooter.atSpeed()) {
-      shotInProgress = false;
+    if (m_shooter.shotInProgress && Timer.getFPGATimestamp() > (shotStartTime + shotTime) && m_shooter.atSpeed()) {
+      m_shooter.shotInProgress = false;
     }
 
     okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
 
-    getNextCell = okToShoot && !shotInProgress && !cellAvailable && m_shooter.atSpeed();
+    getNextCell = okToShoot && !m_shooter.shotInProgress && !cellAvailable && m_shooter.atSpeed();
 
     if (getNextCell || !cellAvailable) {
       releaseOneCell();
     }
 
     // SmartDashboard.putBoolean("OKShoot", okToShoot);
-    // SmartDashboard.putBoolean("SHIP", shotInProgress);
+    // SmartDashboard.putBoolean("SHIP", m_shooter.shotInProgress);
     // SmartDashboard.putBoolean("SHSTD", shootStarted);
     // SmartDashboard.putBoolean("CAvail ", cellAvailable);
     // SmartDashboard.putNumber("CLSSHT", cellsShot);
@@ -135,7 +154,7 @@ public class ShootCells extends CommandBase {
     m_transport.stopBelts();
     m_transport.stopRollers();
     m_compressor.start();
-    shotInProgress = false;
+    m_shooter.shotInProgress = false;
     m_shooter.endShootFile = true;
     m_shooter.isShooting = false;
 
@@ -144,7 +163,7 @@ public class ShootCells extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return cellsShot > 6;
+    return cellsShot > (int) m_time;
   }
 
   public void releaseOneCell() {

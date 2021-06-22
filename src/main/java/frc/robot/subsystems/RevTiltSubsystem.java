@@ -52,7 +52,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double targetVerticalOffset;
     public double driverVerticalOffset;
     public boolean validTargetSeen;
-    public double adjustedTargetAngle;
+    public double adjustedVerticalError;
     private final static double pivotDistance = 10.5;// inches
     private final double[] pinDistances = { 2.1, 3.0842519685, 4.068503937, 5.0527559055, 6.037007874, 7.0212598425,
             8.005511811 };
@@ -437,8 +437,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         tiltLockController.setI(Pref.getPref("TiLkI"));
         tiltLockController.setD(Pref.getPref("TiLkD"));
         lizset = Pref.getPref("TiLkIZ");
+
         tiltLockController.setIntegratorRange(-lizset, lizset);
-        tiltLockController.setTolerance(.5);
+        tiltLockController.setTolerance(1.);
     }
 
     private void checkTune() {
@@ -474,8 +475,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
             lastLockTuneOn = true;
         }
 
-        if (lastLockTuneOn)
+        if (lastLockTuneOn) {
             lastLockTuneOn = lockTuneOn;
+            getLockGains();
+        }
 
     }
 
@@ -490,8 +493,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public void getLockGains() {
         lpset = tiltLockController.getP();
-        iset = tiltLockController.getI();
-        dset = tiltLockController.getD();
+        liset = tiltLockController.getI();
+        ldset = tiltLockController.getD();
+        
+ 
     }
 
 }

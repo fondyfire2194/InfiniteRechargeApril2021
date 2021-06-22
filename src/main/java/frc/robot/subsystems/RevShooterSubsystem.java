@@ -18,6 +18,7 @@ import org.snobotv2.sim_wrappers.ISimWrapper;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,8 +57,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean startShooter;
 
     public int teleopSetupIndex = 3;
-    public String[] teleopSetupPosition = new String[] { "InitLineStraightOn", "ShieldGenerator", "RearTrench",
-            "Driver", " ", "Low Goal ", " ", " " };
+    public String[] teleopSetupPosition = new String[] { "InitLineStraightOn", "ShieldGenerator",
+            "TrenchFrontOfControlPanel", "Trench Behind Control Panel", "Low Goal ", " ", " " };
 
     public double teleopSetupShooterSpeed;
 
@@ -68,6 +69,10 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public SimpleCSVLogger shootSetupLogger;
 
     public boolean logSetup;
+
+    public boolean shotInProgress;
+
+    public PowerDistributionPanel pdp = new PowerDistributionPanel();
 
     private final int VELOCITY_SLOT = 0;
     /**
@@ -110,12 +115,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
      */
 
     public double[] speedBreakMeters = new double[] { 2, 4, 6, 8, 10 };
-    public double[] tiltOffsetFromCameraDistance = new double[] { 0, 1, 2, 4, 6 };
-    public double[] MPSFromCameraDistance = new double[] { 15, 20, 30, 35, 45 };
-
-    public double[] speedBreakDegrees = new double[] { 30, 28, 20, 15, 12, 10, 5, 0 };
-    public double[] tiltOffsetFromCameraAngle = new double[] { 6, 5, 4, 3, 2, 1, 0 };
-    public double[] MPSFromCameraAngle = new double[] { 45, 40, 35, 30, 25, 15, 10 };
+    public double[] MPSFromCameraDistance = new double[] { 25, 30, 35, 40, 45 };
+    public double[] tiltOffsetFromCameraDistance = new double[] { 0, 1, 2, 4, 7 };
+    public double[] minOffsetFromCameraDistance = new double[] { 0, 0, 1, 2, 3 };
 
     private double minimumOffsetInRange = 2;
 
@@ -145,6 +147,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean logTrigger;
     public double testVertOffset;
     public int itemsLogged;
+
+    private double testDistance = 2;
 
     public boolean logSetupFileOpen;
 
@@ -180,11 +184,11 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
             shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
                     .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 15, "Max", 50)).getEntry();
-         
+
         }
         tuneGains();
         getGains();
-        requiredMps = 12;
+        requiredMps = 23;
         shootOne = true;
         simpleCSVLogger = new SimpleCSVLogger();
         shootLogger = new SimpleCSVLogger();
@@ -227,13 +231,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             if (useCameraSpeed) {
                 requiredMps = cameraCalculatedSpeed;
             }
-
         }
 
-        double[] angleSpeed = calculateMPSFromAngle(18);
-
-        SmartDashboard.putNumber("ASPE", angleSpeed[0]);
-        SmartDashboard.putNumber("ASTO", angleSpeed[1]);
     }
 
     public boolean checkCAN() {
@@ -352,6 +351,11 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     }
 
+    public double getBatteryVoltage() {
+
+        return pdp.getVoltage();
+    }
+
     public double[] calculateMPSFromDistance(double distance) {
 
         double[] temp = new double[] { 0, 0 };
@@ -363,6 +367,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         int distanceLength = speedBreakMeters.length;
         double minimumDistance = speedBreakMeters[0];
         double maximumDistance = speedBreakMeters[distanceLength - 1];
+
+        SmartDashboard.putNumber("Amind", minimumDistance);
+        SmartDashboard.putNumber("Amaxd", maximumDistance);
 
         double pu;
         double speedRange;
@@ -376,15 +383,14 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             distance = maximumDistance;
 
         for (int i = 0; i < distanceLength - 1; i++) {
-            if (distance >= speedBreakMeters[i] && distance <= speedBreakMeters[i + 1]) {
+            if (distance >= speedBreakMeters[i] && distance < speedBreakMeters[i + 1]) {
                 temp[0] = MPSFromCameraDistance[i];
                 temp[1] = tiltOffsetFromCameraDistance[i];
 
                 distanceRange = speedBreakMeters[i + 1] - speedBreakMeters[i];
                 double distanceFromEndOfRange = speedBreakMeters[i + 1] - distance;
- 
-                pu = distanceFromEndOfRange/ distanceRange;
-                
+
+                pu = distanceFromEndOfRange / distanceRange;
 
                 if (interpolateSpeed) {
 
@@ -395,70 +401,14 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
                 }
 
                 if (interpolateOffsets) {
-
+                    minimumOffsetInRange = minOffsetFromCameraDistance[i];
                     offsetRange = tiltOffsetFromCameraDistance[i] - minimumOffsetInRange;
+                    SmartDashboard.putNumber("AMINOIR", minimumOffsetInRange);
+                    SmartDashboard.putNumber("AI", i);
+                    SmartDashboard.putNumber("AOFF", tiltOffsetFromCameraDistance[i]);
 
                     unitAdder = offsetRange * pu;
                     temp[1] += unitAdder;
-                }
-                break;
-            }
-
-        }
-        return temp;
-    }
-
-    public double[] calculateMPSFromAngle(double angle) {
-
-        double[] temp = new double[] { 0, 0 };
-        /**
-         * The arrays have distances at which speed step changes
-         * 
-         * 
-         */
-        int angleLength = speedBreakDegrees.length;
-        double firstAngle = speedBreakDegrees[0];
-        double lastAngle = speedBreakDegrees[angleLength - 1];
-
-        double perUnitChange;
-        double speedRange;
-        double distanceFromEndOfRange;
-        double angleRange;
-        double offsetRange;
-
-        if (angle > firstAngle)
-            angle = firstAngle;
-        if (angle < lastAngle)
-            angle = lastAngle;
-
-        for (int i = 0; i < angleLength - 1; i++) {
-            if (angle < speedBreakDegrees[i] && angle >= speedBreakDegrees[i + 1]) {
-                temp[0] = MPSFromCameraAngle[i];
-                temp[1] = tiltOffsetFromCameraAngle[i];
-
-                angleRange = speedBreakDegrees[i] - speedBreakDegrees[i + 1];
-                distanceFromEndOfRange = angle - speedBreakDegrees[i + 1];
-
-                if (interpolateSpeed) {
-
-                    speedRange = MPSFromCameraAngle[i] - MPSFromCameraAngle[i + 1];
-                    perUnitChange = speedRange / angleRange;
-                    double addOn = distanceFromEndOfRange * perUnitChange;
-                    temp[0] = MPSFromCameraAngle[i + 1] + addOn;
-
-                }
-
-                if (interpolateOffsets) {
-
-                    offsetRange = tiltOffsetFromCameraAngle[i] - minimumOffsetInRange;
-                    perUnitChange = offsetRange / angleRange;
-
-                    SmartDashboard.putNumber("AOR", offsetRange);
-                    SmartDashboard.putNumber("PUC", perUnitChange);
-                    SmartDashboard.putNumber("DFER", distanceFromEndOfRange);
-                    double addOn = perUnitChange * distanceFromEndOfRange;
-                    temp[1] = minimumOffsetInRange + addOn;
-
                 }
                 break;
             }

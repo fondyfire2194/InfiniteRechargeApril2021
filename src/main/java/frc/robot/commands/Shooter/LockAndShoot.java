@@ -19,6 +19,7 @@ import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.LimelightSetPipeline;
+import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -47,8 +48,7 @@ public class LockAndShoot extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new ParallelCommandGroup(new LimelightSetPipeline(limelight, limelight.noZoomPipeline),
-                                new UseVision(limelight, true),
+                super(new ParallelCommandGroup(new SetUpLimelightForTarget(limelight),
                                 new StartShooterWheels(shooter, shooter.teleopSetupShooterSpeed),
                                 new SetTiltOffset(tilt, tiltOffset), new PositionTilt(tilt, tiltAngle),
                                 new SetTurretOffset(turret, turretOffset), new PositionTurret(turret, turretAngle)),

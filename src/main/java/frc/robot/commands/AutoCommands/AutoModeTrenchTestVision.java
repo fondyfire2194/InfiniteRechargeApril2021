@@ -44,13 +44,6 @@ public class AutoModeTrenchTestVision extends SequentialCommandGroup {
         static double turretOffset = ShootData.trenchShotConstants.turretOffset;
         static double shootTime = ShootData.trenchShotConstants.shootTime;
 
-        static double retractDistance1 = ShootData.trenchShotConstants.retractDistance1;
-        static double tiltAngle1 = ShootData.trenchShotConstants.tiltAngle1;
-        static double turretAngle1 = ShootData.trenchShotConstants.turretAngle1;
-        static double shootSpeed1 = ShootData.trenchShotConstants.shootSpeed1;
-        static double tiltOffset1 = ShootData.trenchShotConstants.tiltOffset1;
-        static double turretOffset1 = ShootData.trenchShotConstants.turretOffset1;
-        static double shootTime1 = ShootData.trenchShotConstants.shootTime1;
 
         public AutoModeTrenchTestVision(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,

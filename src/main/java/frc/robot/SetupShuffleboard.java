@@ -8,10 +8,8 @@ import java.util.Map;
 
 import edu.wpi.cscore.HttpCamera;
 import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -20,7 +18,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimelightControlMode.CamMode;
@@ -83,7 +80,6 @@ public class SetupShuffleboard {
         private boolean m_showTransport = false;
         private boolean m_showVision = true;
         private boolean m_showSubsystems = false;
-        private boolean m_showPower = false;
         private HttpCamera LLFeed;
         private UsbCamera intakeFeed;
         public double timeToStart;
@@ -220,6 +216,7 @@ public class SetupShuffleboard {
                         competition.addBoolean("TurretOnTarget", () -> m_turret.atTargetAngle());
                         competition.addBoolean("ShooterAtSpeed", () -> m_shooter.atSpeed());
                         competition.addBoolean("Use Vision", () -> m_limelight.useVision);
+                        competition.addBoolean("Shooting", () -> m_shooter.isShooting);
 
                         if (RobotBase.isReal()) {
 
@@ -359,7 +356,7 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("Amps", () -> m_tilt.getAmps());
                         tiltValues.addNumber("Speed", () -> m_tilt.getSpeed());
                         tiltValues.addNumber("Vision Offset", () -> m_tilt.targetVerticalOffset);
-                        tiltValues.addNumber("AdjTarget", () -> m_tilt.adjustedTargetAngle);
+                        tiltValues.addNumber("AdjTarget", () -> m_tilt.adjustedVerticalError);
                         tiltValues.addNumber("Vision Error", () -> m_limelight.getdegVerticalToTarget());
                         tiltValues.addNumber("MotorDeg", () -> m_tilt.getMotorDegrees());
                         tiltValues.addNumber("MotorTarget", () -> m_tilt.motorEndpointDegrees);
@@ -391,7 +388,7 @@ public class SetupShuffleboard {
                         tiltValues2.addBoolean("+SWLimit", () -> m_tilt.onPlusSoftwareLimit());
                         tiltValues2.addBoolean("-SWLimit", () -> m_tilt.onMinusSoftwareLimit());
                         tiltValues2.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled());
-                        tiltValues2.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget(.5));
+                        tiltValues2.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget(1));
                         tiltValues2.addBoolean("Burn OK", () -> m_tilt.burnOK);
 
                         ShuffleboardLayout tiltGains = Shuffleboard.getTab("SetupTilt")

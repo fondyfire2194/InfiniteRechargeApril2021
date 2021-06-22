@@ -102,8 +102,8 @@ public class Robot extends TimedRobot {
 
     // run can check on switch
     // if (m_robotContainer.m_setup.runCan.getBoolean(false)) {
-    //   m_robotContainer.m_setup.checkCANDevices();
-    //   m_robotContainer.m_setup.runCan.setBoolean(false);
+    // m_robotContainer.m_setup.checkCANDevices();
+    // m_robotContainer.m_setup.runCan.setBoolean(false);
     // }
   }
 
@@ -213,11 +213,11 @@ public class Robot extends TimedRobot {
     Shuffleboard.update();
     Shuffleboard.startRecording();
 
-    m_robotContainer.m_shooter.startShooter=false;
+    m_robotContainer.m_shooter.startShooter = false;
     autoHasRun = false;
     if (RobotBase.isReal() && !m_robotContainer.m_tilt.positionResetDone)
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
-
+    m_robotContainer.m_limelight.useVision = false;
     // new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
