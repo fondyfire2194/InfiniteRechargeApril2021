@@ -269,7 +269,7 @@ public class SetupShuffleboard {
                         turretValues.addNumber("Amps", () -> m_turret.getAmps());
                         turretValues.addNumber("Speed", () -> m_turret.getSpeed());
                         turretValues.addNumber("Vision Offset", () -> m_turret.targetHorizontalOffset);
-                        turretValues.addNumber("AdjTarget", () -> m_turret.adjustedTargetAngle);
+                        turretValues.addNumber("AdjTarget", () -> m_turret.adjustedCameraError);
                         turretValues.addNumber("Vision Error", () -> m_limelight.getdegRotationToTarget());
                         turretValues.addNumber("DriverOffset", () -> m_turret.driverHorizontalOffset);
 

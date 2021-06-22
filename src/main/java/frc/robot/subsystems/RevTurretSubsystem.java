@@ -53,7 +53,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double lpset, liset, ldset, lizset;
 
     public boolean validTargetSeen;
-    public double adjustedTargetAngle;
+    public double adjustedCameraError;
 
     public boolean tuneOn = false;
     public boolean lastTuneOn;

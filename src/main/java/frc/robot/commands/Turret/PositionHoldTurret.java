@@ -29,10 +29,11 @@ public class PositionHoldTurret extends CommandBase {
   private final LimeLight m_limelight;
   private final RevShooterSubsystem m_shooter;
   private boolean targetSeen;
-  private double limelightHorizontalAngle;
+  private double cameraHorizontalError;
   private int visionFoundCounter;
   private final int filterCount = 3;
   private double deadband = .01;
+  private double lastHorizontalError;
 
   public PositionHoldTurret(RevTurretSubsystem turret, RevShooterSubsystem shooter, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -63,20 +64,20 @@ public class PositionHoldTurret extends CommandBase {
     targetSeen = m_limelight.getIsTargetFound() && m_limelight.useVision;
 
     if (targetSeen && m_turret.validTargetSeen) {
-      limelightHorizontalAngle = m_limelight.getdegRotationToTarget();
-      m_turret.adjustedTargetAngle = limelightHorizontalAngle
+      cameraHorizontalError = m_limelight.getdegRotationToTarget();
+      m_turret.adjustedCameraError = cameraHorizontalError
           + (m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffset + m_turret.testHorOffset);
       m_limelight.setHorizontalOffset(
           -(m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffset + m_turret.testHorOffset));
 
     } else {
-      limelightHorizontalAngle = 0;
-      m_turret.adjustedTargetAngle = 0;
+      cameraHorizontalError = 0;
+      m_turret.adjustedCameraError = 0;
       m_limelight.setHorizontalOffset(0);
     }
 
-    if (Math.abs(m_turret.adjustedTargetAngle) < deadband)
-      m_turret.adjustedTargetAngle = 0;
+    if (Math.abs(m_turret.adjustedCameraError) < deadband)
+      m_turret.adjustedCameraError = 0;
 
     if (targetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
@@ -92,16 +93,17 @@ public class PositionHoldTurret extends CommandBase {
     if (!m_limelight.useVision || !targetSeen && visionFoundCounter <= 0) {
       m_turret.validTargetSeen = false;
       visionFoundCounter = 0;
-      limelightHorizontalAngle = 0;
+      cameraHorizontalError = 0;
     }
-
-    if (!m_turret.validTargetSeen || m_shooter.isShooting) {
+    if (!m_shooter.shotInProgress)
+      lastHorizontalError = -m_turret.adjustedCameraError;
+    if (!m_turret.validTargetSeen) {
 
       m_turret.goToPositionMotionMagic(m_turret.targetAngle);
     }
 
     else {
-      m_turret.visionOnTarget = m_turret.lockTurretToVision(-m_turret.adjustedTargetAngle);
+      m_turret.visionOnTarget = m_turret.lockTurretToVision(lastHorizontalError);
       m_turret.targetAngle = m_turret.getAngle();
     }
   }
