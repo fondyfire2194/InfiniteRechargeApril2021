@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.HoodedShooterConstants;
+import frc.robot.Constants;
 import frc.robot.Pref;
 import frc.robot.sim.ElevatorSubsystem;
 
@@ -48,7 +49,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double targetAngle;
     private double inPositionBandwidth = 2;
     public double targetHorizontalOffset;
-    public double driverHorizontalOffset;
     public double pset, iset, dset, ffset, izset;
     public double lpset, liset, ldset, lizset;
 
@@ -63,16 +63,17 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public boolean turretMotorConnected;
 
-    private double maxAdjustShoot = 5;
-
     public double pidLockOut;
     public boolean visionOnTarget;
     public boolean burnOK;
+    public double adjustMeters = .15;// 6"
+    private double maxAdjustMeters = .5;
+    private double minAdjustMeters = -.5;
     public double driverAdjustAngle;
-    public double adjustMeters = .1;// 4"
-
+    public double driverAdjustDistance;
     public NetworkTableEntry setupHorOffset;
-
+    public double driverHorizontalOffsetDegrees;
+    public double driverHorizontalOffsetMeters;
     public double turretSetupOffset;
 
     public boolean useSetupHorOffset;
@@ -129,10 +130,10 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
 
         }
-
-        setupHorOffset = Shuffleboard.getTab("SetupShooter").add("SetupHorOffset", 0).withWidget("Number Slider")
-                .withPosition(6,3).withSize(2, 1).withProperties(Map.of("Min", -5, "Max", 5)).getEntry();
-
+        if (!Constants.isMatch) {
+            setupHorOffset = Shuffleboard.getTab("SetupShooter").add("SetupHorOffset", 0).withWidget("Number Slider")
+                    .withPosition(6, 3).withSize(2, 1).withProperties(Map.of("Min", -5, "Max", 5)).getEntry();
+        }
     }
 
     @Override
@@ -183,7 +184,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     @Override
     public void goToPositionMotionMagic(double angle) {
         mPidController.setReference(angle, ControlType.kSmartMotion, SMART_MOTION_SLOT);
-        SmartDashboard.putNumber("TUEP", angle);
 
     }
 
@@ -207,7 +207,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public boolean isStopped() {
         return Math.abs(mEncoder.getVelocity()) < .05;
     }
-
 
     public double getAmps() {
         return m_motor.getOutputCurrent();
@@ -249,17 +248,22 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     }
 
     public void aimFurtherLeft() {
-        if (driverHorizontalOffset > -maxAdjustShoot)
-            driverHorizontalOffset -= driverAdjustAngle;
+        if (driverHorizontalOffsetMeters > minAdjustMeters) {
+            driverHorizontalOffsetDegrees -= driverAdjustAngle;
+            driverHorizontalOffsetMeters -= adjustMeters;
+        }
     }
 
     public void aimFurtherRight() {
-        if (driverHorizontalOffset < maxAdjustShoot)
-            driverHorizontalOffset += driverAdjustAngle;
+        if (driverHorizontalOffsetMeters < maxAdjustMeters) {
+            driverHorizontalOffsetDegrees += driverAdjustAngle;
+            driverHorizontalOffsetMeters += adjustMeters;
+        }
     }
 
     public void aimCenter() {
-        driverHorizontalOffset = 0;
+        driverHorizontalOffsetMeters = 0;
+        driverHorizontalOffsetDegrees = 0;
     }
 
     @Override

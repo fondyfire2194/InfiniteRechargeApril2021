@@ -63,7 +63,7 @@ public class ShootCells extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    SmartDashboard.putBoolean("SHC", true);
+
     startTime = Timer.getFPGATimestamp();
     m_shooter.shootTime = m_time;
     m_compressor.stop();
@@ -82,10 +82,9 @@ public class ShootCells extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putBoolean("VALTAR", m_tilt.validTargetSeen);
 
     loopctr++;
-    SmartDashboard.putNumber("SHOOTWK", loopctr);
+
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
     if (!inAuto) {
@@ -93,14 +92,11 @@ public class ShootCells extends CommandBase {
       m_shooter.cameraCalculatedSpeed = speedAndOffsetFromCamera[0];
       offsetFromCamera = speedAndOffsetFromCamera[1];
     }
-
-    if (m_shooter.atSpeed()
-        && ((m_limelight.getHorOnTarget(1.) && m_limelight.getVertOnTarget(1.)) || m_shooter.driverOKShoot)
-        || m_shooter.isShooting == true) {
+    boolean okToShoot = (m_limelight.getHorOnTarget(1.) && m_limelight.getVertOnTarget(1.)) || m_shooter.driverOKShoot;
+ 
+    if (m_shooter.atSpeed() && okToShoot || m_shooter.isShooting) {
 
       m_shooter.isShooting = true;
-
-      SmartDashboard.putBoolean("SHIS", m_shooter.isShooting);
 
     }
 
@@ -129,12 +125,11 @@ public class ShootCells extends CommandBase {
     if (m_shooter.shotInProgress && Timer.getFPGATimestamp() > (shotStartTime + shotTime) && m_shooter.atSpeed()) {
       m_shooter.shotInProgress = false;
     }
-    SmartDashboard.putBoolean("INAUT", inAuto);
-    SmartDashboard.putBoolean("NotShootOne", !m_shooter.shootOne);
+
     okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
-    SmartDashboard.putBoolean("OKSHOOT", okToShoot);
+
     getNextCell = okToShoot && !m_shooter.shotInProgress && !cellAvailable && m_shooter.atSpeed();
-    SmartDashboard.putBoolean("GETNEXT", getNextCell);
+
     if (getNextCell || cellReleased) {
       releaseOneCell();
     }
@@ -158,6 +153,7 @@ public class ShootCells extends CommandBase {
     m_shooter.endShootFile = true;
     m_shooter.isShooting = false;
     m_shooter.logTrigger = false;
+    m_shooter.setNotOKShootDriver();
   }
 
   // Returns true when the command should end.

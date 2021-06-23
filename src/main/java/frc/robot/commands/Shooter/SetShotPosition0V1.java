@@ -30,18 +30,24 @@ public class SetShotPosition0V1 extends SequentialCommandGroup {
          * Start in front of power port, retract and shoot
          */
 
-        public SetShotPosition0V1(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt, LimeLight limelight) {
+        public SetShotPosition0V1(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+                        LimeLight limelight) {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
                 super(
 
                                 new ParallelCommandGroup(
+
                                                 new SetTiltOffset(tilt, ShootData.centerPowerPortConstants.tiltOffset),
+
                                                 new SetTurretOffset(turret,
                                                                 ShootData.centerPowerPortConstants.turretOffset),
-                                                new PositionTiltToVision(tilt, limelight,ShootData.centerPowerPortConstants.tiltAngle
-                                                                + ShootData.centerPowerPortConstants.tiltOffset),
+
+                                                new PositionTiltToVision(tilt, limelight,
+                                                                ShootData.centerPowerPortConstants.tiltAngle
+                                                                                + ShootData.centerPowerPortConstants.tiltOffset),
+
                                                 new PositionTurret(turret,
                                                                 ShootData.centerPowerPortConstants.turretAngle
                                                                                 + ShootData.centerPowerPortConstants.turretOffset),

@@ -96,7 +96,7 @@ public class CalculateTargetDistance extends CommandBase {
       }
       // tilt counts up camera angle counts down
       cameraAngle = m_tilt.getCameraAngle();
-
+if(RobotBase.isSimulation())cameraAngle=48;
       double tanAngleSum = Math.tan((Math.toRadians(m_cameraVerticalError + cameraAngle)));
 
       m_shooter.calculatedCameraDistance = (heightDifference) / tanAngleSum;

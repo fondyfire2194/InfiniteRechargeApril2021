@@ -23,21 +23,21 @@ public class PositionTiltToVision extends CommandBase {
 
   private final LimeLight m_limelight;
 
-  private double m_position;
-  private boolean targetSeen;
   private double m_endpoint;
+  private boolean targetSeen;
+
   private int visionFoundCounter;
   private boolean endIt;
   private int loopCtr;
   private double motorDegrees;
-  private double correctedEndpoint;
-  private double targetError;
-  private final int filterCount = 5;
 
-  public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double position) {
+  private final int filterCount = 5;
+  private int correctionCtr;
+
+  public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double endpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
-    m_position = position;
+    m_endpoint = endpoint;
     m_limelight = limelight;
     addRequirements(m_tilt);
   }
@@ -45,7 +45,6 @@ public class PositionTiltToVision extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_endpoint = m_position;
 
     m_limelight.useVision = false;
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
@@ -55,10 +54,10 @@ public class PositionTiltToVision extends CommandBase {
       m_endpoint = HoodedShooterConstants.TILT_MIN_ANGLE;
     if (m_endpoint > HoodedShooterConstants.TILT_MAX_ANGLE)
       m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE;
-    motorDegrees = (m_tilt.tiltMaxAngle - m_endpoint);
-    correctedEndpoint = m_endpoint;
+    motorDegrees = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
+    m_tilt.correctedEndpoint = m_endpoint;
     loopCtr = 0;
-    targetError = 0;
+    m_tilt.logTrigger = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -76,11 +75,23 @@ public class PositionTiltToVision extends CommandBase {
 
       m_tilt.validTargetSeen = true;
 
-      if (correctedEndpoint == m_endpoint) {
+      correctionCtr++;
 
-        correctedEndpoint = m_tilt.getAngle() + m_limelight.getdegVerticalToTarget();
+      if (correctionCtr >= 5) {
 
-        motorDegrees = (m_tilt.tiltMaxAngle - correctedEndpoint);
+        m_tilt.positionError = m_tilt.correctedEndpoint - m_tilt.getAngle();
+
+        m_tilt.visionErrorDifference = m_tilt.positionError - m_limelight.getdegVerticalToTarget();
+
+        if (Math.abs(m_tilt.visionErrorDifference) > 2) {
+
+          m_tilt.correctedEndpoint += m_tilt.visionErrorDifference * .5;
+
+        }
+
+        motorDegrees = (m_tilt.tiltMaxAngle - m_tilt.correctedEndpoint);
+
+        correctionCtr = 0;
       }
     }
 
@@ -95,20 +106,22 @@ public class PositionTiltToVision extends CommandBase {
 
     m_tilt.goToPositionMotionMagic(motorDegrees);
 
-    endIt = m_limelight.getVertOnTarget(1) || m_tilt.atTargetAngle() && loopCtr > 5 || loopCtr > 250;
+    endIt = m_limelight.getVertOnTarget(1) || !m_tilt.validTargetSeen && m_tilt.atTargetAngle() && loopCtr > 5
+        || loopCtr > 250;
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (!endIt)
-      m_tilt.targetAngle = m_tilt.getAngle();
+    m_tilt.targetAngle = m_tilt.getAngle();
+    m_tilt.logTrigger = false;
+    m_tilt.endTiltFile = true;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return endIt || m_limelight.useVision;
+    return endIt;
   }
 }

@@ -26,9 +26,11 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.Pref;
+import frc.robot.SimpleCSVLogger;
 import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem {
@@ -50,10 +52,13 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double targetAngle;
     private double inPositionBandwidth = 1;
     public double targetVerticalOffset;
-    public double driverVerticalOffset;
+    public double driverVerticalOffsetDegrees;
+    public double driverVerticalOffsetMeters;   
+
     public boolean validTargetSeen;
     public double adjustedVerticalError;
     private final static double pivotDistance = 10.5;// inches
+    public boolean logTrigger = false;
     private final double[] pinDistances = { 2.1, 3.0842519685, 4.068503937, 5.0527559055, 6.037007874, 7.0212598425,
             8.005511811 };
     public final double cameraBaseAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
@@ -72,21 +77,28 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public boolean lastLockTuneOn;
 
     public boolean tiltMotorConnected;
-    private double maxAdjustShoot = 5;
-    private double minAdjustShoot = -4;
+    private double maxAdjustMeters = .5;
+    private double minAdjustMeters = -.5;
     public double motorEndpointDegrees;
     public int faultSeen;
     public double lockPIDOut;
+    public double lockPIDOutVolts;
     public boolean visionOnTarget;
     public boolean burnOK;
     public double driverAdjustAngle;
-    public double adjustMeters = .1;// 4"
+    public double driverAdjustDistance;
+    public double adjustMeters = .16;// 6"
     public NetworkTableEntry setupVertOffset;
 
     public double tiltSetupOffset;
 
     public boolean useSetupVertOffset;
     public double testVerticalOffset;
+    public boolean endTiltFile;
+    public SimpleCSVLogger tiltLogger;
+    public double positionError;
+    public double correctedEndpoint;
+    public double visionErrorDifference;
 
     /**
      * 
@@ -146,9 +158,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         }
 
-        setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetupVertOffset", 0).withWidget("Number Slider")
-                .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -10, "Max", 10)).getEntry();
-
+        if (!Constants.isMatch) {
+            setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetupVertOffset", 0).withWidget("Number Slider")
+                    .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -10, "Max", 10)).getEntry();
+        }
     }
 
     @Override
@@ -219,7 +232,14 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public boolean lockTiltToVision(double cameraError) {
         lockPIDOut = tiltLockController.calculate(cameraError, 0);
-        m_motor.set(lockPIDOut);
+        m_motor.set((lockPIDOut) + .01);
+        targetAngle = getAngle();
+        return tiltLockController.atSetpoint();
+    }
+
+    public boolean lockTiltToVisionVoltage(double cameraError) {
+        lockPIDOutVolts = 12 * tiltLockController.calculate(cameraError, 0);
+        m_motor.setVoltage((lockPIDOutVolts) + .05);
         targetAngle = getAngle();
         return tiltLockController.atSetpoint();
     }
@@ -327,17 +347,23 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public void aimLower() {
 
-        if (driverVerticalOffset > minAdjustShoot)
-            driverVerticalOffset -= driverAdjustAngle;
+
+        if (driverVerticalOffsetMeters > minAdjustMeters){
+            driverVerticalOffsetDegrees -= driverAdjustAngle;
+            driverVerticalOffsetMeters -= adjustMeters;}
     }
 
     public void aimHigher() {
-        if (driverVerticalOffset < maxAdjustShoot)
-            driverVerticalOffset += driverAdjustAngle;
+
+        if (driverVerticalOffsetMeters < maxAdjustMeters){
+            driverVerticalOffsetDegrees += driverAdjustAngle;
+            driverVerticalOffsetMeters += adjustMeters;
+    }
     }
 
     public void aimCenter() {
-        driverVerticalOffset = 0;
+        driverVerticalOffsetDegrees = 0;
+        driverVerticalOffsetMeters = 0;
     }
 
     /**
@@ -495,8 +521,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         lpset = tiltLockController.getP();
         liset = tiltLockController.getI();
         ldset = tiltLockController.getD();
-        
- 
+
     }
 
 }

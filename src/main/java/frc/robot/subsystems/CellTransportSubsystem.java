@@ -89,12 +89,6 @@ public class CellTransportSubsystem extends SubsystemBase {
 
     cellPassTime = Pref.getPref("CellReleaseTime");
 
-    SmartDashboard.putNumber("CAR", cellArmReleaseCell);
-    SmartDashboard.putNumber("CAH", cellArmHoldCell);
-
-    SmartDashboard.putNumber("CAA", getArmAngle());
-    SmartDashboard.putNumber("CAP", getArmPosition());
-    SmartDashboard.putNumber("CAT", getArmType());
 
   }
 

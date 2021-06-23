@@ -117,9 +117,9 @@ public class LogShootData extends CommandBase {
           m_limelight.getBoundingBoxHeight(), m_limelight.getBoundingBoxWidth(), m_limelight.getTargetArea(),
           m_drive.getLeftRate(), m_tilt.getAngle(), m_limelight.getdegVerticalToTarget(),
           m_tilt.getAngle() + m_limelight.getdegVerticalToTarget(), m_tilt.targetVerticalOffset,
-          m_tilt.driverVerticalOffset, m_turret.getAngle(), m_limelight.getdegRotationToTarget(),
+          m_tilt.driverVerticalOffsetDegrees, m_turret.getAngle(), m_limelight.getdegRotationToTarget(),
           m_turret.getAngle() + m_limelight.getdegRotationToTarget(), m_turret.targetHorizontalOffset,
-          m_turret.driverHorizontalOffset, m_shooter.requiredMps, m_shooter.getMPS(), m_shooter.getLeftAmps(),
+          m_turret.driverHorizontalOffsetDegrees, m_shooter.requiredMps, m_shooter.getMPS(), m_shooter.getLeftAmps(),
           m_shooter.getBatteryVoltage(), turretOnTarget, tiltOnTarget, horOnTarget, vertOnTarget, shooterAtSpeed,
           isShooting, validTargetSeen);
     }

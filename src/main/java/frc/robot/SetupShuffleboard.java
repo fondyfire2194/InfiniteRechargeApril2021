@@ -45,7 +45,6 @@ import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.StopTilt;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
-import frc.robot.commands.Tilt.TiltSeekVision;
 import frc.robot.commands.Turret.ClearTurFaults;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
@@ -189,18 +188,20 @@ public class SetupShuffleboard {
 
                         competition1.addNumber("ShootAngle", () -> m_tilt.getAngle());
                         competition1.addNumber("TurretPosn", () -> m_turret.getAngle());
-                        competition1.addNumber("RobotPosn", () -> m_robotDrive.getAverageDistance());
                         competition1.addNumber("ShooterSpeed", () -> m_shooter.getMPS());
-                        competition1.addNumber("Intake", () -> m_intake.getMotor());
-                        competition1.addNumber("FrontRoller", () -> m_transport.getFrontRoller());
-                        competition1.addNumber("RearRoller", () -> m_transport.getRearRoller());
+                        competition1.addNumber("DriverVertOffsetM", () -> m_tilt.driverVerticalOffsetMeters);
+                        competition1.addNumber("DriverHorOffsetM", () -> m_turret.driverHorizontalOffsetMeters);
+                        competition1.addNumber("TargetVertOffsetDeg", () -> m_tilt.targetVerticalOffset);
+                        competition1.addNumber("TargetHorOffsetDeg", () -> m_turret.targetHorizontalOffset);
 
                         ShuffleboardLayout shoot = Shuffleboard.getTab("Competition")
                                         .getLayout("Shoot", BuiltInLayouts.kList).withPosition(1, 0).withSize(2, 1)
                                         .withProperties(Map.of("Label position", "HIDDEN"));
 
-                        shoot.addBoolean("SHOOT", () -> ((m_shooter.atSpeed() && m_turret.atTargetAngle()
-                                        && m_tilt.atTargetAngle()) || m_shooter.driverOKShoot));
+                        shoot.addBoolean("SHOOT",
+                                        () -> (m_shooter.atSpeed()
+                                                        && ((m_turret.atTargetAngle() && m_tilt.atTargetAngle())
+                                                                        || m_shooter.driverOKShoot)));
 
                         ShuffleboardLayout setup = Shuffleboard.getTab("Competition")
                                         .getLayout("Setup", BuiltInLayouts.kList).withPosition(1, 1).withSize(2, 1)
@@ -218,6 +219,7 @@ public class SetupShuffleboard {
                         competition.addBoolean("ShooterAtSpeed", () -> m_shooter.atSpeed());
                         competition.addBoolean("Use Vision", () -> m_limelight.useVision);
                         competition.addBoolean("Shooting", () -> m_shooter.isShooting);
+                        competition.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
 
                         if (RobotBase.isReal()) {
 
@@ -251,7 +253,6 @@ public class SetupShuffleboard {
                         turretCommands.add("Position To 30", new PositionTurret(m_turret, 30));
                         turretCommands.add("PositionToVision", new PositionTurretToVision(m_turret, m_limelight,
                                         HoodedShooterConstants.TURRET_MAX_ANGLE));
-                     
 
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
@@ -273,7 +274,7 @@ public class SetupShuffleboard {
                         turretValues.addNumber("Vision Offset", () -> m_turret.targetHorizontalOffset);
                         turretValues.addNumber("AdjTarget", () -> m_turret.adjustedCameraError);
                         turretValues.addNumber("Vision Error", () -> m_limelight.getdegRotationToTarget());
-                        turretValues.addNumber("DriverOffset", () -> m_turret.driverHorizontalOffset);
+                        turretValues.addNumber("DriverOffset", () -> m_turret.driverHorizontalOffsetDegrees);
 
                         ShuffleboardLayout turretValues3 = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 2)
@@ -345,7 +346,7 @@ public class SetupShuffleboard {
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
                         tiltCommands.add("Cmd", m_tilt);
                         tiltCommands.addNumber("Faults", () -> m_tilt.faultSeen);
-             
+
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(2, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
@@ -360,7 +361,7 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("Vision Error", () -> m_limelight.getdegVerticalToTarget());
                         tiltValues.addNumber("MotorDeg", () -> m_tilt.getMotorDegrees());
                         tiltValues.addNumber("MotorTarget", () -> m_tilt.motorEndpointDegrees);
-                        tiltValues.addNumber("DriverOffset", () -> m_tilt.driverVerticalOffset);
+                        tiltValues.addNumber("DriverOffset", () -> m_tilt.driverVerticalOffsetDegrees);
 
                         ShuffleboardLayout tiltValues3 = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 2)
@@ -461,8 +462,8 @@ public class SetupShuffleboard {
 
                         shooterValues1.addNumber("VertOffset", () -> m_tilt.targetVerticalOffset);
                         shooterValues1.addNumber("HorOffset", () -> m_turret.targetHorizontalOffset);
-                        shooterValues1.addNumber("DriverVOffset", () -> m_tilt.driverVerticalOffset);
-                        shooterValues1.addNumber("DriverHOffset", () -> m_turret.driverHorizontalOffset);
+                        shooterValues1.addNumber("DriverVOffset", () -> m_tilt.driverVerticalOffsetDegrees);
+                        shooterValues1.addNumber("DriverHOffset", () -> m_turret.driverHorizontalOffsetDegrees);
 
                         shooterValues1.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
                         shooterValues1.addNumber("CameraAngle", () -> m_tilt.getCameraAngle());

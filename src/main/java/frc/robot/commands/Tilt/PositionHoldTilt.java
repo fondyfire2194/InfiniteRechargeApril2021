@@ -55,7 +55,7 @@ public class PositionHoldTilt extends CommandBase {
     if (visionFoundCounter > filterCount)
       visionFoundCounter = filterCount;
     loopctr++;
-    SmartDashboard.putNumber("PHTLC", loopctr);
+  
     if (!m_limelight.useVision)
       visionFoundCounter = 0;
 
@@ -65,11 +65,11 @@ public class PositionHoldTilt extends CommandBase {
 
       cameraVerticalError = m_limelight.getdegVerticalToTarget();
 
-      m_tilt.adjustedVerticalError = cameraVerticalError + m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffset
+      m_tilt.adjustedVerticalError = cameraVerticalError + m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees
           + m_tilt.testVerticalOffset;
 
       m_limelight
-          .setVerticalOffset(-(m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffset + m_tilt.testVerticalOffset));
+          .setVerticalOffset(-(m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset));
 
     } else {
       cameraVerticalError = 0;
@@ -83,9 +83,6 @@ public class PositionHoldTilt extends CommandBase {
     if (targetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
     }
-
-    SmartDashboard.putNumber("VC", visionFoundCounter);
-    SmartDashboard.putBoolean("targetSeen", targetSeen);
 
     if (m_limelight.useVision && visionFoundCounter >= filterCount)
       m_tilt.validTargetSeen = true;

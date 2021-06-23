@@ -180,7 +180,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mEncoder.setPositionConversionFactor(metersPerRev);
         mEncoder.setVelocityConversionFactor(metersPerRev / 60);
 
-        if (!hideSliders) {
+        if (!Constants.isMatch) {
 
             shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
                     .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 15, "Max", 50)).getEntry();
@@ -368,8 +368,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         double minimumDistance = speedBreakMeters[0];
         double maximumDistance = speedBreakMeters[distanceLength - 1];
 
-        SmartDashboard.putNumber("Amind", minimumDistance);
-        SmartDashboard.putNumber("Amaxd", maximumDistance);
 
         double pu;
         double speedRange;
@@ -403,10 +401,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
                 if (interpolateOffsets) {
                     minimumOffsetInRange = minOffsetFromCameraDistance[i];
                     offsetRange = tiltOffsetFromCameraDistance[i] - minimumOffsetInRange;
-                    SmartDashboard.putNumber("AMINOIR", minimumOffsetInRange);
-                    SmartDashboard.putNumber("AI", i);
-                    SmartDashboard.putNumber("AOFF", tiltOffsetFromCameraDistance[i]);
-
+   
                     unitAdder = offsetRange * pu;
                     temp[1] += unitAdder;
                 }
@@ -480,7 +475,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         driverOKShoot = true;
     }
 
-    public void notOKShootDriver() {
+    public void setNotOKShootDriver() {
         driverOKShoot = false;
     }
 
