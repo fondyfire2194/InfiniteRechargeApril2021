@@ -244,9 +244,13 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 4).whenPressed(new SetUpLimelightForTarget(m_limelight));
 
-            // new JoystickButton(m_driverController, 7).whenPressed(
+            new JoystickButton(m_driverController, 7).whileHeld(new PositionTilt(m_tilt, m_tilt.tiltMinAngle))
+                        .whileHeld(new SetUpLimelightForDriver(m_limelight))
+                        .whenReleased(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
+                        .whenReleased(new SetUpLimelightForNoVision(m_limelight));
 
-            // new JoystickButton(m_driverController, 8).whenPressed(
+            new JoystickButton(m_driverController, 8).whenPressed(() -> m_shooter.setOKShootDriver())
+                        .whenReleased(() -> m_shooter.setNotOKShootDriver());
 
             // new JoystickButton(m_driverController, 9).whenPressed(
 
@@ -281,7 +285,7 @@ public class RobotContainer {
             // trench in front of control panel
             codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt));
 
-            //
+            // test method for front of power port
             codriverA.whenPressed(new SetShotPosition0V1(m_shooter, m_turret, m_tilt, m_limelight));
 
             // trench behind control panel
