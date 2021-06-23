@@ -33,6 +33,7 @@ import frc.robot.commands.RobotDrive.DriveStraightJoystick;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.SetShotPosition0;
+import frc.robot.commands.Shooter.SetShotPosition0V1;
 import frc.robot.commands.Shooter.SetShotPosition1;
 import frc.robot.commands.Shooter.SetShotPosition2;
 import frc.robot.commands.Shooter.ShootCells;
@@ -279,6 +280,9 @@ public class RobotContainer {
 
             // trench in front of control panel
             codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt));
+
+            //
+            codriverA.whenPressed(new SetShotPosition0V1(m_shooter, m_turret, m_tilt, m_limelight));
 
             // trench behind control panel
             // coDriverR1.whenPressed(

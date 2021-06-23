@@ -14,15 +14,11 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.commands.RobotDrive.PositionProfiled;
 import frc.robot.commands.Shooter.RunShooter;
-import frc.robot.commands.Shooter.SetActiveTeleopShootData;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
-import frc.robot.commands.Vision.AutoSwitchZoom;
 import frc.robot.commands.Vision.CalculateTargetDistance;
 
 /**
@@ -216,7 +212,7 @@ public class Robot extends TimedRobot {
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
         m_robotContainer.m_shooter).schedule(true);
-    new SetActiveTeleopShootData(m_robotContainer.m_shooter, 2).schedule(true);
+    
 
   }
 

@@ -249,10 +249,9 @@ public class SetupShuffleboard {
                         turretCommands.add("Position To 0", new PositionTurret(m_turret, 0));// degrees
                         turretCommands.add("Position To -30", new PositionTurret(m_turret, -30));// degrees
                         turretCommands.add("Position To 30", new PositionTurret(m_turret, 30));
-                        turretCommands.add("PositionToVision+", new PositionTurretToVision(m_turret, m_limelight,
+                        turretCommands.add("PositionToVision", new PositionTurretToVision(m_turret, m_limelight,
                                         HoodedShooterConstants.TURRET_MAX_ANGLE));
-                        turretCommands.add("PositionToVision+", new PositionTurretToVision(m_turret, m_limelight,
-                                        HoodedShooterConstants.TURRET_MAX_ANGLE));
+                     
 
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
