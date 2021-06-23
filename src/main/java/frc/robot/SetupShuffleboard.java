@@ -41,6 +41,8 @@ import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.ToggleShooterSpeedSource;
 import frc.robot.commands.Tilt.ClearFaults;
+import frc.robot.commands.Tilt.EndTiltLog;
+import frc.robot.commands.Tilt.LogTiltData;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.StopTilt;
@@ -346,6 +348,8 @@ public class SetupShuffleboard {
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
                         tiltCommands.add("Cmd", m_tilt);
                         tiltCommands.addNumber("Faults", () -> m_tilt.faultSeen);
+                        tiltCommands.add(new LogTiltData(m_tilt, m_limelight));
+                        tiltCommands.add(new EndTiltLog(m_tilt));
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(2, 0).withSize(2, 4)

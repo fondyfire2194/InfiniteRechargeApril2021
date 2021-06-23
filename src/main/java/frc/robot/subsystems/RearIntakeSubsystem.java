@@ -52,8 +52,8 @@ public class RearIntakeSubsystem extends SubsystemBase {
 
   }
 
-  public void runIntakeMotor() {
-    m_intakeMotor.set(ControlMode.PercentOutput, .75);
+  public void runIntakeMotor(double speed) {
+    m_intakeMotor.set(ControlMode.PercentOutput, speed);
   }
 
   public void stopIntakeMotor() {

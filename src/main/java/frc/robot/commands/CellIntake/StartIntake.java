@@ -38,7 +38,7 @@ public class StartIntake extends CommandBase {
   @Override
   public void execute() {
 
-    m_rearIntake.runIntakeMotor();
+    m_rearIntake.runIntakeMotor(.75);
     m_rearIntake.lowerArm();
 
   }

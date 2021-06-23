@@ -13,12 +13,12 @@ public class PickupMove extends CommandBase {
   private double m_endpoint;
   private double m_speed;
   private double currentSpeed;
-  private double slowDownDistance = 1;
+  private double slowDownDistance = -1;
 
   public PickupMove(RevDrivetrain drive, double endpoint, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_drive = drive;
-    m_endpoint =endpoint;
+    m_endpoint = endpoint;
     m_speed = speed;
     addRequirements(m_drive);
   }
@@ -32,11 +32,14 @@ public class PickupMove extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+    /**
+     * endpoint is negative as is average distance subtracting makes ave dist
+     * positive but remaining distance will be negative
+     */
     double remainingDistance = m_endpoint - m_drive.getAverageDistance();
 
-    if (remainingDistance < slowDownDistance)
-      currentSpeed = m_speed / 2;
+    if (remainingDistance > slowDownDistance)
+      currentSpeed = m_speed * .5;
 
     m_drive.arcadeDrive(currentSpeed, -m_drive.getYaw() * .01);
   }
@@ -50,8 +53,8 @@ public class PickupMove extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-  
-      return m_drive.getAverageDistance() < m_endpoint;
-    
+
+    return m_drive.getAverageDistance() < m_endpoint;
+
   }
 }
