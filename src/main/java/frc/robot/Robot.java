@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.LimelightControlMode.LedMode;
-import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.RobotDrive.PositionProfiled;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.SetActiveTeleopShootData;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
@@ -80,6 +80,7 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     // m_robotContainer.m_setup.checkLimits();
+    ShootData.showValues();
 
   }
 
@@ -94,7 +95,7 @@ public class Robot extends TimedRobot {
     // ShootData.showValues(1);
     // ShootData.showValues(2);
     // ShootData.showValues(3);
-    ShootData.showValues();
+   
   }
 
   @Override
@@ -135,15 +136,12 @@ public class Robot extends TimedRobot {
       case 0:// cross line
 
         setStartingPose(FieldMap.startPosition[0]);
-        m_autonomousCommand = new PositionRobot(m_robotContainer.m_robotDrive, -1, 3);
+        m_autonomousCommand = new PositionProfiled(m_robotContainer.m_robotDrive, -1, 3);
 
         break;
       case 1:// in front of power port, move back use shooter data index 1
 
         setStartingPose(FieldMap.startPosition[1]);
-        m_robotContainer.m_limelight.setLEDMode(LedMode.kpipeLine);
-        m_robotContainer.m_limelight.useVision = true;
-        m_robotContainer.m_limelight.setPipeline(m_robotContainer.m_limelight.noZoomPipeline);
         m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
 
         break;
@@ -151,11 +149,9 @@ public class Robot extends TimedRobot {
       case 2:// Lined up with 2 balls on shield generator
 
         setStartingPose(FieldMap.startPosition[2]);
-        m_autoFactory.shootNumber = ShootData.leftTwoBall;
+  
         m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
-        m_robotContainer.m_limelight.useVision = true;
-        m_robotContainer.m_limelight.setPipeline(m_robotContainer.m_limelight.noZoomPipeline);
-
+       
         break;
 
       case 3:// Trench
@@ -163,9 +159,7 @@ public class Robot extends TimedRobot {
         setStartingPose(FieldMap.startPosition[3]);
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
-        m_robotContainer.m_limelight.useVision = true;
-        m_robotContainer.m_limelight.setPipeline(m_robotContainer.m_limelight.noZoomPipeline);
-
+  
         break;
 
       default:

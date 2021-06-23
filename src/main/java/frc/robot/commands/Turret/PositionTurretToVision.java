@@ -12,6 +12,7 @@ package frc.robot.commands.Turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
+import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.subsystems.RevTurretSubsystem;
 
 public class PositionTurretToVision extends CommandBase {
@@ -19,18 +20,19 @@ public class PositionTurretToVision extends CommandBase {
 
   private final RevTurretSubsystem m_turret;
   private final LimeLight m_limelight;
-  private double m_position;
+  private double m_endpoint;
   private int loopCtr;
   private final int filterCount = 3;
   private int visionFoundCounter;
   private boolean targetSeen;
   boolean endIt;
+  private double correctedEndpoint;
 
-  public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double position) {
+  public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double endpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
     m_limelight = limelight;
-    m_position = position;
+    m_endpoint = endpoint;
 
     addRequirements(m_turret);
   }
@@ -38,13 +40,15 @@ public class PositionTurretToVision extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_turret.targetAngle = m_position;
+    m_turret.targetAngle = m_endpoint;
     targetSeen = false;
     visionFoundCounter = 0;
     loopCtr = 0;
-    m_turret.driverHorizontalOffset = 0;
-    m_turret.targetHorizontalOffset = 0;
-    m_limelight.useVision = true;
+
+    m_limelight.useVision = false;
+    m_limelight.setPipeline(m_limelight.noZoomPipeline);
+    m_limelight.setLEDMode(LedMode.kpipeLine);
+    correctedEndpoint = m_endpoint;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -70,34 +74,36 @@ public class PositionTurretToVision extends CommandBase {
 
     if (!m_turret.validTargetSeen && visionFoundCounter >= filterCount) {
       m_turret.validTargetSeen = true;
+
+      if (correctedEndpoint == m_endpoint) {
+        correctedEndpoint = m_turret.getAngle() + m_limelight.getdegRotationToTarget();
+        m_turret.targetAngle = correctedEndpoint;
+      }
+
+      if (!targetSeen && m_turret.validTargetSeen) {
+        visionFoundCounter--;
+      }
+
+      if (!targetSeen && m_turret.validTargetSeen && visionFoundCounter < 0) {
+        visionFoundCounter = 0;
+        m_turret.validTargetSeen = false;
+
+      }
+
+      m_turret.goToPositionMotionMagic(m_turret.targetAngle);
     }
 
-    if (!targetSeen && m_turret.validTargetSeen) {
-      visionFoundCounter--;
-    }
-
-    if (!targetSeen && m_turret.validTargetSeen && visionFoundCounter < 0) {
-      visionFoundCounter = 0;
-      m_turret.validTargetSeen = false;
-
-    }
-
-    m_turret.goToPositionMotionMagic(m_turret.targetAngle);
-
-    endIt = m_limelight.getHorOnTarget(5) || m_turret.atTargetAngle() && loopCtr > 5 || loopCtr > 250;
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
 
-    if (!endIt)
-      m_turret.targetAngle = m_turret.getAngle();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return endIt;
+    return m_limelight.getHorOnTarget(1) || m_turret.atTargetAngle() && loopCtr > 5 || loopCtr > 250;
   }
 }

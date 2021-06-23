@@ -64,9 +64,9 @@ public class ShootData {
 
     public final static class centerPowerPortConstants {
         public static double retractDistance = -1;
-        public static double tiltAngle = 21.6;// getTiltAngle(4 + frontOfRobotToCenterofTiltTurret);// 22.7;//
+        public static double tiltAngle = 19.6;// getTiltAngle(4 + frontOfRobotToCenterofTiltTurret);// 22.7;//
         public static double turretAngle = 0;
-        public static double shootSpeed = 33;
+        public static double shootSpeed = 30;
         public static double tiltOffset = 2;
         public static double turretOffset = 0;
         public static double shootTime = 4;
@@ -76,8 +76,8 @@ public class ShootData {
     public final static class shieldGenConstants {
         private static double yfromPort = Units.inchesToMeters((74));
         public static double retractDistance = -4;
-        public static double tiltAngle = 25;
-        public static double turretAngle = 39;
+        public static double tiltAngle = 24;
+        public static double turretAngle = 32;
         public static double shootSpeed = 38;/// ?
         public static double tiltOffset = 0;/// ?
         public static double turretOffset = 0;/// ?
@@ -118,9 +118,9 @@ public class ShootData {
     }
 
     public static void showValues() {
-        SmartDashboard.putNumber("TA", centerPowerPortConstants.tiltAngle);
-        SmartDashboard.putNumber("TATS", trenchShotConstants.tiltAngle);
-        SmartDashboard.putNumber("TUTS", trenchShotConstants.turretAngle);
+        SmartDashboard.putNumber("TAI",activeTeleopTiltAngle);
+        SmartDashboard.putNumber("TAU",activeTeleopTurretAngle);
+      
 
     }
 

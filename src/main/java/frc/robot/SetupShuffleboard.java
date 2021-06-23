@@ -28,7 +28,7 @@ import frc.robot.commands.CellTransport.HoldCell;
 import frc.robot.commands.CellTransport.ReleaseCell;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.RobotDrive.ClearRobFaults;
-import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.RobotDrive.PositionProfiled;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.RobotDrive.StopRobot;
@@ -42,6 +42,7 @@ import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.ToggleShooterSpeedSource;
 import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.PositionTilt;
+import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.StopTilt;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Tilt.TiltSeekVision;
@@ -102,7 +103,7 @@ public class SetupShuffleboard {
                 m_shooter = shooter;
                 m_limelight = limelight;
                 m_intake = intake;
-                
+
                 /**
                  * 
                  * Pre round
@@ -248,7 +249,9 @@ public class SetupShuffleboard {
                         turretCommands.add("Position To 0", new PositionTurret(m_turret, 0));// degrees
                         turretCommands.add("Position To -30", new PositionTurret(m_turret, -30));// degrees
                         turretCommands.add("Position To 30", new PositionTurret(m_turret, 30));
-                        turretCommands.add("PositionToVision", new PositionTurretToVision(m_turret, m_limelight,
+                        turretCommands.add("PositionToVision+", new PositionTurretToVision(m_turret, m_limelight,
+                                        HoodedShooterConstants.TURRET_MAX_ANGLE));
+                        turretCommands.add("PositionToVision+", new PositionTurretToVision(m_turret, m_limelight,
                                         HoodedShooterConstants.TURRET_MAX_ANGLE));
 
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
@@ -337,15 +340,13 @@ public class SetupShuffleboard {
                         // tiltCommands.add("PositionToVision", new PositionTiltToVision(m_tilt,
                         // m_limelight,
                         // HoodedShooterConstants.TILT_MIN_ANGLE));
-                        tiltCommands.add(new TiltSeekVision(tilt, limelight));
+                        tiltCommands.add(new PositionTiltToVision(m_tilt, m_limelight, m_tilt.tiltMinAngle));
                         tiltCommands.add("PositionToSwitch", new TiltMoveToReverseLimit(m_tilt));
                         tiltCommands.add("StopTilt", new StopTilt(m_tilt));
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
                         tiltCommands.add("Cmd", m_tilt);
                         tiltCommands.addNumber("Faults", () -> m_tilt.faultSeen);
-                        tiltCommands.addString("To Jog", () -> "Setup Y left Y");
-                        tiltCommands.addString("OvrdeSoftLim", () -> "Setup RightBmpr");
-
+             
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(2, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
@@ -538,10 +539,11 @@ public class SetupShuffleboard {
 
                         robotCommands.add("Reset Enc", new ResetEncoders(m_robotDrive));
                         robotCommands.add("Reset Gyro", new ResetGyro(m_robotDrive));
-                        robotCommands.add("Pos -2M", new PositionRobot(m_robotDrive, -2, 1));
-                        robotCommands.add("Pos to 0M", new PositionRobot(m_robotDrive, 0, 2));
-                        robotCommands.add("Pos +1M", new PositionRobot(m_robotDrive, 1, 1));
-                        robotCommands.add("Pos -1M", new PositionRobot(m_robotDrive, -1, 1));
+
+                        robotCommands.add("Pos5m", new PositionProfiled(m_robotDrive, 5, 3));
+                        robotCommands.add("Pos to 0M", new PositionProfiled(m_robotDrive, 0, 3));
+                        robotCommands.add("Pos +1M", new PositionProfiled(m_robotDrive, 1, 3));
+                        robotCommands.add("Pos -1M", new PositionProfiled(m_robotDrive, -1, 3));
                         robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
                         robotCommands.add("Stop Robot", new StopRobot(m_robotDrive));
                         robotCommands.add("Cmd", m_robotDrive);
@@ -578,23 +580,6 @@ public class SetupShuffleboard {
                         robotValues2.addBoolean("RFoll", () -> m_robotDrive.getRightFollower());
                         robotValues2.addBoolean("LBurnOK", () -> m_robotDrive.leftBurnOK);
                         robotValues2.addBoolean("RBurnOK", () -> m_robotDrive.rightBurnOK);
-
-                        ShuffleboardLayout robotGains = Shuffleboard.getTab("SetupRobot")
-
-                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(4, 0).withSize(1, 3)
-                                        .withProperties(Map.of("Label position", "LEFT")); // labels
-
-                        robotGains.addNumber("LFF", () -> m_robotDrive.ffset);
-                        robotGains.addNumber("LP", () -> m_robotDrive.pset);
-                        robotGains.addNumber("LI", () -> m_robotDrive.iset);
-                        robotGains.addNumber("LD", () -> m_robotDrive.dset);
-                        robotGains.addNumber("LIZ", () -> m_robotDrive.izset);
-
-                        robotGains.addNumber("RFF", () -> m_robotDrive.rffset);
-                        robotGains.addNumber("RP", () -> m_robotDrive.rpset);
-                        robotGains.addNumber("RI", () -> m_robotDrive.riset);
-                        robotGains.addNumber("RD", () -> m_robotDrive.rdset);
-                        robotGains.addNumber("RIZ", () -> m_robotDrive.rizset);
 
                 }
                 /**
@@ -734,6 +719,7 @@ public class SetupShuffleboard {
                                                                                                                         // here
                         }
                 }
+
         }
 
         public void checkCANDevices() {

@@ -14,7 +14,7 @@ import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
-import frc.robot.commands.RobotDrive.PositionRobot;
+import frc.robot.commands.RobotDrive.PositionProfiled;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.EndLogData;
@@ -27,9 +27,8 @@ import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
-import frc.robot.commands.Vision.LimelightSetPipeline;
+import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
-import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -60,7 +59,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
 
                 super(new ResetEncoders(drive), new ResetGyro(drive),
-                                new ParallelCommandGroup(new PositionRobot(drive, retractDistance, 3),
+                                new ParallelCommandGroup(new PositionProfiled(drive, retractDistance, 3),
                                                 new PositionTilt(tilt, tiltAngle + tiltOffset),
                                                 new PositionTurret(turret, turretAngle + turretOffset)),
 
@@ -81,9 +80,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
                                                 new EndLogData(shooter), new StopShoot(shooter, transport),
-                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MIN_ANGLE),
-                                                new LimelightSetPipeline(limelight, limelight.driverPipeline),
-                                                new UseVision(limelight, false), new PositionTurret(turret, 0)));
-
+                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
+                                                new SetUpLimelightForNoVision(limelight)));
         }
 }

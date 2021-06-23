@@ -7,6 +7,7 @@ package frc.robot.commands.Vision;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
+import frc.robot.LimelightControlMode.LedMode;
 
 public class LimelightSetPipeline extends CommandBase {
   /** Creates a new LimelightLeds. */
@@ -36,6 +37,7 @@ public class LimelightSetPipeline extends CommandBase {
   @Override
   public void execute() {
     m_limelight.setPipeline(m_number);
+    m_limelight.setLEDMode(LedMode.kpipeLine);
   }
 
   // Called once the command ends or is interrupted.

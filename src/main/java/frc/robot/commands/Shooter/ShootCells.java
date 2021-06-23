@@ -7,8 +7,6 @@
 
 package frc.robot.commands.Shooter;
 
-import org.photonvision.LEDMode;
-
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -78,6 +76,7 @@ public class ShootCells extends CommandBase {
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.useVision = true;
     m_shooter.startShooter = true;
+    m_shooter.logTrigger = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -130,12 +129,13 @@ public class ShootCells extends CommandBase {
     if (m_shooter.shotInProgress && Timer.getFPGATimestamp() > (shotStartTime + shotTime) && m_shooter.atSpeed()) {
       m_shooter.shotInProgress = false;
     }
-
+    SmartDashboard.putBoolean("INAUT", inAuto);
+    SmartDashboard.putBoolean("NotShootOne", !m_shooter.shootOne);
     okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
-
+    SmartDashboard.putBoolean("OKSHOOT", okToShoot);
     getNextCell = okToShoot && !m_shooter.shotInProgress && !cellAvailable && m_shooter.atSpeed();
-
-    if (getNextCell || !cellAvailable) {
+    SmartDashboard.putBoolean("GETNEXT", getNextCell);
+    if (getNextCell || cellReleased) {
       releaseOneCell();
     }
 
@@ -157,7 +157,7 @@ public class ShootCells extends CommandBase {
     m_shooter.shotInProgress = false;
     m_shooter.endShootFile = true;
     m_shooter.isShooting = false;
-
+    m_shooter.logTrigger = false;
   }
 
   // Returns true when the command should end.

@@ -10,13 +10,15 @@ import frc.robot.subsystems.RevDrivetrain;
 public class PickupMove extends CommandBase {
   /** Creates a new PickupMove. */
   private final RevDrivetrain m_drive;
-  private double m_distance;
+  private double m_endpoint;
   private double m_speed;
+  private double currentSpeed;
+  private double slowDownDistance = 1;
 
-  public PickupMove(RevDrivetrain drive, double distance, double speed) {
+  public PickupMove(RevDrivetrain drive, double endpoint, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_drive = drive;
-    m_distance = distance;
+    m_endpoint =endpoint;
     m_speed = speed;
     addRequirements(m_drive);
   }
@@ -24,24 +26,32 @@ public class PickupMove extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    currentSpeed = m_speed;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    m_drive.arcadeDrive(m_speed, m_drive.getY() * .05);
+    double remainingDistance = m_endpoint - m_drive.getAverageDistance();
+
+    if (remainingDistance < slowDownDistance)
+      currentSpeed = m_speed / 2;
+
+    m_drive.arcadeDrive(currentSpeed, -m_drive.getYaw() * .01);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drive.arcadeDrive(0,0);
+    m_drive.arcadeDrive(0, 0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_drive.getAverageDistance() < m_distance;
+  
+      return m_drive.getAverageDistance() < m_endpoint;
+    
   }
 }

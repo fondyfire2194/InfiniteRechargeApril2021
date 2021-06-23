@@ -28,13 +28,15 @@ import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellTransport.JogLeftBelt;
 import frc.robot.commands.CellTransport.JogRightBelt;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
-
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Shooter.RunShooter;
-import frc.robot.commands.Shooter.SetActiveTeleopShootData;
+import frc.robot.commands.Shooter.SetShotPosition0;
+import frc.robot.commands.Shooter.SetShotPosition1;
+import frc.robot.commands.Shooter.SetShotPosition2;
 import frc.robot.commands.Shooter.ShootCells;
+import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
@@ -45,6 +47,8 @@ import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretWaitForStop;
+import frc.robot.commands.Vision.SetUpLimelightForDriver;
+import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
@@ -66,7 +70,7 @@ public class RobotContainer {
 
       // The driver's controller
       public final Joystick m_driverController = new Joystick(OIConstants.kDriverControllerPort);
-      public final ButtonBox coDriverBox = new ButtonBox(OIConstants.kCoDriverControllerPort);
+      public final XboxController codriverGamepad = new XboxController(OIConstants.kCoDriverControllerPort);
       public final XboxController setupGamepad = new XboxController(OIConstants.kSetupControllerPort);
 
       public final RevDrivetrain m_robotDrive;
@@ -98,28 +102,26 @@ public class RobotContainer {
       public boolean isMatch = Constants.isMatch;
 
       public boolean clickUp;
+      // Co driver gamepad
 
-      // Co driver button box
-      JoystickButton coDriverX = new JoystickButton(coDriverBox, 1);
-      JoystickButton coDriverA = new JoystickButton(coDriverBox, 2);
-      JoystickButton coDriverB = new JoystickButton(coDriverBox, 3);
-      JoystickButton coDriverY = new JoystickButton(coDriverBox, 4);
-      JoystickButton coDriverLB = new JoystickButton(coDriverBox, 5);
-      JoystickButton coDriverRB = new JoystickButton(coDriverBox, 6);
+      // Setup gamepad LOGITECH
+      JoystickButton codriverX = new JoystickButton(codriverGamepad, 1);
+      JoystickButton codriverA = new JoystickButton(codriverGamepad, 2);
+      JoystickButton codriverB = new JoystickButton(codriverGamepad, 3);
+      JoystickButton codriverY = new JoystickButton(codriverGamepad, 4);
+      JoystickButton codriverLeftTrigger = new JoystickButton(codriverGamepad, 5);
+      JoystickButton codriverRightTrigger = new JoystickButton(codriverGamepad, 6);
 
-      JoystickButton coDriverBack = new JoystickButton(coDriverBox, 7);
-      JoystickButton coDriverStart = new JoystickButton(coDriverBox, 8);
+      JoystickButton codriverBack = new JoystickButton(codriverGamepad, 7);
+      JoystickButton codriverStart = new JoystickButton(codriverGamepad, 8);
 
-      JoystickButton coDriverLT = coDriverBox.getButtonLT();
-      JoystickButton coDriverR1 = coDriverBox.getButtonR1();
-      JoystickButton coDriverRT = coDriverBox.getButtonRT();
-      JoystickButton coDriverL1 = coDriverBox.getButtonL1();
+      JoystickButton codriverLeftStick = new JoystickButton(codriverGamepad, 11);
+      JoystickButton codriverRightStick = new JoystickButton(codriverGamepad, 12);
 
-
-      public POVButton coDriverUpButton = new POVButton(coDriverBox, 0);
-      public POVButton coDriverRightButton = new POVButton(coDriverBox, 90);
-      public POVButton coDriverDownButton = new POVButton(coDriverBox, 180);
-      public POVButton coDriverLeftButton = new POVButton(coDriverBox, 270);
+      public POVButton codriverUpButton = new POVButton(codriverGamepad, 0);
+      public POVButton codriverRightButton = new POVButton(codriverGamepad, 90);
+      public POVButton codriverDownButton = new POVButton(codriverGamepad, 180);
+      public POVButton codriverLeftButton = new POVButton(codriverGamepad, 270);
 
       // Setup gamepad XBox 3
       JoystickButton setupA = new JoystickButton(setupGamepad, 1);
@@ -228,16 +230,18 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 2).whileHeld(
                         new ShootCells(m_shooter, m_tilt, m_turret, m_limelight, m_transport, m_compressor, 100));
 
-            new JoystickButton(m_driverController, 5).whenPressed(new StartShooterWheels(m_shooter, 10));
+            new JoystickButton(m_driverController, 5).whenPressed(new StartShooter(m_shooter));
 
-            new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport));
+            new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport))
+                        .whenPressed(new SetUpLimelightForNoVision(m_limelight))
+                        .whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
+                        .whenPressed(new PositionTurret(m_turret, 0));
 
-            new JoystickButton(m_driverController, 4).whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMinAngle))
+            new JoystickButton(m_driverController, 6).whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
                         .whenPressed(new PositionTurret(m_turret, 0))
-                        .whenPressed(() -> m_limelight.setPipeline(m_limelight.driverPipeline));
+                        .whenPressed(new SetUpLimelightForNoVision(m_limelight));
 
-            new JoystickButton(m_driverController, 6).whileHeld(() -> m_shooter.setOKShootDriver())
-                        .whenReleased(() -> m_shooter.notOKShootDriver());
+            new JoystickButton(m_driverController, 4).whenPressed(new SetUpLimelightForTarget(m_limelight));
 
             // new JoystickButton(m_driverController, 7).whenPressed(
 
@@ -268,20 +272,21 @@ public class RobotContainer {
              */
 
             // front of power port one meter back
-            coDriverBack.whenPressed(new SetActiveTeleopShootData(m_shooter, 0));
+            codriverY.whenPressed(new SetShotPosition0(m_shooter, m_turret, m_tilt));
 
             // on center line 1 meter behind initiation line (shield gen)
-            coDriverA.whenPressed(new SetActiveTeleopShootData(m_shooter, 1));
+            codriverX.whenPressed(new SetShotPosition1(m_shooter, m_turret, m_tilt));
 
             // trench in front of control panel
-            coDriverY.whenPressed(new SetActiveTeleopShootData(m_shooter, 2));
+            codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt));
 
             // trench behind control panel
-            coDriverR1.whenPressed(new SetActiveTeleopShootData(m_shooter, 3));
+            // coDriverR1.whenPressed(
 
             // low goal shot
-            coDriverL1.whenPressed(new SetActiveTeleopShootData(m_shooter, 4));
+            // coDriverLT.whenPressed(
 
+            // coDriverA.whenPressed
             /**
              * Setup gamepad is used for testing functions
              */

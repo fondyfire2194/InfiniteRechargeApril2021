@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Shooter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.ShootData;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -27,11 +28,16 @@ public class SetActiveTeleopShootData extends InstantCommand {
     m_shooter.teleopSetupIndex = m_value;
     switch (m_value) {
       case 0:
+        SmartDashboard.putBoolean("GOTHER", true);
+
         ShootData.activeTeleopShootSpeed = ShootData.centerPowerPortConstants.shootSpeed;
         ShootData.activeTeleopTurretAngle = ShootData.centerPowerPortConstants.turretAngle;
         ShootData.activeTeleopTurretOffset = ShootData.centerPowerPortConstants.turretOffset;
         ShootData.activeTeleopTiltAngle = ShootData.centerPowerPortConstants.tiltAngle;
         ShootData.activeTeleopTiltOffset = ShootData.centerPowerPortConstants.tiltOffset;
+        SmartDashboard.putNumber("SDATS", ShootData.centerPowerPortConstants.tiltAngle);
+        SmartDashboard.putNumber("SDCPP", ShootData.activeTeleopTiltAngle);
+
         break;
 
       case 1:
@@ -63,9 +69,11 @@ public class SetActiveTeleopShootData extends InstantCommand {
         ShootData.activeTeleopShootSpeed = ShootData.lowShotConstants.shootSpeed;
         ShootData.activeTeleopTurretAngle = ShootData.lowShotConstants.turretAngle;
         ShootData.activeTeleopTurretAngle = ShootData.lowShotConstants.tiltAngle;
-
+        break;
       default:
         break;
+
+       
 
     }
   }

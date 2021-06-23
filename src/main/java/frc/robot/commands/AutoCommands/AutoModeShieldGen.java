@@ -16,7 +16,6 @@ import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.RobotDrive.PickupMove;
-import frc.robot.commands.RobotDrive.PositionRobot;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.EndLogData;
@@ -31,6 +30,7 @@ import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.LimelightSetPipeline;
+import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
@@ -65,39 +65,34 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
                 // move back and pickup 2
-                super(new ResetEncoders(drive), new ResetGyro(drive), new PickupMove(drive, retractDistance, -.4),
-                                new ParallelCommandGroup(new PositionRobot(drive, -3, 1), new StopIntake(intake),
+                super(new ResetEncoders(drive), new ResetGyro(drive), new PickupMove(drive, retractDistance, -.5),
+                                new StopIntake(intake),
+
+                                new ParallelCommandGroup(new PickupMove(drive, -1, .75),
                                                 new PositionTilt(tilt, tiltAngle + tiltOffset),
-                                                new PositionTurret(turret, turretAngle + turretOffset),
-                                                new LogShootData(drive, turret, tilt, shooter, limelight)),
+                                                new PositionTurret(turret, turretAngle + turretOffset)),
 
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
-                                                new SetUpLimelightForTarget(limelight),
+                                                new SetUpLimelightForTarget(limelight), new StopIntake(intake)),
 
+                                new StartShooterWheels(shooter, shootSpeed),
+                                new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
                                                 new StartShooterWheels(shooter, shootSpeed),
-                                                new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
-                                                                new StartShooterWheels(shooter, shootSpeed),
-                                                                new ShootCells(shooter, tilt, turret, limelight,
-                                                                                transport, compressor, shootTime))
-                                                                                                .deadlineWith(new PositionHoldTilt(
-                                                                                                                tilt,
-                                                                                                                shooter,
-                                                                                                                limelight),
-                                                                                                                new PositionHoldTurret(
-                                                                                                                                turret,
-                                                                                                                                shooter,
-                                                                                                                                limelight)),
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
+                                                                shootTime)).deadlineWith(
+                                                                                new PositionHoldTilt(tilt, shooter,
+                                                                                                limelight),
+                                                                                new PositionHoldTurret(turret, shooter,
+                                                                                                limelight),
+                                                                                new LogShootData(drive, turret, tilt,
+                                                                                                shooter, limelight)),
 
-                                                new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
-                                                                new EndLogData(shooter),
-                                                                new StopShoot(shooter, transport),
-                                                                new PositionTilt(tilt,
-                                                                                HoodedShooterConstants.TILT_MIN_ANGLE),
-                                                                new LimelightSetPipeline(limelight,
-                                                                                limelight.driverPipeline),
-                                                                new UseVision(limelight, false),
-                                                                new PositionTurret(turret, 0))));
+                                new ParallelCommandGroup(new MessageCommand("EndResetStarted"), new EndLogData(shooter),
+                                                new StopShoot(shooter, transport),
+                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
+                                                new SetUpLimelightForNoVision(limelight),
+                                                new PositionTurret(turret, 0)));
 
         }
 }
