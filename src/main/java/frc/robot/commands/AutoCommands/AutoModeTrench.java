@@ -14,7 +14,10 @@ import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
+import frc.robot.commands.CellIntake.IntakeArm;
+import frc.robot.commands.CellIntake.RunIntakeMotor;
 import frc.robot.commands.CellIntake.StopIntake;
+import frc.robot.commands.CellIntake.StopIntakeMotor;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
@@ -64,12 +67,13 @@ public class AutoModeTrench extends SequentialCommandGroup {
 
                 super(new ResetEncoders(drive), new ResetGyro(drive),
                                 new ParallelCommandGroup(new PickupMove(drive, retractDistance, -.4),
+                                                new IntakeArm(intake, true), new RunIntakeMotor(intake, .75),
                                                 new PositionTilt(tilt, tiltAngle + tiltOffset),
                                                 new PositionTurret(turret, turretAngle + turretOffset)),
 
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
-                                                new SetUpLimelightForTarget(limelight), new StopIntake(intake)),
+                                                new SetUpLimelightForTarget(limelight), new StopIntakeMotor(intake)),
 
                                 new StartShooterWheels(shooter, shootSpeed),
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
@@ -84,7 +88,7 @@ public class AutoModeTrench extends SequentialCommandGroup {
                                                                                                 shooter, limelight)),
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"), new EndLogData(shooter),
-                                                new StopShoot(shooter, transport),
+                                                new StopShoot(shooter, transport), new IntakeArm(intake, false),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new SetUpLimelightForNoVision(limelight),
                                                 new PositionTurret(turret, 0)));
