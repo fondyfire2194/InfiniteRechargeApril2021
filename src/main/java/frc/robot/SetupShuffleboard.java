@@ -24,6 +24,8 @@ import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.IntakeArm;
+import frc.robot.commands.CellIntake.RunIntakeMotor;
+import frc.robot.commands.CellIntake.StopIntakeMotor;
 import frc.robot.commands.CellTransport.HoldCell;
 import frc.robot.commands.CellTransport.ReleaseCell;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
@@ -169,7 +171,9 @@ public class SetupShuffleboard {
                         intakeValues.addNumber("Motor CMD", () -> m_intake.getMotor());
                         intakeValues.add("ArmRaise", new IntakeArm(m_intake, false));
                         intakeValues.add("ArmLower", new IntakeArm(m_intake, true));
-
+                        intakeValues.add("Run Motor", new RunIntakeMotor(intake, .75));
+                        intakeValues.add("Stop Motor", new StopIntakeMotor(intake));
+                        
                         Shuffleboard.getTab("Intake").add("Intake", intakeFeed).withWidget(BuiltInWidgets.kCameraStream)
                                         .withPosition(2, 0).withSize(6, 4)
                                         .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//

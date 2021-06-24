@@ -25,6 +25,8 @@ import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
+import frc.robot.commands.CellIntake.ToggleIntakeArm;
+import frc.robot.commands.CellIntake.ToggleIntakeArmOff;
 import frc.robot.commands.CellTransport.JogLeftBelt;
 import frc.robot.commands.CellTransport.JogRightBelt;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
@@ -258,9 +260,9 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 9)
                         .whenPressed(new SetShotPosition0V1(m_shooter, m_turret, m_tilt, m_limelight));
 
-            // new JoystickButton(m_driverController, 10).whenPressed(
+            new JoystickButton(m_driverController, 10).whenPressed(new ToggleIntakeArm(m_intake));
 
-            // new JoystickButton(m_driverController, 11).whenPressed(
+            new JoystickButton(m_driverController, 11).whenPressed(new ToggleIntakeArmOff(m_intake));
 
             // Hold to shoot all
             new JoystickButton(m_driverController, 12).whileHeld(() -> m_shooter.shootAll())

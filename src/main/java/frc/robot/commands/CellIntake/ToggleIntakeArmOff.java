@@ -6,39 +6,42 @@ package frc.robot.commands.CellIntake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RearIntakeSubsystem;
+import edu.wpi.first.wpilibj.Timer;
 
-public class RunIntakeMotor extends CommandBase {
-  /** Creates a new RunIntakeMotor. */
+public class ToggleIntakeArmOff extends CommandBase {
+
   private RearIntakeSubsystem m_intake;
-  private double m_speed;
+  private boolean m_lower;
+  private double m_startTime;
 
-  public RunIntakeMotor(RearIntakeSubsystem intake, double speed) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  public ToggleIntakeArmOff(RearIntakeSubsystem intake) {
     m_intake = intake;
-    m_speed = speed;
-    addRequirements(m_intake);
+
   }
 
-  // Called when the command is initially scheduled.
-  @Override
   public void initialize() {
+    m_startTime = Timer.getFPGATimestamp();
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
+
   public void execute() {
-    m_intake.runIntakeMotor(m_speed);
+    if (m_intake.getArmOff()) {
+      m_intake.lowerArm();
+    } else {
+      m_intake.armSolenoidOff();
+    }
+
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_intake.stopIntakeMotor();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Timer.getFPGATimestamp() > m_startTime + .5;
+
   }
 }

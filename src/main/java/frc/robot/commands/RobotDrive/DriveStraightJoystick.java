@@ -38,7 +38,7 @@ public class DriveStraightJoystick extends CommandBase {
   @Override
   public void execute() {
 
-    m_drive.arcadeDrive(forward.getAsDouble(), (startAngle - m_drive.getYaw()) * Pref.getPref("dRStKp"));
+    m_drive.arcadeDrive(forward.getAsDouble(), (-m_drive.getYaw() - startAngle) * Pref.getPref("dRStKp"));
   }
 
   // Called once the command ends or is interrupted.

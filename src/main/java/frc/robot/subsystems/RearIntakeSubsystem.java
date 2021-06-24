@@ -25,7 +25,6 @@ public class RearIntakeSubsystem extends SubsystemBase {
   public final DoubleSolenoid m_intakeArm = new DoubleSolenoid(2, 3);
   public boolean intakeMotorConnected;
 
-
   public RearIntakeSubsystem() {
 
     m_intakeMotor.configFactoryDefault();
@@ -91,4 +90,13 @@ public class RearIntakeSubsystem extends SubsystemBase {
   public boolean getArmRaised() {
     return m_intakeArm.get() == DoubleSolenoid.Value.kReverse;
   }
+
+  public void armSolenoidOff() {
+    m_intakeArm.set(DoubleSolenoid.Value.kOff);
+  }
+
+  public boolean getArmOff() {
+    return m_intakeArm.get() == DoubleSolenoid.Value.kOff;
+  }
+
 }
