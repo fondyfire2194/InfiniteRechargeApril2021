@@ -20,6 +20,7 @@ import frc.robot.commands.RobotDrive.PositionProfiled;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Vision.CalculateTargetDistance;
+import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -91,7 +92,6 @@ public class Robot extends TimedRobot {
     // ShootData.showValues(1);
     // ShootData.showValues(2);
     // ShootData.showValues(3);
-   
   }
 
   @Override
@@ -145,9 +145,9 @@ public class Robot extends TimedRobot {
       case 2:// Lined up with 2 balls on shield generator
 
         setStartingPose(FieldMap.startPosition[2]);
-  
+
         m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
-       
+
         break;
 
       case 3:// Trench
@@ -155,7 +155,7 @@ public class Robot extends TimedRobot {
         setStartingPose(FieldMap.startPosition[3]);
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
-  
+
         break;
 
       default:
@@ -212,7 +212,6 @@ public class Robot extends TimedRobot {
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
         m_robotContainer.m_shooter).schedule(true);
-    
 
   }
 

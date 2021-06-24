@@ -56,9 +56,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     public boolean startShooter;
 
-    public int teleopSetupIndex = 3;
+    public int teleopSetupIndex = 5;
     public String[] teleopSetupPosition = new String[] { "InitLineStraightOn", "ShieldGenerator",
-            "TrenchFrontOfControlPanel", "Trench Behind Control Panel", "Low Goal ", " ", " " };
+            "TrenchFrontOfControlPanel", "Trench Behind Control Panel", "Low Goal ", "Not Chosen ", " " };
 
     public double teleopSetupShooterSpeed;
 

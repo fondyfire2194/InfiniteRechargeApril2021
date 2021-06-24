@@ -51,6 +51,7 @@ import frc.robot.commands.Turret.TurretWaitForStop;
 import frc.robot.commands.Vision.SetUpLimelightForDriver;
 import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
+import frc.robot.commands.Vision.SetVisionMode;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -245,14 +246,17 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 4).whenPressed(new SetUpLimelightForTarget(m_limelight));
 
             new JoystickButton(m_driverController, 7).whileHeld(new PositionTilt(m_tilt, m_tilt.tiltMinAngle))
+                        .whenPressed(new PositionTurret(m_turret, 0))
                         .whileHeld(new SetUpLimelightForDriver(m_limelight))
                         .whenReleased(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
+                        .whenReleased(new SetVisionMode(m_limelight))
                         .whenReleased(new SetUpLimelightForNoVision(m_limelight));
 
             new JoystickButton(m_driverController, 8).whenPressed(() -> m_shooter.setOKShootDriver())
                         .whenReleased(() -> m_shooter.setNotOKShootDriver());
 
-            // new JoystickButton(m_driverController, 9).whenPressed(
+            new JoystickButton(m_driverController, 9)
+                        .whenPressed(new SetShotPosition0V1(m_shooter, m_turret, m_tilt, m_limelight));
 
             // new JoystickButton(m_driverController, 10).whenPressed(
 
@@ -289,7 +293,9 @@ public class RobotContainer {
             codriverA.whenPressed(new SetShotPosition0V1(m_shooter, m_turret, m_tilt, m_limelight));
 
             // trench behind control panel
-            // coDriverR1.whenPressed(
+            codriverRightTrigger.whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
+                        .whenPressed(new PositionTurret(m_turret, 0)).whenPressed(new SetVisionMode(m_limelight))
+                        .whenPressed(new SetUpLimelightForNoVision(m_limelight));
 
             // low goal shot
             // coDriverLT.whenPressed(

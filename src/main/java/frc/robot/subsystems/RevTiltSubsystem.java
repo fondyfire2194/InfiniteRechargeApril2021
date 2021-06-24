@@ -53,7 +53,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private double inPositionBandwidth = 1;
     public double targetVerticalOffset;
     public double driverVerticalOffsetDegrees;
-    public double driverVerticalOffsetMeters;   
+    public double driverVerticalOffsetMeters;
 
     public boolean validTargetSeen;
     public double adjustedVerticalError;
@@ -133,6 +133,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         getLockGains();
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
+        tiltLogger = new SimpleCSVLogger();
 
         m_reverseLimit = m_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
 
@@ -347,18 +348,18 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public void aimLower() {
 
-
-        if (driverVerticalOffsetMeters > minAdjustMeters){
+        if (driverVerticalOffsetMeters > minAdjustMeters) {
             driverVerticalOffsetDegrees -= driverAdjustAngle;
-            driverVerticalOffsetMeters -= adjustMeters;}
+            driverVerticalOffsetMeters -= adjustMeters;
+        }
     }
 
     public void aimHigher() {
 
-        if (driverVerticalOffsetMeters < maxAdjustMeters){
+        if (driverVerticalOffsetMeters < maxAdjustMeters) {
             driverVerticalOffsetDegrees += driverAdjustAngle;
             driverVerticalOffsetMeters += adjustMeters;
-    }
+        }
     }
 
     public void aimCenter() {

@@ -80,6 +80,7 @@ public class LogShootData extends CommandBase {
     // log data every shot
     if (fileOpenNow)
       loopCtr++;
+      
     if (m_shooter.logTrigger && loopCtr >= 5) {
       loopCtr = 0;
       step++;

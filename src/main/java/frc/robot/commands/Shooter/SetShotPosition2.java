@@ -34,7 +34,7 @@ public class SetShotPosition2 extends SequentialCommandGroup {
 
                 super(
 
-                        new ParallelCommandGroup(
+                        new ParallelCommandGroup(new SetActiveTeleopShootData(shooter, 2),
                                         new SetTiltOffset(tilt, ShootData.shieldGenConstants.tiltOffset),
                                         new SetTurretOffset(turret,
                                                         ShootData.shieldGenConstants.turretOffset),

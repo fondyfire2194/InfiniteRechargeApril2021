@@ -37,8 +37,7 @@ public class SetShotPosition0V1 extends SequentialCommandGroup {
 
                 super(
 
-                                new ParallelCommandGroup(
-
+                                new ParallelCommandGroup(new SetActiveTeleopShootData(shooter, 0),
                                                 new SetTiltOffset(tilt, ShootData.centerPowerPortConstants.tiltOffset),
 
                                                 new SetTurretOffset(turret,

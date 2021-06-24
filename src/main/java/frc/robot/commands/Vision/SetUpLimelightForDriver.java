@@ -17,7 +17,6 @@ public class SetUpLimelightForDriver extends ParallelCommandGroup {
   public SetUpLimelightForDriver(LimeLight limelight) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new LimelightLeds(limelight, LedMode.kpipeLine),
-        new LimelightSetPipeline(limelight, limelight.driverPipeline), new UseVision(limelight, false));
+    addCommands( new SetDriverMode(limelight),new UseVision(limelight, false));
   }
 }

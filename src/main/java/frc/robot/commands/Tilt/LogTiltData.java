@@ -16,12 +16,9 @@ public class LogTiltData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Step", "TiltAngle", "VertToTarget", "Tilt+Vert", "TiltInPosition", "VertOK",
-      "TurretAngle", "HorToTarget", "Turret+Hor", "TargetHOff", "DriverVOff", "TurretInPosition", "HorOK",
-      "ValidTargetSeen" };
-  public static String[] units = { "Number", "Meters", "Pixels", "Pixels", "SqPixels", "MPS", "Degrees", "Degrees",
-      "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "MPS", "MPS", "Volts",
-      "Bool", "Bool", "Bool", "Bool", "Bool", "Bool", "Bool" };
+  public final String[] names = { "Step", "TargetAngle", "TiltAngle", "PositionError", "TargetSeen", "ValidTarget",
+      "DegVerToTgt", "VisErDiff", "CorrEndPt" };
+  public static String[] units = { "Number", "Degrees", "Degrees", "Degrees", "OnOff", "OnOff", "Degrees", "Degrees" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -66,6 +63,7 @@ public class LogTiltData extends CommandBase {
     // log data every shot
     if (fileOpenNow)
       loopCtr++;
+    
     if (m_tilt.logTrigger && loopCtr >= 5) {
       loopCtr = 0;
       step++;
