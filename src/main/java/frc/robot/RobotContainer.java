@@ -260,9 +260,11 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 9)
                         .whenPressed(new SetShotPosition0V1(m_shooter, m_turret, m_tilt, m_limelight));
 
-            new JoystickButton(m_driverController, 10).whenPressed(new ToggleIntakeArm(m_intake));
+            // new JoystickButton(m_driverController, 10).whenPressed(new
+            // ToggleIntakeArm(m_intake));
 
-            new JoystickButton(m_driverController, 11).whenPressed(new ToggleIntakeArmOff(m_intake));
+            // new JoystickButton(m_driverController, 11).whenPressed(new
+            // ToggleIntakeArmOff(m_intake));
 
             // Hold to shoot all
             new JoystickButton(m_driverController, 12).whileHeld(() -> m_shooter.shootAll())
@@ -283,13 +285,13 @@ public class RobotContainer {
              */
 
             // front of power port one meter back
-            codriverY.whenPressed(new SetShotPosition0(m_shooter, m_turret, m_tilt));
+            codriverY.whenPressed(new SetShotPosition0(m_shooter, m_turret, m_tilt, m_limelight));
 
             // on center line 1 meter behind initiation line (shield gen)
-            codriverX.whenPressed(new SetShotPosition1(m_shooter, m_turret, m_tilt));
+            codriverX.whenPressed(new SetShotPosition1(m_shooter, m_turret, m_tilt, m_limelight));
 
             // trench in front of control panel
-            codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt));
+            codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt, m_limelight));
 
             // test method for front of power port
             codriverA.whenPressed(new SetShotPosition0V1(m_shooter, m_turret, m_tilt, m_limelight));

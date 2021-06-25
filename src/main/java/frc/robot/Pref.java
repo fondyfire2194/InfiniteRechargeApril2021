@@ -48,6 +48,7 @@ public class Pref {
     prefDict.put("TiLkD", 0.5);
     prefDict.put("TiLkIZ", 0.001);
     prefDict.put("tiLTune", 0.);
+    prefDict.put("TiltLockAdd", 0.);
 
     // Turret smart motion
     prefDict.put("tURKp", .00018);

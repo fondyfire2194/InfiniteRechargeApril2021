@@ -103,7 +103,7 @@ public class PositionHoldTurret extends CommandBase {
     }
 
     else {
-      m_turret.visionOnTarget = m_turret.lockTurretToVision(lastHorizontalError);
+      m_turret.lockTurretToVision(lastHorizontalError);
       m_turret.targetAngle = m_turret.getAngle();
     }
   }

@@ -19,18 +19,17 @@ public class LogShootData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Step", "CameraDistance", "BBHeight", "BBWidth", "TargetArea", "RobotSpeed",
-      "TiltAngle", "VertToTarget", "Tilt+Vert", "TargetVOff", "DriverVOff", "TurretAngle", "HorToTarget", "Turret+Hor",
-      "TargetHOff", "DriverVOff", "ReqdSpeed", "ActSpeed", "Battery", "TurretInPosition", "TiltInPosition", "VertOK",
-      "HorOK", "ShooterAtSpeed", "IsShooting", "ValidTargetSeen" };
-  public static String[] units = { "Number", "Meters", "Pixels", "Pixels", "SqPixels", "MPS", "Degrees", "Degrees",
-      "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "MPS", "MPS", "Volts",
-      "Bool", "Bool", "Bool", "Bool", "Bool", "Bool", "Bool" };
+  public final String[] names = { "Step", "TiltAngle", "VertToTarget", "TargetVOff", "DriverVOff", "TiltLockErr",
+      "TurretAngle", "HorToTarget", "TargetHOff", "DriverHOff", "TurrLockPE", "ReqdSpeed", "ActSpeed", "Battery",
+      "TurretInPos", "TiltInPos", "VertOK", "HorOK", "ShooterAtSpeed", "IsShooting", "ValidTargetSeen" };
+
+  public static String[] units = { "Number", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees",
+      "Degrees", "Degrees", "Degrees", "Degrees", "MPS", "MPS", "Volts", "T/F", "T/F", "T/F", "T/F", "T/F", "T/F",
+      "T/F" };
 
   private int loopCtr;
   private boolean fileOpenNow;
   private int step;
-  private final RevDrivetrain m_drive;
   private final LimeLight m_limelight;
   private final RevTurretSubsystem m_turret;
   private final RevTiltSubsystem m_tilt;
@@ -44,10 +43,10 @@ public class LogShootData extends CommandBase {
   private double validTargetSeen;
   private double shooterAtSpeed;
 
-  public LogShootData(RevDrivetrain drive, RevTurretSubsystem turret, RevTiltSubsystem tilt,
-      RevShooterSubsystem shooter, LimeLight limelight) {
+  public LogShootData(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevShooterSubsystem shooter,
+      LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_drive = drive;
+
     m_limelight = limelight;
     m_turret = turret;
     m_tilt = tilt;
@@ -80,7 +79,7 @@ public class LogShootData extends CommandBase {
     // log data every shot
     if (fileOpenNow)
       loopCtr++;
-      
+
     if (m_shooter.logTrigger && loopCtr >= 5) {
       loopCtr = 0;
       step++;
@@ -114,15 +113,12 @@ public class LogShootData extends CommandBase {
       else
         shooterAtSpeed = 0;
 
-      m_shooter.shootLogger.writeData((double) step, m_shooter.calculatedCameraDistance,
-          m_limelight.getBoundingBoxHeight(), m_limelight.getBoundingBoxWidth(), m_limelight.getTargetArea(),
-          m_drive.getLeftRate(), m_tilt.getAngle(), m_limelight.getdegVerticalToTarget(),
-          m_tilt.getAngle() + m_limelight.getdegVerticalToTarget(), m_tilt.targetVerticalOffset,
-          m_tilt.driverVerticalOffsetDegrees, m_turret.getAngle(), m_limelight.getdegRotationToTarget(),
-          m_turret.getAngle() + m_limelight.getdegRotationToTarget(), m_turret.targetHorizontalOffset,
-          m_turret.driverHorizontalOffsetDegrees, m_shooter.requiredMps, m_shooter.getMPS(), m_shooter.getLeftAmps(),
-          m_shooter.getBatteryVoltage(), turretOnTarget, tiltOnTarget, horOnTarget, vertOnTarget, shooterAtSpeed,
-          isShooting, validTargetSeen);
+      m_shooter.shootLogger.writeData((double) step, m_tilt.getAngle(), m_limelight.getdegVerticalToTarget(),
+          m_tilt.targetVerticalOffset, m_tilt.driverVerticalOffsetDegrees, m_tilt.getLockPositionError(),
+          m_turret.getAngle(), m_limelight.getdegRotationToTarget(), m_turret.targetHorizontalOffset,
+          m_turret.driverHorizontalOffsetDegrees, m_turret.getLockPositionError(), m_shooter.requiredMps,
+          m_shooter.getMPS(), m_shooter.getBatteryVoltage(), turretOnTarget, tiltOnTarget, horOnTarget, vertOnTarget,
+          shooterAtSpeed, isShooting, validTargetSeen);
     }
 
   }

@@ -4,57 +4,41 @@
 
 package frc.robot.commands.Tilt;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
-import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 
-public class PositionHoldTilt extends CommandBase {
-  /** Creates a new PositionTilt. */
-
-  private final RevTiltSubsystem m_tilt;
-  private final LimeLight m_limelight;
-  private final RevShooterSubsystem m_shooter;
-  private boolean targetSeen;
+public class LockTiltToVision extends CommandBase {
+  /** Creates a new LockTiltToVision. */
+  private RevTiltSubsystem m_tilt;
+  private LimeLight m_limelight;
   private int visionFoundCounter;
-  private double cameraVerticalError;
-  private final int filterCount = 3;
-  private double deadband = .01;
-  private int loopctr;
-  private double lastVerticalError;
+  private int filterCount = 3;
 
-  public PositionHoldTilt(RevTiltSubsystem tilt, RevShooterSubsystem shooter, LimeLight limelight) {
+  private boolean targetSeen;
+  private double deadband = .01;
+  private double cameraVerticalError;
+
+  public LockTiltToVision(RevTiltSubsystem tilt, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
-    m_shooter = shooter;
     m_limelight = limelight;
-    visionFoundCounter = 0;
     addRequirements(m_tilt);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
-    if (!m_limelight.useVision)
-      visionFoundCounter = 0;
-
-    if (m_tilt.validTargetSeen && m_limelight.useVision)
-      visionFoundCounter = filterCount;
-    else
-      visionFoundCounter = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
     if (visionFoundCounter < 0)
       visionFoundCounter = 0;
     if (visionFoundCounter > filterCount)
       visionFoundCounter = filterCount;
-    loopctr++;
+    
 
     if (!m_limelight.useVision)
       visionFoundCounter = 0;
@@ -100,13 +84,10 @@ public class PositionHoldTilt extends CommandBase {
     double motorTurns = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
     m_tilt.motorEndpointDegrees = motorTurns;
 
-    if (!m_shooter.okToShoot)
-      lastVerticalError = m_tilt.adjustedVerticalError;
-
     if (!m_tilt.validTargetSeen) {
       m_tilt.goToPositionMotionMagic(motorTurns);
     } else {
-      m_tilt.lockTiltToVision(lastVerticalError);
+      m_tilt.lockTiltToVision(cameraVerticalError);
       m_tilt.targetAngle = m_tilt.getAngle();
     }
 
@@ -115,15 +96,11 @@ public class PositionHoldTilt extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_tilt.targetAngle = m_tilt.getAngle();
-    m_tilt.validTargetSeen = false;
-    m_tilt.visionOnTarget = false;
-    visionFoundCounter = 0;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_tilt.getLockAtTarget();
   }
 }

@@ -64,9 +64,20 @@ public class ShootData {
 
     public final static class centerPowerPortConstants {
         public static double retractDistance = -1;
-        public static double tiltAngle = 19.6;// getTiltAngle(4 + frontOfRobotToCenterofTiltTurret);// 22.7;//
+        public static double tiltAngle = 19.6;
         public static double turretAngle = 0;
-        public static double shootSpeed = 30;
+        public static double shootSpeed = 32;
+        public static double tiltOffset = 2;
+        public static double turretOffset = 0;
+        public static double shootTime = 4;
+
+    }
+
+    public final static class rightRetractShootConstants {
+        public static double retractDistance = -2;
+        public static double tiltAngle = 15;// 
+        public static double turretAngle = -10;
+        public static double shootSpeed = 32;
         public static double tiltOffset = 2;
         public static double turretOffset = 0;
         public static double shootTime = 4;
@@ -90,15 +101,27 @@ public class ShootData {
         public static double tiltAngle = 15;
 
         public static double turretAngle = -21;
-        public static double shootSpeed = 35;
+        public static double shootSpeed = 37;
         public static double tiltOffset = 7;
-        public static double turretOffset = 1;
+        public static double turretOffset = -1;
         public static double shootTime = 5;
 
     }
 
+    public final static class trench4BallShotConstants {
+        public static double retractDistance = -3;
+        public static double tiltAngle = 17;
+
+        public static double turretAngle = -15;
+        public static double shootSpeed = 37;
+        public static double tiltOffset = 6;
+        public static double turretOffset = 0;
+        public static double shootTime = 4;
+
+    }
+
     public final static class behindControlPanelShotConstants {
-        
+
         public static double tiltAngle = 15;
 
         public static double turretAngle = -15;
@@ -118,9 +141,8 @@ public class ShootData {
     }
 
     public static void showValues() {
-        SmartDashboard.putNumber("TAI",activeTeleopTiltAngle);
-        SmartDashboard.putNumber("TAU",activeTeleopTurretAngle);
-      
+        SmartDashboard.putNumber("TAI", activeTeleopTiltAngle);
+        SmartDashboard.putNumber("TAU", activeTeleopTurretAngle);
 
     }
 

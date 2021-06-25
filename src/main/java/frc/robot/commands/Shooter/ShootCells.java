@@ -57,6 +57,7 @@ public class ShootCells extends CommandBase {
     m_tilt = tilt;
     m_turret = turret;
     m_time = time;
+    m_shooter.startShooter = true;
 
   }
 
@@ -75,7 +76,6 @@ public class ShootCells extends CommandBase {
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.useVision = true;
-    m_shooter.startShooter = true;
     m_shooter.logTrigger = true;
   }
 
@@ -92,8 +92,12 @@ public class ShootCells extends CommandBase {
       m_shooter.cameraCalculatedSpeed = speedAndOffsetFromCamera[0];
       offsetFromCamera = speedAndOffsetFromCamera[1];
     }
-    boolean okToShoot = (m_limelight.getHorOnTarget(1.) && m_limelight.getVertOnTarget(1.)) || m_shooter.driverOKShoot;
- 
+    m_shooter.okToShoot = (m_limelight.getHorOnTarget(1.75) && m_limelight.getVertOnTarget(1.75))
+        || m_shooter.driverOKShoot;
+
+    if (okToShoot)
+      m_shooter.startShooter = true;
+
     if (m_shooter.atSpeed() && okToShoot || m_shooter.isShooting) {
 
       m_shooter.isShooting = true;
@@ -105,7 +109,7 @@ public class ShootCells extends CommandBase {
       m_transport.runRearRollerMotor();
       m_transport.runLeftBeltMotor(.5);
       m_transport.runRightBeltMotor(-.5);
-      m_limelight.useVision = false;
+      
     }
 
     if (m_shooter.isShooting && cellAvailable && !m_shooter.shotInProgress) {

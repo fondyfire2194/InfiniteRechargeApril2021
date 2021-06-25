@@ -231,10 +231,17 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         mPidController.setReference(motorDegrees, ControlType.kSmartMotion, SMART_MOTION_SLOT);
     }
 
-    public boolean lockTiltToVision(double cameraError) {
+    public void lockTiltToVision(double cameraError) {
         lockPIDOut = tiltLockController.calculate(cameraError, 0);
-        m_motor.set((lockPIDOut) + .01);
+        m_motor.set(lockPIDOut);
         targetAngle = getAngle();
+    }
+
+    public double getLockPositionError() {
+        return tiltLockController.getPositionError();
+    }
+
+    public boolean getLockAtTarget() {
         return tiltLockController.atSetpoint();
     }
 

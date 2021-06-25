@@ -45,21 +45,21 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class AutoModeTrench extends SequentialCommandGroup {
+public class AutoMode4BallTrench extends SequentialCommandGroup {
         /**
          * Creates a new Auto0.
          * 
          * Start in front of power port and shoot
          */
-        static double retractDistance = ShootData.trenchShotConstants.retractDistance;
-        static double tiltAngle = ShootData.trenchShotConstants.tiltAngle;
-        static double turretAngle = ShootData.trenchShotConstants.turretAngle;
-        static double shootSpeed = ShootData.trenchShotConstants.shootSpeed;
-        static double tiltOffset = ShootData.trenchShotConstants.tiltOffset;
-        static double turretOffset = ShootData.trenchShotConstants.turretOffset;
-        static double shootTime = ShootData.trenchShotConstants.shootTime;
+        static double retractDistance = ShootData.trench4BallShotConstants.retractDistance;
+        static double tiltAngle = ShootData.trench4BallShotConstants.tiltAngle;
+        static double turretAngle = ShootData.trench4BallShotConstants.turretAngle;
+        static double shootSpeed = ShootData.trench4BallShotConstants.shootSpeed;
+        static double tiltOffset = ShootData.trench4BallShotConstants.tiltOffset;
+        static double turretOffset = ShootData.trench4BallShotConstants.turretOffset;
+        static double shootTime = ShootData.trench4BallShotConstants.shootTime;
 
-        public AutoModeTrench(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+        public AutoMode4BallTrench(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
                         Compressor compressor, RearIntakeSubsystem intake) {
                 // Add your commands in the super() call, e.g.

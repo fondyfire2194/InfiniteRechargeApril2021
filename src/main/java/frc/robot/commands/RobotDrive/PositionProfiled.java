@@ -29,11 +29,11 @@ public class PositionProfiled extends ProfiledPIDCommand {
     super(
         new ProfiledPIDController(drive.kP, drive.kI, drive.kD, new TrapezoidProfile.Constraints(maxVel, drive.maxAcc)),
         // Close loop on heading
-        drive::getAverageDistance,
+        drive::getLeftDistance,
         // Set reference to target
         targetMeters,
         // Pipe output to move robot
-        (output, setpoint) -> drive.arcadeDrive(output, -drive.getYaw() * .01),
+        (output, setpoint) -> drive.arcadeDrive(output, -drive.getYaw() * .05),
         // Require the drive
         drive);
 

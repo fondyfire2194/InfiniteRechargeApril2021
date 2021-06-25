@@ -8,30 +8,25 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import edu.wpi.first.wpilibj.Timer;
 
-public class IntakeArm extends CommandBase {
+public class IntakeArmRaise extends CommandBase {
 
   private RearIntakeSubsystem m_intake;
-  private boolean m_lower;
-  private double m_startTime;
 
-  public IntakeArm(RearIntakeSubsystem intake, boolean lower) {
+  public IntakeArmRaise(RearIntakeSubsystem intake) {
     m_intake = intake;
-    m_lower = lower;
-    
+
   }
 
   public void initialize() {
-    m_startTime = Timer.getFPGATimestamp();
+
   }
 
   @Override
 
   public void execute() {
-    if (m_lower) {
-      m_intake.lowerArm();
-    } else {
-      m_intake.raiseArm();
-    }
+
+    m_intake.raiseArm();
+
   }
 
   @Override
@@ -41,7 +36,7 @@ public class IntakeArm extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Timer.getFPGATimestamp() > m_startTime + .5;
+    return true;
 
   }
 }

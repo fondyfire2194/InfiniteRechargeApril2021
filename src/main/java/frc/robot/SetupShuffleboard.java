@@ -23,7 +23,8 @@ import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
-import frc.robot.commands.CellIntake.IntakeArm;
+import frc.robot.commands.CellIntake.IntakeArmLower;
+import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
 import frc.robot.commands.CellIntake.StopIntakeMotor;
 import frc.robot.commands.CellTransport.HoldCell;
@@ -125,9 +126,10 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Center Start Retract Shoot", 1);
 
-                        autoChooser.addOption("Left Start Move Shoot Move Pickup Shoot", 2);
+                        autoChooser.addOption("Right Start Retract Shoot", 2);
 
-                        autoChooser.addOption("Trench Start Move Shoot  Move Pickup Shoot", 3);
+                        autoChooser.addOption("Trench 5 Ball Start Move Shoot  Move Pickup Shoot", 3);
+                        autoChooser.addOption("Trench 4 Ball Start Move Shoot  Move Pickup Shoot", 4);
 
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
@@ -169,11 +171,11 @@ public class SetupShuffleboard {
                         intakeValues.addBoolean("Arm Down", () -> m_intake.getArmLowered());
                         intakeValues.addNumber("Motor Amps", () -> m_intake.getMotorAmps());
                         intakeValues.addNumber("Motor CMD", () -> m_intake.getMotor());
-                        intakeValues.add("ArmRaise", new IntakeArm(m_intake, false));
-                        intakeValues.add("ArmLower", new IntakeArm(m_intake, true));
+                        intakeValues.add("ArmRaise", new IntakeArmRaise(m_intake));
+                        intakeValues.add("ArmLower", new IntakeArmLower(m_intake));
                         intakeValues.add("Run Motor", new RunIntakeMotor(intake, .75));
                         intakeValues.add("Stop Motor", new StopIntakeMotor(intake));
-                        
+
                         Shuffleboard.getTab("Intake").add("Intake", intakeFeed).withWidget(BuiltInWidgets.kCameraStream)
                                         .withPosition(2, 0).withSize(6, 4)
                                         .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//
@@ -281,6 +283,7 @@ public class SetupShuffleboard {
                         turretValues.addNumber("AdjTarget", () -> m_turret.adjustedCameraError);
                         turretValues.addNumber("Vision Error", () -> m_limelight.getdegRotationToTarget());
                         turretValues.addNumber("DriverOffset", () -> m_turret.driverHorizontalOffsetDegrees);
+                        turretValues.addNumber("LockPosnErr", () -> m_turret.getLockPositionError());
 
                         ShuffleboardLayout turretValues3 = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 2)
@@ -291,7 +294,6 @@ public class SetupShuffleboard {
                         turretValues3.addNumber("LockOutput", () -> m_tilt.lockPIDOut);
                         turretValues3.addNumber("LockError", () -> m_turret.m_turretLockController.getPositionError());
                         turretValues3.addBoolean("LockController", () -> m_turret.validTargetSeen);
-                        turretValues3.addBoolean("LockOnTarget", () -> m_turret.visionOnTarget);
 
                         ShuffleboardLayout turretValues2 = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("States", BuiltInLayouts.kGrid).withPosition(2, 3).withSize(2, 3)
@@ -310,7 +312,7 @@ public class SetupShuffleboard {
                         turretValues2.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget(.5));
 
                         turretValues2.addBoolean("OKTune", () -> (m_turret.tuneOn && m_turret.lastTuneOn));
-                        turretValues2.addBoolean("Burn OK", () -> m_turret.burnOK);
+                        turretValues2.addBoolean("LockAtTarget", () -> m_turret.getLockAtTarget());
 
                         ShuffleboardLayout turretGains = Shuffleboard.getTab("SetupTurret")
 
@@ -370,6 +372,7 @@ public class SetupShuffleboard {
                         tiltValues.addNumber("MotorDeg", () -> m_tilt.getMotorDegrees());
                         tiltValues.addNumber("MotorTarget", () -> m_tilt.motorEndpointDegrees);
                         tiltValues.addNumber("DriverOffset", () -> m_tilt.driverVerticalOffsetDegrees);
+                        tiltValues.addNumber("LockError", () -> m_tilt.tiltLockController.getPositionError());
 
                         ShuffleboardLayout tiltValues3 = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 2)
@@ -380,7 +383,7 @@ public class SetupShuffleboard {
                         tiltValues3.addNumber("LockOutput", () -> m_tilt.lockPIDOut);
                         tiltValues3.addNumber("LockError", () -> m_tilt.tiltLockController.getPositionError());
                         tiltValues3.addBoolean(("LockController"), () -> m_tilt.validTargetSeen);
-                        tiltValues3.addBoolean("LockOnTarget", () -> m_tilt.visionOnTarget);
+                        tiltValues3.addBoolean("LockOnTarget", () -> m_tilt.getLockAtTarget());
 
                         ShuffleboardLayout tiltValues2 = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("States", BuiltInLayouts.kGrid).withPosition(4, 3).withSize(4, 2)
@@ -444,8 +447,7 @@ public class SetupShuffleboard {
                         shooterCommands.add("LogDataRun",
                                         new LogDistanceData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
                         shooterCommands.add("EndLogs", new EndLogData(m_shooter));
-                        shooterCommands.add("LogShootRun",
-                                        new LogShootData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
+                        shooterCommands.add("LogShootRun", new LogShootData(m_turret, m_tilt, m_shooter, m_limelight));
                         shooterCommands.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter, tilt, turret));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
@@ -548,10 +550,10 @@ public class SetupShuffleboard {
                         robotCommands.add("Reset Enc", new ResetEncoders(m_robotDrive));
                         robotCommands.add("Reset Gyro", new ResetGyro(m_robotDrive));
 
-                        robotCommands.add("Pos5m", new PositionProfiled(m_robotDrive, 5, 3));
-                        robotCommands.add("Pos to 0M", new PositionProfiled(m_robotDrive, 0, 3));
-                        robotCommands.add("Pos +1M", new PositionProfiled(m_robotDrive, 1, 3));
-                        robotCommands.add("Pos -1M", new PositionProfiled(m_robotDrive, -1, 3));
+                        robotCommands.add("Pos5m", new PositionProfiled(m_robotDrive, 5, .75));
+                        robotCommands.add("Pos to 0M", new PositionProfiled(m_robotDrive, 0, .75));
+                        robotCommands.add("Pos +1M", new PositionProfiled(m_robotDrive, 1, .75));
+                        robotCommands.add("Pos -1M", new PositionProfiled(m_robotDrive, -1, .75));
                         robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
                         robotCommands.add("Stop Robot", new StopRobot(m_robotDrive));
                         robotCommands.add("Cmd", m_robotDrive);
@@ -707,9 +709,9 @@ public class SetupShuffleboard {
 
                         visionBools.addBoolean("Connected", () -> m_limelight.isConnected());
 
-                        visionBools.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget(.5));
+                        visionBools.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget(1.75));
 
-                        visionBools.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget(.5));
+                        visionBools.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget(1.75));
 
                         visionBools.addBoolean("TargetFound", () -> m_limelight.getIsTargetFound());
 

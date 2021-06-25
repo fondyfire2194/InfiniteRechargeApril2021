@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.PositionProfiled;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
@@ -132,7 +133,7 @@ public class Robot extends TimedRobot {
       case 0:// cross line
 
         setStartingPose(FieldMap.startPosition[0]);
-        m_autonomousCommand = new PositionProfiled(m_robotContainer.m_robotDrive, -1, 3);
+        m_autonomousCommand = new PickupMove(m_robotContainer.m_robotDrive, -1, -.5);
 
         break;
       case 1:// in front of power port, move back use shooter data index 1
@@ -142,7 +143,7 @@ public class Robot extends TimedRobot {
 
         break;
 
-      case 2:// Lined up with 2 balls on shield generator
+      case 2:// Right start close to centar robot
 
         setStartingPose(FieldMap.startPosition[2]);
 
@@ -155,6 +156,13 @@ public class Robot extends TimedRobot {
         setStartingPose(FieldMap.startPosition[3]);
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
+
+        break;
+      case 4:// Trench 4 ball
+
+        setStartingPose(FieldMap.startPosition[3]);
+
+        m_autonomousCommand = m_autoFactory.getAutonomousCommand4();
 
         break;
 

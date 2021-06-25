@@ -39,7 +39,7 @@ public class PickupMove extends CommandBase {
     double remainingDistance = m_endpoint - m_drive.getAverageDistance();
 
     if (remainingDistance > slowDownDistance)
-      currentSpeed = m_speed * .5;
+      currentSpeed = m_speed * .85;
 
     m_drive.arcadeDrive(currentSpeed, -m_drive.getYaw() * .01);
   }

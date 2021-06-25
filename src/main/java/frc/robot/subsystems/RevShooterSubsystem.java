@@ -151,6 +151,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     private double testDistance = 2;
 
     public boolean logSetupFileOpen;
+	public boolean okToShoot;
+
 
     public RevShooterSubsystem() {
 

@@ -92,7 +92,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
         tuneGains();
         setTurretLockGains();
-        m_turretLockController.setTolerance(.5);
+        m_turretLockController.setTolerance(1.);
         setSoftwareLimits();
 
         if (RobotBase.isReal()) {
@@ -187,10 +187,18 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     }
 
-    public boolean lockTurretToVision(double cameraError) {
+    public void lockTurretToVision(double cameraError) {
         pidLockOut = m_turretLockController.calculate(cameraError, 0);
         m_motor.set(pidLockOut);
         targetAngle = getAngle();
+        
+    }
+
+    public double getLockPositionError(){
+        return m_turretLockController.getPositionError();
+    }
+
+    public boolean getLockAtTarget(){
         return m_turretLockController.atSetpoint();
     }
 
