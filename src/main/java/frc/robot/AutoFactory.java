@@ -53,18 +53,18 @@ public class AutoFactory {
     public SequentialCommandGroup getAutonomousCommand1() {
         return new AutoModeCenterPowerPort(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
                 m_compressor);
-        // return new PowerPortVisionTest(m_shooter, m_turret, m_tilt, m_limelight);
+      
     }
 
     // right of center retract shoot
     public SequentialCommandGroup getAutonomousCommand2() {
-        return new RightStartRetractShoot(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
-                m_compressor);
+        return new AutoModeShieldGen(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
+                m_compressor, m_intake);
     }
 
     // front of trench or left of center move pickup and and shoot together
     public SequentialCommandGroup getAutonomousCommand3() {
-        return new AutoModeTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor,
+        return new AutoMode3M3BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor,
                 m_intake);
         // return new AutoModeTrenchTestVision(m_shooter, m_turret, m_tilt, m_transport,
         // m_robotDrive, m_limelight,
@@ -73,12 +73,12 @@ public class AutoFactory {
 
     // front of trench or left of center move pickup and and shoot
     public SequentialCommandGroup getAutonomousCommand4() {
-        return new AutoMode4BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
+        return new AutoMode3M3BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
                 m_compressor, m_intake);
     }
 
     public SequentialCommandGroup getAutonomousCommand5() {
-        return new AutoMode33BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
+        return new AutoMode3M3BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
                 m_compressor, m_intake);
     }
 

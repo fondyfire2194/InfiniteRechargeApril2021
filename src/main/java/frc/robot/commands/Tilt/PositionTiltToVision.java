@@ -10,6 +10,7 @@
 
 package frc.robot.commands.Tilt;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.Constants.HoodedShooterConstants;
@@ -55,6 +56,7 @@ public class PositionTiltToVision extends CommandBase {
     m_tilt.correctedEndpoint = m_endpoint;
     loopCtr = 0;
     m_tilt.logTrigger = true;
+    m_limelight.setVerticalOffset(m_tilt.targetVerticalOffset);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -80,19 +82,20 @@ public class PositionTiltToVision extends CommandBase {
     if (!m_tilt.validTargetSeen && visionFoundCounter >= filterCount) {
 
       m_tilt.validTargetSeen = true;
+    }
+
+    if (m_tilt.validTargetSeen) {
 
       correctionCtr++;
 
       if (correctionCtr >= 5) {
 
-
-        m_tilt.correctedEndpoint = m_tilt.getAngle() + m_tilt.getSpeed() / 50 - m_limelight.getdegVerticalToTarget();
+        m_tilt.correctedEndpoint = m_tilt.getAngle() + m_limelight.getdegVerticalToTarget();
 
         m_tilt.targetAngle = m_tilt.correctedEndpoint;
 
         correctionCtr = 0;
       }
-
     }
 
     double motorTurns = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
@@ -102,7 +105,7 @@ public class PositionTiltToVision extends CommandBase {
     m_tilt.goToPositionMotionMagic(motorTurns);
 
     endIt = m_limelight.getVertOnTarget(1) || !m_tilt.validTargetSeen && m_tilt.atTargetAngle() && loopCtr > 5
-        || loopCtr > 150;
+        || loopCtr > 1250;
 
   }
 

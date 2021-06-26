@@ -126,7 +126,7 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Center Start Retract Shoot", 1);
 
-                        autoChooser.addOption("Right Start Retract Shoot", 2);
+                        autoChooser.addOption("Left Start Shoot Retract Shoot", 2);
 
                         autoChooser.addOption("Trench 5 Ball Start Move Pickup Shoot", 3);
                         autoChooser.addOption("Trench 4 Ball Start Move Pickup Shoot", 4);

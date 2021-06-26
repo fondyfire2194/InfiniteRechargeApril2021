@@ -44,7 +44,7 @@ public class PositionTurretToVision extends CommandBase {
     targetSeen = false;
     visionFoundCounter = 0;
     loopCtr = 0;
-
+    m_limelight.horizontalOffset = m_turret.targetHorizontalOffset;
     m_limelight.useVision = false;
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.setLEDMode(LedMode.kpipeLine);
@@ -75,32 +75,33 @@ public class PositionTurretToVision extends CommandBase {
     if (!m_turret.validTargetSeen && visionFoundCounter >= filterCount) {
 
       m_turret.validTargetSeen = true;
+    }
+
+    if (m_turret.validTargetSeen) {
 
       correctionCtr++;
 
       if (correctionCtr >= 5) {
 
-        m_turret.correctedEndpoint = (m_turret.getAngle() + m_turret.getSpeed() / 50)
-            - m_limelight.getdegRotationToTarget();
+        m_turret.correctedEndpoint = (m_turret.getAngle() - m_limelight.getdegRotationToTarget());
 
         m_turret.targetAngle = m_turret.correctedEndpoint;
 
         correctionCtr = 0;
       }
-
-      if (!targetSeen && m_turret.validTargetSeen) {
-        visionFoundCounter--;
-      }
-
-      if (!targetSeen && m_turret.validTargetSeen && visionFoundCounter < 0) {
-        visionFoundCounter = 0;
-        m_turret.validTargetSeen = false;
-
-      }
-
-      m_turret.goToPositionMotionMagic(m_turret.targetAngle);
     }
 
+    if (!targetSeen && m_turret.validTargetSeen) {
+      visionFoundCounter--;
+    }
+
+    if (!targetSeen && m_turret.validTargetSeen && visionFoundCounter < 0) {
+      visionFoundCounter = 0;
+      m_turret.validTargetSeen = false;
+
+    }
+
+    m_turret.goToPositionMotionMagic(m_turret.targetAngle);
   }
 
   // Called once the command ends or is interrupted.

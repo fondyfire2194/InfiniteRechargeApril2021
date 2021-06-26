@@ -24,9 +24,11 @@ import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
+import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
+import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
@@ -59,10 +61,13 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new ResetEncoders(drive), new ResetGyro(drive), new ParallelCommandGroup(
-                                new SetTiltOffset(tilt, tiltOffset), new SetTurretOffset(turret, turretOffset),
-                                new PickupMove(drive, -1, -.5), new PositionTilt(tilt, tiltAngle + tiltOffset),
-                                new PositionTurret(turret, turretAngle + turretOffset)),
+                super(new ResetEncoders(drive), new ResetGyro(drive),
+                                new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
+                                                new SetTurretOffset(turret, turretOffset),
+                                                new PickupMove(drive, -1, -.5),
+                                                new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
+                                                new PositionTurretToVision(turret, limelight,
+                                                                turretAngle + turretOffset)),
 
                                 new SetUpLimelightForTarget(limelight),
 

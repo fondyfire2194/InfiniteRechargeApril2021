@@ -23,6 +23,8 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
+import frc.robot.commands.CellIntake.IntakeArmLower;
+import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellTransport.JogLeftBelt;
@@ -39,6 +41,7 @@ import frc.robot.commands.Shooter.SetShotPosition2;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Shooter.StopShoot;
+import frc.robot.commands.Shooter.StopShooter;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.TiltJog;
@@ -226,10 +229,12 @@ public class RobotContainer {
              * 
              */
 
-            new JoystickButton(m_driverController, 1).whileHeld(new StartIntake(m_intake, m_transport));
+            new JoystickButton(m_driverController, 2).whileHeld(new StartIntake(m_intake, m_transport));
 
-            new JoystickButton(m_driverController, 2).whileHeld(
-                        new ShootCells(m_shooter, m_tilt, m_turret, m_limelight, m_transport, m_compressor, 100));
+            new JoystickButton(m_driverController, 1)
+                        .whileHeld(new IntakeArmLower(m_intake)).whileHeld(new ShootCells(m_shooter, m_tilt, m_turret,
+                                    m_limelight, m_transport, m_compressor, 100))
+                        .whenReleased(new IntakeArmRaise(m_intake));
 
             new JoystickButton(m_driverController, 5).whenPressed(new StartShooter(m_shooter));
 
@@ -254,14 +259,14 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 8).whenPressed(() -> m_shooter.setOKShootDriver())
                         .whenReleased(() -> m_shooter.setNotOKShootDriver());
 
-            new JoystickButton(m_driverController, 9)
-                        .whenPressed(new SetShotPosition0V1(m_shooter, m_turret, m_tilt, m_limelight));
+           // new JoystickButton(m_driverController, 9).whenPressed
+
 
             // new JoystickButton(m_driverController, 10).whenPressed(new
             // ToggleIntakeArm(m_intake));
 
-            // new JoystickButton(m_driverController, 11).whenPressed(new
-            // ToggleIntakeArmOff(m_intake));
+            new JoystickButton(m_driverController, 11).whileHeld(() -> m_shooter.shootAll())
+                        .whenReleased(() -> m_shooter.shootOne());
 
             // Hold to shoot all
             new JoystickButton(m_driverController, 12).whileHeld(() -> m_shooter.shootAll())

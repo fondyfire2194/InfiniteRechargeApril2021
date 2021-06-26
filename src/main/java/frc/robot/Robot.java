@@ -131,8 +131,10 @@ public class Robot extends TimedRobot {
       case 0:// cross line
 
         setStartingPose(FieldMap.startPosition[0]);
-        m_autonomousCommand = new PickupMove(m_robotContainer.m_robotDrive, -1, -.5);
 
+        m_autonomousCommand = new PickupMove(m_robotContainer.m_robotDrive, -1, -.5);
+        m_robotContainer.m_shooter.stop();
+        
         break;
       case 1:// in front of power port, move back use shooter data index 1
 
@@ -141,7 +143,7 @@ public class Robot extends TimedRobot {
 
         break;
 
-      case 2:// Right start close to centar robot
+      case 2:// Left start close to center line
 
         setStartingPose(FieldMap.startPosition[2]);
 
@@ -164,15 +166,15 @@ public class Robot extends TimedRobot {
 
         break;
 
-        case 5:
+      case 5:
 
-        m_autonomousCommand  = m_autoFactory.getAutonomousCommand5();
+        m_autonomousCommand = m_autoFactory.getAutonomousCommand5();
 
         break;
-        
-        case 6:
 
-        m_autonomousCommand  = m_autoFactory.getAutonomousCommand6();
+      case 6:
+
+        m_autonomousCommand = m_autoFactory.getAutonomousCommand6();
 
         break;
 

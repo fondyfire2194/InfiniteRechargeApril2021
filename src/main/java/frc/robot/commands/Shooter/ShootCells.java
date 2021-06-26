@@ -34,7 +34,7 @@ public class ShootCells extends CommandBase {
   private double shotTime = 1;
   private double shotStartTime;
 
-  private boolean okToShoot;
+private boolean okToShoot;
 
   private int cellsShot;
   private double startTime;
@@ -84,7 +84,7 @@ public class ShootCells extends CommandBase {
   public void execute() {
 
     loopctr++;
-
+    SmartDashboard.putNumber("SCELC", loopctr);
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
     if (!inAuto) {
@@ -95,10 +95,10 @@ public class ShootCells extends CommandBase {
     m_shooter.okToShoot = (m_limelight.getHorOnTarget(1.75) && m_limelight.getVertOnTarget(1.75))
         || m_shooter.driverOKShoot;
 
-    if (okToShoot)
+    if (m_shooter.okToShoot)
       m_shooter.startShooter = true;
 
-    if (m_shooter.atSpeed() && okToShoot || m_shooter.isShooting) {
+    if (m_shooter.atSpeed() && m_shooter.okToShoot || m_shooter.isShooting) {
 
       m_shooter.isShooting = true;
 
@@ -109,7 +109,7 @@ public class ShootCells extends CommandBase {
       m_transport.runRearRollerMotor();
       m_transport.runLeftBeltMotor(.5);
       m_transport.runRightBeltMotor(-.5);
-      
+
     }
 
     if (m_shooter.isShooting && cellAvailable && !m_shooter.shotInProgress) {
@@ -130,9 +130,9 @@ public class ShootCells extends CommandBase {
       m_shooter.shotInProgress = false;
     }
 
-    okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
+    m_shooter.okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
 
-    getNextCell = okToShoot && !m_shooter.shotInProgress && !cellAvailable && m_shooter.atSpeed();
+    getNextCell = m_shooter.okToShoot && !m_shooter.shotInProgress && !cellAvailable && m_shooter.atSpeed();
 
     if (getNextCell || cellReleased) {
       releaseOneCell();
