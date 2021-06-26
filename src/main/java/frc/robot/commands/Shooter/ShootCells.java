@@ -138,11 +138,6 @@ private boolean okToShoot;
       releaseOneCell();
     }
 
-    // SmartDashboard.putBoolean("OKShoot", okToShoot);
-    // SmartDashboard.putBoolean("SHIP", m_shooter.shotInProgress);
-    // SmartDashboard.putBoolean("SHSTD", shootStarted);
-    // SmartDashboard.putBoolean("CAvail ", cellAvailable);
-    // SmartDashboard.putNumber("CLSSHT", cellsShot);
 
   }
 

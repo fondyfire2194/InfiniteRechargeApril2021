@@ -13,8 +13,10 @@ import frc.robot.LimeLight;
 import frc.robot.commands.Vision.UseVision;
 import frc.robot.ShootData;
 import frc.robot.commands.Tilt.PositionTilt;
+import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
+import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -40,17 +42,16 @@ public class SetShotPosition1 extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new SetActiveTeleopShootData(shooter, 1),
                                                 new SetUpLimelightForTarget(limelight),
-                                                new SetTiltOffset(tilt, ShootData.trench4BallShotConstants.tiltOffset),
-                                                new SetTurretOffset(turret,
-                                                                ShootData.trench4BallShotConstants.turretOffset),
-                                                new PositionTilt(tilt, ShootData.trench4BallShotConstants.tiltAngle
-                                                                + ShootData.trench4BallShotConstants.tiltOffset),
-                                                new PositionTurret(turret,
-                                                                ShootData.trench4BallShotConstants.turretAngle
-                                                                                + ShootData.trench4BallShotConstants.turretOffset),
-                                                new SetShootSpeed(shooter,
-                                                                ShootData.trench4BallShotConstants.shootSpeed),
-                                                new StartShooter(shooter)));
+                                                new SetTiltOffset(tilt, ShootData.shieldGenConstants.tiltOffset),
+                                                new SetTurretOffset(turret, ShootData.shieldGenConstants.turretOffset),
+                                                new PositionTiltToVision(tilt, limelight,
+                                                                ShootData.shieldGenConstants.tiltAngle
+                                                                                + ShootData.shieldGenConstants.tiltOffset),
+                                                new PositionTurretToVision(turret, limelight,
+                                                                ShootData.shieldGenConstants.turretAngle
+                                                                                + ShootData.shieldGenConstants.turretOffset),
+                                                new SetShootSpeed(shooter, ShootData.shieldGenConstants.shootSpeed),
+                                                new UseVision(limelight, true), new StartShooter(shooter)));
 
         }
 }

@@ -131,9 +131,8 @@ public class SetupShuffleboard {
                         autoChooser.addOption("Trench 5 Ball Start Move Pickup Shoot", 3);
                         autoChooser.addOption("Trench 4 Ball Start Move Pickup Shoot", 4);
                         autoChooser.addOption("Trench 3-3 Ball Move Shoot  Move Pickup Shoot", 5);
-                       autoChooser.addOption("Trench 3M3 Ball Shoot  Move Pickup Shoot", 6);
- 
- 
+                        autoChooser.addOption("Trench 3M3 Ball Shoot  Move Pickup Shoot", 6);
+
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
 
@@ -224,13 +223,14 @@ public class SetupShuffleboard {
                                         .getLayout("Values", BuiltInLayouts.kGrid).withPosition(1, 2).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "TOP"));
 
-                        competition.addBoolean("IntakeArm Down", () -> m_intake.getArmLowered());
-                        competition.addBoolean("TiltOnTarget", () -> m_tilt.atTargetAngle());
-                        competition.addBoolean("TurretOnTarget", () -> m_turret.atTargetAngle());
-                        competition.addBoolean("ShooterAtSpeed", () -> m_shooter.atSpeed());
+                        competition.addBoolean("TiltOnTt", () -> m_tilt.atTargetAngle());
+                        competition.addBoolean("TurrOnTgt", () -> m_turret.atTargetAngle());
+                        competition.addBoolean("AtSpeed", () -> m_shooter.atSpeed());
                         competition.addBoolean("Use Vision", () -> m_limelight.useVision);
                         competition.addBoolean("Shooting", () -> m_shooter.isShooting);
-                        competition.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
+                        competition.addBoolean("AllOKShoot", () -> m_shooter.okToShoot);
+                        competition.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget(1.75));
+                        competition.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget(1.75));
 
                         if (RobotBase.isReal()) {
 
@@ -450,7 +450,8 @@ public class SetupShuffleboard {
                         shooterCommands.add("LogDataRun",
                                         new LogDistanceData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
                         shooterCommands.add("EndLogs", new EndLogData(m_shooter));
-                        shooterCommands.add("LogShootRun", new LogShootData(m_turret, m_tilt, m_shooter, transport, m_limelight));
+                        shooterCommands.add("LogShootRun",
+                                        new LogShootData(m_turret, m_tilt, m_shooter, transport, m_limelight));
                         shooterCommands.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter, tilt, turret));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")

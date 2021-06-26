@@ -6,16 +6,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.AutoCommands.PowerPortVisionTest;
-import frc.robot.commands.AutoCommands.RightStartRetractShoot;
-import frc.robot.commands.AutoCommands.AutoMode33BallTrench;
 import frc.robot.commands.AutoCommands.AutoMode3M3BallTrench;
-import frc.robot.commands.AutoCommands.AutoMode4BallTrench;
 import frc.robot.commands.AutoCommands.AutoModeCenterPowerPort;
 import frc.robot.commands.AutoCommands.AutoModeShieldGen;
-import frc.robot.commands.AutoCommands.AutoModeShieldGenTestVision;
-import frc.robot.commands.AutoCommands.AutoModeTrench;
-import frc.robot.commands.AutoCommands.AutoModeTrenchTestVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;

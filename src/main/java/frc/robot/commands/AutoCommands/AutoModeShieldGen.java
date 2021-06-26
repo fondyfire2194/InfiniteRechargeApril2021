@@ -55,19 +55,20 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
          * Start in line with balls on shield generator, retract and shoot, retract wile
          * picking up then shoot
          */
-        static double retractDistance = -3.5;
+
         static double tiltAngle = ShootData.trench3M3BallShotConstants.tiltAngle;
         static double turretAngle = -ShootData.trench3M3BallShotConstants.turretAngle;
         static double shootSpeed = ShootData.trench3M3BallShotConstants.shootSpeed;
         static double tiltOffset = ShootData.trench3M3BallShotConstants.tiltOffset;
         static double turretOffset = -ShootData.trench3M3BallShotConstants.turretOffset;
-        static double shootTime = ShootData.trench3M3BallShotConstants.shootTime;
 
-        static double tiltAngle1 = 20;
-        static double tiltOffset1 = 20;
-        static double turretAngle1 = -25;
-        static double turretOffset1 = 0;
-        static double shootSpeed1 = 32;
+        static double shootTime = ShootData.trench3M3BallShotConstants.shootTime;
+        static double retractDistance1 = ShootData.shieldGenConstants.retractDistance1;
+        static double tiltAngle1 = ShootData.shieldGenConstants.tiltAngle1;
+        static double tiltOffset1 = ShootData.shieldGenConstants.tiltAngle1;
+        static double turretAngle1 = ShootData.shieldGenConstants.tiltAngle1;
+        static double turretOffset1 = ShootData.shieldGenConstants.tiltAngle1;
+        static double shootSpeed1 = ShootData.shieldGenConstants.tiltAngle1;
 
         public AutoModeShieldGen(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
@@ -99,7 +100,7 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                                                                                                 limelight)),
                                 // 2nd pickup
                                 new ParallelCommandGroup(new SetUpLimelightForNoVision(limelight),
-                                                new PickupMove(drive, retractDistance, -.75)).deadlineWith(
+                                                new PickupMove(drive, retractDistance1, -.75)).deadlineWith(
                                                                 new ParallelCommandGroup(new IntakeArmLower(intake),
                                                                                 new RunIntakeMotor(intake, .75))),
                                 // 2nd lock
