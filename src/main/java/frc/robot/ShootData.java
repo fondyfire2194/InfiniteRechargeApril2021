@@ -28,7 +28,7 @@ public class ShootData {
     public static double innerTiltAngle = 12;
 
     private static double shotHeight = FieldConstants.SHOT_HEIGHT;
-    private static double innerWallFromOuter = .74;
+    
 
     public static double activeTeleopShootSpeed;
     public static double activeTeleopTiltAngle;

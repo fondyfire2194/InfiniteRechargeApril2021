@@ -17,11 +17,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RobotDrive.PickupMove;
-import frc.robot.commands.RobotDrive.PositionProfiled;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Vision.CalculateTargetDistance;
-import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 
 /**
  * The VM is configured to automatically run this class, and to call the
