@@ -10,6 +10,7 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
+import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
@@ -21,11 +22,12 @@ public class LogShootData extends CommandBase {
    */
   public final String[] names = { "Step", "TiltAngle", "VertToTarget", "TargetVOff", "DriverVOff", "TiltLockErr",
       "TurretAngle", "HorToTarget", "TargetHOff", "DriverHOff", "TurrLockPE", "ReqdSpeed", "ActSpeed", "Battery",
-      "TurretInPos", "TiltInPos", "VertOK", "HorOK", "ShooterAtSpeed", "IsShooting", "ValidTargetSeen" };
+      "TurretInPos", "TiltInPos", "VertOK", "HorOK", "ShooterAtSpeed", "IsShooting", "ServoArmUP", "ArmPosition",
+      "ValidTargetSeen" };
 
   public static String[] units = { "Number", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees",
       "Degrees", "Degrees", "Degrees", "Degrees", "MPS", "MPS", "Volts", "T/F", "T/F", "T/F", "T/F", "T/F", "T/F",
-      "T/F" };
+      "PWM", "T/F" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -34,6 +36,7 @@ public class LogShootData extends CommandBase {
   private final RevTurretSubsystem m_turret;
   private final RevTiltSubsystem m_tilt;
   private final RevShooterSubsystem m_shooter;
+  private final CellTransportSubsystem m_transport;
 
   private double tiltOnTarget;
   private double turretOnTarget;
@@ -42,16 +45,17 @@ public class LogShootData extends CommandBase {
   private double isShooting;
   private double validTargetSeen;
   private double shooterAtSpeed;
+  private double servoArmReleasing;
 
   public LogShootData(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevShooterSubsystem shooter,
-      LimeLight limelight) {
+      CellTransportSubsystem transport, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     m_limelight = limelight;
     m_turret = turret;
     m_tilt = tilt;
     m_shooter = shooter;
-
+    m_transport = transport;
   }
 
   // Called when the command is initially scheduled.
@@ -113,12 +117,17 @@ public class LogShootData extends CommandBase {
       else
         shooterAtSpeed = 0;
 
+      if (m_shooter.shotInProgress)
+        servoArmReleasing = 1;
+      else
+        servoArmReleasing = 0;
+
       m_shooter.shootLogger.writeData((double) step, m_tilt.getAngle(), m_limelight.getdegVerticalToTarget(),
           m_tilt.targetVerticalOffset, m_tilt.driverVerticalOffsetDegrees, m_tilt.getLockPositionError(),
           m_turret.getAngle(), m_limelight.getdegRotationToTarget(), m_turret.targetHorizontalOffset,
           m_turret.driverHorizontalOffsetDegrees, m_turret.getLockPositionError(), m_shooter.requiredMps,
           m_shooter.getMPS(), m_shooter.getBatteryVoltage(), turretOnTarget, tiltOnTarget, horOnTarget, vertOnTarget,
-          shooterAtSpeed, isShooting, validTargetSeen);
+          shooterAtSpeed, isShooting, servoArmReleasing,m_transport.getArmAngle(),validTargetSeen);
     }
 
   }

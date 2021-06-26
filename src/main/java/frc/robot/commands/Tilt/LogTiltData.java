@@ -16,9 +16,9 @@ public class LogTiltData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Step", "TargetAngle", "TiltAngle", "PositionError", "TargetSeen", "ValidTarget",
-      "DegVerToTgt", "VisErDiff", "CorrEndPt" };
-  public static String[] units = { "Number", "Degrees", "Degrees", "Degrees", "OnOff", "OnOff", "Degrees", "Degrees" };
+  public final String[] names = { "Step", "TargetAngle", "TiltAngle", "TargetSeen", "DegVerToTgt", "CorrEndPt",
+      "ValidTarget" };
+  public static String[] units = { "Number", "Degrees", "Degrees", "Degrees", "OnOff", "OnOff" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -63,7 +63,7 @@ public class LogTiltData extends CommandBase {
     // log data every shot
     if (fileOpenNow)
       loopCtr++;
-    
+
     if (m_tilt.logTrigger && loopCtr >= 5) {
       loopCtr = 0;
       step++;
@@ -80,8 +80,8 @@ public class LogTiltData extends CommandBase {
 
       m_tilt.tiltLogger.writeData((double) step,
 
-          m_tilt.targetAngle, m_tilt.getAngle(), m_tilt.positionError, targetSeen, validTargetSeen,
-          m_limelight.getdegVerticalToTarget(), m_tilt.visionErrorDifference, m_tilt.correctedEndpoint);
+          m_tilt.targetAngle, m_tilt.getAngle(), targetSeen, m_limelight.getdegVerticalToTarget(),
+          m_tilt.correctedEndpoint, validTargetSeen);
     }
 
   }

@@ -77,7 +77,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                                                                 new PositionHoldTurret(turret, shooter,
                                                                                                 limelight),
                                                                                 new LogShootData(turret, tilt, shooter,
-                                                                                                limelight)),
+                                                                                                transport, limelight)),
 
                                 new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
                                                 new EndLogData(shooter), new StopShoot(shooter, transport),

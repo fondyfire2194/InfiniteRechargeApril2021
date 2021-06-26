@@ -40,14 +40,17 @@ public class SetShotPosition1 extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new SetActiveTeleopShootData(shooter, 1),
                                                 new SetUpLimelightForTarget(limelight),
-                                                new SetTiltOffset(tilt, ShootData.shieldGenConstants.tiltOffset),
-                                                new SetTurretOffset(turret, ShootData.shieldGenConstants.turretOffset),
-                                                new PositionTilt(tilt, ShootData.shieldGenConstants.tiltAngle
-                                                                + ShootData.shieldGenConstants.tiltOffset),
-                                                new PositionTurret(turret, ShootData.shieldGenConstants.turretAngle
-                                                                + ShootData.shieldGenConstants.turretOffset),
-                                                new SetShootSpeed(shooter, ShootData.shieldGenConstants.shootSpeed),
-                                                new UseVision(limelight, true), new StartShooter(shooter)));
+                                                new SetTiltOffset(tilt, ShootData.trench4BallShotConstants.tiltOffset),
+                                                new SetTurretOffset(turret,
+                                                                ShootData.trench4BallShotConstants.turretOffset),
+                                                new PositionTilt(tilt, ShootData.trench4BallShotConstants.tiltAngle
+                                                                + ShootData.trench4BallShotConstants.tiltOffset),
+                                                new PositionTurret(turret,
+                                                                ShootData.trench4BallShotConstants.turretAngle
+                                                                                + ShootData.trench4BallShotConstants.turretOffset),
+                                                new SetShootSpeed(shooter,
+                                                                ShootData.trench4BallShotConstants.shootSpeed),
+                                                new StartShooter(shooter)));
 
         }
 }

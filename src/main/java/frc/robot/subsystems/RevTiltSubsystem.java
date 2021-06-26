@@ -159,10 +159,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         }
 
-        if (!Constants.isMatch) {
-            setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetupVertOffset", 0).withWidget("Number Slider")
-                    .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -10, "Max", 10)).getEntry();
-        }
+        // if (!Constants.isMatch) {
+        //     setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetVerOffset", 0).withWidget("Number Slider")
+        //             .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -10, "Max", 10)).getEntry();
+        // }
     }
 
     @Override

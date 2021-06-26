@@ -287,7 +287,7 @@ public class RobotContainer {
             // front of power port one meter back
             codriverY.whenPressed(new SetShotPosition0(m_shooter, m_turret, m_tilt, m_limelight));
 
-            // on center line 1 meter behind initiation line (shield gen)
+            // 4 ball trench
             codriverX.whenPressed(new SetShotPosition1(m_shooter, m_turret, m_tilt, m_limelight));
 
             // trench in front of control panel

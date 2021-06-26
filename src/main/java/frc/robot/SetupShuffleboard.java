@@ -447,7 +447,7 @@ public class SetupShuffleboard {
                         shooterCommands.add("LogDataRun",
                                         new LogDistanceData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
                         shooterCommands.add("EndLogs", new EndLogData(m_shooter));
-                        shooterCommands.add("LogShootRun", new LogShootData(m_turret, m_tilt, m_shooter, m_limelight));
+                        shooterCommands.add("LogShootRun", new LogShootData(m_turret, m_tilt, m_shooter, transport, m_limelight));
                         shooterCommands.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter, tilt, turret));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")

@@ -101,7 +101,7 @@ public class ShootData {
         public static double tiltAngle = 15;
 
         public static double turretAngle = -21;
-        public static double shootSpeed = 37;
+        public static double shootSpeed = 36;
         public static double tiltOffset = 7;
         public static double turretOffset = -1;
         public static double shootTime = 5;

@@ -26,7 +26,7 @@ public class PositionTurretToVision extends CommandBase {
   private int visionFoundCounter;
   private boolean targetSeen;
   boolean endIt;
-  private double correctedEndpoint;
+  private int correctionCtr;
 
   public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double endpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -48,7 +48,7 @@ public class PositionTurretToVision extends CommandBase {
     m_limelight.useVision = false;
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.setLEDMode(LedMode.kpipeLine);
-    correctedEndpoint = m_endpoint;
+    m_turret.correctedEndpoint = m_endpoint;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -73,11 +73,19 @@ public class PositionTurretToVision extends CommandBase {
     }
 
     if (!m_turret.validTargetSeen && visionFoundCounter >= filterCount) {
+
       m_turret.validTargetSeen = true;
 
-      if (correctedEndpoint == m_endpoint) {
-        correctedEndpoint = m_turret.getAngle() + m_limelight.getdegRotationToTarget();
-        m_turret.targetAngle = correctedEndpoint;
+      correctionCtr++;
+
+      if (correctionCtr >= 5) {
+
+        m_turret.correctedEndpoint = (m_turret.getAngle() + m_turret.getSpeed() / 50)
+            - m_limelight.getdegRotationToTarget();
+
+        m_turret.targetAngle = m_turret.correctedEndpoint;
+
+        correctionCtr = 0;
       }
 
       if (!targetSeen && m_turret.validTargetSeen) {

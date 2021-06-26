@@ -78,6 +78,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public boolean useSetupHorOffset;
     public double testHorOffset;
+	public double positionError;
+    public double correctedEndpoint;
+    public double visionErrorDifference;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -130,10 +133,10 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
 
         }
-        if (!Constants.isMatch) {
-            setupHorOffset = Shuffleboard.getTab("SetupShooter").add("SetupHorOffset", 0).withWidget("Number Slider")
-                    .withPosition(6, 3).withSize(2, 1).withProperties(Map.of("Min", -5, "Max", 5)).getEntry();
-        }
+        // if (!Constants.isMatch) {
+        //     setupHorOffset = Shuffleboard.getTab("SetupShooter").add("SetupHorOffset", 0).withWidget("Number Slider")
+        //             .withPosition(6, 3).withSize(2, 1).withProperties(Map.of("Min", -5, "Max", 5)).getEntry();
+        // }
     }
 
     @Override

@@ -29,8 +29,6 @@ public class PositionTiltToVision extends CommandBase {
   private int visionFoundCounter;
   private boolean endIt;
   private int loopCtr;
-  private double motorDegrees;
-
   private final int filterCount = 5;
   private int correctionCtr;
 
@@ -54,7 +52,6 @@ public class PositionTiltToVision extends CommandBase {
       m_endpoint = HoodedShooterConstants.TILT_MIN_ANGLE;
     if (m_endpoint > HoodedShooterConstants.TILT_MAX_ANGLE)
       m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE;
-    motorDegrees = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
     m_tilt.correctedEndpoint = m_endpoint;
     loopCtr = 0;
     m_tilt.logTrigger = true;
@@ -66,6 +63,15 @@ public class PositionTiltToVision extends CommandBase {
     loopCtr++;
 
     targetSeen = m_limelight.getIsTargetFound();
+
+    if (!targetSeen && m_tilt.validTargetSeen) {
+      visionFoundCounter--;
+    }
+
+    if (!targetSeen && visionFoundCounter < 0) {
+      m_tilt.validTargetSeen = false;
+      visionFoundCounter = 0;
+    }
 
     if (targetSeen && !m_tilt.validTargetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
@@ -79,35 +85,24 @@ public class PositionTiltToVision extends CommandBase {
 
       if (correctionCtr >= 5) {
 
-        m_tilt.positionError = m_tilt.correctedEndpoint - m_tilt.getAngle();
 
-        m_tilt.visionErrorDifference = m_tilt.positionError - m_limelight.getdegVerticalToTarget();
+        m_tilt.correctedEndpoint = m_tilt.getAngle() + m_tilt.getSpeed() / 50 - m_limelight.getdegVerticalToTarget();
 
-        if (Math.abs(m_tilt.visionErrorDifference) > 2) {
-
-          m_tilt.correctedEndpoint += m_tilt.visionErrorDifference * .5;
-
-        }
-
-        motorDegrees = (m_tilt.tiltMaxAngle - m_tilt.correctedEndpoint);
+        m_tilt.targetAngle = m_tilt.correctedEndpoint;
 
         correctionCtr = 0;
       }
+
     }
 
-    if (!targetSeen && m_tilt.validTargetSeen) {
-      visionFoundCounter--;
-    }
+    double motorTurns = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
 
-    if (!targetSeen && visionFoundCounter < 0) {
-      m_tilt.validTargetSeen = false;
-      visionFoundCounter = 0;
-    }
+    m_tilt.motorEndpointDegrees = motorTurns;
 
-    m_tilt.goToPositionMotionMagic(motorDegrees);
+    m_tilt.goToPositionMotionMagic(motorTurns);
 
     endIt = m_limelight.getVertOnTarget(1) || !m_tilt.validTargetSeen && m_tilt.atTargetAngle() && loopCtr > 5
-        || loopCtr > 250;
+        || loopCtr > 150;
 
   }
 

@@ -14,6 +14,8 @@ public class PickupMove extends CommandBase {
   private double m_speed;
   private double currentSpeed;
   private double slowDownDistance = -1;
+  private double speedSlope;
+  private int loopCtr;
 
   public PickupMove(RevDrivetrain drive, double endpoint, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -27,6 +29,8 @@ public class PickupMove extends CommandBase {
   @Override
   public void initialize() {
     currentSpeed = m_speed;
+    speedSlope = m_speed / 50;// units per 20 msec
+    loopCtr = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -38,9 +42,11 @@ public class PickupMove extends CommandBase {
      */
     double remainingDistance = m_endpoint - m_drive.getAverageDistance();
 
-    if (remainingDistance > slowDownDistance)
-      currentSpeed = m_speed * .85;
+    if (remainingDistance > slowDownDistance) {
+      loopCtr++;
 
+      currentSpeed = currentSpeed - speedSlope * loopCtr;
+    }
     m_drive.arcadeDrive(currentSpeed, -m_drive.getYaw() * .01);
   }
 

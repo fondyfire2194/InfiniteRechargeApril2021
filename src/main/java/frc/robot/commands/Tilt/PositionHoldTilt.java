@@ -54,6 +54,7 @@ public class PositionHoldTilt extends CommandBase {
       visionFoundCounter = 0;
     if (visionFoundCounter > filterCount)
       visionFoundCounter = filterCount;
+      
     loopctr++;
 
     if (!m_limelight.useVision)

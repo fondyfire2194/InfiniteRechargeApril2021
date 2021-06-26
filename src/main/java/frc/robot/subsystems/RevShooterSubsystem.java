@@ -182,12 +182,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mEncoder.setPositionConversionFactor(metersPerRev);
         mEncoder.setVelocityConversionFactor(metersPerRev / 60);
 
-        if (!Constants.isMatch) {
+        // if (!Constants.isMatch) {
 
-            shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
-                    .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 15, "Max", 50)).getEntry();
+        //     shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
+        //             .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 15, "Max", 50)).getEntry();
 
-        }
+        // }
         tuneGains();
         getGains();
         requiredMps = 23;
@@ -258,7 +258,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     }
 
     public boolean atSpeed() {
-        return startShooter && Math.abs(requiredMps + getMPS()) < (requiredMps * .1);
+        return startShooter && Math.abs(requiredMps + getMPS()) < (requiredMps * .2);
 
     }
 
