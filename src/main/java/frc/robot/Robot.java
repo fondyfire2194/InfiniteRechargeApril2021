@@ -164,6 +164,18 @@ public class Robot extends TimedRobot {
 
         break;
 
+        case 5:
+
+        m_autonomousCommand  = m_autoFactory.getAutonomousCommand5();
+
+        break;
+        
+        case 6:
+
+        m_autonomousCommand  = m_autoFactory.getAutonomousCommand6();
+
+        break;
+
       default:
 
         break;

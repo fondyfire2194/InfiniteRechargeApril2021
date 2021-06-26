@@ -15,6 +15,7 @@ import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
+import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
@@ -47,8 +48,8 @@ public class SetShotPosition0V1 extends SequentialCommandGroup {
                                                                 ShootData.centerPowerPortConstants.tiltAngle
                                                                                 + ShootData.centerPowerPortConstants.tiltOffset),
 
-                                                new PositionTurret(turret,
-                                                                ShootData.centerPowerPortConstants.turretAngle
+                                                new PositionTurretToVision(turret,
+                                                                limelight, ShootData.centerPowerPortConstants.turretAngle
                                                                                 + ShootData.centerPowerPortConstants.turretOffset),
                                                 new SetShootSpeed(shooter,
                                                                 ShootData.centerPowerPortConstants.shootSpeed)));

@@ -128,9 +128,12 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Right Start Retract Shoot", 2);
 
-                        autoChooser.addOption("Trench 5 Ball Start Move Shoot  Move Pickup Shoot", 3);
-                        autoChooser.addOption("Trench 4 Ball Start Move Shoot  Move Pickup Shoot", 4);
-
+                        autoChooser.addOption("Trench 5 Ball Start Move Pickup Shoot", 3);
+                        autoChooser.addOption("Trench 4 Ball Start Move Pickup Shoot", 4);
+                        autoChooser.addOption("Trench 3-3 Ball Move Shoot  Move Pickup Shoot", 5);
+                       autoChooser.addOption("Trench 3M3 Ball Shoot  Move Pickup Shoot", 6);
+ 
+ 
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
 

@@ -51,13 +51,13 @@ public class AutoModeTrench extends SequentialCommandGroup {
          * 
          * Start in front of power port and shoot
          */
-        static double retractDistance = ShootData.trenchShotConstants.retractDistance;
-        static double tiltAngle = ShootData.trenchShotConstants.tiltAngle;
-        static double turretAngle = ShootData.trenchShotConstants.turretAngle;
-        static double shootSpeed = ShootData.trenchShotConstants.shootSpeed;
-        static double tiltOffset = ShootData.trenchShotConstants.tiltOffset;
-        static double turretOffset = ShootData.trenchShotConstants.turretOffset;
-        static double shootTime = ShootData.trenchShotConstants.shootTime;
+        static double retractDistance = ShootData.trench5BallShotConstants.retractDistance;
+        static double tiltAngle = ShootData.trench5BallShotConstants.tiltAngle;
+        static double turretAngle = ShootData.trench5BallShotConstants.turretAngle;
+        static double shootSpeed = ShootData.trench5BallShotConstants.shootSpeed;
+        static double tiltOffset = ShootData.trench5BallShotConstants.tiltOffset;
+        static double turretOffset = ShootData.trench5BallShotConstants.turretOffset;
+        static double shootTime = ShootData.trench5BallShotConstants.shootTime;
 
         public AutoModeTrench(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
