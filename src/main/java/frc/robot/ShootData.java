@@ -147,7 +147,7 @@ public class ShootData {
     }
 
     public final static class trench6BallShotConstants {
-        public static double retractDistance = -4.5;
+        public static double retractDistance = -4.;
         public static double tiltAngle = 13;
         public static double turretAngle = -16;
         public static double shootSpeed = 40;
