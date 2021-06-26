@@ -298,9 +298,9 @@ public class RobotContainer {
             // m_limelight));
 
             // trench behind control panel
-            codriverRightTrigger.whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
-                        .whenPressed(new PositionTurret(m_turret, 0)).whenPressed(new SetVisionMode(m_limelight))
-                        .whenPressed(new SetUpLimelightForNoVision(m_limelight));
+            // codriverRightTrigger.whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
+            //             .whenPressed(new PositionTurret(m_turret, 0)).whenPressed(new SetVisionMode(m_limelight))
+            //             .whenPressed(new SetUpLimelightForNoVision(m_limelight));
 
             // low goal shot
             // coDriverLT.whenPressed(
@@ -319,12 +319,10 @@ public class RobotContainer {
 
             setupLeftButton.whenPressed(new ReleaseOneCell(m_transport));
 
-            setupLeftTrigger.whileHeld(() -> m_transport.pulseLeftBelt(.5, .5, .5))
-                        .whenReleased(() -> m_transport.stopLeftBeltMotor());
+            setupLeftTrigger.whenPressed(new SetUpLimelightForTarget(m_limelight));
 
-            setupRightTrigger.whileHeld(() -> m_transport.pulseRightBelt(-.55, .25, .4))
-                        .whenReleased(() -> m_transport.stopRightBeltMotor());
-
+            setupRightTrigger.whenPressed(new SetUpLimelightForNoVision(m_limelight));
+            
             setupBack.whileHeld(new StartIntake(m_intake, m_transport)).whenReleased(new StopIntake(m_intake));
 
             setupX.whileHeld(getJogShooterCommand());
