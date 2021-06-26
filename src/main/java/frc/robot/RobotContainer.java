@@ -232,7 +232,7 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 1)
                         .whileHeld(new IntakeArmLower(m_intake)).whileHeld(new ShootCells(m_shooter, m_tilt, m_turret,
-                                    m_limelight, m_transport, m_compressor, 100))
+                                    m_limelight, m_transport, m_intake, m_compressor, 100))
                         .whenReleased(new IntakeArmRaise(m_intake));
 
             new JoystickButton(m_driverController, 5).whenPressed(new StartShooter(m_shooter));

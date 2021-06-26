@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AutoCommands.AutoMode3M3BallTrench;
 import frc.robot.commands.AutoCommands.AutoModeCenterPowerPort;
+import frc.robot.commands.AutoCommands.AutoModeRightOfCenter;
 import frc.robot.commands.AutoCommands.AutoModeShieldGen;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
@@ -57,14 +58,11 @@ public class AutoFactory {
 
     // front of trench or left of center move pickup and and shoot together
     public SequentialCommandGroup getAutonomousCommand3() {
-        return new AutoMode3M3BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor,
-                m_intake);
-        // return new AutoModeTrenchTestVision(m_shooter, m_turret, m_tilt, m_transport,
-        // m_robotDrive, m_limelight,
-        // m_compressor, m_intake);
+        return new AutoModeRightOfCenter(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor);
+        
     }
 
-    // front of trench or left of center move pickup and and shoot
+    // 
     public SequentialCommandGroup getAutonomousCommand4() {
         return new AutoMode3M3BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
                 m_compressor, m_intake);

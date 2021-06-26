@@ -73,7 +73,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new MessageCommand("ShootIs3Started"),
                                                 new SetShootSpeed(shooter, shootSpeed),
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, null, compressor,
                                                                 shootTime)).deadlineWith(
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),

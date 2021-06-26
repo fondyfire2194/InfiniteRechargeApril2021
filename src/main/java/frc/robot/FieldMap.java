@@ -43,7 +43,7 @@ public class FieldMap {
         // public static ArrayList<Translation2d> ballPositions = new
         // ArrayList<Translation2d>();
         public static Translation2d[] ballPosition = new Translation2d[12];
-        public static Pose2d[] startPosition = new Pose2d[5];
+        public static Pose2d[] startPosition = new Pose2d[6];
 
         /**
          * Equations for tilt angle need to calculate diagonal floor distance then use
@@ -73,6 +73,8 @@ public class FieldMap {
 
                 startPosition[3] = new Pose2d(startPositionX, ourTrenchY + robotWidth / 2, new Rotation2d(0.0));
 
+                startPosition[4] = new Pose2d(startPositionX, targetCenterPointY - robotWidth,
+                                new Rotation2d(0.0));
         };
 
 }

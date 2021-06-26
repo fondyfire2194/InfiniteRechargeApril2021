@@ -80,7 +80,7 @@ public class AutoModeTrench extends SequentialCommandGroup {
                                 new StartShooterWheels(shooter, shootSpeed),
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
                                                 new StartShooterWheels(shooter, shootSpeed),
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, intake, compressor,
                                                                 shootTime)).deadlineWith(
                                                                                 new StopIntakeMotor(intake),
                                                                                 new PositionHoldTilt(tilt, shooter,

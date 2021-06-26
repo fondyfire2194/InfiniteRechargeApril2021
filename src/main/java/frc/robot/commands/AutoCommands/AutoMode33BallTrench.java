@@ -96,7 +96,7 @@ public class AutoMode33BallTrench extends SequentialCommandGroup {
                                 // 1st Shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
                                                 new SetShootSpeed(shooter, shootSpeed),
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, intake, compressor,
                                                                 shootTime)).deadlineWith(
                                                                                 new StopIntakeMotor(intake),
                                                                                 new PositionHoldTilt(tilt, shooter,
@@ -119,7 +119,7 @@ public class AutoMode33BallTrench extends SequentialCommandGroup {
                                 // 2nd shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot2Started"),
                                                 new SetShootSpeed(shooter, shootSpeed1),
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, intake, compressor,
                                                                 shootTime)).deadlineWith(
                                                                                 new StopIntakeMotor(intake),
                                                                                 new PositionHoldTilt(tilt, shooter,

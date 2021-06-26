@@ -151,30 +151,18 @@ public class Robot extends TimedRobot {
 
         break;
 
-      case 3:// Trench
+      case 3:// Right Of Center
 
-        setStartingPose(FieldMap.startPosition[3]);
+        setStartingPose(FieldMap.startPosition[4]);
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
 
         break;
-      case 4:// Trench 4 ball
+      case 4:// Trench  3M3
 
         setStartingPose(FieldMap.startPosition[3]);
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand4();
-
-        break;
-
-      case 5:
-
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand5();
-
-        break;
-
-      case 6:
-
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand6();
 
         break;
 

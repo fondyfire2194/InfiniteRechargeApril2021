@@ -128,11 +128,10 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Left Start Shoot Retract Shoot", 2);
 
-                        autoChooser.addOption("Trench 5 Ball Start Move Pickup Shoot", 3);
-                        autoChooser.addOption("Trench 4 Ball Start Move Pickup Shoot", 4);
-                        autoChooser.addOption("Trench 3-3 Ball Move Shoot  Move Pickup Shoot", 5);
-                        autoChooser.addOption("Trench 3M3 Ball Shoot  Move Pickup Shoot", 6);
-
+                        autoChooser.addOption("Right Of Center Retract Shoot", 3);
+                        
+                        autoChooser.addOption("Trench 3M3 Ball Start Move Pickup Shoot", 4);
+                  
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
 
@@ -444,7 +443,7 @@ public class SetupShuffleboard {
                         shooterCommands.add("Shooter Motor Start", new StartShooterWheels(m_shooter, 10));
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
                         shooterCommands.add("Shoot", new ShootCells(m_shooter, m_tilt, m_turret, m_limelight,
-                                        m_transport, m_compressor, 0));
+                                        m_transport, intake, m_compressor, 0));
                         shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
                         shooterCommands.add("Cmd", m_shooter);
                         shooterCommands.add("LogDataRun",

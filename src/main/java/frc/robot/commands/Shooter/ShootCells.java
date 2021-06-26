@@ -9,12 +9,14 @@ package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.subsystems.CellTransportSubsystem;
+import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
@@ -28,13 +30,14 @@ public class ShootCells extends CommandBase {
   private final RevTiltSubsystem m_tilt;
   private final RevTurretSubsystem m_turret;
   private final CellTransportSubsystem m_transport;
+  private final RearIntakeSubsystem m_intake;
   private final Compressor m_compressor;
   private final LimeLight m_limelight;
   private double m_time;
   private double shotTime = 1;
   private double shotStartTime;
 
-private boolean okToShoot;
+  private boolean okToShoot;
 
   private int cellsShot;
   private double startTime;
@@ -48,10 +51,11 @@ private boolean okToShoot;
   private int loopctr;
 
   public ShootCells(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret, LimeLight limelight,
-      CellTransportSubsystem transport, Compressor compressor, double time) {
+      CellTransportSubsystem transport, RearIntakeSubsystem intake, Compressor compressor, double time) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
     m_transport = transport;
+    m_intake = intake;
     m_compressor = compressor;
     m_limelight = limelight;
     m_tilt = tilt;
@@ -64,7 +68,7 @@ private boolean okToShoot;
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    m_intake.lowerArm();
     startTime = Timer.getFPGATimestamp();
     m_shooter.shootTime = m_time;
     m_compressor.stop();
@@ -77,6 +81,7 @@ private boolean okToShoot;
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.useVision = true;
     m_shooter.logTrigger = true;
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -92,13 +97,13 @@ private boolean okToShoot;
       m_shooter.cameraCalculatedSpeed = speedAndOffsetFromCamera[0];
       offsetFromCamera = speedAndOffsetFromCamera[1];
     }
-    m_shooter.okToShoot = (m_limelight.getHorOnTarget(1.75) && m_limelight.getVertOnTarget(1.75))
-        || m_shooter.driverOKShoot;
+    okToShoot = (m_limelight.getHorOnTarget(1.75) && m_limelight.getVertOnTarget(1.75))
+        || m_shooter.driverOKShoot || RobotBase.isSimulation();
 
-    if (m_shooter.okToShoot)
+    if (okToShoot)
       m_shooter.startShooter = true;
 
-    if (m_shooter.atSpeed() && m_shooter.okToShoot || m_shooter.isShooting) {
+    if ((m_shooter.atSpeed() && okToShoot) || m_shooter.isShooting) {
 
       m_shooter.isShooting = true;
 
@@ -120,6 +125,8 @@ private boolean okToShoot;
 
     }
 
+    if (cellsShot > 3)
+      m_intake.raiseArm();
     // if (shotInProgress) {
     // m_limelight.setSnapshot(Snapshot.kon);
     // } else {
@@ -138,7 +145,6 @@ private boolean okToShoot;
       releaseOneCell();
     }
 
-
   }
 
   // Called once the command ends or is interrupted.
@@ -153,6 +159,7 @@ private boolean okToShoot;
     m_shooter.isShooting = false;
     m_shooter.logTrigger = false;
     m_shooter.setNotOKShootDriver();
+    m_intake.raiseArm();
   }
 
   // Returns true when the command should end.
