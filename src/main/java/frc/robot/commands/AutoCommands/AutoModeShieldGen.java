@@ -86,42 +86,43 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                                                 new SetUpLimelightForTarget(limelight), new UseVision(limelight, false),
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
                                                 new PositionTurretToVision(turret, limelight,
-                                                                turretAngle + turretOffset)).deadlineWith(
+                                                                -(turretAngle + turretOffset))).deadlineWith(
                                                                                 new IntakeArmLower(intake)),
                                 // 1st Shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
                                                 new SetShootSpeed(shooter, shootSpeed),
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, intake, compressor,
-                                                                shootTime)).deadlineWith(
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, intake,
+                                                                compressor, shootTime)).deadlineWith(
                                                                                 new StopIntakeMotor(intake),
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),
                                                                                 new PositionHoldTurret(turret, shooter,
                                                                                                 limelight)),
-                                // 2nd pickup
-                                new ParallelCommandGroup(new SetUpLimelightForNoVision(limelight),
-                                                new PickupMove(drive, retractDistance1, -.75)).deadlineWith(
-                                                                new ParallelCommandGroup(new IntakeArmLower(intake),
-                                                                                new RunIntakeMotor(intake, .75))),
-                                // 2nd lock
-                                new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset1),
-                                                new SetTurretOffset(turret, turretOffset1),
-                                                new SetUpLimelightForTarget(limelight), new UseVision(limelight, false),
-                                                new PositionTiltToVision(tilt, limelight, tiltAngle1 + tiltOffset1),
-                                                new PositionTurretToVision(turret, limelight,
-                                                                turretAngle1 + turretOffset1)).deadlineWith(
+                                // // 2nd pickup
+                                // new ParallelCommandGroup(new SetUpLimelightForNoVision(limelight),
+                                // new PickupMove(drive, retractDistance1, -.75)).deadlineWith(
+                                // new ParallelCommandGroup(new IntakeArmLower(intake),
+                                // new RunIntakeMotor(intake, .75))),
+                                // // 2nd lock
+                                // new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset1),
+                                // new SetTurretOffset(turret, turretOffset1),
+                                // new SetUpLimelightForTarget(limelight), new UseVision(limelight, false),
+                                // new PositionTiltToVision(tilt, limelight, tiltAngle1 + tiltOffset1),
+                                // new PositionTurretToVision(turret, limelight,
+                                // turretAngle1 + turretOffset1)).deadlineWith(
 
-                                                                                new StopIntakeMotor(intake)),
-                                // 2nd shoot
-                                new ParallelCommandGroup(new MessageCommand("Shoot2Started"),
-                                                new SetShootSpeed(shooter, shootSpeed1),
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, intake, compressor,
-                                                                shootTime)).deadlineWith(
-                                                                                // new RunIntakeMotor(intake, -.25),
-                                                                                new PositionHoldTilt(tilt, shooter,
-                                                                                                limelight),
-                                                                                new PositionHoldTurret(turret, shooter,
-                                                                                                limelight)),
+                                // new StopIntakeMotor(intake)),
+                                // // 2nd shoot
+                                // new ParallelCommandGroup(new MessageCommand("Shoot2Started"),
+                                // new SetShootSpeed(shooter, shootSpeed1),
+                                // new ShootCells(shooter, tilt, turret, limelight, transport, intake,
+                                // compressor,
+                                // shootTime)).deadlineWith(
+                                // // new RunIntakeMotor(intake, -.25),
+                                // new PositionHoldTilt(tilt, shooter,
+                                // limelight),
+                                // new PositionHoldTurret(turret, shooter,
+                                // limelight)),
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"), new EndLogData(shooter),
                                                 new EndTiltLog(tilt), new StopShoot(shooter, transport),

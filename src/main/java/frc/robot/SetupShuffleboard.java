@@ -125,7 +125,7 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Center Start Retract Shoot", 1);
 
-                        autoChooser.addOption("Left Start Shoot Retract Shoot", 2);
+                        autoChooser.addOption("Left Start Shoot", 2);
 
                         autoChooser.addOption("Right Of Center Retract Shoot", 3);
                         

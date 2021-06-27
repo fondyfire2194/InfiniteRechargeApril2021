@@ -67,6 +67,7 @@ public class CellTransportSubsystem extends SubsystemBase {
       setFrontRollerBrakeOn(true);
       setRearRollerBrakeOn(true);
       setBeltBrakeOn(true);
+   //   releaseCell();
       holdCell();
     }
 

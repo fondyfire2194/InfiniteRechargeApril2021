@@ -125,8 +125,8 @@ public class ShootCells extends CommandBase {
 
     }
 
-    if (cellsShot > 3)
-      m_intake.raiseArm();
+    // if (cellsShot > 3)
+    //   m_intake.raiseArm();
     // if (shotInProgress) {
     // m_limelight.setSnapshot(Snapshot.kon);
     // } else {
@@ -159,7 +159,7 @@ public class ShootCells extends CommandBase {
     m_shooter.isShooting = false;
     m_shooter.logTrigger = false;
     m_shooter.setNotOKShootDriver();
-    m_intake.raiseArm();
+   // m_intake.raiseArm();
   }
 
   // Returns true when the command should end.

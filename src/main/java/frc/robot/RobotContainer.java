@@ -228,7 +228,9 @@ public class RobotContainer {
              * 
              */
 
-            new JoystickButton(m_driverController, 2).whileHeld(new StartIntake(m_intake, m_transport));
+            new JoystickButton(m_driverController, 2).whileHeld(new StartIntake(m_intake, m_transport))
+                        .whenPressed(() -> m_transport.releaseCell())
+                        .whenReleased(() -> m_transport.holdCell());
 
             new JoystickButton(m_driverController, 1)
                         .whileHeld(new IntakeArmLower(m_intake)).whileHeld(new ShootCells(m_shooter, m_tilt, m_turret,
@@ -293,19 +295,18 @@ public class RobotContainer {
             // trench in front of control panel
             codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt, m_limelight));
 
-            // test method for front of power port
-            // codriverA.whenPressed(new SetShotPosition0V1(m_shooter, m_turret, m_tilt,
-            // m_limelight));
 
-            // trench behind control panel
-            // codriverRightTrigger.whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
-            //             .whenPressed(new PositionTurret(m_turret, 0)).whenPressed(new SetVisionMode(m_limelight))
-            //             .whenPressed(new SetUpLimelightForNoVision(m_limelight));
+            codriverUpButton.whenPressed(() -> m_tilt.aimHigher());
 
-            // low goal shot
-            // coDriverLT.whenPressed(
+            codriverDownButton.whenPressed(() -> m_tilt.aimLower());
 
-            // coDriverA.whenPressed
+            codriverLeftButton.whenPressed(() -> m_turret.aimFurtherLeft());// shoot right
+
+            codriverRightButton.whenPressed(() -> m_turret.aimFurtherRight());// shoot left
+            
+            codriverLeftTrigger.whenPressed(new IntakeArmLower(m_intake));
+
+            codriverRightTrigger.whenPressed(new IntakeArmRaise(m_intake));
             /**
              * Setup gamepad is used for testing functions
              */
@@ -322,7 +323,7 @@ public class RobotContainer {
             setupLeftTrigger.whenPressed(new SetUpLimelightForTarget(m_limelight));
 
             setupRightTrigger.whenPressed(new SetUpLimelightForNoVision(m_limelight));
-            
+
             setupBack.whileHeld(new StartIntake(m_intake, m_transport)).whenReleased(new StopIntake(m_intake));
 
             setupX.whileHeld(getJogShooterCommand());
