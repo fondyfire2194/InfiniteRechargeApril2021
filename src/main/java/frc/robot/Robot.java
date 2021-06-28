@@ -14,11 +14,14 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RobotDrive.PickupMove;
+import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
+import frc.robot.commands.Vision.CalculateSpeedFromDistance;
 import frc.robot.commands.Vision.CalculateTargetDistance;
 
 /**
@@ -76,8 +79,9 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     // m_robotContainer.m_setup.checkLimits();
-    ShootData.showValues();
+    
 
+    m_robotContainer.m_shooter.driverThrottleValue = m_robotContainer.getThrottle();
   }
 
   /**
@@ -113,7 +117,11 @@ public class Robot extends TimedRobot {
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
         m_robotContainer.m_shooter).schedule(true);
 
+    new ChooseShooterSpeedSource(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_turret, 0)
+        .schedule(true);
+
     new RunShooter(m_robotContainer.m_shooter).schedule(true);
+
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 
     Shuffleboard.selectTab("Competition");
@@ -132,9 +140,9 @@ public class Robot extends TimedRobot {
 
         setStartingPose(FieldMap.startPosition[0]);
 
-        m_autonomousCommand = new PickupMove(m_robotContainer.m_robotDrive, -1, -.5);
+        m_autonomousCommand = new PickupMove(m_robotContainer.m_robotDrive, -1, .5);
         m_robotContainer.m_shooter.stop();
-        
+
         break;
       case 1:// in front of power port, move back use shooter data index 1
 
@@ -232,6 +240,12 @@ public class Robot extends TimedRobot {
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
         m_robotContainer.m_shooter).schedule(true);
+
+    new CalculateSpeedFromDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
+        m_robotContainer.m_shooter).schedule(true);
+
+    new ChooseShooterSpeedSource(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_turret, 1)
+        .schedule(true);
 
   }
 

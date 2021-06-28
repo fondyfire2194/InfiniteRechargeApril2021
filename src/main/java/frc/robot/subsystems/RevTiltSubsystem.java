@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANEncoder;
@@ -21,10 +23,12 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.HoodedShooterConstants;
+import frc.robot.Constants;
 import frc.robot.Pref;
 import frc.robot.SimpleCSVLogger;
 import frc.robot.sim.ElevatorSubsystem;
@@ -38,7 +42,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
     public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastmaxRPM, lastmaxVel,
             lastminVel, lastmaxAcc, lastallowedErr;
-    private final SimableCANSparkMax m_motor; // NOPMD
+    public final SimableCANSparkMax m_motor; // NOPMD
     private final CANEncoder mEncoder;
     public final CANPIDController mPidController;
     public final PIDController tiltLockController = new PIDController(.032, 0.001, 0);
@@ -95,6 +99,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double positionError;
     public double correctedEndpoint;
     public double visionErrorDifference;
+    public boolean useTiltVision;
+    public double highTolerance;
+    public double lowTolerance;
+    public double cameraAngle;
 
     /**
      * 
@@ -155,10 +163,12 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         }
 
-        // if (!Constants.isMatch) {
-        //     setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetVerOffset", 0).withWidget("Number Slider")
-        //             .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -10, "Max", 10)).getEntry();
-        // }
+        if (!Constants.isMatch) {
+        setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetVerOffset",
+        0).withWidget("Number Slider")
+        .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -10, "Max",
+        10)).getEntry();
+        }
     }
 
     @Override
@@ -170,8 +180,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         if (RobotBase.isReal() && DriverStation.getInstance().isDisabled())
             targetAngle = getAngle();
 
-
-            
         // SmartDashboard.putNumber("CTA", calculateTiltAngle());
 
         if (faultSeen != 0)
@@ -233,6 +241,14 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         lockPIDOut = tiltLockController.calculate(cameraError, 0);
         m_motor.set(lockPIDOut);
         targetAngle = getAngle();
+    }
+
+    public double getLockControllerOutput(double cameraError) {
+        return tiltLockController.calculate(cameraError, 0);
+    }
+
+    public void lockWithLockController(double cameraError) {
+        m_motor.set(tiltLockController.calculate(cameraError, 0));
     }
 
     public double getLockPositionError() {

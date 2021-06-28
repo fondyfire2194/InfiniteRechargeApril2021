@@ -22,6 +22,7 @@ import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.EndLogData;
+import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
@@ -92,6 +93,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                 // 1st Shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
                                                 new SetShootSpeed(shooter, shootSpeed),
+                                                new LogShootData(turret, tilt, shooter, transport, limelight),
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
                                                                 shootTime)).deadlineWith(
                                                                                 new StopIntakeMotor(intake),
@@ -101,7 +103,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                                                                                 limelight)),
                                 // 2nd pickup
                                 new ParallelCommandGroup(new SetUpLimelightForNoVision(limelight),
-                                                new PickupMove(drive, retractDistance1, -.75)).deadlineWith(
+                                                new PickupMove(drive, retractDistance1, .6)).deadlineWith(
                                                                 new ParallelCommandGroup(new IntakeArmLower(intake),
                                                                                 new RunIntakeMotor(intake, .75))),
                                 // 2nd lock
@@ -116,6 +118,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                 // 2nd shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot2Started"),
                                                 new SetShootSpeed(shooter, shootSpeed1),
+
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
                                                                 shootTime)).deadlineWith(
                                                                                 // new RunIntakeMotor(intake, -.25),
@@ -126,7 +129,8 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"), new EndLogData(shooter),
                                                 new EndTiltLog(tilt), new StopShoot(shooter, transport),
-                                                new IntakeArmRaise(intake), new StopIntakeMotor(intake),
+                                                new EndLogData(shooter), new IntakeArmRaise(intake),
+                                                new StopIntakeMotor(intake),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new SetUpLimelightForNoVision(limelight),
                                                 new PositionTurret(turret, 0)));

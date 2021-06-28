@@ -71,7 +71,7 @@ public class AutoMode4BallTrench extends SequentialCommandGroup {
                 super(new ResetEncoders(drive), new ResetGyro(drive),
 
                                 new ParallelCommandGroup(new SetTurretOffset(turret, turretOffset),new PositionTurret(turret, turretAngle + turretOffset),
-                                                new PickupMove(drive, retractDistance, -.5)).deadlineWith(
+                                                new PickupMove(drive, retractDistance, .5)).deadlineWith(
                                                                 new ParallelCommandGroup(new IntakeArmLower(intake),
                                                                                 new RunIntakeMotor(intake, .75))),
 

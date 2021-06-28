@@ -39,6 +39,7 @@ public class SetShotPosition1 extends SequentialCommandGroup {
                 super(
 
                                 new ParallelCommandGroup(new SetActiveTeleopShootData(shooter, 1),
+                                                new ChooseShooterSpeedSource(shooter, tilt, turret, 1),
                                                 new SetUpLimelightForTarget(limelight),
                                                 new SetTiltOffset(tilt, ShootData.trench4BallShotConstants.tiltOffset),
                                                 new SetTurretOffset(turret,

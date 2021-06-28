@@ -34,7 +34,7 @@ public class ShootCells extends CommandBase {
   private double shotTime = 1;
   private double shotStartTime;
 
-private boolean okToShoot;
+  private boolean okToShoot;
 
   private int cellsShot;
   private double startTime;
@@ -42,10 +42,10 @@ private boolean okToShoot;
   private boolean cellAvailable;
   private boolean cellReleased;
   private double cellReleasedStartTime;
-  private double[] speedAndOffsetFromCamera;
-  private double speedFromCamera;
-  private double offsetFromCamera;
+
   private int loopctr;
+  private double tiltDistanceTolerance;
+  private double turretDistanceTolerance;
 
   public ShootCells(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret, LimeLight limelight,
       CellTransportSubsystem transport, Compressor compressor, double time) {
@@ -82,20 +82,19 @@ private boolean okToShoot;
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    turretDistanceTolerance = m_shooter.getTurretTolerance(m_shooter.calculatedCameraDistance);
+    tiltDistanceTolerance = m_shooter.getTiltTolerance(m_shooter.calculatedCameraDistance);
 
     loopctr++;
-    SmartDashboard.putNumber("SCELC", loopctr);
+
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
-    if (!inAuto) {
-      speedAndOffsetFromCamera = m_shooter.calculateMPSFromDistance(m_shooter.calculatedCameraDistance);
-      m_shooter.cameraCalculatedSpeed = speedAndOffsetFromCamera[0];
-      offsetFromCamera = speedAndOffsetFromCamera[1];
-    }
-    m_shooter.okToShoot = (m_limelight.getHorOnTarget(1.75) && m_limelight.getVertOnTarget(1.75))
-        || m_shooter.driverOKShoot;
+    m_shooter.requiredMps = m_shooter.adjustedCameraMPS;
 
-    if (m_shooter.okToShoot)
+    m_shooter.okToShoot = (m_limelight.getVertOnTarget(tiltDistanceTolerance)
+        && m_limelight.getHorOnTarget(turretDistanceTolerance)) || m_shooter.useDriverSpeed;
+
+    if (m_shooter.okToShoot && !m_shooter.useDriverSpeed)
       m_shooter.startShooter = true;
 
     if (m_shooter.atSpeed() && m_shooter.okToShoot || m_shooter.isShooting) {

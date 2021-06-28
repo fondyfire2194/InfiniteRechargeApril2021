@@ -4,7 +4,6 @@
 
 package frc.robot.commands.Tilt;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -54,7 +53,7 @@ public class PositionHoldTilt extends CommandBase {
       visionFoundCounter = 0;
     if (visionFoundCounter > filterCount)
       visionFoundCounter = filterCount;
-      
+
     loopctr++;
 
     if (!m_limelight.useVision)
@@ -66,8 +65,8 @@ public class PositionHoldTilt extends CommandBase {
 
       cameraVerticalError = m_limelight.getdegVerticalToTarget();
 
-      m_tilt.adjustedVerticalError = cameraVerticalError + m_tilt.targetVerticalOffset
-          + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset;
+      m_tilt.adjustedVerticalError = cameraVerticalError
+          - (m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset);
 
       m_limelight.setVerticalOffset(
           -(m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset));
@@ -98,14 +97,13 @@ public class PositionHoldTilt extends CommandBase {
       cameraVerticalError = 0;
     }
 
-    double motorTurns = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
-    m_tilt.motorEndpointDegrees = motorTurns;
+    m_tilt.motorEndpointDegrees = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
 
     if (!m_shooter.okToShoot)
       lastVerticalError = m_tilt.adjustedVerticalError;
 
     if (!m_tilt.validTargetSeen) {
-      m_tilt.goToPositionMotionMagic(motorTurns);
+      m_tilt.goToPositionMotionMagic(m_tilt.motorEndpointDegrees);
     } else {
       m_tilt.lockTiltToVision(lastVerticalError);
       m_tilt.targetAngle = m_tilt.getAngle();

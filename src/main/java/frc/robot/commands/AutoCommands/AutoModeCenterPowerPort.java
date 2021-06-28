@@ -64,7 +64,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                 super(new ResetEncoders(drive), new ResetGyro(drive),
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
-                                                new PickupMove(drive, -1, -.5),
+                                                new PickupMove(drive, -1, .5),
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
                                                 new PositionTurretToVision(turret, limelight,
                                                                 turretAngle + turretOffset)),

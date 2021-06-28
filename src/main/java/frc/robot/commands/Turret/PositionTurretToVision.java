@@ -83,7 +83,8 @@ public class PositionTurretToVision extends CommandBase {
 
       if (correctionCtr >= 5) {
 
-        m_turret.correctedEndpoint = (m_turret.getAngle() - m_limelight.getdegRotationToTarget());
+        m_turret.correctedEndpoint = (m_turret.getAngle() - m_limelight.getdegRotationToTarget()
+            - m_turret.targetHorizontalOffset);
 
         m_turret.targetAngle = m_turret.correctedEndpoint;
 

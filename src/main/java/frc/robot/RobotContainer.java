@@ -32,10 +32,10 @@ import frc.robot.commands.CellTransport.JogRightBelt;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
+import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.SetShotPosition0;
-import frc.robot.commands.Shooter.SetShotPosition0V1;
 import frc.robot.commands.Shooter.SetShotPosition1;
 import frc.robot.commands.Shooter.SetShotPosition2;
 import frc.robot.commands.Shooter.ShootCells;
@@ -256,14 +256,13 @@ public class RobotContainer {
                         .whenReleased(new SetVisionMode(m_limelight))
                         .whenReleased(new SetUpLimelightForNoVision(m_limelight));
 
-            new JoystickButton(m_driverController, 8).whenPressed(() -> m_shooter.setOKShootDriver())
-                        .whenReleased(() -> m_shooter.setNotOKShootDriver());
+           // new JoystickButton(m_driverController, 8).whenPressed(
 
-           // new JoystickButton(m_driverController, 9).whenPressed
+            new JoystickButton(m_driverController, 9)
+                        .whenPressed(new ChooseShooterSpeedSource(m_shooter, m_tilt, m_turret, 1));
 
-
-            // new JoystickButton(m_driverController, 10).whenPressed(new
-            // ToggleIntakeArm(m_intake));
+            new JoystickButton(m_driverController, 10)
+                        .whenPressed(new ChooseShooterSpeedSource(m_shooter, m_tilt, m_turret, 2));
 
             new JoystickButton(m_driverController, 11).whileHeld(() -> m_shooter.shootAll())
                         .whenReleased(() -> m_shooter.shootOne());
@@ -296,7 +295,7 @@ public class RobotContainer {
             codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt, m_limelight));
 
             // test method for front of power port
-            codriverA.whenPressed(new SetShotPosition0V1(m_shooter, m_turret, m_tilt, m_limelight));
+           // codriverA.whenPressed(
 
             // trench behind control panel
             codriverRightTrigger.whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))

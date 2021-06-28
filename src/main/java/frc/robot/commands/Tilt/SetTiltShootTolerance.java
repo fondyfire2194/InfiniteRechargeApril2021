@@ -2,27 +2,29 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Shooter;
+package frc.robot.commands.Tilt;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.RevShooterSubsystem;
+import frc.robot.subsystems.RevTiltSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class SetShootSpeed extends InstantCommand {
-  private final RevShooterSubsystem m_shooter;
-  private double m_mps;
+public class SetTiltShootTolerance extends InstantCommand {
+  private RevTiltSubsystem m_tilt;
+  public double m_highTolerance;
+  public double m_lowTolerance;
 
-  public SetShootSpeed(RevShooterSubsystem shooter, double mps) {
+  public SetTiltShootTolerance(RevTiltSubsystem tilt, double high, double low) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_shooter = shooter;
-    m_mps = mps;
+    m_highTolerance = high;
+    m_lowTolerance = low;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooter.programSpeed = m_mps;
+    m_tilt.highTolerance = m_highTolerance;
+    m_tilt.lowTolerance = m_lowTolerance;
   }
 }

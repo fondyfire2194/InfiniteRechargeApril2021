@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANError;
@@ -19,7 +20,10 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CANConstants;
@@ -49,6 +53,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double pset, iset, dset, ffset, izset;
     public boolean useCameraSpeed;
     public boolean useSetupSlider;
+    public boolean useDriverSpeed;
     public NetworkTableEntry shooterSpeed;
 
     public boolean startShooter;
@@ -97,7 +102,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
      * has sliders for speed and offset. They are active when the "SpeedFromSlider"
      * indicator is on. It is toggled using the ToggleSpeedFromSlider button.
      * 
-     * Slder range is 20 to 50 MPS. Offset slider range is -10 to +10 degrees
+     * Slider range is 20 to 50 MPS. Offset slider range is -10 to +10 degrees
      * 
      * 
      * Starting at 2 meters fire cells and get the best speed and y offset to hit
@@ -113,10 +118,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     public double[] speedBreakMeters = new double[] { 2, 4, 6, 8, 10 };
     public double[] MPSFromCameraDistance = new double[] { 25, 30, 35, 40, 45 };
-    public double[] tiltOffsetFromCameraDistance = new double[] { 0, 1, 2, 4, 7 };
-    public double[] minOffsetFromCameraDistance = new double[] { 0, 0, 1, 2, 3 };
-
-    private double minimumOffsetInRange = 2;
 
     public String[] shootColor = { "red", "yellow", "green" };
     public int shootColorNumber;
@@ -139,17 +140,21 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean endShootFile;
     public boolean isShooting;
 
-    private boolean interpolateSpeed = false;
-    private boolean interpolateOffsets = true;
     public boolean logTrigger;
     public double testVertOffset;
     public int itemsLogged;
 
-    private double testDistance = 2;
-
     public boolean logSetupFileOpen;
-	public boolean okToShoot;
-
+    public boolean okToShoot;
+    private double shootError = Units.inchesToMeters(8);
+    private double tiltShootError = Units.inchesToMeters(12);
+    private double speedPerDegree = .1;
+    public double adjustedCameraMPS;
+    public double driverThrottleValue;
+    public boolean useProgramSpeed;
+    public double programSpeed;
+    public String[] speedSource = { "Program", "Camera", "Driver", "Setup" };
+    public String activeSpeedSource = "Program";
 
     public RevShooterSubsystem() {
 
@@ -179,12 +184,12 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mEncoder.setPositionConversionFactor(metersPerRev);
         mEncoder.setVelocityConversionFactor(metersPerRev / 60);
 
-        // if (!Constants.isMatch) {
+        if (!Constants.isMatch) {
 
-        //     shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
-        //             .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 15, "Max", 50)).getEntry();
+            shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
+                    .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 15, "Max", 50)).getEntry();
 
-        // }
+        }
         tuneGains();
         getGains();
         requiredMps = 23;
@@ -209,6 +214,10 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mPidController.setReference(metersPerSec, ControlType.kVelocity, VELOCITY_SLOT);
     }
 
+    public double getDriverMPS() {
+        return 20 + driverThrottleValue * 20;
+    }
+
     public void runShooter() {
 
         spinAtMetersPerSec(-requiredMps);
@@ -223,14 +232,15 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         // This method will be called once per scheduler run
 
         checkTune();
-        if (useSetupSlider) {
+
+        if (useCameraSpeed)
+            requiredMps = cameraCalculatedSpeed;
+        if (useDriverSpeed)
+            requiredMps = getDriverMPS();
+        if (useSetupSlider)
             requiredMps = shooterSpeed.getDouble(20);
-        }
-        if (DriverStation.getInstance().isOperatorControlEnabled()) {
-            if (useCameraSpeed) {
-                requiredMps = cameraCalculatedSpeed;
-            }
-        }
+        if (useProgramSpeed)
+            requiredMps = programSpeed;
 
     }
 
@@ -355,9 +365,25 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         return pdp.getVoltage();
     }
 
-    public double[] calculateMPSFromDistance(double distance) {
+    public double getTurretTolerance(double calculatedCameraDistance) {
+        return Math.toDegrees(Math.atan(shootError / calculatedCameraDistance));
+    }
 
-        double[] temp = new double[] { 0, 0 };
+    public double getTiltTolerance(double calculatedCameraDistance) {
+        return Math.toDegrees(Math.atan(tiltShootError / calculatedCameraDistance));
+    }
+
+    public double calculateMPS() {
+        return calculateMPSFromDistance(calculatedCameraDistance);
+    }
+
+    public double calculateSpeedChangeFromCameraVerticalError(double cameraError, double speed) {
+        return speed * (1 - (speedPerDegree * cameraError));
+    }
+
+    public double calculateMPSFromDistance(double distance) {
+
+        double temp = 0;
         /**
          * The arrays have distances at which speed step changes
          * 
@@ -367,12 +393,10 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         double minimumDistance = speedBreakMeters[0];
         double maximumDistance = speedBreakMeters[distanceLength - 1];
 
-
         double pu;
         double speedRange;
         double unitAdder;
         double distanceRange;
-        double offsetRange;
 
         if (distance < minimumDistance)
             distance = minimumDistance;
@@ -381,30 +405,22 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
         for (int i = 0; i < distanceLength - 1; i++) {
             if (distance >= speedBreakMeters[i] && distance < speedBreakMeters[i + 1]) {
-                temp[0] = MPSFromCameraDistance[i];
-                temp[1] = tiltOffsetFromCameraDistance[i];
+                temp = MPSFromCameraDistance[i];
+                SmartDashboard.putNumber("MYi", i);
+                SmartDashboard.putNumber("MYDistL", distanceLength);
+                SmartDashboard.putNumber("MyTemp", temp);
 
                 distanceRange = speedBreakMeters[i + 1] - speedBreakMeters[i];
+
                 double distanceFromEndOfRange = speedBreakMeters[i + 1] - distance;
 
                 pu = distanceFromEndOfRange / distanceRange;
 
-                if (interpolateSpeed) {
+                speedRange = MPSFromCameraDistance[i + 1] - MPSFromCameraDistance[i];
 
-                    speedRange = MPSFromCameraDistance[i + 1] - MPSFromCameraDistance[i];
+                unitAdder = speedRange * pu;
+                temp += unitAdder;
 
-                    unitAdder = speedRange * pu;
-                    temp[0] += unitAdder;
-                }
-
-                if (interpolateOffsets) {
-                    minimumOffsetInRange = minOffsetFromCameraDistance[i];
-                    offsetRange = tiltOffsetFromCameraDistance[i] - minimumOffsetInRange;
-   
-                    unitAdder = offsetRange * pu;
-                    temp[1] += unitAdder;
-                }
-                break;
             }
 
         }

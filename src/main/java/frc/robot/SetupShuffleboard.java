@@ -31,6 +31,7 @@ import frc.robot.commands.CellTransport.HoldCell;
 import frc.robot.commands.CellTransport.ReleaseCell;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.RobotDrive.ClearRobFaults;
+import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.PositionProfiled;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
@@ -42,7 +43,7 @@ import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
-import frc.robot.commands.Shooter.ToggleShooterSpeedSource;
+import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.EndTiltLog;
 import frc.robot.commands.Tilt.LogTiltData;
@@ -131,9 +132,8 @@ public class SetupShuffleboard {
                         autoChooser.addOption("Trench 5 Ball Start Move Pickup Shoot", 3);
                         autoChooser.addOption("Trench 4 Ball Start Move Pickup Shoot", 4);
                         autoChooser.addOption("Trench 3-3 Ball Move Shoot  Move Pickup Shoot", 5);
-                       autoChooser.addOption("Trench 3M3 Ball Shoot  Move Pickup Shoot", 6);
- 
- 
+                        autoChooser.addOption("Trench 3M3 Ball Shoot  Move Pickup Shoot", 6);
+
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
 
@@ -199,6 +199,7 @@ public class SetupShuffleboard {
 
                         competition1.addNumber("ShootAngle", () -> m_tilt.getAngle());
                         competition1.addNumber("TurretPosn", () -> m_turret.getAngle());
+                        competition1.addNumber("ShooterSetSpeed", () -> m_shooter.requiredMps);
                         competition1.addNumber("ShooterSpeed", () -> m_shooter.getMPS());
                         competition1.addNumber("DriverVertOffsetM", () -> m_tilt.driverVerticalOffsetMeters);
                         competition1.addNumber("DriverHorOffsetM", () -> m_turret.driverHorizontalOffsetMeters);
@@ -220,6 +221,8 @@ public class SetupShuffleboard {
 
                         setup.addString("PositionforShot",
                                         () -> m_shooter.teleopSetupPosition[m_shooter.teleopSetupIndex]);
+                        setup.addString("SpeedSource", () -> m_shooter.activeSpeedSource);
+
                         ShuffleboardLayout competition = Shuffleboard.getTab("Competition")
                                         .getLayout("Values", BuiltInLayouts.kGrid).withPosition(1, 2).withSize(2, 3)
                                         .withProperties(Map.of("Label position", "TOP"));
@@ -450,8 +453,9 @@ public class SetupShuffleboard {
                         shooterCommands.add("LogDataRun",
                                         new LogDistanceData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
                         shooterCommands.add("EndLogs", new EndLogData(m_shooter));
-                        shooterCommands.add("LogShootRun", new LogShootData(m_turret, m_tilt, m_shooter, transport, m_limelight));
-                        shooterCommands.add("UseSpeedSlider", new ToggleShooterSpeedSource(shooter, tilt, turret));
+                        shooterCommands.add("LogShootRun",
+                                        new LogShootData(m_turret, m_tilt, m_shooter, transport, m_limelight));
+                        shooterCommands.add("UseSpeedSlider", new ChooseShooterSpeedSource(shooter, tilt, turret, 3));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
                                         .getLayout("ShooterValues", BuiltInLayouts.kList).withPosition(2, 0)
@@ -555,6 +559,10 @@ public class SetupShuffleboard {
 
                         robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
                         robotCommands.add("Stop Robot", new StopRobot(m_robotDrive));
+                        robotCommands.add("To -4", new PickupMove(m_robotDrive, -4, .75));
+                        robotCommands.add("To +4", new PickupMove(m_robotDrive, 4, .5));
+                        robotCommands.add("To -1", new PickupMove(m_robotDrive, -1, .5));
+                        robotCommands.add("To 0", new PickupMove(m_robotDrive, 0, .5));
                         robotCommands.add("Cmd", m_robotDrive);
 
                         ShuffleboardLayout robotValues = Shuffleboard.getTab("SetupRobot")

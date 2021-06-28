@@ -32,6 +32,7 @@ public class PositionTiltToVision extends CommandBase {
   private int loopCtr;
   private final int filterCount = 5;
   private int correctionCtr;
+  double pidOut;
 
   public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double endpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -86,25 +87,20 @@ public class PositionTiltToVision extends CommandBase {
 
     if (m_tilt.validTargetSeen) {
 
-      correctionCtr++;
+      pidOut = m_tilt.tiltLockController.calculate(m_limelight.getdegVerticalToTarget());
 
-      if (correctionCtr >= 5) {
+      m_tilt.correctedEndpoint = m_tilt.getAngle() + m_tilt.targetVerticalOffset + m_limelight.getdegVerticalToTarget();
 
-        m_tilt.correctedEndpoint = m_tilt.getAngle() + m_limelight.getdegVerticalToTarget();
+      m_tilt.targetAngle = m_tilt.correctedEndpoint;
 
-        m_tilt.targetAngle = m_tilt.correctedEndpoint;
-
-        correctionCtr = 0;
-      }
     }
 
-    double motorTurns = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
+    m_tilt.motorEndpointDegrees  = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
 
-    m_tilt.motorEndpointDegrees = motorTurns;
 
-    m_tilt.goToPositionMotionMagic(motorTurns);
+    m_tilt.goToPositionMotionMagic(m_tilt.motorEndpointDegrees );
 
-    endIt = m_limelight.getVertOnTarget(1) || !m_tilt.validTargetSeen && m_tilt.atTargetAngle() && loopCtr > 5
+    endIt = m_limelight.getVertOnTarget(5) || !m_tilt.validTargetSeen && m_tilt.atTargetAngle() && loopCtr > 5
         || loopCtr > 1250;
 
   }

@@ -76,6 +76,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 	public double positionError;
     public double correctedEndpoint;
     public double visionErrorDifference;
+  
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -90,6 +91,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
         tuneGains();
         setTurretLockGains();
+        getLockGains();
         m_turretLockController.setTolerance(1.);
         setSoftwareLimits();
 
@@ -416,6 +418,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
             setTurretLockGains();
             lastLockTuneOn = true;
+            getLockGains();
         }
 
         if (lastLockTuneOn)
@@ -442,8 +445,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public void getLockGains() {
         lpset = m_turretLockController.getP();
-        iset = m_turretLockController.getI();
-        dset = m_turretLockController.getD();
+        liset = m_turretLockController.getI();
+        ldset = m_turretLockController.getD();
+        
     }
 
 }

@@ -83,7 +83,7 @@ public class Pref {
     prefDict.put("dRKi", .0);
     prefDict.put("dRKd", .0);
     prefDict.put("dRKiz", .0);
-    prefDict.put("dRStKp", .1);
+    prefDict.put("dRStKp", .15);
     prefDict.put("dRacc", .1);
 
     prefDict.put("dRTune", 0.);
