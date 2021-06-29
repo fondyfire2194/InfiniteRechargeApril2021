@@ -19,7 +19,7 @@ import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 
-public class ShootCells extends CommandBase {
+public class ShootInMotion extends CommandBase {
   /**
    * Creates a new ShootCells
    * 
@@ -47,8 +47,8 @@ public class ShootCells extends CommandBase {
   private double tiltDistanceTolerance;
   private double turretDistanceTolerance;
 
-  public ShootCells(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret, LimeLight limelight,
-      CellTransportSubsystem transport, Compressor compressor, double time) {
+  public ShootInMotion(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret,
+      LimeLight limelight, CellTransportSubsystem transport, Compressor compressor, double time) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
     m_transport = transport;
@@ -90,9 +90,9 @@ public class ShootCells extends CommandBase {
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
     m_shooter.okToShoot = (m_limelight.getVertOnTarget(tiltDistanceTolerance)
-        && m_limelight.getHorOnTarget(turretDistanceTolerance)) || m_shooter.useDriverSpeed;
+        && m_limelight.getHorOnTarget(turretDistanceTolerance));
 
-    if (m_shooter.okToShoot && !m_shooter.useDriverSpeed)
+    if (m_shooter.okToShoot)
       m_shooter.startShooter = true;
 
     if (m_shooter.atSpeed() && m_shooter.okToShoot || m_shooter.isShooting) {
@@ -109,7 +109,7 @@ public class ShootCells extends CommandBase {
 
     }
 
-    if (m_shooter.isShooting && cellAvailable && !m_shooter.shotInProgress) {
+    if (okToShoot && cellAvailable && !m_shooter.shotInProgress) {
       shotStartTime = Timer.getFPGATimestamp();
       m_shooter.shotInProgress = true;
       cellsShot++;
@@ -127,7 +127,7 @@ public class ShootCells extends CommandBase {
       m_shooter.shotInProgress = false;
     }
 
-    m_shooter.okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
+    m_shooter.okToShoot = okToShoot && m_shooter.isShooting;
 
     getNextCell = m_shooter.okToShoot && !m_shooter.shotInProgress && !cellAvailable && m_shooter.atSpeed();
 

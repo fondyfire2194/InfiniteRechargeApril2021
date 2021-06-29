@@ -14,28 +14,24 @@ import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
+import frc.robot.commands.TimeDelay;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
-import frc.robot.commands.CellIntake.StopIntakeMotor;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.EndLogData;
-import frc.robot.commands.Shooter.ShootCells;
+import frc.robot.commands.Shooter.ShootInMotion;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.EndTiltLog;
-import frc.robot.commands.Tilt.LogTiltData;
-import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
-import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForNoVision;
-import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
@@ -53,7 +49,7 @@ public class AutoMode5BallTrench extends SequentialCommandGroup {
          * 
          * Start in front of power port and shoot
          */
-        static double retractDistance = ShootData.trench5BallShotConstants.retractDistance;
+        static double retractDistance = ShootData.trench3M3BallShotConstants.retractDistance;
         static double tiltAngle = ShootData.trench5BallShotConstants.tiltAngle;
         static double turretAngle = ShootData.trench5BallShotConstants.turretAngle;
         static double shootSpeed = ShootData.trench5BallShotConstants.shootSpeed;
@@ -70,31 +66,19 @@ public class AutoMode5BallTrench extends SequentialCommandGroup {
 
                 super(new ResetEncoders(drive), new ResetGyro(drive),
 
-                                new ParallelCommandGroup(new SetTurretOffset(turret, turretOffset),new PositionTurret(turret, turretAngle + turretOffset),
-                                                new PickupMove(drive, retractDistance, .5)).deadlineWith(
-                                                                new ParallelCommandGroup(new IntakeArmLower(intake),
-                                                                                new RunIntakeMotor(intake, .75))),
-
-                                new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
-                                                
-                                                new LogTiltData(tilt, limelight),
-                                                new SetUpLimelightForTarget(limelight), new UseVision(limelight, false),
+                                new ParallelCommandGroup(new SetTurretOffset(turret, turretOffset),
+                                                new PositionTurretToVision(turret, limelight,
+                                                                turretAngle + turretOffset),
+                                                new SetTiltOffset(tilt, tiltOffset),
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
-                                                new PositionTurretToVision(turret, limelight, turretAngle
-                                                                + turretOffset)).deadlineWith(new ParallelCommandGroup(
-                                                                                new IntakeArmLower(intake),
-                                                                                new LogTiltData(tilt, limelight),
-                                                                                new StopIntakeMotor(intake))),
+                                                new UseVision(limelight, true)),
 
-                                new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
-
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
-                                                                shootTime)).deadlineWith(
-                                                                                new StopIntakeMotor(intake),
-                                                                                new PositionHoldTilt(tilt, shooter,
-                                                                                                limelight),
-                                                                                new PositionHoldTurret(turret, shooter,
-                                                                                                limelight)),
+                                new ParallelCommandGroup(new PickupMove(drive, retractDistance, .25), new TimeDelay(15))
+                                                .deadlineWith(new ParallelCommandGroup(
+                                                                new ShootInMotion(shooter, tilt, turret, limelight,
+                                                                                transport, compressor, shootTime),
+                                                                new IntakeArmLower(intake),
+                                                                new RunIntakeMotor(intake, .75))),
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"), new EndLogData(shooter),
                                                 new EndTiltLog(tilt), new StopShoot(shooter, transport),
