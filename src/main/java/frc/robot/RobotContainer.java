@@ -34,6 +34,7 @@ import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
 import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.JogShooter;
+import frc.robot.commands.Shooter.Position2Macro;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.SetShotPosition0;
 import frc.robot.commands.Shooter.SetShotPosition1;
@@ -292,10 +293,10 @@ public class RobotContainer {
             codriverX.whenPressed(new SetShotPosition1(m_shooter, m_turret, m_tilt, m_limelight));
 
             // trench in front of control panel
-            codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt, m_limelight));
+            codriverA.whenPressed(new Position2Macro(m_robotDrive, m_shooter, m_turret, m_tilt, m_limelight));
 
-            // 
-            // codriverA.whenPressed(
+            //
+            codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt, m_limelight));
 
             //
             codriverRightTrigger.whileHeld(getJogTiltCommand(codriverGamepad))

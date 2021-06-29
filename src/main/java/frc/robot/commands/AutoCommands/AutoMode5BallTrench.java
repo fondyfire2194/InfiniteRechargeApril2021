@@ -75,7 +75,7 @@ public class AutoMode5BallTrench extends SequentialCommandGroup {
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
                                                 new UseVision(limelight, true)),
 
-                                new ParallelCommandGroup(new PickupMove(drive, retractDistance, .25), new TimeDelay(15),
+                                new ParallelCommandGroup(new PickupMove(drive, retractDistance, .25,.25), new TimeDelay(15),
                                                 new LogShootData(turret, tilt, shooter, transport, limelight))
                                                                 .deadlineWith(new ParallelCommandGroup(
                                                                                 new ShootInMotion(shooter, tilt, turret,

@@ -566,11 +566,11 @@ public class SetupShuffleboard {
 
                         robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
                         robotCommands.add("Stop Robot", new StopRobot(m_robotDrive));
-                        robotCommands.add("To -4", new PickupMove(m_robotDrive, -4, .75));
-                        robotCommands.add("To -10", new PickupMove(m_robotDrive, -10, .25));
-                        robotCommands.add("To +4", new PickupMove(m_robotDrive, 4, .5));
-                        robotCommands.add("To -1", new PickupMove(m_robotDrive, -1, .5));
-                        robotCommands.add("To 0", new PickupMove(m_robotDrive, 0, .5));
+                        robotCommands.add("To -4", new PickupMove(m_robotDrive, -4, .75, .4));
+                        robotCommands.add("To -10", new PickupMove(m_robotDrive, -10, .25, .25));
+                        robotCommands.add("To +4", new PickupMove(m_robotDrive, 4, .5, .4));
+                        robotCommands.add("To -1", new PickupMove(m_robotDrive, -1, .5, .25));
+                        robotCommands.add("To 0", new PickupMove(m_robotDrive, 0, .5, .25));
                         robotCommands.add("Cmd", m_robotDrive);
 
                         ShuffleboardLayout robotValues = Shuffleboard.getTab("SetupRobot")

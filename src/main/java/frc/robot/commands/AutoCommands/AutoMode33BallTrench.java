@@ -81,7 +81,7 @@ public class AutoMode33BallTrench extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new SetTurretOffset(turret, turretOffset),
                                                 new PositionTurret(turret, turretAngle + turretOffset),
-                                                new PickupMove(drive, retractDistance, -.5)).deadlineWith(
+                                                new PickupMove(drive, retractDistance, -.5,.25)).deadlineWith(
                                                                 new ParallelCommandGroup(new IntakeArmLower(intake),
                                                                                 new RunIntakeMotor(intake, .75))),
                                 // 1st lock
@@ -104,7 +104,7 @@ public class AutoMode33BallTrench extends SequentialCommandGroup {
                                                                                 new PositionHoldTurret(turret, shooter,
                                                                                                 limelight)),
                                 // 2nd pickup
-                                new ParallelCommandGroup(new PickupMove(drive, retractDistance1, .5))
+                                new ParallelCommandGroup(new PickupMove(drive, retractDistance1, .5,.25))
                                                 .deadlineWith(new ParallelCommandGroup(new IntakeArmLower(intake),
                                                                 new RunIntakeMotor(intake, .75))),
                                 // 2nd lock

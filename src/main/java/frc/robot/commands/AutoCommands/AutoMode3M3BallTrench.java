@@ -103,7 +103,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                                                                                 limelight)),
                                 // 2nd pickup
                                 new ParallelCommandGroup(new SetUpLimelightForNoVision(limelight),
-                                                new PickupMove(drive, retractDistance1, .6)).deadlineWith(
+                                                new PickupMove(drive, retractDistance1, .6,.5)).deadlineWith(
                                                                 new ParallelCommandGroup(new IntakeArmLower(intake),
                                                                                 new RunIntakeMotor(intake, .75))),
                                 // 2nd lock

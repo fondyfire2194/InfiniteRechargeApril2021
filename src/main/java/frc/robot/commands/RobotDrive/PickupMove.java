@@ -13,6 +13,7 @@ public class PickupMove extends CommandBase {
   private final RevDrivetrain m_drive;
   private double m_endpoint;
   private double m_speed;
+  private double m_accelTime;
   private double currentSpeed;
   private double slowDownDistance = 1;
   private double slowDownRampTime = .5;
@@ -27,11 +28,12 @@ public class PickupMove extends CommandBase {
 
   private double useSpeed;
 
-  public PickupMove(RevDrivetrain drive, double endpoint, double speed) {
+  public PickupMove(RevDrivetrain drive, double endpoint, double speed, double accelTime) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_drive = drive;
     m_endpoint = endpoint;
     m_speed = Math.abs(speed);
+    m_accelTime = accelTime;
     // addRequirements(m_drive);
   }
 
@@ -42,6 +44,7 @@ public class PickupMove extends CommandBase {
     decelerating = false;
     plusDirection = true;
     currentSpeed = minSpeed;
+    upRampTime = m_accelTime;
     upRamp = (m_speed - minSpeed) / (upRampTime * 50);// per 20 ms
     slowDownRamp = m_speed / (slowDownRampTime * 50);
     remainingDistance = m_endpoint - m_drive.getAverageDistance();
@@ -84,7 +87,7 @@ public class PickupMove extends CommandBase {
         currentSpeed = minSpeed;
     }
     useSpeed = currentSpeed;
-    
+
     if (!plusDirection)
       useSpeed = -useSpeed;
 
