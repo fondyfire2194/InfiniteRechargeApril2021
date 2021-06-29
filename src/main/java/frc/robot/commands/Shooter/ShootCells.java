@@ -72,7 +72,7 @@ public class ShootCells extends CommandBase {
     m_transport.holdCell();
     cellsShot = 0;
     shotStartTime = 0;
-    cellAvailable = false;
+    cellAvailable = true;
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.useVision = true;

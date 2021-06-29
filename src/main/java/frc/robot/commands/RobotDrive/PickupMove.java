@@ -4,6 +4,7 @@
 
 package frc.robot.commands.RobotDrive;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Pref;
 import frc.robot.subsystems.RevDrivetrain;
@@ -15,12 +16,12 @@ public class PickupMove extends CommandBase {
   private double m_speed;
   private double m_accelTime;
   private double currentSpeed;
-  private double slowDownDistance = 1;
-  private double slowDownRampTime = .5;
-  private double upRampTime = .5;
+  private double slowDownDistance = .4;
+  private double slowDownRampTime = .1;
+  private double upRampTime;
   private double slowDownRamp;
   private double upRamp;
-  private double minSpeed = .1;
+  private double minSpeed = .25;
   private boolean accelerating;
   private boolean decelerating;
   private boolean plusDirection;
@@ -28,13 +29,15 @@ public class PickupMove extends CommandBase {
 
   private double useSpeed;
 
+  private int loopCtr;
+
   public PickupMove(RevDrivetrain drive, double endpoint, double speed, double accelTime) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_drive = drive;
     m_endpoint = endpoint;
     m_speed = Math.abs(speed);
     m_accelTime = accelTime;
-    // addRequirements(m_drive);
+     addRequirements(m_drive);
   }
 
   // Called when the command is initially scheduled.
@@ -47,11 +50,12 @@ public class PickupMove extends CommandBase {
     upRampTime = m_accelTime;
     upRamp = (m_speed - minSpeed) / (upRampTime * 50);// per 20 ms
     slowDownRamp = m_speed / (slowDownRampTime * 50);
-    remainingDistance = m_endpoint - m_drive.getAverageDistance();
+    remainingDistance = m_endpoint - m_drive.getLeftDistance();
     if (Math.abs(remainingDistance) < slowDownDistance) {
-      slowDownDistance = slowDownDistance / 2;
+      slowDownDistance = 0;
 
     }
+    m_drive.resetGyro();
 
   }
 
@@ -64,7 +68,7 @@ public class PickupMove extends CommandBase {
      * 
      */
 
-    remainingDistance = m_endpoint - m_drive.getAverageDistance();//
+    remainingDistance = m_endpoint - m_drive.getLeftDistance();//
 
     if (remainingDistance < 0) {
       plusDirection = false;
@@ -73,6 +77,13 @@ public class PickupMove extends CommandBase {
     if (currentSpeed >= m_speed) {
       accelerating = false;
     }
+    SmartDashboard.putBoolean("ACC", accelerating);
+
+    SmartDashboard.putNumber("CurrSp", currentSpeed);
+
+    SmartDashboard.putNumber("UpRamp", upRamp);
+
+    SmartDashboard.putNumber("UseSpee", useSpeed);
 
     if (accelerating) {
       currentSpeed += upRamp;
@@ -105,8 +116,8 @@ public class PickupMove extends CommandBase {
   @Override
   public boolean isFinished() {
 
-    return plusDirection && m_drive.getAverageDistance() > m_endpoint
-        || !plusDirection && m_drive.getAverageDistance() < m_endpoint;
+    return !accelerating && plusDirection && m_drive.getLeftDistance() > m_endpoint
+        || !accelerating && !plusDirection && m_drive.getLeftDistance() < m_endpoint;
 
   }
 }

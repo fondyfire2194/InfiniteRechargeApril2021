@@ -7,7 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AutoCommands.AutoMode3M3BallTrench;
-import frc.robot.commands.AutoCommands.AutoMode5BallTrench;
+import frc.robot.commands.AutoCommands.AutoModeTrenchShootOnTheMove;
 import frc.robot.commands.AutoCommands.AutoModeCenterPowerPort;
 import frc.robot.commands.AutoCommands.AutoModeShieldGen;
 import frc.robot.subsystems.CellTransportSubsystem;
@@ -47,38 +47,26 @@ public class AutoFactory {
     public SequentialCommandGroup getAutonomousCommand1() {
         return new AutoModeCenterPowerPort(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
                 m_compressor);
-      
+
     }
 
-    // right of center retract shoot
+    // right of center line retract shoot
     public SequentialCommandGroup getAutonomousCommand2() {
-        return new AutoModeShieldGen(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
-                m_compressor, m_intake);
-    }
-
-    // front of trench or left of center move pickup and and shoot together
-    public SequentialCommandGroup getAutonomousCommand3() {
-        return new AutoMode3M3BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor,
+        return new AutoModeShieldGen(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor,
                 m_intake);
-        // return new AutoModeTrenchTestVision(m_shooter, m_turret, m_tilt, m_transport,
-        // m_robotDrive, m_limelight,
-        // m_compressor, m_intake);
     }
 
-    // front of trench or left of center move pickup and and shoot
+    // front of trench or shoot 3 move pickup shoot 3
+    public SequentialCommandGroup getAutonomousCommand3() {
+        return new AutoMode3M3BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
+                m_compressor, m_intake);
+    }
+
+    // front of trench  move pickup and and shoot together
     public SequentialCommandGroup getAutonomousCommand4() {
-        return new AutoMode5BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
+        return new AutoModeTrenchShootOnTheMove(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
                 m_compressor, m_intake);
-    }
 
-    public SequentialCommandGroup getAutonomousCommand5() {
-        return new AutoMode3M3BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
-                m_compressor, m_intake);
-    }
-
-    public SequentialCommandGroup getAutonomousCommand6() {
-        return new AutoMode3M3BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
-                m_compressor, m_intake);
     }
 
 }

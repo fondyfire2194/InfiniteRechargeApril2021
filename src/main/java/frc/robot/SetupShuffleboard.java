@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
@@ -32,21 +31,16 @@ import frc.robot.commands.CellTransport.ReleaseCell;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.RobotDrive.ClearRobFaults;
 import frc.robot.commands.RobotDrive.PickupMove;
-import frc.robot.commands.RobotDrive.PositionProfiled;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.RobotDrive.StopRobot;
+import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.ClearShFaults;
-import frc.robot.commands.Shooter.EndLogData;
 import frc.robot.commands.Shooter.LogDistanceData;
-import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
-import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Tilt.ClearFaults;
-import frc.robot.commands.Tilt.EndTiltLog;
-import frc.robot.commands.Tilt.LogTiltData;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.StopTilt;
@@ -129,10 +123,9 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Left Start Shoot Retract Shoot", 2);
 
-                        autoChooser.addOption("Trench 5 Ball Start Move Pickup Shoot", 3);
-                        autoChooser.addOption("Trench 4 Ball Start Move Pickup Shoot", 4);
-                        autoChooser.addOption("Trench 3-3 Ball Move Shoot  Move Pickup Shoot", 5);
-                        autoChooser.addOption("Trench 3M3 Ball Shoot  Move Pickup Shoot", 6);
+                        autoChooser.addOption("Trench 3 M 3", 3);
+
+                        autoChooser.addOption("Trench Shoot on the Move", 4);
 
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
@@ -235,12 +228,15 @@ public class SetupShuffleboard {
                         competition.addBoolean("Shooting", () -> m_shooter.isShooting);
                         competition.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
 
-                        Shuffleboard.getTab("Competition").addNumber("TimeRemaining", () -> m_robotDrive.getMatchTime())
-                                        .withWidget(BuiltInWidgets.kTextView).withPosition(9, 0).withSize(1, 1);
-                        Shuffleboard.getTab("Competition").addNumber("Battery", () -> getPDPInfo()[0])
-                                        .withWidget(BuiltInWidgets.kTextView).withPosition(9, 1).withSize(1, 1);
-                        Shuffleboard.getTab("Competition").addNumber("TotalEnegy", () -> getPDPInfo()[2])
-                                        .withWidget(BuiltInWidgets.kTextView).withPosition(9, 2).withSize(1, 1);
+                        // Shuffleboard.getTab("Competition").addNumber("TimeRemaining", () ->
+                        // m_robotDrive.getMatchTime())
+                        // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 0).withSize(1, 1);
+                        // Shuffleboard.getTab("Competition").addNumber("Battery", () ->
+                        // getPDPInfo()[0])
+                        // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 1).withSize(1, 1);
+                        // Shuffleboard.getTab("Competition").addNumber("TotalEnegy", () ->
+                        // getPDPInfo()[2])
+                        // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 2).withSize(1, 1);
 
                         if (RobotBase.isReal()) {
 
@@ -260,7 +256,7 @@ public class SetupShuffleboard {
                  * Shooter Turret
                  * 
                  */
-                if (m_showTurret & !liveMatch)
+                if (m_showTurret)
 
                 {
                         ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurret")
@@ -272,8 +268,10 @@ public class SetupShuffleboard {
                         turretCommands.add("Position To 0", new PositionTurret(m_turret, 0));// degrees
                         turretCommands.add("Position To -30", new PositionTurret(m_turret, -30));// degrees
                         turretCommands.add("Position To 30", new PositionTurret(m_turret, 30));
-                        turretCommands.add("PositionToVision", new PositionTurretToVision(m_turret, m_limelight,
-                                        HoodedShooterConstants.TURRET_MAX_ANGLE));
+                        turretCommands.add("PositionToVision +10",
+                                        new PositionTurretToVision(m_turret, m_limelight, 10));
+                        turretCommands.add("PositionToVision -10",
+                                        new PositionTurretToVision(m_turret, m_limelight, -10));
 
                         turretCommands.add("StopTurret", new StopTurret(m_turret));
                         turretCommands.add("ClearFaults", new ClearTurFaults(m_turret));
@@ -350,7 +348,7 @@ public class SetupShuffleboard {
                 /**
                  * Shooter Tilt
                  */
-                if (m_showTilt & !liveMatch) {
+                if (m_showTilt) {
                         ShuffleboardLayout tiltCommands = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("Tilt", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); //
@@ -367,8 +365,6 @@ public class SetupShuffleboard {
                         tiltCommands.add("ClearFaults", new ClearFaults(m_tilt));
                         tiltCommands.add("Cmd", m_tilt);
                         tiltCommands.addNumber("Faults", () -> m_tilt.faultSeen);
-                        tiltCommands.add(new LogTiltData(m_tilt, m_limelight));
-                        tiltCommands.add(new EndTiltLog(m_tilt));
 
                         ShuffleboardLayout tiltValues = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("TiltValues", BuiltInLayouts.kList).withPosition(2, 0).withSize(2, 4)
@@ -443,7 +439,7 @@ public class SetupShuffleboard {
                  * Shooter and Transport
                  * 
                  */
-                if (m_showShooter & !liveMatch)
+                if (m_showShooter)
 
                 {
                         ShuffleboardLayout shooterCommands = Shuffleboard.getTab("SetupShooter")
@@ -459,9 +455,7 @@ public class SetupShuffleboard {
                         shooterCommands.add("Cmd", m_shooter);
                         shooterCommands.add("LogDataRun",
                                         new LogDistanceData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
-                        shooterCommands.add("EndLogs", new EndLogData(m_shooter));
-                        shooterCommands.add("LogShootRun",
-                                        new LogShootData(m_turret, m_tilt, m_shooter, transport, m_limelight));
+
                         shooterCommands.add("UseSpeedSlider", new ChooseShooterSpeedSource(shooter, tilt, turret, 3));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
@@ -566,11 +560,11 @@ public class SetupShuffleboard {
 
                         robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
                         robotCommands.add("Stop Robot", new StopRobot(m_robotDrive));
-                        robotCommands.add("To -4", new PickupMove(m_robotDrive, -4, .75, .4));
-                        robotCommands.add("To -10", new PickupMove(m_robotDrive, -10, .25, .25));
+                        robotCommands.add("To -4", new PickupMove(m_robotDrive, -4, .6, .1));
+                        robotCommands.add("To -8", new PickupMove(m_robotDrive, -8, .3, .1));
                         robotCommands.add("To +4", new PickupMove(m_robotDrive, 4, .5, .4));
-                        robotCommands.add("To -1", new PickupMove(m_robotDrive, -1, .5, .25));
-                        robotCommands.add("To 0", new PickupMove(m_robotDrive, 0, .5, .25));
+                        robotCommands.add("To -1", new PickupMove(m_robotDrive, -1, .5, .02));
+                        robotCommands.add("To 0", new PickupMove(m_robotDrive, 0, .5, .1));
                         robotCommands.add("Cmd", m_robotDrive);
 
                         ShuffleboardLayout robotValues = Shuffleboard.getTab("SetupRobot")
@@ -662,7 +656,7 @@ public class SetupShuffleboard {
                  * Vision
                  * 
                  */
-                if (m_showVision & !liveMatch) {
+                if (m_showVision) {
                         ShuffleboardLayout zoomCommands = Shuffleboard.getTab("Vision")
                                         .getLayout("Zoom", BuiltInLayouts.kList).withPosition(0, 0).withSize(1, 2)
                                         .withProperties(Map.of("Label position", "TOP")); //
@@ -757,15 +751,15 @@ public class SetupShuffleboard {
 
         }
 
-        public double[] getPDPInfo() {
-                double temp[] = { 0, 0, 0, 0, 0 };
-                temp[0] = m_shooter.getBatteryVoltage();
-                temp[1] = m_shooter.getTemperature();
-                temp[2] = m_shooter.getTotalEnergy() / 3600;
-                temp[3] = m_shooter.getTotalPower();
-                return temp;
+        // public double[] getPDPInfo() {
+        // double temp[] = { 0, 0, 0, 0, 0 };
+        // temp[0] = m_shooter.getBatteryVoltage();
+        // temp[1] = m_shooter.getTemperature();
+        // temp[2] = m_shooter.getTotalEnergy() / 3600;
+        // temp[3] = m_shooter.getTotalPower();
+        // return temp;
 
-        }
+        // }
 
         public void checkLimits() {
                 if (m_tilt.onMinusSoftwareLimit() || m_tilt.onPlusSoftwareLimit() || m_tilt.onMinusHardwarLimit()

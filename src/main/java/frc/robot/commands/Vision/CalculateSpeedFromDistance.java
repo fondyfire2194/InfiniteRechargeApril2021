@@ -58,7 +58,7 @@ public class CalculateSpeedFromDistance extends CommandBase {
         .calculateSpeedChangeFromCameraVerticalError(m_limelight.getdegVerticalToTarget(), baseSpeed);
     tempSpeed = baseSpeed + speedChangeFromCameraVerticalError;
 
-    m_shooter.calculatedCameraDistance = m_filter.calculate(tempSpeed);
+    m_shooter.cameraCalculatedSpeed = m_filter.calculate(baseSpeed);
 
   }
 

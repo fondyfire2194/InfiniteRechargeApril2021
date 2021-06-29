@@ -19,22 +19,25 @@ public class PositionTilt extends CommandBase {
 
   private boolean endIt;
 
+  private double motorDegrees;
+
   public PositionTilt(RevTiltSubsystem tilt, double endpoint) {
     m_tilt = tilt;
-    m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE - endpoint;
+    m_endpoint = endpoint;
     addRequirements(m_tilt);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_tilt.targetAngle = m_endpoint;
+
     if (m_endpoint < HoodedShooterConstants.TILT_MIN_ANGLE)
       m_endpoint = HoodedShooterConstants.TILT_MIN_ANGLE;
     if (m_endpoint > HoodedShooterConstants.TILT_MAX_ANGLE)
       m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE;
-      
-    m_tilt.motorEndpointDegrees = (m_tilt.tiltMaxAngle - m_endpoint);
+    m_tilt.targetAngle = m_endpoint;
+    motorDegrees = (m_tilt.tiltMaxAngle - m_endpoint);
+    m_tilt.motorEndpointDegrees = motorDegrees;
 
     loopCtr = 0;
 
@@ -45,7 +48,7 @@ public class PositionTilt extends CommandBase {
   public void execute() {
     loopCtr++;
 
-    m_tilt.goToPositionMotionMagic(m_tilt.motorEndpointDegrees);
+    m_tilt.goToPositionMotionMagic(motorDegrees);
 
     endIt = m_tilt.atTargetAngle() && loopCtr > 10 && Math.abs(m_tilt.getSpeed()) < 1;// || !m_tilt.positionResetDone;
   }

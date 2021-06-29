@@ -66,7 +66,7 @@ public class PositionHoldTilt extends CommandBase {
       cameraVerticalError = m_limelight.getdegVerticalToTarget();
 
       m_tilt.adjustedVerticalError = cameraVerticalError
-          - (m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset);
+          +(m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset);
 
       m_limelight.setVerticalOffset(
           -(m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset));

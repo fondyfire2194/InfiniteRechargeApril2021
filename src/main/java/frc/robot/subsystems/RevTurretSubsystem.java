@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
@@ -19,9 +21,11 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
+import frc.robot.Constants;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.Pref;
 import frc.robot.sim.ElevatorSubsystem;
@@ -92,7 +96,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         tuneGains();
         setTurretLockGains();
         getLockGains();
-        m_turretLockController.setTolerance(1.);
+        m_turretLockController.setTolerance(.5);
         setSoftwareLimits();
 
         if (RobotBase.isReal()) {
@@ -130,10 +134,10 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
 
         }
-        // if (!Constants.isMatch) {
-        //     setupHorOffset = Shuffleboard.getTab("SetupShooter").add("SetupHorOffset", 0).withWidget("Number Slider")
-        //             .withPosition(6, 3).withSize(2, 1).withProperties(Map.of("Min", -5, "Max", 5)).getEntry();
-        // }
+         if (!Constants.isMatch) {
+           setupHorOffset = Shuffleboard.getTab("SetupShooter").add("SetupHorOffset", 0).withWidget("Number Slider")
+                    .withPosition(6, 3).withSize(2, 1).withProperties(Map.of("Min", -5, "Max", 5)).getEntry();
+        }
     }
 
     @Override

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.LimeLight;
+import frc.robot.Pref;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
@@ -94,8 +95,9 @@ public class CalculateTargetDistance extends CommandBase {
 
       }
       // tilt counts up camera angle counts down
-      cameraAngle = m_tilt.getCameraAngle();
-if(RobotBase.isSimulation())cameraAngle=48;
+      cameraAngle = m_tilt.getCameraAngle() + Pref.getPref("TiltLockAdd");
+      if (RobotBase.isSimulation())
+        cameraAngle = 48;
       double tanAngleSum = Math.tan((Math.toRadians(m_cameraVerticalError + cameraAngle)));
 
       m_shooter.calculatedCameraDistance = (heightDifference) / tanAngleSum;

@@ -21,12 +21,9 @@ import frc.robot.commands.CellIntake.StopIntakeMotor;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
-import frc.robot.commands.Shooter.EndLogData;
 import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
-import frc.robot.commands.Tilt.EndTiltLog;
-import frc.robot.commands.Tilt.LogTiltData;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
@@ -81,7 +78,7 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
 
-                                                new LogTiltData(tilt, limelight),
+                                                
                                                 new SetUpLimelightForTarget(limelight), new UseVision(limelight, false),
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
                                                 new PositionTurretToVision(turret, limelight,
@@ -122,8 +119,8 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                                                                                 new PositionHoldTurret(turret, shooter,
                                                                                                 limelight)),
 
-                                new ParallelCommandGroup(new MessageCommand("EndResetStarted"), new EndLogData(shooter),
-                                                new EndTiltLog(tilt), new StopShoot(shooter, transport),
+                                new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
+                                                 new StopShoot(shooter, transport),
                                                 new IntakeArmRaise(intake), new StopIntakeMotor(intake),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new SetUpLimelightForNoVision(limelight),

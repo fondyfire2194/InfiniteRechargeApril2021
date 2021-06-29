@@ -241,8 +241,8 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport))
                         .whenPressed(new SetUpLimelightForNoVision(m_limelight))
-                        .whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
-                        .whenPressed(new PositionTurret(m_turret, 0));
+                        .whenPressed(new PositionTurret(m_turret, 0))
+                        .whenReleased(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle));
 
             new JoystickButton(m_driverController, 6).whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
                         .whenPressed(new PositionTurret(m_turret, 0))
@@ -257,7 +257,7 @@ public class RobotContainer {
                         .whenReleased(new SetVisionMode(m_limelight))
                         .whenReleased(new SetUpLimelightForNoVision(m_limelight));
 
-            // new JoystickButton(m_driverController, 8).whenPressed(
+            new JoystickButton(m_driverController, 8).whenPressed(getDriveStraightCommand());
 
             new JoystickButton(m_driverController, 9)
                         .whenPressed(new ChooseShooterSpeedSource(m_shooter, m_tilt, m_turret, 1));
@@ -360,7 +360,7 @@ public class RobotContainer {
             return new ArcadeDrive(m_robotDrive, () -> -m_driverController.getY(), () -> m_driverController.getTwist());
       }
 
-      public Command getDriveToVisionCommand() {
+      public Command getDriveStraightCommand() {
             return new DriveStraightJoystick(m_robotDrive, () -> -m_driverController.getY());
 
       }

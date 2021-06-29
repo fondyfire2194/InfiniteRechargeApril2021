@@ -143,8 +143,9 @@ public class Robot extends TimedRobot {
 
         setStartingPose(FieldMap.startPosition[0]);
 
-        m_autonomousCommand = new PickupMove(m_robotContainer.m_robotDrive, -1, .5,.25);
-        m_robotContainer.m_shooter.stop();
+        m_autonomousCommand = new PickupMove(m_robotContainer.m_robotDrive, -1, .5,.02);
+
+       // m_robotContainer.m_shooter.stop();
 
         break;
       case 1:// in front of power port, move back use shooter data index 1
@@ -177,17 +178,6 @@ public class Robot extends TimedRobot {
 
         break;
 
-      case 5:
-
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand5();
-
-        break;
-
-      case 6:
-
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand6();
-
-        break;
 
       default:
 
@@ -214,10 +204,11 @@ public class Robot extends TimedRobot {
     if (m_robotContainer.m_setup.timeToStart < 0)
       m_robotContainer.m_setup.timeToStart = 0;
 
-    // CommandScheduler.getInstance().run();
+     CommandScheduler.getInstance().run();
 
-    if (DriverStation.getInstance().getMatchTime() < 10)
-      Shuffleboard.stopRecording();
+    
+    // if (DriverStation.getInstance().getMatchTime() < 10)
+    //   Shuffleboard.stopRecording();
 
   }
 

@@ -17,13 +17,10 @@ import frc.robot.commands.MessageCommand;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
-import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellIntake.StopIntakeMotor;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
-import frc.robot.commands.Shooter.EndLogData;
-import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
@@ -69,7 +66,7 @@ public class AutoModeTrench extends SequentialCommandGroup {
                 super(new ResetEncoders(drive), new ResetGyro(drive),
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
-                                                new PickupMove(drive, retractDistance, .5,.25),
+                                                new PickupMove(drive, retractDistance, .5, .25),
                                                 new PositionTilt(tilt, tiltAngle + tiltOffset),
                                                 new PositionTurret(turret, turretAngle + turretOffset)).deadlineWith(
                                                                 new ParallelCommandGroup(new IntakeArmLower(intake),
@@ -86,11 +83,9 @@ public class AutoModeTrench extends SequentialCommandGroup {
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),
                                                                                 new PositionHoldTurret(turret, shooter,
-                                                                                                limelight),
-                                                                                new LogShootData(turret, tilt,
-                                                                                                shooter, transport, limelight)),
+                                                                                                limelight)),
 
-                                new ParallelCommandGroup(new MessageCommand("EndResetStarted"), new EndLogData(shooter),
+                                new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
                                                 new StopShoot(shooter, transport), new IntakeArmRaise(intake),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new SetUpLimelightForNoVision(limelight),

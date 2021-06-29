@@ -85,19 +85,18 @@ public class PositionTiltToVision extends CommandBase {
     }
 
     if (m_tilt.validTargetSeen) {
-
+    
       pidOut = m_tilt.tiltLockController.calculate(m_limelight.getdegVerticalToTarget());
 
-      m_tilt.correctedEndpoint = m_tilt.getAngle() + m_tilt.targetVerticalOffset + m_limelight.getdegVerticalToTarget();
+      m_tilt.correctedEndpoint = m_tilt.getAngle() - m_tilt.targetVerticalOffset + m_limelight.getdegVerticalToTarget();
 
       m_tilt.targetAngle = m_tilt.correctedEndpoint;
 
     }
 
-    m_tilt.motorEndpointDegrees  = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
+    m_tilt.motorEndpointDegrees = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
 
-
-    m_tilt.goToPositionMotionMagic(m_tilt.motorEndpointDegrees );
+    m_tilt.goToPositionMotionMagic(m_tilt.motorEndpointDegrees);
 
     endIt = m_limelight.getVertOnTarget(5) || !m_tilt.validTargetSeen && m_tilt.atTargetAngle() && loopCtr > 5
         || loopCtr > 1250;

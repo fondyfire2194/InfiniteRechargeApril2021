@@ -13,8 +13,10 @@ import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.Tilt.PositionTilt;
+import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
+import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
@@ -40,15 +42,15 @@ public class SetShotPosition0 extends SequentialCommandGroup {
                 super(
 
                                 new ParallelCommandGroup(new SetActiveTeleopShootData(shooter, 0),
-                                                new ChooseShooterSpeedSource(shooter, tilt, turret, 1),
+                                                new ChooseShooterSpeedSource(shooter, tilt, turret, 0),
                                                 new SetUpLimelightForTarget(limelight),
                                                 new SetTiltOffset(tilt, ShootData.centerPowerPortConstants.tiltOffset),
                                                 new SetTurretOffset(turret,
                                                                 ShootData.centerPowerPortConstants.turretOffset),
-                                                new PositionTilt(tilt, ShootData.centerPowerPortConstants.tiltAngle
+                                                new PositionTiltToVision(tilt, limelight, ShootData.centerPowerPortConstants.tiltAngle
                                                                 + ShootData.centerPowerPortConstants.tiltOffset),
-                                                new PositionTurret(turret,
-                                                                ShootData.centerPowerPortConstants.turretAngle
+                                                new PositionTurretToVision(turret,
+                                                                limelight, ShootData.centerPowerPortConstants.turretAngle
                                                                                 + ShootData.centerPowerPortConstants.turretOffset),
                                                 new SetShootSpeed(shooter,
                                                                 ShootData.centerPowerPortConstants.shootSpeed),
