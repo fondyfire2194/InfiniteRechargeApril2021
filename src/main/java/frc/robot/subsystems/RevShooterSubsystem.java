@@ -361,8 +361,23 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     }
 
     public double getBatteryVoltage() {
-
         return pdp.getVoltage();
+    }
+
+    public double getTotalAmpa() {
+        return pdp.getTotalCurrent();
+    }
+
+    public double getTotalEnergy() {
+        return pdp.getTotalEnergy();
+    }
+
+    public double getTotalPower() {
+        return pdp.getTotalPower();
+    }
+
+    public double getTemperature() {
+        return pdp.getTemperature();
     }
 
     public double getTurretTolerance(double calculatedCameraDistance) {

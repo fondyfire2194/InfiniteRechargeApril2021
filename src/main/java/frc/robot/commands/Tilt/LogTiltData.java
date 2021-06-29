@@ -16,9 +16,9 @@ public class LogTiltData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Step", "TargetAngle", "TiltAngle", "TargetSeen", "DegVerToTgt", "CorrEndPt",
-      "ValidTarget" };
-  public static String[] units = { "Number", "Degrees", "Degrees", "Degrees", "OnOff", "OnOff" };
+  public final String[] names = { "Step", "TargetAngle", "TiltAngle", "LockPE", "TargetSeen", "DegVerToTgt",
+      "CorrEndPt", "ValidTarget" };
+  public static String[] units = { "Number", "Degrees", "Degrees", "PWM", "Degrees", "OnOff", "OnOff" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -80,8 +80,8 @@ public class LogTiltData extends CommandBase {
 
       m_tilt.tiltLogger.writeData((double) step,
 
-          m_tilt.targetAngle, m_tilt.getAngle(), targetSeen, m_limelight.getdegVerticalToTarget(),
-          m_tilt.correctedEndpoint, validTargetSeen);
+          m_tilt.targetAngle, m_tilt.getAngle(), m_tilt.tiltLockController.getPositionError(),
+          m_limelight.getdegVerticalToTarget(), m_tilt.correctedEndpoint, validTargetSeen);
     }
 
   }
@@ -91,7 +91,7 @@ public class LogTiltData extends CommandBase {
   public void end(boolean interrupted) {
     int sd = m_tilt.tiltLogger.close();
     m_tilt.endTiltFile = false;
-    SmartDashboard.putNumber("Close", sd);
+    
   }
 
   // Returns true when the command should end.

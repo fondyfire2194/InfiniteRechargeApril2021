@@ -256,7 +256,7 @@ public class RobotContainer {
                         .whenReleased(new SetVisionMode(m_limelight))
                         .whenReleased(new SetUpLimelightForNoVision(m_limelight));
 
-           // new JoystickButton(m_driverController, 8).whenPressed(
+            // new JoystickButton(m_driverController, 8).whenPressed(
 
             new JoystickButton(m_driverController, 9)
                         .whenPressed(new ChooseShooterSpeedSource(m_shooter, m_tilt, m_turret, 1));
@@ -294,13 +294,14 @@ public class RobotContainer {
             // trench in front of control panel
             codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt, m_limelight));
 
-            // test method for front of power port
-           // codriverA.whenPressed(
+            // 
+            // codriverA.whenPressed(
 
-            // trench behind control panel
-            codriverRightTrigger.whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
-                        .whenPressed(new PositionTurret(m_turret, 0)).whenPressed(new SetVisionMode(m_limelight))
-                        .whenPressed(new SetUpLimelightForNoVision(m_limelight));
+            //
+            codriverRightTrigger.whileHeld(getJogTiltCommand(codriverGamepad))
+                        .whenReleased(new TiltWaitForStop(m_tilt));
+            codriverLeftTrigger.whileHeld(getJogTurretCommand(codriverGamepad))
+                        .whenReleased(new TiltWaitForStop(m_tilt));
 
             // low goal shot
             // coDriverLT.whenPressed(
@@ -329,9 +330,9 @@ public class RobotContainer {
 
             setupX.whileHeld(getJogShooterCommand());
 
-            setupY.whileHeld(getJogTiltCommand()).whenReleased(new TiltWaitForStop(m_tilt));
+            setupY.whileHeld(getJogTiltCommand(setupGamepad)).whenReleased(new TiltWaitForStop(m_tilt));
 
-            setupA.whileHeld(getJogTurretCommand()).whenReleased(new TurretWaitForStop(m_turret));
+            setupA.whileHeld(getJogTurretCommand(setupGamepad)).whenReleased(new TurretWaitForStop(m_turret));
 
             setupB.whenPressed(new SetUpLimelightForTarget(m_limelight));
 
@@ -363,12 +364,12 @@ public class RobotContainer {
 
       }
 
-      public Command getJogTurretCommand() {
-            return new TurretJog(m_turret, () -> setupGamepad.getRawAxis(0) / 5, setupGamepad);
+      public Command getJogTurretCommand(XboxController gamepad) {
+            return new TurretJog(m_turret, () -> gamepad.getRawAxis(0) / 5, gamepad);
       }
 
-      public Command getJogTiltCommand() {
-            return new TiltJog(m_tilt, () -> -setupGamepad.getRawAxis(1) / 5, setupGamepad);
+      public Command getJogTiltCommand(XboxController gamepad) {
+            return new TiltJog(m_tilt, () -> -gamepad.getRawAxis(1) / 5, gamepad);
       }
 
       public Command getJogShooterCommand() {

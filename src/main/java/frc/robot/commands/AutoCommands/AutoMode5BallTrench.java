@@ -22,9 +22,11 @@ import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.EndLogData;
+import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.ShootInMotion;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.EndTiltLog;
+import frc.robot.commands.Tilt.LogTiltData;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
@@ -64,7 +66,7 @@ public class AutoMode5BallTrench extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 //
 
-                super(new ResetEncoders(drive), new ResetGyro(drive),
+                super(new ResetEncoders(drive), new ResetGyro(drive), new LogTiltData(tilt, limelight),
 
                                 new ParallelCommandGroup(new SetTurretOffset(turret, turretOffset),
                                                 new PositionTurretToVision(turret, limelight,
@@ -73,16 +75,18 @@ public class AutoMode5BallTrench extends SequentialCommandGroup {
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
                                                 new UseVision(limelight, true)),
 
-                                new ParallelCommandGroup(new PickupMove(drive, retractDistance, .25), new TimeDelay(15))
-                                                .deadlineWith(new ParallelCommandGroup(
-                                                                new ShootInMotion(shooter, tilt, turret, limelight,
-                                                                                transport, compressor, shootTime),
-                                                                new IntakeArmLower(intake),
-                                                                new RunIntakeMotor(intake, .75))),
+                                new ParallelCommandGroup(new PickupMove(drive, retractDistance, .25), new TimeDelay(15),
+                                                new LogShootData(turret, tilt, shooter, transport, limelight))
+                                                                .deadlineWith(new ParallelCommandGroup(
+                                                                                new ShootInMotion(shooter, tilt, turret,
+                                                                                                limelight, transport,
+                                                                                                compressor, shootTime),
+                                                                                new IntakeArmLower(intake),
+                                                                                new RunIntakeMotor(intake, .75))),
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"), new EndLogData(shooter),
                                                 new EndTiltLog(tilt), new StopShoot(shooter, transport),
-                                                new IntakeArmRaise(intake),
+                                                new EndLogData(shooter), new IntakeArmRaise(intake),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new SetUpLimelightForNoVision(limelight),
                                                 new PositionTurret(turret, 0)));

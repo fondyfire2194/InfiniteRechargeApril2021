@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -23,6 +24,7 @@ import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Vision.CalculateSpeedFromDistance;
 import frc.robot.commands.Vision.CalculateTargetDistance;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -43,6 +45,7 @@ public class Robot extends TimedRobot {
   private double startTime;
   public double timeToStart;
 
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -56,7 +59,7 @@ public class Robot extends TimedRobot {
     CameraServer.getInstance().startAutomaticCapture("Intake", 0);
 
     Shuffleboard.selectTab("Pre-Round");
-
+ 
   }
 
   /**
@@ -79,9 +82,9 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     // m_robotContainer.m_setup.checkLimits();
-    
 
     m_robotContainer.m_shooter.driverThrottleValue = m_robotContainer.getThrottle();
+
   }
 
   /**

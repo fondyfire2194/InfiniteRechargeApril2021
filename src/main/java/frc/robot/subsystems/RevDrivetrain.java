@@ -18,6 +18,7 @@ import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
 import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -390,6 +391,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public void setMaxVel(double maxVel) {
         mLeftPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
         mRightPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
+    }
+
+    public double getMatchTime() {
+        return DriverStation.getInstance().getMatchTime();
     }
 
     @Override

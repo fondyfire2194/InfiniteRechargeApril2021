@@ -235,6 +235,13 @@ public class SetupShuffleboard {
                         competition.addBoolean("Shooting", () -> m_shooter.isShooting);
                         competition.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
 
+                        Shuffleboard.getTab("Competition").addNumber("TimeRemaining", () -> m_robotDrive.getMatchTime())
+                                        .withWidget(BuiltInWidgets.kTextView).withPosition(9, 0).withSize(1, 1);
+                        Shuffleboard.getTab("Competition").addNumber("Battery", () -> getPDPInfo()[0])
+                                        .withWidget(BuiltInWidgets.kTextView).withPosition(9, 1).withSize(1, 1);
+                        Shuffleboard.getTab("Competition").addNumber("TotalEnegy", () -> getPDPInfo()[2])
+                                        .withWidget(BuiltInWidgets.kTextView).withPosition(9, 2).withSize(1, 1);
+
                         if (RobotBase.isReal()) {
 
                                 LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
@@ -560,7 +567,7 @@ public class SetupShuffleboard {
                         robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
                         robotCommands.add("Stop Robot", new StopRobot(m_robotDrive));
                         robotCommands.add("To -4", new PickupMove(m_robotDrive, -4, .75));
-                        robotCommands.add("To -4", new PickupMove(m_robotDrive, -4, .25));                      
+                        robotCommands.add("To -10", new PickupMove(m_robotDrive, -10, .25));
                         robotCommands.add("To +4", new PickupMove(m_robotDrive, 4, .5));
                         robotCommands.add("To -1", new PickupMove(m_robotDrive, -1, .5));
                         robotCommands.add("To 0", new PickupMove(m_robotDrive, 0, .5));
@@ -747,6 +754,16 @@ public class SetupShuffleboard {
                 m_shooter.checkCAN();
                 m_robotDrive.checkCAN();
                 m_transport.checkCAN();
+
+        }
+
+        public double[] getPDPInfo() {
+                double temp[] = { 0, 0, 0, 0, 0 };
+                temp[0] = m_shooter.getBatteryVoltage();
+                temp[1] = m_shooter.getTemperature();
+                temp[2] = m_shooter.getTotalEnergy() / 3600;
+                temp[3] = m_shooter.getTotalPower();
+                return temp;
 
         }
 

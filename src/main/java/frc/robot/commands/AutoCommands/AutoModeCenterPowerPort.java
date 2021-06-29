@@ -22,6 +22,7 @@ import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
+import frc.robot.commands.Tilt.LogTiltData;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
@@ -61,7 +62,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new ResetEncoders(drive), new ResetGyro(drive),
+                super(new ResetEncoders(drive), new ResetGyro(drive), new LogTiltData(tilt, limelight),
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
                                                 new PickupMove(drive, -1, .5),
@@ -72,6 +73,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                 new SetUpLimelightForTarget(limelight),
 
                                 new ParallelCommandGroup(new MessageCommand("ShootIs3Started"),
+                                                new LogShootData(turret, tilt, shooter, transport, limelight),
                                                 new SetShootSpeed(shooter, shootSpeed),
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
                                                                 shootTime)).deadlineWith(
@@ -83,7 +85,8 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                                                                                 transport, limelight)),
 
                                 new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
-                                                new EndLogData(shooter), new StopShoot(shooter, transport),
+                                                new EndLogData(shooter), new EndLogData(shooter),
+                                                new StopShoot(shooter, transport),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new SetUpLimelightForNoVision(limelight)));
         }

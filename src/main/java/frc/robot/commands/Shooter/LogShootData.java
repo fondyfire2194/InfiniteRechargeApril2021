@@ -20,14 +20,12 @@ public class LogShootData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Step", "TiltAngle", "VertToTarget", "TargetVOff", "DriverVOff", "TiltLockErr",
-      "TurretAngle", "HorToTarget", "TargetHOff", "DriverHOff", "TurrLockPE", "ReqdSpeed", "ActSpeed", "Battery",
-      "TurretInPos", "TiltInPos", "VertOK", "HorOK", "ShooterAtSpeed", "IsShooting", "ServoArmUP", "ArmPosition",
-      "ValidTargetSeen" };
+  public final String[] names = { "Step", "TiltAngle", "VertToTarget", "TargetVOff", "TiltLockErr", "TurretAngle",
+      "TargetHOff", "TurrLockPE", "AtSpeed", "TurretInPos", "TiltInPos", "VertOK", "HorOK", "ShooterAtSpeed",
+      "IsShooting", "Amps", "ServoArmUP" };
 
-  public static String[] units = { "Number", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees",
-      "Degrees", "Degrees", "Degrees", "Degrees", "MPS", "MPS", "Volts", "T/F", "T/F", "T/F", "T/F", "T/F", "T/F",
-      "PWM", "T/F" };
+  public static String[] units = { "Number", "Degrees", "Degrees", "Degrees", "PU", "Degrees", "Degrees", "Degrees",
+      "PU", "T/F", "T/F", "Amps", "T/F" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -123,11 +121,9 @@ public class LogShootData extends CommandBase {
         servoArmReleasing = 0;
 
       m_shooter.shootLogger.writeData((double) step, m_tilt.getAngle(), m_limelight.getdegVerticalToTarget(),
-          m_tilt.targetVerticalOffset, m_tilt.driverVerticalOffsetDegrees, m_tilt.getLockPositionError(),
-          m_turret.getAngle(), m_limelight.getdegRotationToTarget(), m_turret.targetHorizontalOffset,
-          m_turret.driverHorizontalOffsetDegrees, m_turret.getLockPositionError(), m_shooter.requiredMps,
-          m_shooter.getMPS(), m_shooter.getBatteryVoltage(), turretOnTarget, tiltOnTarget, horOnTarget, vertOnTarget,
-          shooterAtSpeed, isShooting, servoArmReleasing,m_transport.getArmAngle(),validTargetSeen);
+          m_tilt.targetVerticalOffset, m_tilt.getLockPositionError(), m_turret.getAngle(),
+          m_limelight.getdegRotationToTarget(), m_turret.targetHorizontalOffset, m_turret.getLockPositionError(),
+          shooterAtSpeed, isShooting, m_shooter.getLeftAmps(), servoArmReleasing);
     }
 
   }
