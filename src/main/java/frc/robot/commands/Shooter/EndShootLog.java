@@ -13,11 +13,11 @@ import frc.robot.subsystems.RevShooterSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class EndLogData extends InstantCommand {
+public class EndShootLog extends InstantCommand {
 
   private final RevShooterSubsystem m_shooter;
 
-  public EndLogData(RevShooterSubsystem shooter) {
+  public EndShootLog(RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
   }
@@ -25,7 +25,7 @@ public class EndLogData extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooter.endFile = true;
     m_shooter.endShootFile = true;
+    m_shooter.shootLogInProgress = true;
   }
 }

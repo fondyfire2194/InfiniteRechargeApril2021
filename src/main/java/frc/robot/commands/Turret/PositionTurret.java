@@ -27,6 +27,7 @@ public class PositionTurret extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_turret.programRunning = 2;
     m_turret.targetAngle = m_endpoint;
     loopCtr = 0;
   }

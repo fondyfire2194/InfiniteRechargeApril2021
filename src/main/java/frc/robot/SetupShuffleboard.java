@@ -36,16 +36,22 @@ import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.RobotDrive.StopRobot;
 import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.ClearShFaults;
+import frc.robot.commands.Shooter.EndShootLog;
 import frc.robot.commands.Shooter.LogDistanceData;
+import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.ClearFaults;
+import frc.robot.commands.Tilt.EndTiltLog;
+import frc.robot.commands.Tilt.LogTiltData;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.StopTilt;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.ClearTurFaults;
+import frc.robot.commands.Turret.EndTurretLog;
+import frc.robot.commands.Turret.LogTurretData;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.ResetTurretAngle;
@@ -150,8 +156,18 @@ public class SetupShuffleboard {
                                                         && m_transport.allConnected && m_shooter.allConnected
                                                         && m_robotDrive.allConnected && m_intake.intakeMotorConnected);
 
-                        LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
+                        ShuffleboardLayout logCmd = Shuffleboard.getTab("Pre-Round")
+                                        .getLayout("LogCommands", BuiltInLayouts.kList).withPosition(2, 1)
+                                        .withSize(2, 4).withProperties(Map.of("Label position", "LEFT"));
 
+                        logCmd.add("LogTilt", new LogTiltData(tilt, limelight));
+                        logCmd.add("LogTurret", new LogTurretData(turret, limelight));
+                        logCmd.add("LogShoot", new LogShootData(shooter, transport));
+                        logCmd.add("EndLogTilt", new EndTiltLog(tilt));
+                        logCmd.add("EndLogTurret", new EndTurretLog(turret));
+                        logCmd.add("EndLogShoot", new EndShootLog(shooter));
+
+                        LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
                         Shuffleboard.getTab("Pre-Round").add("Limelight", LLFeed)
                                         .withWidget(BuiltInWidgets.kCameraStream).withPosition(4, 0).withSize(3, 2)
                                         .withProperties(Map.of("Show Crosshair", true, "Show Controls", false));//

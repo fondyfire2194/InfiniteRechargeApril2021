@@ -35,7 +35,7 @@ public class PositionHoldTilt extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    m_tilt.programRunning = 1;
     if (!m_limelight.useVision)
       visionFoundCounter = 0;
 
@@ -66,7 +66,7 @@ public class PositionHoldTilt extends CommandBase {
       cameraVerticalError = m_limelight.getdegVerticalToTarget();
 
       m_tilt.adjustedVerticalError = cameraVerticalError
-          +(m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset);
+          + (m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset);
 
       m_limelight.setVerticalOffset(
           -(m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset));
@@ -118,6 +118,7 @@ public class PositionHoldTilt extends CommandBase {
     m_tilt.validTargetSeen = false;
     m_tilt.visionOnTarget = false;
     visionFoundCounter = 0;
+
   }
 
   // Returns true when the command should end.

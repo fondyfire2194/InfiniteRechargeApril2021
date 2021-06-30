@@ -5,43 +5,44 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Tilt;
+package frc.robot.commands.Turret;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
-import frc.robot.subsystems.RevTiltSubsystem;
+import frc.robot.subsystems.RevTurretSubsystem;
 
-public class LogTiltData extends CommandBase {
+public class LogTurretData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Step", "ProgRunning", "UseVision", "ValidTarget", "TargetAngle", "TiltAngle",
-      "Offset", "Tolerance", "LockPE", "DegHorToTgt", "CorrEndPt" };
+  public final String[] names = { "Step", "ProgRunning", "UseVision", "ValidTarget", "TargetAngle", "TurretAngle",
+      "Offset", "LockPE", "DegVertToTgt", "CorrEndPt" };
 
   public static String[] units = { "Number", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees", "Degrees", "PU", "Degrees" };
+
   private int loopCtr;
   private boolean fileOpenNow;
+  private double logTime;
 
   private final LimeLight m_limelight;
-  private final RevTiltSubsystem m_tilt;
+  private final RevTurretSubsystem m_turret;
 
   private double validTargetSeen;
   private double useVision;
-  private double logTime;
 
-  public LogTiltData(RevTiltSubsystem tilt, LimeLight limelight) {
+  public LogTurretData(RevTurretSubsystem turret, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     m_limelight = limelight;
-    m_tilt = tilt;
+    m_turret = turret;
 
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    int ope4 = m_tilt.tiltLogger.init("TestRun", "Tilt", names, units);
+    int ope4 = m_turret.turretLogger.init("TestRun", "Turret", names, units);
 
     loopCtr = 0;
     fileOpenNow = false;
@@ -58,16 +59,14 @@ public class LogTiltData extends CommandBase {
     if (loopCtr > 500) {
       fileOpenNow = true;
       loopCtr = 0;
-
     }
     // log data every shot
     if (fileOpenNow)
-      m_tilt.tiltLogInProgress = true;
+      m_turret.turretLogInProgress = true;
     if (logTime == 0)
       logTime = Timer.getFPGATimestamp();
 
     if (Timer.getFPGATimestamp() > logTime + .1) {
-
       logTime = Timer.getFPGATimestamp();
 
       if (m_limelight.useVision)
@@ -75,17 +74,17 @@ public class LogTiltData extends CommandBase {
       else
         useVision = 0;
 
-      if (m_tilt.validTargetSeen)
+      if (m_turret.validTargetSeen)
         validTargetSeen = 1;
       else
         validTargetSeen = 0;
 
-      m_tilt.tiltLogger.writeData(logTime, m_tilt.programRunning,
+      m_turret.turretLogger.writeData(logTime, m_turret.programRunning,
 
-          useVision, validTargetSeen, m_tilt.targetAngle, m_tilt.getAngle(), m_tilt.targetVerticalOffset,
+          useVision, validTargetSeen, m_turret.targetAngle, m_turret.getAngle(), m_turret.targetHorizontalOffset,
 
-          m_tilt.tiltDistanceTolerance, m_tilt.tiltLockController.getPositionError(),
-          m_limelight.getdegVerticalToTarget(), m_tilt.correctedEndpoint);
+          m_turret.m_turretLockController.getPositionError(), m_limelight.getdegVerticalToTarget(),
+          m_turret.correctedEndpoint);
     }
 
   }
@@ -93,14 +92,14 @@ public class LogTiltData extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    int sd = m_tilt.tiltLogger.close();
-    m_tilt.endTiltFile = false;
+    int sd = m_turret.turretLogger.close();
+    m_turret.endTurretFile = false;
 
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_tilt.endTiltFile;
+    return m_turret.endTurretFile;
   }
 }

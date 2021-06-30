@@ -52,7 +52,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
          * 
          * Start in front of power port and shoot
          */
-        static double retractDistance = ShootData.trench33BallShotConstants.retractDistance;
+        
         static double tiltAngle = ShootData.trench3M3BallShotConstants.tiltAngle;
         static double turretAngle = ShootData.trench3M3BallShotConstants.turretAngle;
         static double shootSpeed = ShootData.trench3M3BallShotConstants.shootSpeed;

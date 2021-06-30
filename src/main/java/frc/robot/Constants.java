@@ -286,4 +286,8 @@ public final class Constants {
       public static double cameraHeightSlope = cameraHeightRange / HoodedShooterConstants.tiltRange;
       public static double cameraAngleSlope = cameraAngleRange / HoodedShooterConstants.tiltRange;
    }
+
+public static boolean logTilt;
+public static boolean logShoot;
+public static boolean logTurret;
 }

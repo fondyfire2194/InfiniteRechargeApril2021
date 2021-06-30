@@ -22,5 +22,6 @@ public class EndTiltLog extends InstantCommand {
   @Override
   public void initialize() {
     m_tilt.endTiltFile = true;
+    m_tilt.tiltLogInProgress = false;
   }
 }

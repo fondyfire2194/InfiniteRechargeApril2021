@@ -30,7 +30,7 @@ public class PositionTilt extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    m_tilt.programRunning = 2;
     if (m_endpoint < HoodedShooterConstants.TILT_MIN_ANGLE)
       m_endpoint = HoodedShooterConstants.TILT_MIN_ANGLE;
     if (m_endpoint > HoodedShooterConstants.TILT_MAX_ANGLE)

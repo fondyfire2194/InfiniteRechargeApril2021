@@ -44,8 +44,8 @@ public class ShootCells extends CommandBase {
   private double cellReleasedStartTime;
 
   private int loopctr;
-  private double tiltDistanceTolerance;
-  private double turretDistanceTolerance;
+  // private double tiltDistanceTolerance;
+  // private double turretDistanceTolerance;
 
   public ShootCells(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret, LimeLight limelight,
       CellTransportSubsystem transport, Compressor compressor, double time) {
@@ -76,21 +76,20 @@ public class ShootCells extends CommandBase {
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.useVision = true;
-    m_shooter.logTrigger = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turretDistanceTolerance = m_shooter.getTurretTolerance(m_shooter.calculatedCameraDistance);
-    tiltDistanceTolerance = m_shooter.getTiltTolerance(m_shooter.calculatedCameraDistance);
+   m_turret.turretDistanceTolerance = m_shooter.getTurretTolerance(m_shooter.calculatedCameraDistance);
+    m_tilt.tiltDistanceTolerance = m_shooter.getTiltTolerance(m_shooter.calculatedCameraDistance);
 
     loopctr++;
 
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
-    m_shooter.okToShoot = (m_limelight.getVertOnTarget(tiltDistanceTolerance)
-        && m_limelight.getHorOnTarget(turretDistanceTolerance)) || m_shooter.useDriverSpeed;
+    m_shooter.okToShoot = (m_limelight.getVertOnTarget(m_tilt.tiltDistanceTolerance)
+        && m_limelight.getHorOnTarget(m_turret.turretDistanceTolerance)) || m_shooter.useDriverSpeed;
 
     if (m_shooter.okToShoot && !m_shooter.useDriverSpeed)
       m_shooter.startShooter = true;
@@ -153,7 +152,6 @@ public class ShootCells extends CommandBase {
     m_shooter.shotInProgress = false;
     m_shooter.endShootFile = true;
     m_shooter.isShooting = false;
-    m_shooter.logTrigger = false;
     m_shooter.setNotOKShootDriver();
   }
 

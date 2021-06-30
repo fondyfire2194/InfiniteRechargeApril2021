@@ -76,7 +76,7 @@ public class ShootInMotion extends CommandBase {
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.useVision = true;
-    m_shooter.logTrigger = true;
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -153,7 +153,6 @@ public class ShootInMotion extends CommandBase {
     m_shooter.shotInProgress = false;
     m_shooter.endShootFile = true;
     m_shooter.isShooting = false;
-    m_shooter.logTrigger = false;
     m_shooter.setNotOKShootDriver();
   }
 

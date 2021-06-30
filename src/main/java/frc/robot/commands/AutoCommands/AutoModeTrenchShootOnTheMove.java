@@ -20,7 +20,9 @@ import frc.robot.commands.CellIntake.RunIntakeMotor;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
+import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.commands.Shooter.ShootInMotion;
+import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
@@ -74,15 +76,19 @@ public class AutoModeTrenchShootOnTheMove extends SequentialCommandGroup {
                                                                                 new PositionHoldTurret(turret, shooter,
                                                                                                 limelight)),
 
-                                new ParallelCommandGroup(new PickupMove(drive, retractDistance, .25, .25))
+                                new ParallelCommandGroup(new SetShootSpeed(shooter, 34), new StartShooter(shooter),
+                                                new PickupMove(drive, retractDistance, .25, .25))
 
-                                                .deadlineWith(new ParallelCommandGroup(
-                                                                new PositionHoldTilt(tilt, shooter, limelight),
-                                                                new PositionHoldTurret(turret, shooter, limelight),
-                                                                new ShootInMotion(shooter, tilt, turret, limelight,
-                                                                                transport, compressor, shootTime),
-                                                                new IntakeArmLower(intake),
-                                                                new RunIntakeMotor(intake, .75))),
+                                                                .deadlineWith(new ParallelCommandGroup(
+                                                                                new PositionHoldTilt(tilt, shooter,
+                                                                                                limelight),
+                                                                                new PositionHoldTurret(turret, shooter,
+                                                                                                limelight),
+                                                                                new ShootInMotion(shooter, tilt, turret,
+                                                                                                limelight, transport,
+                                                                                                compressor, shootTime),
+                                                                                new IntakeArmLower(intake),
+                                                                                new RunIntakeMotor(intake, .75))),
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
                                                 new StopShoot(shooter, transport), new IntakeArmRaise(intake),

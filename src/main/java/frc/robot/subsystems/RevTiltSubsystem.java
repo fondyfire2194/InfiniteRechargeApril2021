@@ -58,7 +58,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public boolean validTargetSeen;
     public double adjustedVerticalError;
     private final static double pivotDistance = 10.5;// inches
-    public boolean logTrigger = false;
+    public boolean tiltLogInProgress;
     private final double[] pinDistances = { 2.1, 3.0842519685, 4.068503937, 5.0527559055, 6.037007874, 7.0212598425,
             8.005511811 };
     public final double cameraBaseAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
@@ -104,7 +104,11 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double lowTolerance;
     public double cameraAngle;
 
-    /**
+    public double programRunning;// 1-hold 2 position 3 vision
+	public double tiltDistanceTolerance;
+    
+
+    /** 
      * 
      */
 
@@ -487,7 +491,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         lizset = Pref.getPref("TiLkIZ");
 
         tiltLockController.setIntegratorRange(-lizset, lizset);
-        tiltLockController.setTolerance(1.);
+        tiltLockController.setTolerance(.5);
     }
 
     private void checkTune() {

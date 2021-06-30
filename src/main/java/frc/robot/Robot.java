@@ -20,11 +20,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
+import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.RunShooter;
+import frc.robot.commands.Tilt.LogTiltData;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
+import frc.robot.commands.Turret.LogTurretData;
 import frc.robot.commands.Vision.CalculateSpeedFromDistance;
 import frc.robot.commands.Vision.CalculateTargetDistance;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,7 +47,6 @@ public class Robot extends TimedRobot {
   private double startTime;
   public double timeToStart;
 
-
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -59,7 +60,17 @@ public class Robot extends TimedRobot {
     CameraServer.getInstance().startAutomaticCapture("Intake", 0);
 
     Shuffleboard.selectTab("Pre-Round");
- 
+
+    if (Constants.logTilt)
+      new LogTiltData(m_robotContainer.m_tilt, m_robotContainer.m_limelight).schedule(true);
+
+    if (Constants.logTurret)
+      new LogTurretData(m_robotContainer.m_turret, m_robotContainer.m_limelight).schedule(true);
+
+    if (Constants.logShoot)
+      new LogShootData(m_robotContainer.m_shooter,
+          m_robotContainer.m_transport).schedule(true);
+
   }
 
   /**
@@ -143,9 +154,9 @@ public class Robot extends TimedRobot {
 
         setStartingPose(FieldMap.startPosition[0]);
 
-        m_autonomousCommand = new PickupMove(m_robotContainer.m_robotDrive, -1, .5,.02);
+        m_autonomousCommand = new PickupMove(m_robotContainer.m_robotDrive, -1, .5, .02);
 
-       // m_robotContainer.m_shooter.stop();
+        // m_robotContainer.m_shooter.stop();
 
         break;
       case 1:// in front of power port, move back use shooter data index 1
@@ -178,7 +189,6 @@ public class Robot extends TimedRobot {
 
         break;
 
-
       default:
 
         break;
@@ -204,11 +214,10 @@ public class Robot extends TimedRobot {
     if (m_robotContainer.m_setup.timeToStart < 0)
       m_robotContainer.m_setup.timeToStart = 0;
 
-     CommandScheduler.getInstance().run();
+    CommandScheduler.getInstance().run();
 
-    
     // if (DriverStation.getInstance().getMatchTime() < 10)
-    //   Shuffleboard.stopRecording();
+    // Shuffleboard.stopRecording();
 
   }
 

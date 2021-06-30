@@ -40,6 +40,7 @@ public class PositionTurretToVision extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_turret.programRunning = 3;
     m_turret.targetAngle = m_endpoint;
     targetSeen = false;
     visionFoundCounter = 0;
@@ -79,16 +80,11 @@ public class PositionTurretToVision extends CommandBase {
 
     if (m_turret.validTargetSeen) {
 
-    
+      m_turret.correctedEndpoint = (m_turret.getAngle() - m_limelight.getdegRotationToTarget()
+          - m_turret.targetHorizontalOffset);
 
-   
-      
-        m_turret.correctedEndpoint = (m_turret.getAngle() - m_limelight.getdegRotationToTarget()
-            - m_turret.targetHorizontalOffset);
+      m_turret.targetAngle = m_turret.correctedEndpoint;
 
-        m_turret.targetAngle = m_turret.correctedEndpoint;
-
-      
     }
 
     if (!targetSeen && m_turret.validTargetSeen) {

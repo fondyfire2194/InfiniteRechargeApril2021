@@ -46,7 +46,7 @@ public class PositionHoldTurret extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    m_turret.programRunning = 1;
     if (m_turret.validTargetSeen && m_limelight.useVision)
       visionFoundCounter = filterCount;
     else

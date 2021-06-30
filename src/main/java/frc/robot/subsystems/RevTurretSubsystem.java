@@ -28,6 +28,7 @@ import frc.robot.Constants.CANConstants;
 import frc.robot.Constants;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.Pref;
+import frc.robot.SimpleCSVLogger;
 import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsystem {
@@ -80,7 +81,11 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 	public double positionError;
     public double correctedEndpoint;
     public double visionErrorDifference;
-  
+    public double programRunning;// 1-hold 2 position 3 vision
+    public boolean endTurretFile;
+    public SimpleCSVLogger turretLogger;
+	public boolean turretLogInProgress;
+	public double turretDistanceTolerance;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);

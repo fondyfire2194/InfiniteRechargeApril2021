@@ -7,51 +7,36 @@
 
 package frc.robot.commands.Shooter;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.LimeLight;
 import frc.robot.subsystems.CellTransportSubsystem;
-import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
-import frc.robot.subsystems.RevTurretSubsystem;
-import frc.robot.subsystems.RevTiltSubsystem;
 
 public class LogShootData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Step", "TiltAngle", "VertToTarget", "TargetVOff", "TiltLockErr", "TurretAngle",
-      "TargetHOff", "TurrLockPE", "AtSpeed", "TurretInPos", "TiltInPos", "VertOK", "HorOK", "ShooterAtSpeed",
-      "IsShooting", "Amps", "ServoArmUP" };
+  public final String[] names = { "Time", "ActSpeed", "AtSpeed", "IsShooting", "LeftCurrent", "CellReleasing",
+      "ArmPosn" };
 
-  public static String[] units = { "Number", "Degrees", "Degrees", "Degrees", "PU", "Degrees", "Degrees", "Degrees",
-      "PU", "T/F", "T/F", "Amps", "T/F" };
+  public static String[] units = { "Seconds", "MPS", "T/F", "T/F", "Amps", "T/F", "T/F", "Degrees" };
 
   private int loopCtr;
   private boolean fileOpenNow;
-  private int step;
-  private final LimeLight m_limelight;
-  private final RevTurretSubsystem m_turret;
-  private final RevTiltSubsystem m_tilt;
+
   private final RevShooterSubsystem m_shooter;
   private final CellTransportSubsystem m_transport;
 
-  private double tiltOnTarget;
-  private double turretOnTarget;
-  private double vertOnTarget;
-  private double horOnTarget;
   private double isShooting;
-  private double validTargetSeen;
+
   private double shooterAtSpeed;
   private double servoArmReleasing;
+  private double logTime;
 
-  public LogShootData(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevShooterSubsystem shooter,
-      CellTransportSubsystem transport, LimeLight limelight) {
+  public LogShootData(RevShooterSubsystem shooter, CellTransportSubsystem transport) {
     // Use addRequirements() here to declare subsystem dependencies.
 
-    m_limelight = limelight;
-    m_turret = turret;
-    m_tilt = tilt;
     m_shooter = shooter;
     m_transport = transport;
   }
@@ -63,7 +48,7 @@ public class LogShootData extends CommandBase {
     SmartDashboard.putNumber("OPE1", ope1);
     loopCtr = 0;
     fileOpenNow = false;
-    step = 0;
+    logTime = 0;
 
   }
 
@@ -78,37 +63,14 @@ public class LogShootData extends CommandBase {
       fileOpenNow = true;
       loopCtr = 0;
     }
-    // log data every shot
+    // log data every 100ms
     if (fileOpenNow)
-      loopCtr++;
+      m_shooter.shootLogInProgress = true;
+    if (logTime == 0)
+      logTime = Timer.getFPGATimestamp();
 
-    if (m_shooter.logTrigger && loopCtr >= 5) {
-      loopCtr = 0;
-      step++;
-      if (m_tilt.atTargetAngle())
-        tiltOnTarget = 1;
-      else
-        tiltOnTarget = 0;
-
-      if (m_turret.atTargetAngle())
-        turretOnTarget = 1;
-      else
-        turretOnTarget = 0;
-
-      if (m_limelight.getHorOnTarget(1))
-        horOnTarget = 1;
-      else
-        horOnTarget = 0;
-
-      if (m_limelight.getVertOnTarget(1))
-        vertOnTarget = 1;
-      else
-        vertOnTarget = 0;
-
-      if (m_tilt.validTargetSeen)
-        validTargetSeen = 1;
-      else
-        validTargetSeen = 0;
+    if (Timer.getFPGATimestamp() > logTime + .1) {
+      logTime = Timer.getFPGATimestamp();
 
       if (m_shooter.atSpeed())
         shooterAtSpeed = 1;
@@ -120,10 +82,8 @@ public class LogShootData extends CommandBase {
       else
         servoArmReleasing = 0;
 
-      m_shooter.shootLogger.writeData((double) step, m_tilt.getAngle(), m_limelight.getdegVerticalToTarget(),
-          m_tilt.targetVerticalOffset, m_tilt.getLockPositionError(), m_turret.getAngle(),
-          m_limelight.getdegRotationToTarget(), m_turret.targetHorizontalOffset, m_turret.getLockPositionError(),
-          shooterAtSpeed, isShooting, m_shooter.getLeftAmps(), servoArmReleasing);
+      m_shooter.shootLogger.writeData(logTime, m_shooter.getMPS(), shooterAtSpeed, isShooting, m_shooter.getLeftAmps(),
+          servoArmReleasing, (double) m_transport.getArmAngle());
     }
 
   }

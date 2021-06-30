@@ -44,7 +44,7 @@ public class PositionTiltToVision extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    m_tilt.programRunning = 3;
     m_limelight.useVision = false;
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.setLEDMode(LedMode.kpipeLine);
@@ -55,7 +55,7 @@ public class PositionTiltToVision extends CommandBase {
       m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE;
     m_tilt.correctedEndpoint = m_endpoint;
     loopCtr = 0;
-    m_tilt.logTrigger = true;
+
     m_limelight.setVerticalOffset(m_tilt.targetVerticalOffset);
   }
 
@@ -85,7 +85,7 @@ public class PositionTiltToVision extends CommandBase {
     }
 
     if (m_tilt.validTargetSeen) {
-    
+
       pidOut = m_tilt.tiltLockController.calculate(m_limelight.getdegVerticalToTarget());
 
       m_tilt.correctedEndpoint = m_tilt.getAngle() - m_tilt.targetVerticalOffset + m_limelight.getdegVerticalToTarget();
@@ -107,8 +107,7 @@ public class PositionTiltToVision extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_tilt.targetAngle = m_tilt.getAngle();
-    m_tilt.logTrigger = false;
-    m_tilt.endTiltFile = true;
+
   }
 
   // Returns true when the command should end.
