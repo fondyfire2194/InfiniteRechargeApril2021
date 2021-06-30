@@ -69,7 +69,7 @@ public class LogShootData extends CommandBase {
     if (logTime == 0)
       logTime = Timer.getFPGATimestamp();
 
-    if (Timer.getFPGATimestamp() > logTime + .1) {
+    if (m_shooter.logShooterItems && Timer.getFPGATimestamp() > logTime + .1) {
       logTime = Timer.getFPGATimestamp();
 
       if (m_shooter.atSpeed())

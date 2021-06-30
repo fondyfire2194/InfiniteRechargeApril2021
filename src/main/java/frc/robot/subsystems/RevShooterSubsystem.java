@@ -143,6 +143,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean shootLogInProgress;
     public double testVertOffset;
     public int itemsLogged;
+    public boolean logShooterItems;
 
     public boolean logSetupFileOpen;
     public boolean okToShoot;

@@ -84,6 +84,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double programRunning;// 1-hold 2 position 3 vision
     public boolean endTurretFile;
     public SimpleCSVLogger turretLogger;
+    public boolean logTurretItems;
 	public boolean turretLogInProgress;
 	public double turretDistanceTolerance;
 

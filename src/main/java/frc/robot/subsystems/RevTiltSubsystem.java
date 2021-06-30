@@ -96,6 +96,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double testVerticalOffset;
     public boolean endTiltFile;
     public SimpleCSVLogger tiltLogger;
+    public boolean logTiltItems;
     public double positionError;
     public double correctedEndpoint;
     public double visionErrorDifference;

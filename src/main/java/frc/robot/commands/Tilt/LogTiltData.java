@@ -66,7 +66,7 @@ public class LogTiltData extends CommandBase {
     if (logTime == 0)
       logTime = Timer.getFPGATimestamp();
 
-    if (Timer.getFPGATimestamp() > logTime + .1) {
+    if (m_tilt.logTiltItems && Timer.getFPGATimestamp() > logTime + .1) {
 
       logTime = Timer.getFPGATimestamp();
 
