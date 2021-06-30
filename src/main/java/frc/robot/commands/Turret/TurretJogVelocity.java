@@ -6,6 +6,7 @@ package frc.robot.commands.Turret;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTurretSubsystem;
 
@@ -13,12 +14,15 @@ public class TurretJogVelocity extends CommandBase {
   /** Creates a new TurretJJogVelocity. */
 
   private final RevTurretSubsystem m_turret;
+  private XboxController m_controller;
+
   private final Supplier<Double> m_xaxisSpeedSupplier;
   private double maxSpeed = 2000;
 
-  public TurretJogVelocity(RevTurretSubsystem turret, Supplier<Double> xaxisSpeedSupplier) {
+  public TurretJogVelocity(RevTurretSubsystem turret, Supplier<Double> xaxisSpeedSupplier, XboxController controller) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
+    m_controller = controller;
     m_xaxisSpeedSupplier = xaxisSpeedSupplier;
     addRequirements(m_turret);
   }
@@ -36,7 +40,7 @@ public class TurretJogVelocity extends CommandBase {
       m_turret.moveManually(0);
     else
       m_turret.runAtVelocity(m_xaxisSpeedSupplier.get() * maxSpeed);
-  //  SmartDashboard.putNumber("TUSP", m_xaxisSpeedSupplier.get() * maxSpeed);
+    // SmartDashboard.putNumber("TUSP", m_xaxisSpeedSupplier.get() * maxSpeed);
   }
 
   // Called once the command ends or is interrupted.
@@ -49,6 +53,6 @@ public class TurretJogVelocity extends CommandBase {
   // Returns true when the command sh.joould end.
   @Override
   public boolean isFinished() {
-    return Math.abs(m_turret.getSpeed()) < 10;
+    return false;
   }
 }

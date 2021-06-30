@@ -68,8 +68,7 @@ public class Robot extends TimedRobot {
       new LogTurretData(m_robotContainer.m_turret, m_robotContainer.m_limelight).schedule(true);
 
     if (Constants.logShoot)
-      new LogShootData(m_robotContainer.m_shooter,
-          m_robotContainer.m_transport).schedule(true);
+      new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport).schedule(true);
 
   }
 
@@ -96,6 +95,7 @@ public class Robot extends TimedRobot {
 
     m_robotContainer.m_shooter.driverThrottleValue = m_robotContainer.getThrottle();
 
+     
   }
 
   /**
@@ -235,9 +235,12 @@ public class Robot extends TimedRobot {
     Shuffleboard.startRecording();
 
     m_robotContainer.m_shooter.startShooter = false;
+
     autoHasRun = false;
+
     if (RobotBase.isReal() && !m_robotContainer.m_tilt.positionResetDone)
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
+      
     m_robotContainer.m_limelight.useVision = false;
     // new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
 

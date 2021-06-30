@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import java.util.Map;
 
 import com.revrobotics.CANEncoder;
-import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -22,6 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
@@ -42,7 +42,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastmaxRPM, lastmaxVel,
             lastminVel, lastmaxAcc, lastallowedErr;
 
-    public double kPv, kIv, kDv, kIzv, kFFv, kMaxOutputv, kMinOutputv, maxRPMv, maxVelv, minVelv, maxAccv, allowedErrv;
+    public double kPv, kIv, kDv, kIzv, kFFv, maxRPMv, maxVelv, minVelv, maxAccv, allowedErrv;
     public double lastkPv, lastkIv, lastkDv, lastkIzv, lastkFFv, lastkMaxOutputv, lastmaxRPMv, lastmaxVelv, lastmv,
             lastmaxAccv, lastallowedErrv;
 
@@ -73,7 +73,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public double pidLockOut;
     public boolean visionOnTarget;
-    public boolean burnOK;
     public double adjustMeters = .15;// 6"
     private double maxAdjustMeters = .5;
     private double minAdjustMeters = -.5;
@@ -95,6 +94,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public boolean logTurretItems;
     public boolean turretLogInProgress;
     public double turretDistanceTolerance;
+    public double testLockFromThrottle;
+    public boolean testLock;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -106,7 +107,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
         mEncoder.setPosition(0);
         aimCenter();
-
+        setFF_MaxOuts();
         tuneMMGains();
         tuneVelGains();
         getMMGains();
@@ -155,6 +156,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
             setupHorOffset = Shuffleboard.getTab("SetupShooter").add("SetupHorOffset", 0).withWidget("Number Slider")
                     .withPosition(6, 3).withSize(2, 1).withProperties(Map.of("Min", -5, "Max", 5)).getEntry();
         }
+        turretLogger = new SimpleCSVLogger();
     }
 
     @Override
@@ -209,7 +211,18 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     }
 
     public void lockTurretToVision(double cameraError) {
+
         pidLockOut = m_turretLockController.calculate(cameraError, 0);
+        runAtVelocity(pidLockOut);
+        targetAngle = getAngle();
+    }
+
+    public void lockTurretToThrottle(double throttleError) {
+        SmartDashboard.putNumber("TTHERR", throttleError);
+        pidLockOut = m_turretLockController.calculate(throttleError, 0);
+        SmartDashboard.putNumber("PIDL OUT", pidLockOut);
+        SmartDashboard.putNumber("PIDL Err", m_turretLockController.getPositionError());
+
         runAtVelocity(pidLockOut);
         targetAngle = getAngle();
     }
@@ -229,7 +242,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     }
 
     public double getOut() {
-        return m_motor.get();
+        return m_motor.getAppliedOutput();
     }
 
     public boolean isStopped() {
@@ -318,6 +331,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     }
 
     public void runAtVelocity(double speed) {
+        SmartDashboard.putNumber("PIDATRUN", speed);
         targetAngle = getAngle();
         mPidController.setReference(speed, ControlType.kVelocity, VELOCITY_SLOT);
     }
@@ -326,8 +340,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         return mPidController.getIAccum();
     }
 
-    public void calibratePID(final double p, final double i, final double d, final double f, final double kIz,
-            int slotNumber) {
+    public void calibratePID(final double p, final double i, final double d, final double kIz, int slotNumber) {
+
         if (p != lastkP) {
             mPidController.setP(p, slotNumber);
             lastkP = mPidController.getP(slotNumber);
@@ -342,19 +356,12 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
             mPidController.setD(d, slotNumber);
             lastkD = mPidController.getD(slotNumber);
         }
-        if (f != lastkFF) {
-            mPidController.setFF(f, slotNumber);
-            lastkFF = f;
-        }
+
         if (kIz != lastkIz) {
             mPidController.setIZone(kIz, slotNumber);
             lastkIz = mPidController.getIZone(slotNumber);
         }
-        if (kMinOutput != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
-            mPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
-            lastkMinOutput = kMinOutput;
-            lastkMaxOutput = kMaxOutput;
-        }
+
         if (slotNumber == SMART_MOTION_SLOT) {
             if (lastmaxAcc != maxAcc) {
                 mPidController.setSmartMotionMaxAccel(maxAcc, slotNumber);
@@ -362,7 +369,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
             }
 
             if (lastmaxVel != maxVel) {
-                mPidController.setSmartMotionMaxVelocity(maxAcc, slotNumber);
+                mPidController.setSmartMotionMaxVelocity(maxVel, slotNumber);
                 lastmaxVel = maxVel;
             }
 
@@ -376,8 +383,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     }
 
-    public void calibratePIDV(final double p, final double i, final double d, final double f, final double kIz,
+    public void calibratePIDV(final double p, final double i, final double d, final double kIz, final double allE,
             int slotNumber) {
+
         if (p != lastkPv) {
             mPidController.setP(p, slotNumber);
             lastkPv = mPidController.getP(slotNumber);
@@ -392,33 +400,27 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
             mPidController.setD(d, slotNumber);
             lastkDv = mPidController.getD(slotNumber);
         }
-        if (f != lastkFFv) {
-            mPidController.setFF(f, slotNumber);
-            lastkFFv = f;
-        }
+
         if (kIz != lastkIzv) {
             mPidController.setIZone(kIz, slotNumber);
             lastkIzv = mPidController.getIZone(slotNumber);
         }
-        if (kMinOutputv != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
-            mPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
-            lastkMinOutput = kMinOutput;
-            lastkMaxOutput = kMaxOutput;
-        }
 
-        if (lastmaxVelv != maxVel) {
-            mPidController.setSmartMotionMaxVelocity(maxAcc, slotNumber);
-            lastmaxVelv = maxVel;
-        }
+    }
 
-        if (lastallowedErrv != allowedErr) {
-            mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, slotNumber);
-            lastallowedErrv = allowedErr;
-        }
+    private void setFF_MaxOuts() {
+        kFF = .0004;
+        kFFv = .00004;
+        kMinOutput = -.75;
+        kMaxOutput = .75;
+        mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
+        mPidController.setOutputRange(kMinOutput, kMaxOutput, VELOCITY_SLOT);
+        mPidController.setFF(kFF, SMART_MOTION_SLOT);
+        mPidController.setFF(kFFv, VELOCITY_SLOT);
+
     }
 
     private void tuneMMGains() {
-        fixedSettings();
 
         double p = Pref.getPref("tURKp");
         double i = Pref.getPref("tURKi");
@@ -426,29 +428,20 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         double iz = Pref.getPref("tURKiz");
         maxVel = Pref.getPref("tURMaxV");
         maxAcc = Pref.getPref("tURMaxA");
+        allowedErr = .1;
+        calibratePID(p, i, d, iz, SMART_MOTION_SLOT);
 
-        calibratePID(p, i, d, kFF, iz, SMART_MOTION_SLOT);
-
-    }
-
-    private void fixedSettings() {
-        kFF = .0004;// 10000 rpm = 10000 * 1.42 deg / rev =14,200/60 = 235 1/235 = .004
-        kMaxOutput = .75;
-        kMinOutput = -.75;
-        maxRPM = 11000;// not used
-        allowedErr = .01;
     }
 
     private void tuneVelGains() {
-        double p = Pref.getPref("tUKpv");
-        double i = Pref.getPref("tUKiv");
-        double d = Pref.getPref("tUKdv");
-        double iz = Pref.getPref("tUKizv");
-        maxVel = Pref.getPref("tUMaxVv");
-        maxAcc = Pref.getPref("tUMaxAv");
-        double f = .03;
 
-        calibratePIDV(p, i, d, f, iz, VELOCITY_SLOT);
+        double p = Pref.getPref("tURKpv");
+        double i = Pref.getPref("tURKiv");
+        double d = Pref.getPref("tURKdv");
+        double iz = Pref.getPref("tURKizv");
+
+        allowedErrv = .1;
+        calibratePIDV(p, i, d, iz, allowedErrv, VELOCITY_SLOT);
     }
 
     private void setTurretLockGains() {
@@ -475,7 +468,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
             lastTuneOn = tuneOn;
 
         // vel controller
-        tuneOnv = Pref.getPref("tUVTune") == 1. && turretMotorConnected;
+        tuneOnv = Pref.getPref("tURTunev") == 1. && turretMotorConnected;
 
         if (tuneOnv && !lastTuneOnv) {
 

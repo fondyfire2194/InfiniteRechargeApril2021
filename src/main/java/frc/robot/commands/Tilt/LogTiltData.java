@@ -16,10 +16,10 @@ public class LogTiltData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Step", "ProgRunning", "UseVision", "ValidTarget", "TargetAngle", "TiltAngle",
+  public final String[] names = { "Time", "ProgRunning", "UseVision", "ValidTarget", "TargetAngle", "TiltAngle",
       "Offset", "Tolerance", "LockPE", "DegHorToTgt", "CorrEndPt" };
 
-  public static String[] units = { "Number", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees", "Degrees", "PU", "Degrees" };
+  public static String[] units = { "Sec", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees", "Degrees", "PU", "Degrees" };
   private int loopCtr;
   private boolean fileOpenNow;
 

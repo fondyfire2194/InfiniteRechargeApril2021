@@ -11,11 +11,15 @@ import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
 import frc.robot.commands.CellIntake.StopIntakeMotor;
 import frc.robot.commands.CellTransport.StartRollers;
+import frc.robot.commands.Shooter.EndShootLog;
+import frc.robot.commands.Shooter.SetLogShooterItems;
 import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Tilt.PositionHoldTilt;
+import frc.robot.commands.Tilt.SetLogTiltItems;
 import frc.robot.commands.Turret.PositionHoldTurret;
+import frc.robot.commands.Turret.SetLogTurretItems;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -34,14 +38,17 @@ public class A3M32 extends ParallelCommandGroup {
   public A3M32(CellTransportSubsystem transport, RevShooterSubsystem shooter, RevTurretSubsystem turret,
       RevTiltSubsystem tilt, RearIntakeSubsystem intake, LimeLight limelight, Compressor compressor) {
     // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
+    // addCommands(new FooCommand(), new BarCommand()
 
-    super(new SetShootSpeed(shooter, shootSpeed), new StartRollers(transport, true, .75),
+    super(new SetLogShooterItems(shooter, true), new SetShootSpeed(shooter, shootSpeed),
+        new StartRollers(transport, true, .75),
 
         new ParallelCommandGroup(new MessageCommand("Shoot1Started"), new StartShooter(shooter),
             new ShootCells(shooter, tilt, turret, limelight, transport, compressor, shootTime)).deadlineWith(
                 new StopIntakeMotor(intake), new PositionHoldTilt(tilt, shooter, limelight),
-                new PositionHoldTurret(turret, shooter, limelight))
+                new PositionHoldTurret(turret, shooter, limelight)),
+
+        new SetLogShooterItems(shooter, false), new EndShootLog(shooter)
 
     );
   }

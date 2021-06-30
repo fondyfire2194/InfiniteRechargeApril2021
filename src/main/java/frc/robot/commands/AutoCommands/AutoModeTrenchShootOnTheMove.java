@@ -20,17 +20,23 @@ import frc.robot.commands.CellIntake.RunIntakeMotor;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
+import frc.robot.commands.Shooter.EndShootLog;
+import frc.robot.commands.Shooter.SetLogShooterItems;
 import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.commands.Shooter.ShootInMotion;
 import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Shooter.StopShoot;
+import frc.robot.commands.Tilt.EndTiltLog;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
+import frc.robot.commands.Tilt.SetLogTiltItems;
 import frc.robot.commands.Tilt.SetTiltOffset;
+import frc.robot.commands.Turret.EndTurretLog;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
+import frc.robot.commands.Turret.SetLogTurretItems;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 import frc.robot.subsystems.CellTransportSubsystem;
@@ -66,7 +72,10 @@ public class AutoModeTrenchShootOnTheMove extends SequentialCommandGroup {
 
                 super(new ResetEncoders(drive), new ResetGyro(drive),
 
-                                new ParallelCommandGroup(new SetTurretOffset(turret, turretOffset),
+                                new ParallelCommandGroup(new SetLogTiltItems(tilt, true),
+                                                new SetLogTurretItems(turret, true),
+                                                new SetLogShooterItems(shooter, true),
+                                                new SetTurretOffset(turret, turretOffset),
                                                 new PositionTurretToVision(turret, limelight,
                                                                 turretAngle + turretOffset),
                                                 new SetTiltOffset(tilt, tiltOffset),
@@ -91,6 +100,9 @@ public class AutoModeTrenchShootOnTheMove extends SequentialCommandGroup {
                                                                                 new RunIntakeMotor(intake, .75))),
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
+                                                new SetLogTiltItems(tilt, true), new SetLogTurretItems(turret, true),
+                                                new SetLogShooterItems(shooter, true), new EndTiltLog(tilt),
+                                                new EndTurretLog(turret), new EndShootLog(shooter),
                                                 new StopShoot(shooter, transport), new IntakeArmRaise(intake),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new SetUpLimelightForNoVision(limelight),

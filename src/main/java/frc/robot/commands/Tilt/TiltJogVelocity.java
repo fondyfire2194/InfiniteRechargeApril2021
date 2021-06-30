@@ -49,6 +49,6 @@ public class TiltJogVelocity extends CommandBase {
   // Returns true when the command sh.joould end.
   @Override
   public boolean isFinished() {
-    return Math.abs(m_tilt.getSpeed()) < 10;
+    return false;
   }
 }

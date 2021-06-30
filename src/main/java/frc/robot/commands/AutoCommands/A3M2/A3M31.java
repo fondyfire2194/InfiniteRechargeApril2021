@@ -9,10 +9,14 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.TimeDelay;
+import frc.robot.commands.Tilt.EndTiltLog;
 import frc.robot.commands.Tilt.PositionTiltToVision;
+import frc.robot.commands.Tilt.SetLogTiltItems;
 import frc.robot.commands.Tilt.SetTiltOffset;
+import frc.robot.commands.Turret.EndTurretLog;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
+import frc.robot.commands.Turret.SetLogTurretItems;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
@@ -36,7 +40,8 @@ public class A3M31 extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
 
     super(
-        new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset), new SetTurretOffset(turret, turretOffset),
+        new ParallelCommandGroup(new SetLogTiltItems(tilt, true), new SetLogTurretItems(turret, true),
+            new SetTiltOffset(tilt, tiltOffset), new SetTurretOffset(turret, turretOffset),
             new PositionTurret(turret, turretAngle + turretOffset)),
 
         new ParallelCommandGroup(
@@ -44,8 +49,14 @@ public class A3M31 extends SequentialCommandGroup {
             new SetUpLimelightForTarget(limelight), new UseVision(limelight, false),
 
             new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
-            
-            new PositionTurretToVision(turret, limelight, turretAngle + turretOffset)));
+
+            new PositionTurretToVision(turret, limelight, turretAngle + turretOffset)),
+
+        new TimeDelay(1), new UseVision(limelight, true),
+
+        new SetLogTiltItems(tilt, false), new SetLogTurretItems(turret, false), new EndTiltLog(tilt),
+        
+        new EndTurretLog(turret));
 
   }
 }

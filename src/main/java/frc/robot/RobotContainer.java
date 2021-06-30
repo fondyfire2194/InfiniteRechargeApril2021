@@ -44,12 +44,16 @@ import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Shooter.StopShooter;
 import frc.robot.commands.Tilt.PositionHoldTilt;
+import frc.robot.commands.Tilt.PositionHoldTiltTest;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.TiltJog;
+import frc.robot.commands.Tilt.TiltJogVelocity;
 import frc.robot.commands.Tilt.TiltWaitForStop;
 import frc.robot.commands.Turret.PositionHoldTurret;
+import frc.robot.commands.Turret.PositionHoldTurretTest;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.TurretJog;
+import frc.robot.commands.Turret.TurretJogVelocity;
 import frc.robot.commands.Turret.TurretWaitForStop;
 import frc.robot.commands.Vision.SetUpLimelightForDriver;
 import frc.robot.commands.Vision.SetUpLimelightForNoVision;
@@ -232,10 +236,10 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 2).whileHeld(new StartIntake(m_intake, m_transport));
 
-            new JoystickButton(m_driverController, 1)
-                        .whileHeld(new IntakeArmLower(m_intake)).whileHeld(new ShootCells(m_shooter, m_tilt, m_turret,
-                                    m_limelight, m_transport, m_compressor, 100))
-                        .whenReleased(new IntakeArmRaise(m_intake));
+            // new JoystickButton(m_driverController, 1)
+            //             .whileHeld(new IntakeArmLower(m_intake)).whileHeld(new ShootCells(m_shooter, m_tilt, m_turret,
+            //                         m_limelight, m_transport, m_compressor, 100))
+            //             .whenReleased(new IntakeArmRaise(m_intake));
 
             new JoystickButton(m_driverController, 5).whenPressed(new StartShooter(m_shooter));
 
@@ -329,13 +333,13 @@ public class RobotContainer {
 
             setupBack.whileHeld(new StartIntake(m_intake, m_transport)).whenReleased(new StopIntake(m_intake));
 
-            setupX.whileHeld(getJogShooterCommand());
+            setupX.whileHeld(getJogTiltVelocityCommand()).whenReleased(new TiltWaitForStop(m_tilt));
 
             setupY.whileHeld(getJogTiltCommand(setupGamepad)).whenReleased(new TiltWaitForStop(m_tilt));
 
             setupA.whileHeld(getJogTurretCommand(setupGamepad)).whenReleased(new TurretWaitForStop(m_turret));
 
-            setupB.whenPressed(new SetUpLimelightForTarget(m_limelight));
+            setupB.whileHeld(getJogTurretVelocityCommand(setupGamepad)).whenReleased(new TurretWaitForStop(m_turret));
 
             setupLeftStick.whileHeld(getJogLeftBeltCommand());
 
@@ -371,6 +375,14 @@ public class RobotContainer {
 
       public Command getJogTiltCommand(XboxController gamepad) {
             return new TiltJog(m_tilt, () -> -gamepad.getRawAxis(1) / 5, gamepad);
+      }
+
+      public Command getJogTurretVelocityCommand(XboxController gamepad) {
+            return new TurretJogVelocity(m_turret, () -> -gamepad.getRawAxis(0) / 5, gamepad);
+      }
+
+      public Command getJogTiltVelocityCommand() {
+            return new TiltJogVelocity(m_tilt, () -> -setupGamepad.getRawAxis(1) / 5);
       }
 
       public Command getJogShooterCommand() {

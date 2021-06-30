@@ -52,7 +52,7 @@ public class Pref {
 
     // Tilt Lock
 
-    prefDict.put("TiLkP", .4);
+    prefDict.put("TiLkP", 20.);
     prefDict.put("TiLkI", .01);
     prefDict.put("TiLkD", 0.5);
     prefDict.put("TiLkIZ", 0.001);
@@ -70,9 +70,9 @@ public class Pref {
 
     // turret vel
     // Turret smart motion
-    prefDict.put("tURKpv", .00018);
-    prefDict.put("tURKiv", .0001);
-    prefDict.put("tURKdv", .0002);
+    prefDict.put("tURKpv", .000);
+    prefDict.put("tURKiv", .000);
+    prefDict.put("tURKdv", .000);
     prefDict.put("tURKizv", 1.);
     prefDict.put("tURMaxVv", 1000.);// deg/sec motor
     prefDict.put("tURMaxAv", 850.);// deg/sec motor
@@ -80,7 +80,7 @@ public class Pref {
 
     // Turret Lock
 
-    prefDict.put("TuLkP", .0);
+    prefDict.put("TuLkP", 50.0);
     prefDict.put("TuLkI", .00);
     prefDict.put("TuLkD", 0.);
     prefDict.put("TuLkIZ", 0.);

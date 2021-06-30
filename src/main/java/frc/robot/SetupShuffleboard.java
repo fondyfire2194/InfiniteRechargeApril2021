@@ -316,9 +316,9 @@ public class SetupShuffleboard {
                                         .getLayout("PIDValues", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 2)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
 
-                        turretValues3.addNumber("IAccum", () -> m_tilt.getIaccum());
+                        turretValues3.addNumber("IAccum", () -> m_turret.getIaccum());
 
-                        turretValues3.addNumber("LockOutput", () -> m_tilt.lockPIDOut);
+                        turretValues3.addNumber("LockOutput", () -> m_turret.pidLockOut);
                         turretValues3.addNumber("LockError", () -> m_turret.m_turretLockController.getPositionError());
                         turretValues3.addBoolean("LockController", () -> m_turret.validTargetSeen);
 
@@ -338,7 +338,8 @@ public class SetupShuffleboard {
                         turretValues2.addBoolean("BrakeMode", () -> m_turret.isBrake());
                         turretValues2.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget(.5));
 
-                        turretValues2.addBoolean("OKTune", () -> (m_turret.tuneOn && m_turret.lastTuneOn));
+                        turretValues2.addBoolean("OKTune", () -> (m_turret.tuneOnv && m_turret.lastTuneOnv));
+
                         turretValues2.addBoolean("LockAtTarget", () -> m_turret.getLockAtTarget());
 
                         ShuffleboardLayout turretGains = Shuffleboard.getTab("SetupTurret")
@@ -437,7 +438,7 @@ public class SetupShuffleboard {
                         tiltValues2.addBoolean("-SWLimit", () -> m_tilt.onMinusSoftwareLimit());
                         tiltValues2.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled());
                         tiltValues2.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget(1));
-                        tiltValues2.addBoolean("Burn OK", () -> m_tilt.burnOK);
+                        
 
                         ShuffleboardLayout tiltGains = Shuffleboard.getTab("SetupTilt")
 
