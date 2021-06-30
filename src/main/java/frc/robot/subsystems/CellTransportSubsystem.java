@@ -46,6 +46,10 @@ public class CellTransportSubsystem extends SubsystemBase {
   public double cellArmHoldCell = .1;
   public boolean startRollers;
   public double cellPassTime = .25;
+  public boolean rollersAtSpeed;
+  public double rollerSpeed;
+  private boolean rollersAreStopped;
+  private double rollerStartTime;
 
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
@@ -88,6 +92,20 @@ public class CellTransportSubsystem extends SubsystemBase {
 
     cellPassTime = Pref.getPref("CellReleaseTime");
 
+    if (startRollers) {
+      runFrontRollerMotor(rollerSpeed);
+      runRearRollerMotor(rollerSpeed);
+      if (rollerStartTime == 0)
+        rollerStartTime = Timer.getFPGATimestamp();
+      if (rollerStartTime != 0)
+        rollersAtSpeed = Timer.getFPGATimestamp() > rollerStartTime + 1;
+
+    } else {
+      stopFrontRollerMotor();
+      stopRearRollerMotor();
+      rollerStartTime = 0;
+      rollersAtSpeed = false;
+    }
 
   }
 
@@ -213,8 +231,8 @@ public class CellTransportSubsystem extends SubsystemBase {
     }
   }
 
-  public void runFrontRollerMotor() {
-    m_frontRollerMotor.set(ControlMode.PercentOutput, .75);
+  public void runFrontRollerMotor(double speed) {
+    m_frontRollerMotor.set(ControlMode.PercentOutput, speed);
   }
 
   public double getFrontRoller() {
@@ -233,8 +251,8 @@ public class CellTransportSubsystem extends SubsystemBase {
     }
   }
 
-  public void runRearRollerMotor() {
-    m_rearRollerMotor.set(ControlMode.PercentOutput, -.75);
+  public void runRearRollerMotor(double speed) {
+    m_rearRollerMotor.set(ControlMode.PercentOutput, -speed);
   }
 
   public double getRearRoller() {

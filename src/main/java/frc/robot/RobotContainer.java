@@ -314,8 +314,8 @@ public class RobotContainer {
 
             // setupDownButton.whileHeld(
 
-            setupUpButton.whileHeld(() -> m_transport.runFrontRollerMotor())
-                        .whileHeld(() -> m_transport.runRearRollerMotor())
+            setupUpButton.whileHeld(() -> m_transport.runFrontRollerMotor(.5))
+                        .whileHeld(() -> m_transport.runRearRollerMotor(.5))
                         .whenReleased(() -> m_transport.stopFrontRollerMotor())
                         .whenReleased(() -> m_transport.stopRearRollerMotor());
 

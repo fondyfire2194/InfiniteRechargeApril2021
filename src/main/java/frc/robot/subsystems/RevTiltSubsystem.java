@@ -5,7 +5,6 @@ import java.util.Map;
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANEncoder;
-import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -35,13 +34,18 @@ import frc.robot.sim.ElevatorSubsystem;
 
 public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem {
 
-    public final int POSITION_SLOT = 0;
+    public final int VELOCITY_SLOT = 0;
     public final int SMART_MOTION_SLOT = 1;
-    public final int VISION_SLOT = 2;
+    public final int POSITION_SLOT = 2;
 
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
     public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastmaxRPM, lastmaxVel,
             lastminVel, lastmaxAcc, lastallowedErr;
+
+    public double kPv, kIv, kDv, kIzv, kFFv, kMaxOutputv, kMinOutputv, maxRPMv, maxVelv, minVelv, maxAccv, allowedErrv;
+    public double lastkPv, lastkIv, lastkDv, lastkIzv, lastkFFv, lastkMaxOutputv, lastmaxRPMv, lastmaxVelv, lastmv,
+            lastmaxAccv, lastallowedErrv;
+
     public final SimableCANSparkMax m_motor; // NOPMD
     private final CANEncoder mEncoder;
     public final CANPIDController mPidController;
@@ -68,6 +72,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public final double tiltMinAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
 
     public double pset, iset, dset, ffset, izset;
+    public double psetv, isetv, dsetv, ffsetv, izsetv;
     public double lpset, liset, ldset, lizset;
 
     public boolean tuneOn = false;
@@ -106,8 +111,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double cameraAngle;
 
     public double programRunning;// 1-hold 2 position 3 vision
-	public double tiltDistanceTolerance;
-    
+    public double tiltDistanceTolerance;
+    private boolean lastTuneOnv;
+    private boolean tuneOnv;
 
     /** 
      * 
@@ -136,9 +142,11 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
             mEncoder.setVelocityConversionFactor(degreesPerRev * 3 / 60);
 
         }
-        tuneGains();
+        tuneMMGains();
+        tuneVelGains();
         setTiltLockGains();
-        getGains();
+        getMMGains();
+        getVelGains();
         getLockGains();
         resetAngle();
         m_motor.setIdleMode(IdleMode.kBrake);
@@ -169,10 +177,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         }
 
         if (!Constants.isMatch) {
-        setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetVerOffset",
-        0).withWidget("Number Slider")
-        .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -10, "Max",
-        10)).getEntry();
+            setupVertOffset = Shuffleboard.getTab("SetupShooter").add("SetVerOffset", 0).withWidget("Number Slider")
+                    .withPosition(4, 3).withSize(2, 1).withProperties(Map.of("Min", -10, "Max", 10)).getEntry();
         }
     }
 
@@ -211,7 +217,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         m_motor.close();
     }
 
-    public void moveManuallyVelocity(double speed) {
+    public void runAtVelocity(double speed) {
         targetAngle = getAngle();
         mPidController.setReference(speed, ControlType.kVelocity);
     }
@@ -244,7 +250,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public void lockTiltToVision(double cameraError) {
         lockPIDOut = tiltLockController.calculate(cameraError, 0);
-        m_motor.set(lockPIDOut);
+        runAtVelocity(lockPIDOut);
         targetAngle = getAngle();
     }
 
@@ -261,13 +267,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     public boolean getLockAtTarget() {
-        return tiltLockController.atSetpoint();
-    }
-
-    public boolean lockTiltToVisionVoltage(double cameraError) {
-        lockPIDOutVolts = 12 * tiltLockController.calculate(cameraError, 0);
-        m_motor.setVoltage((lockPIDOutVolts) + .05);
-        targetAngle = getAngle();
         return tiltLockController.atSetpoint();
     }
 
@@ -461,7 +460,48 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         }
     }
 
-    private void tuneGains() {
+    public void calibratePIDV(final double p, final double i, final double d, final double f, final double kIz,
+            int slotNumber) {
+        if (p != lastkPv) {
+            mPidController.setP(p, slotNumber);
+            lastkPv = mPidController.getP(slotNumber);
+
+        }
+        if (i != lastkIv) {
+            mPidController.setI(i, slotNumber);
+            lastkIv = mPidController.getI(slotNumber);
+        }
+
+        if (d != lastkDv) {
+            mPidController.setD(d, slotNumber);
+            lastkDv = mPidController.getD(slotNumber);
+        }
+        if (f != lastkFFv) {
+            mPidController.setFF(f, slotNumber);
+            lastkFFv = f;
+        }
+        if (kIz != lastkIzv) {
+            mPidController.setIZone(kIz, slotNumber);
+            lastkIzv = mPidController.getIZone(slotNumber);
+        }
+        if (kMinOutputv != lastkMinOutput || kMaxOutput != lastkMaxOutput) {
+            mPidController.setOutputRange(kMinOutput, kMaxOutput, slotNumber);
+            lastkMinOutput = kMinOutput;
+            lastkMaxOutput = kMaxOutput;
+        }
+
+        if (lastmaxVelv != maxVel) {
+            mPidController.setSmartMotionMaxVelocity(maxAcc, slotNumber);
+            lastmaxVelv = maxVel;
+        }
+
+        if (lastallowedErrv != allowedErr) {
+            mPidController.setSmartMotionAllowedClosedLoopError(allowedErr, slotNumber);
+            lastallowedErrv = allowedErr;
+        }
+    }
+
+    private void tuneMMGains() {
 
         fixedSettings();
 
@@ -484,6 +524,18 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         allowedErr = .01;
     }
 
+    private void tuneVelGains() {
+        double p = Pref.getPref("tIKpv");
+        double i = Pref.getPref("tIKiv");
+        double d = Pref.getPref("tIKdv");
+        double iz = Pref.getPref("tIKizv");
+        maxVel = Pref.getPref("tIMaxVv");
+        maxAcc = Pref.getPref("tIMaxAv");
+        double f = .03;
+
+        calibratePIDV(p, i, d, f, iz, VELOCITY_SLOT);
+    }
+
     private void setTiltLockGains() {
 
         tiltLockController.setP(Pref.getPref("TiLkP"));
@@ -497,26 +549,30 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     private void checkTune() {
 
-        CANError burnError = CANError.kError;
-
-        if (Pref.getPref("tITune") == 5. && tiltMotorConnected) {
-            burnOK = false;
-            burnError = m_motor.burnFlash();
-            burnOK = burnError == CANError.kOk;
-            getGains();
-        }
-
         tuneOn = Pref.getPref("tITune") == 1. && tiltMotorConnected;
 
         if (tuneOn && !lastTuneOn) {
 
-            tuneGains();
-            getGains();
+            tuneMMGains();
+            getMMGains();
             lastTuneOn = true;
         }
 
         if (lastTuneOn)
             lastTuneOn = tuneOn;
+
+        // vel controller
+        tuneOnv = Pref.getPref("tIVTune") == 1. && tiltMotorConnected;
+
+        if (tuneOnv && !lastTuneOnv) {
+
+            tuneVelGains();
+            getVelGains();
+            lastTuneOnv = true;
+        }
+
+        if (lastTuneOnv)
+            lastTuneOnv = tuneOnv;
 
         // Lock controller
 
@@ -535,12 +591,21 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     }
 
-    public void getGains() {
+    public void getMMGains() {
         ffset = mPidController.getFF(SMART_MOTION_SLOT);
         pset = mPidController.getP(SMART_MOTION_SLOT);
         iset = mPidController.getI(SMART_MOTION_SLOT);
         dset = mPidController.getD(SMART_MOTION_SLOT);
         izset = mPidController.getIZone(SMART_MOTION_SLOT);
+
+    }
+
+    public void getVelGains() {
+        ffsetv = mPidController.getFF(VELOCITY_SLOT);
+        psetv = mPidController.getP(VELOCITY_SLOT);
+        isetv = mPidController.getI(VELOCITY_SLOT);
+        dsetv = mPidController.getD(VELOCITY_SLOT);
+        izsetv = mPidController.getIZone(VELOCITY_SLOT);
 
     }
 

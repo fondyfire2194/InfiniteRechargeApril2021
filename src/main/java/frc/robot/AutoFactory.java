@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.AutoCommands.AutoMode3M3BallTrench;
+import frc.robot.commands.AutoCommands.A3M2.AutoMode3M3BallTrench;
 import frc.robot.commands.AutoCommands.AutoModeTrenchShootOnTheMove;
 import frc.robot.commands.AutoCommands.AutoModeCenterPowerPort;
 import frc.robot.commands.AutoCommands.AutoModeShieldGen;

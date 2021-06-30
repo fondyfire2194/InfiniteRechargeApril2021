@@ -41,6 +41,15 @@ public class Pref {
     prefDict.put("tIMaxA", 1250.);// deg per min/sec
     prefDict.put("tITune", 0.);
 
+    // tilt vel
+    prefDict.put("tIKpv", .001);
+    prefDict.put("tIKiv", .001);
+    prefDict.put("tIKdv", 0.);
+    prefDict.put("tIKizv", 1.);
+    prefDict.put("tIMaxVv", 1000.);// 1000 deg per min
+    prefDict.put("tIMaxAv", 1250.);// deg per min/sec
+    prefDict.put("tITunev", 0.);
+
     // Tilt Lock
 
     prefDict.put("TiLkP", .4);
@@ -58,6 +67,16 @@ public class Pref {
     prefDict.put("tURMaxV", 1000.);// deg/sec motor
     prefDict.put("tURMaxA", 850.);// deg/sec motor
     prefDict.put("tURTune", 0.);
+
+    // turret vel
+    // Turret smart motion
+    prefDict.put("tURKpv", .00018);
+    prefDict.put("tURKiv", .0001);
+    prefDict.put("tURKdv", .0002);
+    prefDict.put("tURKizv", 1.);
+    prefDict.put("tURMaxVv", 1000.);// deg/sec motor
+    prefDict.put("tURMaxAv", 850.);// deg/sec motor
+    prefDict.put("tURTunev", 0.);
 
     // Turret Lock
 

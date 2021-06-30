@@ -343,7 +343,7 @@ public class SetupShuffleboard {
 
                         ShuffleboardLayout turretGains = Shuffleboard.getTab("SetupTurret")
 
-                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1, 1)
+                                        .getLayout("MMGains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1, 1)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels
 
                         turretGains.addNumber("FF", () -> m_turret.ffset);
@@ -351,6 +351,17 @@ public class SetupShuffleboard {
                         turretGains.addNumber("I", () -> m_turret.iset);
                         turretGains.addNumber("D", () -> m_turret.dset);
                         turretGains.addNumber("IZ", () -> m_turret.izset);
+
+                        ShuffleboardLayout turretVGains = Shuffleboard.getTab("SetupTurret")
+
+                                        .getLayout("VelGains", BuiltInLayouts.kList).withPosition(7, 0).withSize(1, 1)
+                                        .withProperties(Map.of("Label position", "LEFT")); // labels
+
+                        turretVGains.addNumber("FF", () -> m_turret.ffsetv);
+                        turretVGains.addNumber("P", () -> m_turret.psetv);
+                        turretVGains.addNumber("I", () -> m_turret.isetv);
+                        turretVGains.addNumber("D", () -> m_turret.dsetv);
+                        turretVGains.addNumber("IZ", () -> m_turret.izsetv);
 
                         ShuffleboardLayout turretLockGains = Shuffleboard.getTab("SetupTurret")
 
@@ -411,7 +422,7 @@ public class SetupShuffleboard {
                         tiltValues3.addBoolean("LockOnTarget", () -> m_tilt.getLockAtTarget());
 
                         ShuffleboardLayout tiltValues2 = Shuffleboard.getTab("SetupTilt")
-                                        .getLayout("States", BuiltInLayouts.kGrid).withPosition(4, 3).withSize(4, 2)
+                                        .getLayout("States", BuiltInLayouts.kGrid).withPosition(4, 2).withSize(3, 2)
                                         .withProperties(Map.of("Label position", "TOP")); // labels
 
                         tiltValues2.addBoolean("InPosition", () -> m_tilt.atTargetAngle());
@@ -430,7 +441,7 @@ public class SetupShuffleboard {
 
                         ShuffleboardLayout tiltGains = Shuffleboard.getTab("SetupTilt")
 
-                                        .getLayout("Gains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1, 1)
+                                        .getLayout("MMGains", BuiltInLayouts.kList).withPosition(6, 0).withSize(1, 1)
                                         .withProperties(Map.of("Label position", "LEFT")); // labels
 
                         tiltGains.addNumber("FF", () -> m_tilt.ffset);
@@ -438,6 +449,17 @@ public class SetupShuffleboard {
                         tiltGains.addNumber("I", () -> m_tilt.iset);
                         tiltGains.addNumber("D", () -> m_tilt.dset);
                         tiltGains.addNumber("IZ", () -> m_tilt.izset);
+
+                        ShuffleboardLayout tiltVGains = Shuffleboard.getTab("SetupTilt")
+
+                                        .getLayout("VelGains", BuiltInLayouts.kList).withPosition(7, 0).withSize(1, 1)
+                                        .withProperties(Map.of("Label position", "LEFT")); // labels
+
+                        tiltVGains.addNumber("FF", () -> m_tilt.ffsetv);
+                        tiltVGains.addNumber("P", () -> m_tilt.psetv);
+                        tiltVGains.addNumber("I", () -> m_tilt.isetv);
+                        tiltVGains.addNumber("D", () -> m_tilt.dsetv);
+                        tiltVGains.addNumber("IZ", () -> m_tilt.izsetv);
 
                         ShuffleboardLayout tiltLockGains = Shuffleboard.getTab("SetupTilt")
 
@@ -767,15 +789,15 @@ public class SetupShuffleboard {
 
         }
 
-        // public double[] getPDPInfo() {
-        // double temp[] = { 0, 0, 0, 0, 0 };
-        // temp[0] = m_shooter.getBatteryVoltage();
-        // temp[1] = m_shooter.getTemperature();
-        // temp[2] = m_shooter.getTotalEnergy() / 3600;
-        // temp[3] = m_shooter.getTotalPower();
-        // return temp;
+        public double[] getPDPInfo() {
+                double temp[] = { 0, 0, 0, 0, 0 };
+                temp[0] = m_shooter.getBatteryVoltage();
+                temp[1] = m_shooter.getTemperature();
+                temp[2] = m_shooter.getTotalEnergy() / 3600;
+                temp[3] = m_shooter.getTotalPower();
+                return temp;
 
-        // }
+        }
 
         public void checkLimits() {
                 if (m_tilt.onMinusSoftwareLimit() || m_tilt.onPlusSoftwareLimit() || m_tilt.onMinusHardwarLimit()

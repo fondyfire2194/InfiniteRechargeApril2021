@@ -102,8 +102,7 @@ public class ShootInMotion extends CommandBase {
     }
 
     if (m_shooter.isShooting) {
-      m_transport.runFrontRollerMotor();
-      m_transport.runRearRollerMotor();
+      
       m_transport.runLeftBeltMotor(.5);
       m_transport.runRightBeltMotor(-.5);
 

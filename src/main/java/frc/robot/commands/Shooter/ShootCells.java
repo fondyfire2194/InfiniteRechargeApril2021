@@ -81,7 +81,7 @@ public class ShootCells extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-   m_turret.turretDistanceTolerance = m_shooter.getTurretTolerance(m_shooter.calculatedCameraDistance);
+    m_turret.turretDistanceTolerance = m_shooter.getTurretTolerance(m_shooter.calculatedCameraDistance);
     m_tilt.tiltDistanceTolerance = m_shooter.getTiltTolerance(m_shooter.calculatedCameraDistance);
 
     loopctr++;
@@ -94,15 +94,13 @@ public class ShootCells extends CommandBase {
     if (m_shooter.okToShoot && !m_shooter.useDriverSpeed)
       m_shooter.startShooter = true;
 
-    if (m_shooter.atSpeed() && m_shooter.okToShoot || m_shooter.isShooting) {
+    if (m_shooter.atSpeed() && m_transport.rollersAtSpeed && okToShoot || m_shooter.isShooting) {
 
       m_shooter.isShooting = true;
 
     }
 
     if (m_shooter.isShooting) {
-      m_transport.runFrontRollerMotor();
-      m_transport.runRearRollerMotor();
       m_transport.runLeftBeltMotor(.5);
       m_transport.runRightBeltMotor(-.5);
 
@@ -116,11 +114,6 @@ public class ShootCells extends CommandBase {
 
     }
 
-    // if (shotInProgress) {
-    // m_limelight.setSnapshot(Snapshot.kon);
-    // } else {
-    // m_limelight.setSnapshot(Snapshot.koff);
-    // }
 
     if (m_shooter.shotInProgress && Timer.getFPGATimestamp() > (shotStartTime + shotTime) && m_shooter.atSpeed()) {
       m_shooter.shotInProgress = false;
