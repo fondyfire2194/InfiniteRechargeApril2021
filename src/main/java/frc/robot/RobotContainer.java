@@ -305,6 +305,7 @@ public class RobotContainer {
             //
             codriverRightTrigger.whileHeld(getJogTiltCommand(codriverGamepad))
                         .whenReleased(new TiltWaitForStop(m_tilt));
+                        
             codriverLeftTrigger.whileHeld(getJogTurretCommand(codriverGamepad))
                         .whenReleased(new TiltWaitForStop(m_tilt));
 
