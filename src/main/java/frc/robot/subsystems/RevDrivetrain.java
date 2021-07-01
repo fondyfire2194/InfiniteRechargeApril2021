@@ -30,6 +30,7 @@ import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PDPConstants;
 import frc.robot.Pref;
+import frc.robot.SimpleCSVLogger;
 import frc.robot.sim.BaseDrivetrainSubsystem;
 
 public class RevDrivetrain extends BaseDrivetrainSubsystem {
@@ -83,6 +84,14 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public boolean leftBurnOK;
     public boolean rightBurnOK;
 
+    public SimpleCSVLogger driveLogger;
+
+    public boolean driveLogInProgress;
+
+	public boolean logDriveItems;
+
+    public boolean endDriveFile;
+
     public RevDrivetrain() {
         mLeadLeft = new SimableCANSparkMax(CANConstants.DRIVETRAIN_LEFT_MASTER,
                 CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -128,6 +137,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mDrive.setRightSideInverted(false);
 
         mDrive.setSafetyEnabled(false);
+
+        driveLogger = new SimpleCSVLogger();
 
         tuneGains();
 

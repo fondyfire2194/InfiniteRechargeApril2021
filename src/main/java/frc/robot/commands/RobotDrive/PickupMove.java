@@ -4,6 +4,7 @@
 
 package frc.robot.commands.RobotDrive;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Pref;
@@ -37,7 +38,7 @@ public class PickupMove extends CommandBase {
     m_endpoint = endpoint;
     m_speed = Math.abs(speed);
     m_accelTime = accelTime;
-     addRequirements(m_drive);
+    addRequirements(m_drive);
   }
 
   // Called when the command is initially scheduled.
@@ -55,6 +56,10 @@ public class PickupMove extends CommandBase {
       slowDownDistance = 0;
 
     }
+    if (DriverStation.getInstance().isOperatorControlEnabled()) {
+      m_drive.logDriveItems = true;
+    }
+
     m_drive.resetGyro();
 
   }
@@ -77,13 +82,6 @@ public class PickupMove extends CommandBase {
     if (currentSpeed >= m_speed) {
       accelerating = false;
     }
-    SmartDashboard.putBoolean("ACC", accelerating);
-
-    SmartDashboard.putNumber("CurrSp", currentSpeed);
-
-    SmartDashboard.putNumber("UpRamp", upRamp);
-
-    SmartDashboard.putNumber("UseSpee", useSpeed);
 
     if (accelerating) {
       currentSpeed += upRamp;
@@ -110,6 +108,7 @@ public class PickupMove extends CommandBase {
   public void end(boolean interrupted) {
     currentSpeed = 0;
     m_drive.arcadeDrive(0, 0);
+    m_drive.logDriveItems = false;
   }
 
   // Returns true when the command should end.

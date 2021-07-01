@@ -5,44 +5,38 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Tilt;
+package frc.robot.commands.RobotDrive;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.LimeLight;
-import frc.robot.subsystems.RevTiltSubsystem;
+import frc.robot.subsystems.RevDrivetrain;
 
-public class LogTiltData extends CommandBase {
+public class LogDriveData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Time", "ProgRunning", "UseVision", "ValidTarget", "TargetAngle", "TiltAngle",
-      "Offset", "Tolerance", "LockPE", "DegHorToTgt", "CorrEndPt", "Out", "Speed" };
+  public final String[] names = { "Time", "LeftDist", "LeftRate", "LeftAmps", "LeftOut", "RightDist", "RightRate",
+      "RightAmps", "RightOut", "GyroYaw" };
 
   public static String[] units = { "Sec", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees", "Degrees", "PU", "Degrees", "PU",
       "MPSec" };
   private int loopCtr;
   private boolean fileOpenNow;
 
-  private final LimeLight m_limelight;
-  private final RevTiltSubsystem m_tilt;
+  private final RevDrivetrain m_drive;
 
-  private double validTargetSeen;
-  private double useVision;
   private double logTime;
 
-  public LogTiltData(RevTiltSubsystem tilt, LimeLight limelight) {
+  public LogDriveData(RevDrivetrain drive) {
     // Use addRequirements() here to declare subsystem dependencies.
 
-    m_limelight = limelight;
-    m_tilt = tilt;
-
+    m_drive = drive;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    int ope4 = m_tilt.tiltLogger.init("TestRun", "Tilt", names, units);
+    int ope5 = m_drive.driveLogger.init("TestRun", "Drive", names, units);
 
     loopCtr = 0;
     fileOpenNow = false;
@@ -63,30 +57,19 @@ public class LogTiltData extends CommandBase {
     }
     // log data every shot
     if (fileOpenNow)
-      m_tilt.tiltLogInProgress = true;
+      m_drive.driveLogInProgress = true;
     if (logTime == 0)
       logTime = Timer.getFPGATimestamp();
 
-    if (m_tilt.logTiltItems && Timer.getFPGATimestamp() > logTime + .1) {
+    if (m_drive.logDriveItems && Timer.getFPGATimestamp() > logTime + .1) {
 
       logTime = Timer.getFPGATimestamp();
 
-      if (m_limelight.useVision)
-        useVision = 1;
-      else
-        useVision = 0;
+      m_drive.driveLogger.writeData(logTime, m_drive.getLeftDistance(), m_drive.getLeftRate(), m_drive.getLeftAmps(),
+          m_drive.getLeftOut(),
 
-      if (m_tilt.validTargetSeen)
-        validTargetSeen = 1;
-      else
-        validTargetSeen = 0;
-
-      m_tilt.tiltLogger.writeData(logTime, m_tilt.programRunning,
-
-          useVision, validTargetSeen, m_tilt.targetAngle, m_tilt.getAngle(), m_tilt.targetVerticalOffset,
-
-          m_tilt.tiltDistanceTolerance, m_tilt.tiltLockController.getPositionError(),
-          m_limelight.getdegVerticalToTarget(), m_tilt.correctedEndpoint, m_tilt.getOut(), m_tilt.getSpeed());
+          m_drive.getRightDistance(), m_drive.getRightRate(), m_drive.getRightAmps(), m_drive.getRightOut(),
+          m_drive.getYaw());
     }
 
   }
@@ -94,14 +77,14 @@ public class LogTiltData extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    int sd = m_tilt.tiltLogger.close();
-    m_tilt.endTiltFile = false;
+    int sd = m_drive.driveLogger.close();
+    m_drive.endDriveFile = false;
 
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_tilt.endTiltFile;
+    return m_drive.endDriveFile;
   }
 }

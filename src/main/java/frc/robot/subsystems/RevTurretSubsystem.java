@@ -97,6 +97,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double testLockFromThrottle;
     public boolean testLock;
 
+    public boolean notUseVision;
+
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
         mEncoder = m_motor.getEncoder();

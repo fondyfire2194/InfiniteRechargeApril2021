@@ -117,6 +117,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private boolean lastTuneOnv;
     private boolean tuneOnv;
     public boolean testLock;
+    public boolean notUseVision;
 
     /** 
      * 
@@ -318,7 +319,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     public double getOut() {
-        return m_motor.get();
+        return m_motor.getAppliedOutput();
     }
 
     public double getAmps() {

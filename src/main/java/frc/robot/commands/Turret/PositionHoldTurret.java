@@ -61,7 +61,7 @@ public class PositionHoldTurret extends CommandBase {
     if (!m_limelight.useVision)
       visionFoundCounter = 0;
 
-    targetSeen = m_limelight.getIsTargetFound() && (m_limelight.useVision);
+    targetSeen = m_limelight.getIsTargetFound() && m_limelight.useVision && !m_turret.notUseVision;
 
     if (targetSeen && m_turret.validTargetSeen) {
       cameraHorizontalError = m_limelight.getdegRotationToTarget();

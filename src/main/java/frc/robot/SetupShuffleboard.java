@@ -30,6 +30,7 @@ import frc.robot.commands.CellTransport.HoldCell;
 import frc.robot.commands.CellTransport.ReleaseCell;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.RobotDrive.ClearRobFaults;
+import frc.robot.commands.RobotDrive.LogDriveData;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
@@ -163,6 +164,7 @@ public class SetupShuffleboard {
                         logCmd.add("LogTilt", new LogTiltData(tilt, limelight));
                         logCmd.add("LogTurret", new LogTurretData(turret, limelight));
                         logCmd.add("LogShoot", new LogShootData(shooter, transport));
+                        logCmd.add("LogDrive", new LogDriveData(m_robotDrive));
                         logCmd.add("EndLogTilt", new EndTiltLog(tilt));
                         logCmd.add("EndLogTurret", new EndTurretLog(turret));
                         logCmd.add("EndLogShoot", new EndShootLog(shooter));

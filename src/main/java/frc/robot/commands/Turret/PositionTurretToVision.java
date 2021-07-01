@@ -10,6 +10,7 @@
 
 package frc.robot.commands.Turret;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.LimelightControlMode.LedMode;
@@ -50,6 +51,9 @@ public class PositionTurretToVision extends CommandBase {
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_turret.correctedEndpoint = m_endpoint;
+
+    if (DriverStation.getInstance().isOperatorControlEnabled())
+      m_turret.logTurretItems = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -103,7 +107,7 @@ public class PositionTurretToVision extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    m_turret.logTurretItems = false;
   }
 
   // Returns true when the command should end.

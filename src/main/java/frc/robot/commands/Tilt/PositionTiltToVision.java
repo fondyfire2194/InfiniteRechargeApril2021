@@ -10,6 +10,7 @@
 
 package frc.robot.commands.Tilt;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimeLight;
@@ -57,6 +58,10 @@ public class PositionTiltToVision extends CommandBase {
     loopCtr = 0;
 
     m_limelight.setVerticalOffset(m_tilt.targetVerticalOffset);
+
+    if (DriverStation.getInstance().isOperatorControlEnabled())
+      m_tilt.logTiltItems = true;
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -107,6 +112,7 @@ public class PositionTiltToVision extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_tilt.targetAngle = m_tilt.getAngle();
+    m_tilt.logTiltItems = false;
 
   }
 
