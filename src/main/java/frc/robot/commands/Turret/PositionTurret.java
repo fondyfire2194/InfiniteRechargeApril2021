@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Turret;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTurretSubsystem;
 
@@ -30,6 +31,8 @@ public class PositionTurret extends CommandBase {
     m_turret.programRunning = 2;
     m_turret.targetAngle = m_endpoint;
     loopCtr = 0;
+    if (DriverStation.getInstance().isOperatorControlEnabled())
+      m_turret.logTurretItems = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -46,6 +49,7 @@ public class PositionTurret extends CommandBase {
   public void end(boolean interrupted) {
     if (loopCtr > 10 && !endIt)
       m_turret.targetAngle = m_turret.getAngle();
+    m_turret.logTurretItems = false;
   }
 
   // Returns true when the command should end.

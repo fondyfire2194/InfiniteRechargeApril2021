@@ -506,7 +506,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     private void setFF_MaxOuts() {
         kFF = .0004;// 10000 rpm = 10000 * .25 deg per rev= 2500 1/2500 = .0004
-        kFFv = .0025;
+        kFFv = .00025;
         kMinOutput = -.5;
         kMaxOutput = .5;
 

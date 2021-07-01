@@ -23,8 +23,6 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
-import frc.robot.commands.CellIntake.IntakeArmLower;
-import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellTransport.JogLeftBelt;
@@ -39,19 +37,17 @@ import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.SetShotPosition0;
 import frc.robot.commands.Shooter.SetShotPosition1;
 import frc.robot.commands.Shooter.SetShotPosition2;
-import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Shooter.StopShoot;
-import frc.robot.commands.Shooter.StopShooter;
 import frc.robot.commands.Tilt.PositionHoldTilt;
-import frc.robot.commands.Tilt.PositionHoldTiltTest;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Tilt.TiltJogVelocity;
 import frc.robot.commands.Tilt.TiltWaitForStop;
+import frc.robot.commands.Tilt.ToggleTiltUseVision;
 import frc.robot.commands.Turret.PositionHoldTurret;
-import frc.robot.commands.Turret.PositionHoldTurretTest;
 import frc.robot.commands.Turret.PositionTurret;
+import frc.robot.commands.Turret.ToggleTurretUseVision;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretJogVelocity;
 import frc.robot.commands.Turret.TurretWaitForStop;
@@ -237,9 +233,10 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 2).whileHeld(new StartIntake(m_intake, m_transport));
 
             // new JoystickButton(m_driverController, 1)
-            //             .whileHeld(new IntakeArmLower(m_intake)).whileHeld(new ShootCells(m_shooter, m_tilt, m_turret,
-            //                         m_limelight, m_transport, m_compressor, 100))
-            //             .whenReleased(new IntakeArmRaise(m_intake));
+            // .whileHeld(new IntakeArmLower(m_intake)).whileHeld(new ShootCells(m_shooter,
+            // m_tilt, m_turret,
+            // m_limelight, m_transport, m_compressor, 100))
+            // .whenReleased(new IntakeArmRaise(m_intake));
 
             new JoystickButton(m_driverController, 5).whenPressed(new StartShooter(m_shooter));
 
@@ -305,7 +302,7 @@ public class RobotContainer {
             //
             codriverRightTrigger.whileHeld(getJogTiltCommand(codriverGamepad))
                         .whenReleased(new TiltWaitForStop(m_tilt));
-                        
+
             codriverLeftTrigger.whileHeld(getJogTurretCommand(codriverGamepad))
                         .whenReleased(new TiltWaitForStop(m_tilt));
 
@@ -334,13 +331,15 @@ public class RobotContainer {
 
             setupBack.whileHeld(new StartIntake(m_intake, m_transport)).whenReleased(new StopIntake(m_intake));
 
-            setupX.whileHeld(getJogTiltVelocityCommand()).whenReleased(new TiltWaitForStop(m_tilt));
+            setupX.whileHeld(getJogTiltVelocityCommand()).whileHeld(getJogTurretVelocityCommand(setupGamepad))
+                        .whenReleased(new TiltWaitForStop(m_tilt)).whenReleased(new TurretWaitForStop(m_turret));
 
-            setupY.whileHeld(getJogTiltCommand(setupGamepad)).whenReleased(new TiltWaitForStop(m_tilt));
+            setupY.whileHeld(getJogTiltCommand(setupGamepad)).whileHeld(getJogTurretCommand(setupGamepad))
+                        .whenReleased(new TiltWaitForStop(m_tilt)).whenReleased(new TurretWaitForStop(m_turret));
 
-            setupA.whileHeld(getJogTurretCommand(setupGamepad)).whenReleased(new TurretWaitForStop(m_turret));
+            setupB.whenPressed(new ToggleTiltUseVision(m_tilt));
 
-            setupB.whileHeld(getJogTurretVelocityCommand(setupGamepad)).whenReleased(new TurretWaitForStop(m_turret));
+            setupA.whenPressed(new ToggleTurretUseVision(m_turret));
 
             setupLeftStick.whileHeld(getJogLeftBeltCommand());
 

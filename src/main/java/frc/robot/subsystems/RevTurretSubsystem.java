@@ -413,8 +413,8 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     private void setFF_MaxOuts() {
         kFF = .0004;
         kFFv = .00004;
-        kMinOutput = -.75;
-        kMaxOutput = .75;
+        kMinOutput = -.5;
+        kMaxOutput = .5;
         mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
         mPidController.setOutputRange(kMinOutput, kMaxOutput, VELOCITY_SLOT);
         mPidController.setFF(kFF, SMART_MOTION_SLOT);

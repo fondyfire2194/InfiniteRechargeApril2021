@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Tilt;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.subsystems.RevTiltSubsystem;
@@ -39,6 +40,9 @@ public class PositionTilt extends CommandBase {
     motorDegrees = (m_tilt.tiltMaxAngle - m_endpoint);
     m_tilt.motorEndpointDegrees = motorDegrees;
 
+    if (DriverStation.getInstance().isOperatorControlEnabled())
+      m_tilt.logTiltItems = true;
+
     loopCtr = 0;
 
   }
@@ -58,6 +62,7 @@ public class PositionTilt extends CommandBase {
   public void end(boolean interrupted) {
     if (loopCtr > 10 && !endIt)
       m_tilt.targetAngle = m_tilt.getAngle();
+    m_tilt.logTiltItems = false;
   }
 
   // Returns true when the command should end.
