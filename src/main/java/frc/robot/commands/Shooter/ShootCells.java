@@ -10,6 +10,7 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.LimelightControlMode.LedMode;
@@ -43,7 +44,6 @@ public class ShootCells extends CommandBase {
   private double cellReleasedStartTime;
 
   private int loopctr;
-  
 
   public ShootCells(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret, LimeLight limelight,
       CellTransportSubsystem transport, Compressor compressor, double time) {
@@ -69,7 +69,7 @@ public class ShootCells extends CommandBase {
     m_transport.holdCell();
     cellsShot = 0;
     shotStartTime = 0;
-    cellAvailable = true;
+    cellAvailable = false;
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.useVision = true;
@@ -79,13 +79,13 @@ public class ShootCells extends CommandBase {
   @Override
   public void execute() {
 
-   
     loopctr++;
 
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
-    m_shooter.okToShoot = (m_limelight.getVertOnTarget(m_tilt.tiltVisionTolerance) && m_limelight.getHorOnTarget(m_turret.turretVisionTolerance)) || m_shooter.useDriverSpeed;
-
+    okToShoot = (m_limelight.getVertOnTarget(m_tilt.tiltVisionTolerance)
+        && m_limelight.getHorOnTarget(m_turret.turretVisionTolerance)) || m_shooter.useDriverSpeed;
+    SmartDashboard.putBoolean("OK@S", okToShoot);
     if (m_shooter.atSpeed() && m_transport.rollersAtSpeed && okToShoot || m_shooter.isShooting) {
 
       m_shooter.isShooting = true;
@@ -123,7 +123,7 @@ public class ShootCells extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_transport.releaseCell();
+    m_transport.holdCell();
     m_transport.stopBelts();
     m_transport.stopRollers();
     m_compressor.start();

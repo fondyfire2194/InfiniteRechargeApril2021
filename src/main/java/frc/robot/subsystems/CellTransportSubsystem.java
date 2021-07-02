@@ -48,7 +48,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   public double cellPassTime = .25;
   public boolean rollersAtSpeed;
   public double rollerSpeed;
-  private boolean rollersAreStopped;
+  public boolean haltRollers;
   private double rollerStartTime;
 
   public CellTransportSubsystem() {

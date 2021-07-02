@@ -17,14 +17,8 @@ public class PickupMove extends CommandBase {
   private double m_speed;
   private double m_accelTime;
   private double currentSpeed;
-  private double slowDownDistance = .4;
-  private double slowDownRampTime = .1;
-  private double upRampTime;
-  private double slowDownRamp;
-  private double upRamp;
-  private double minSpeed = .25;
+  
   private boolean accelerating;
-  private boolean decelerating;
   private boolean plusDirection;
   private double remainingDistance;
 
@@ -32,30 +26,23 @@ public class PickupMove extends CommandBase {
 
   private int loopCtr;
 
-  public PickupMove(RevDrivetrain drive, double endpoint, double speed, double accelTime) {
+  public PickupMove(RevDrivetrain drive, double endpoint, double speed, double accel) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_drive = drive;
     m_endpoint = endpoint;
     m_speed = Math.abs(speed);
-    m_accelTime = accelTime;
+
     addRequirements(m_drive);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    accelerating = true;
-    decelerating = false;
-    plusDirection = true;
-    currentSpeed = minSpeed;
-    upRampTime = m_accelTime;
-    upRamp = (m_speed - minSpeed) / (upRampTime * 50);// per 20 ms
-    slowDownRamp = m_speed / (slowDownRampTime * 50);
-    remainingDistance = m_endpoint - m_drive.getLeftDistance();
-    if (Math.abs(remainingDistance) < slowDownDistance) {
-      slowDownDistance = 0;
 
-    }
+    plusDirection = true;
+    currentSpeed = m_speed;
+
+
     if (DriverStation.getInstance().isOperatorControlEnabled()) {
       m_drive.logDriveItems = true;
     }
@@ -79,22 +66,6 @@ public class PickupMove extends CommandBase {
       plusDirection = false;
     }
 
-    if (currentSpeed >= m_speed) {
-      accelerating = false;
-    }
-
-    if (accelerating) {
-      currentSpeed += upRamp;
-    }
-
-    decelerating = Math.abs(remainingDistance) < slowDownDistance || decelerating;
-
-    if (decelerating) {
-      accelerating = false;
-      currentSpeed -= slowDownRamp;
-      if (currentSpeed < minSpeed)
-        currentSpeed = minSpeed;
-    }
     useSpeed = currentSpeed;
 
     if (!plusDirection)
@@ -115,8 +86,8 @@ public class PickupMove extends CommandBase {
   @Override
   public boolean isFinished() {
 
-    return !accelerating && plusDirection && m_drive.getLeftDistance() > m_endpoint
-        || !accelerating && !plusDirection && m_drive.getLeftDistance() < m_endpoint;
+    return  plusDirection && m_drive.getLeftDistance() > m_endpoint
+        || !plusDirection && m_drive.getLeftDistance() < m_endpoint;
 
   }
 }

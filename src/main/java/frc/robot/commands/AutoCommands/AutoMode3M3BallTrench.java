@@ -87,7 +87,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                                                                 new IntakeArmLower(intake)),
                                 // 1st Shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
-                                                new SetShootSpeed(shooter, shootSpeed),
+                                                new SetShootSpeed(shooter, shootSpeed), new UseVision(limelight, false),
 
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
                                                                 shootTime)).deadlineWith(
@@ -96,20 +96,17 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                                                                 new PositionHoldTurret(turret, shooter,
                                                                                                 limelight)),
                                 // 2nd pickup
-                                new SetUpLimelightForNoVision(limelight), new TimeDelay(.2),
-                                new ParallelCommandGroup(new PositionTilt(tilt, tilt.tiltMaxAngle),
-                                                new PositionTurret(turret, turretAngle1),
-                                                new PickupMove(drive, retractDistance1, .6, .5)).deadlineWith(
-                                                                new ParallelCommandGroup(new IntakeArmLower(intake),
-                                                                                new RunIntakeMotor(intake, .75))),
+
+                                new PickupMove(drive, retractDistance1, .6, .5).deadlineWith(new ParallelCommandGroup(
+                                                new IntakeArmLower(intake), new RunIntakeMotor(intake, .75))),
                                 // // 2nd lock
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset1),
                                                 new SetTurretOffset(turret, turretOffset1),
-                                                new SetUpLimelightForTarget(limelight), new UseVision(limelight, false),
+
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle1 + tiltOffset1),
                                                 new PositionTurretToVision(turret, limelight,
                                                                 turretAngle1 + turretOffset1)).deadlineWith(
-
+                                                                                new UseVision(limelight, true),
                                                                                 new StopIntakeMotor(intake)),
                                 // // 2nd shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot2Started"),

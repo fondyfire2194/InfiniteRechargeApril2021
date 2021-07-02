@@ -71,7 +71,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
-                                                new PickupMove(drive, -1, .5, .02),
+                                                new PickupMove(drive, -1, .5, 0),
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
                                                 new PositionTurretToVision(turret, limelight,
                                                                 turretAngle + turretOffset)),
@@ -81,7 +81,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                 new ParallelCommandGroup(new MessageCommand("ShootIs3Started"),
                                                 new SetLogShooterItems(shooter, true),
                                                 new SetShootSpeed(shooter, shootSpeed),
-                                                new StartAllShooter(shooter, transport, 0),
+
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
                                                                 shootTime)).deadlineWith(
                                                                                 new PositionHoldTilt(tilt, shooter,
@@ -92,7 +92,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                 new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
                                                 new SetLogTiltItems(tilt, false), new SetLogTurretItems(turret, false),
                                                 new EndTiltLog(tilt), new EndTurretLog(turret),
-                                                new StopShoot(shooter, transport),
+                                                // new StopShoot(shooter, transport),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new SetUpLimelightForNoVision(limelight)));
         }

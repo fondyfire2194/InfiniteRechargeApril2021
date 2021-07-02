@@ -42,9 +42,9 @@ public final class Constants {
       public static final int LEFT_MOTOR = 6;
       public static final int RIGHT_MOTOR = 7;
 
-      public static final int TURRET_ROTATE_MOTOR = 9;// turret
+      public static final int TURRET_ROTATE_MOTOR = 8;// turret
 
-      public static final int TILT_MOTOR = 8;
+      public static final int TILT_MOTOR = 9;
 
       // talons
 
@@ -216,7 +216,7 @@ public final class Constants {
        */
 
       public static final double TURRET_MAX_ANGLE = 45;
-      
+
       public static final double TURRET_MIN_ANGLE = -45;
 
       public static final double TURRET_DEG_PER_MOTOR_REV = 1.421;
@@ -288,7 +288,7 @@ public final class Constants {
       public static double cameraAngleSlope = cameraAngleRange / HoodedShooterConstants.tiltRange;
    }
 
-public static boolean logTilt;
-public static boolean logShoot;
-public static boolean logTurret;
+   public static boolean logTilt;
+   public static boolean logShoot;
+   public static boolean logTurret;
 }

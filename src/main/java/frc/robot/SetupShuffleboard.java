@@ -19,6 +19,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
@@ -30,6 +33,8 @@ import frc.robot.commands.CellIntake.StopIntakeMotor;
 import frc.robot.commands.CellTransport.HoldCell;
 import frc.robot.commands.CellTransport.ReleaseCell;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
+import frc.robot.commands.CellTransport.RunRollers;
+import frc.robot.commands.CellTransport.StopRollers;
 import frc.robot.commands.RobotDrive.ClearRobFaults;
 import frc.robot.commands.RobotDrive.LogDriveData;
 import frc.robot.commands.RobotDrive.PickupMove;
@@ -41,8 +46,12 @@ import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.EndShootLog;
 import frc.robot.commands.Shooter.LogDistanceData;
 import frc.robot.commands.Shooter.LogShootData;
+import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
+import frc.robot.commands.TestStuff.One;
+import frc.robot.commands.TestStuff.Three;
+import frc.robot.commands.TestStuff.Two;
 import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.EndTiltLog;
 import frc.robot.commands.Tilt.LogTiltData;
@@ -84,7 +93,7 @@ public class SetupShuffleboard {
         private boolean m_showTilt = true;
         private boolean m_showShooter = true;
         private boolean m_showRobot = true;
-        private boolean m_showTransport = false;
+        private boolean m_showTransport = true;
         private boolean m_showVision = true;
         private boolean m_showSubsystems = false;
         private HttpCamera LLFeed;
@@ -245,6 +254,8 @@ public class SetupShuffleboard {
                         competition.addBoolean("Use Vision", () -> m_limelight.useVision);
                         competition.addBoolean("Shooting", () -> m_shooter.isShooting);
                         competition.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
+                        competition.addBoolean("RollersAtSpeed", () -> m_transport.rollersAtSpeed);
+
 
                         // Shuffleboard.getTab("Competition").addNumber("TimeRemaining", () ->
                         // m_robotDrive.getMatchTime())
@@ -297,6 +308,8 @@ public class SetupShuffleboard {
                         turretCommands.addNumber("Faults", () -> m_turret.getFaults());
                         turretCommands.addString("To Jog", () -> "SetupXBox Btn A left X");
                         turretCommands.addString("OvrRideSoftLim", () -> "Setup RightBmpr");
+                        turretCommands.add("A", new ParallelRaceGroup(new Two(),
+                                        new SequentialCommandGroup(new One(), new Three())));
 
                         ShuffleboardLayout turretValues = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("TurretValues", BuiltInLayouts.kList).withPosition(2, 0)
@@ -496,7 +509,7 @@ public class SetupShuffleboard {
                         shooterCommands.add("Cmd", m_shooter);
                         shooterCommands.add("LogDataRun",
                                         new LogDistanceData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
-                        shooterCommands.add("RunAllShooters", new StartAllShooter(shooter, transport, 5));
+                        shooterCommands.add("RunAllShooters", new RunShooter(shooter));
                         shooterCommands.add("UseSpeedSlider", new ChooseShooterSpeedSource(shooter, tilt, turret, 3));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")
@@ -555,6 +568,8 @@ public class SetupShuffleboard {
                         transportValues.add("Release Cell", new ReleaseCell(transport));
                         transportValues.add("Hold Cell", new HoldCell(transport));
                         transportValues.add("ReleaseOneCell", new ReleaseOneCell(transport));
+                        transportValues.add("StartRollers",new RunRollers(transport));
+                        transportValues.add("StopRollers",new StopRollers(transport));
 
                         transportValues.addNumber("LeftBeltAmps", () -> m_transport.getLeftBeltMotorAmps());
                         transportValues.addNumber("RightBeltAmps", () -> m_transport.getRightBeltMotorAmps());
@@ -574,6 +589,7 @@ public class SetupShuffleboard {
                         transportValues1.addBoolean("Arm Up", () -> m_intake.getArmRaised());
                         transportValues1.addBoolean("Arm Down", () -> m_intake.getArmLowered());
                         transportValues1.addBoolean("IntakeConnected (10)", () -> m_intake.intakeMotorConnected);
+                        transportValues1.addBoolean("RollersAtSpeed", ()->m_transport.rollersAtSpeed);
 
                         transportValues1.addBoolean("LeftBeltConnected (13)", () -> m_transport.leftBeltMotorConnected);
                         transportValues1.addBoolean("RightBeltConnected (11)",
