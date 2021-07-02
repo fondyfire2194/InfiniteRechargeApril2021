@@ -17,10 +17,10 @@ public class LogTurretData extends CommandBase {
    * Creates a new LogDistanceData.
    */
   public final String[] names = { "Step", "ProgRunning", "UseVision", "ValidTarget", "TargetAngle", "TurretAngle",
-      "Offset", "Tolerance", "LockPE", "DegVertToTgt", "CorrEndPt", "Out", "Speed" };
+      "Tolerance", "LockPE", "DegVertToTgt", "CorrEndPt", "Out", "Speed" };
 
-  public static String[] units = { "Number", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees", "Degrees", "Degrees", "PU",
-      "Degrees", "PU", "MPS" };
+  public static String[] units = { "Number", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees", "Degrees", "PU", "Degrees", "PU",
+      "MPS" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -84,8 +84,7 @@ public class LogTurretData extends CommandBase {
 
           useVision, validTargetSeen, m_turret.targetAngle, m_turret.getAngle(), m_turret.targetHorizontalOffset,
 
-          m_turret.turretDistanceTolerance, m_turret.m_turretLockController.getPositionError(),
-          m_limelight.getdegVerticalToTarget(),
+          m_turret.m_turretLockController.getPositionError(), m_limelight.getdegVerticalToTarget(),
 
           m_turret.correctedEndpoint, m_turret.getOut(), m_turret.getSpeed());
     }

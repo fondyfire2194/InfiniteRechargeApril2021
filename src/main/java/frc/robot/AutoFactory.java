@@ -5,11 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.AutoCommands.A3M2.AutoMode3M3BallTrench;
-import frc.robot.commands.AutoCommands.AutoModeTrenchShootOnTheMove;
-import frc.robot.commands.AutoCommands.AutoModeCenterPowerPort;
-import frc.robot.commands.AutoCommands.AutoModeShieldGen;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import frc.robot.commands.AutoCommands.AutoCenterShootMove;
+import frc.robot.commands.AutoCommands.ShieldGenShoot3Pickup2;
+import frc.robot.commands.AutoCommands.ShootWhileMoving;
+import frc.robot.commands.AutoCommands.Trench3BallShootPlusPickup;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -32,7 +32,7 @@ public class AutoFactory {
 
     public AutoFactory(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
             CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight, Compressor compressor,
-            RearIntakeSubsystem intake, int shootNumber) {
+            RearIntakeSubsystem intake) {
         m_turret = turret;
         m_tilt = tilt;
         m_shooter = shooter;
@@ -44,28 +44,31 @@ public class AutoFactory {
     }
 
     // front of power port move and shoot
-    public SequentialCommandGroup getAutonomousCommand1() {
-        return new AutoModeCenterPowerPort(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
+    public ParallelRaceGroup getAutonomousCommand1() {
+
+        return new AutoCenterShootMove(m_shooter, m_robotDrive, m_turret, m_tilt, m_limelight, m_compressor,
+                m_transport);
+        // right of center line retract shoot
+    }
+
+    public ParallelRaceGroup getAutonomousCommand2() {
+
+        return new ShieldGenShoot3Pickup2(m_shooter, m_tilt, m_turret, m_robotDrive, m_transport, m_limelight, m_intake,
                 m_compressor);
 
     }
 
-    // right of center line retract shoot
-    public SequentialCommandGroup getAutonomousCommand2() {
-        return new AutoModeShieldGen(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight, m_compressor,
-                m_intake);
-    }
-
     // front of trench or shoot 3 move pickup shoot 3
-    public SequentialCommandGroup getAutonomousCommand3() {
-        return new AutoMode3M3BallTrench(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
-                m_compressor, m_intake);
+    public ParallelRaceGroup getAutonomousCommand3() {
+        return new Trench3BallShootPlusPickup(m_shooter, m_robotDrive, m_tilt, m_turret, m_transport, m_intake,
+                m_limelight, m_compressor);
     }
 
-    // front of trench  move pickup and and shoot together
-    public SequentialCommandGroup getAutonomousCommand4() {
-        return new AutoModeTrenchShootOnTheMove(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
-                m_compressor, m_intake);
+    // front of trench move pickup and and shoot together
+    public ParallelRaceGroup getAutonomousCommand4() {
+
+        return new ShootWhileMoving(m_shooter, m_robotDrive, m_tilt, m_turret, m_transport, m_intake, m_limelight,
+                m_compressor);
 
     }
 

@@ -91,22 +91,6 @@ public class CellTransportSubsystem extends SubsystemBase {
     }
 
     cellPassTime = Pref.getPref("CellReleaseTime");
-
-    if (startRollers) {
-      runFrontRollerMotor(rollerSpeed);
-      runRearRollerMotor(rollerSpeed);
-      if (rollerStartTime == 0)
-        rollerStartTime = Timer.getFPGATimestamp();
-      if (rollerStartTime != 0)
-        rollersAtSpeed = Timer.getFPGATimestamp() > rollerStartTime + 1;
-
-    } else {
-      stopFrontRollerMotor();
-      stopRearRollerMotor();
-      rollerStartTime = 0;
-      rollersAtSpeed = false;
-    }
-
   }
 
   public boolean checkCAN() {

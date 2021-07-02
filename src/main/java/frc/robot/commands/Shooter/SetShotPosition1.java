@@ -10,13 +10,14 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
-import frc.robot.commands.Vision.UseVision;
 import frc.robot.ShootData;
+import frc.robot.commands.AutoCommands.StartAllShooter;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
+import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
@@ -32,7 +33,7 @@ public class SetShotPosition1 extends SequentialCommandGroup {
          */
 
         public SetShotPosition1(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
-                        LimeLight limelight) {
+                        CellTransportSubsystem transport, LimeLight limelight) {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
@@ -51,7 +52,7 @@ public class SetShotPosition1 extends SequentialCommandGroup {
                                                                                 + ShootData.trench4BallShotConstants.turretOffset),
                                                 new SetShootSpeed(shooter,
                                                                 ShootData.trench4BallShotConstants.shootSpeed),
-                                                new StartShooter(shooter)));
+                                                new StartAllShooter(shooter, transport, 2)));
 
         }
 }

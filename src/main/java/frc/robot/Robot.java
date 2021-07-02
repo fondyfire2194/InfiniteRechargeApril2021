@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.LogShootData;
-import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Tilt.LogTiltData;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.LogTurretData;
@@ -95,7 +94,6 @@ public class Robot extends TimedRobot {
 
     m_robotContainer.m_shooter.driverThrottleValue = m_robotContainer.getThrottle();
 
-     
   }
 
   /**
@@ -134,8 +132,6 @@ public class Robot extends TimedRobot {
     new ChooseShooterSpeedSource(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_turret, 0)
         .schedule(true);
 
-    new RunShooter(m_robotContainer.m_shooter).schedule(true);
-
     AutoFactory m_autoFactory = m_robotContainer.m_autoFactory;
 
     Shuffleboard.selectTab("Competition");
@@ -162,6 +158,7 @@ public class Robot extends TimedRobot {
       case 1:// in front of power port, move back use shooter data index 1
 
         setStartingPose(FieldMap.startPosition[1]);
+
         m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
 
         break;
@@ -216,9 +213,6 @@ public class Robot extends TimedRobot {
 
     CommandScheduler.getInstance().run();
 
-    // if (DriverStation.getInstance().getMatchTime() < 10)
-    // Shuffleboard.stopRecording();
-
   }
 
   @Override
@@ -240,7 +234,7 @@ public class Robot extends TimedRobot {
 
     if (RobotBase.isReal() && !m_robotContainer.m_tilt.positionResetDone)
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
-      
+
     m_robotContainer.m_limelight.useVision = false;
     // new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
 

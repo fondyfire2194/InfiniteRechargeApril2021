@@ -156,6 +156,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double programSpeed;
     public String[] speedSource = { "Program", "Camera", "Driver", "Setup" };
     public String activeSpeedSource = "Program";
+    
 
     public RevShooterSubsystem() {
 
@@ -280,6 +281,10 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     public double getRightAmps() {
         return mRightMotor.getOutputCurrent();
+    }
+
+    public double getMatchTimeRemaining() {
+        return DriverStation.getInstance().getMatchTime();
     }
 
     @Override

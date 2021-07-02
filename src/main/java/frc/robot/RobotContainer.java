@@ -23,6 +23,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
+import frc.robot.commands.AutoCommands.StartAllShooter;
 import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellTransport.JogLeftBelt;
@@ -37,7 +38,6 @@ import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.SetShotPosition0;
 import frc.robot.commands.Shooter.SetShotPosition1;
 import frc.robot.commands.Shooter.SetShotPosition2;
-import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
@@ -178,7 +178,7 @@ public class RobotContainer {
             m_compressor = new Compressor();
 
             m_autoFactory = new AutoFactory(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive, m_limelight,
-                        m_compressor, m_intake, 10);
+                        m_compressor, m_intake);
 
             m_trajectory = new FondyFireTrajectory(m_robotDrive);
 
@@ -238,7 +238,7 @@ public class RobotContainer {
             // m_limelight, m_transport, m_compressor, 100))
             // .whenReleased(new IntakeArmRaise(m_intake));
 
-            new JoystickButton(m_driverController, 5).whenPressed(new StartShooter(m_shooter));
+            new JoystickButton(m_driverController, 5).whenPressed(new StartAllShooter(m_shooter, m_transport, 0));
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport))
                         .whenPressed(new SetUpLimelightForNoVision(m_limelight))
@@ -288,16 +288,16 @@ public class RobotContainer {
              */
 
             // front of power port one meter back
-            codriverY.whenPressed(new SetShotPosition0(m_shooter, m_turret, m_tilt, m_limelight));
+            codriverY.whenPressed(new SetShotPosition0(m_shooter, m_turret, m_tilt, m_transport, m_limelight));
 
             // 4 ball trench
-            codriverX.whenPressed(new SetShotPosition1(m_shooter, m_turret, m_tilt, m_limelight));
+            codriverX.whenPressed(new SetShotPosition1(m_shooter, m_turret, m_tilt, m_transport, m_limelight));
 
             // trench in front of control panel
-            codriverA.whenPressed(new Position2Macro(m_robotDrive, m_shooter, m_turret, m_tilt, m_limelight));
+            codriverA.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt, m_transport, m_limelight));
 
             //
-            codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt, m_limelight));
+            // codriverB.whenPressed
 
             //
             codriverRightTrigger.whileHeld(getJogTiltCommand(codriverGamepad))
@@ -345,7 +345,7 @@ public class RobotContainer {
 
             setupRightStick.whileHeld(getJogRightBeltCommand());
 
-            // LiveWindow.disableAllTelemetry();
+            LiveWindow.disableAllTelemetry();
 
       }
 

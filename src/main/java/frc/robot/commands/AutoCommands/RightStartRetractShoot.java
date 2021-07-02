@@ -18,7 +18,6 @@ import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
@@ -63,7 +62,7 @@ public class RightStartRetractShoot extends SequentialCommandGroup {
                                 new PositionTurret(turret, turretAngle + turretOffset)),
                                 new SetUpLimelightForTarget(limelight),
                                 new ParallelCommandGroup(new MessageCommand("ShootIs3Started"),
-                                                new StartShooterWheels(shooter, shootSpeed),
+                                                
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
                                                                 shootTime)).deadlineWith(
                                                                                 new PositionHoldTilt(tilt, shooter,

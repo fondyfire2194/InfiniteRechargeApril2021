@@ -57,7 +57,6 @@ public class ShootInMotion extends CommandBase {
     m_tilt = tilt;
     m_turret = turret;
     m_time = time;
-    m_shooter.startShooter = true;
 
   }
 
@@ -82,18 +81,14 @@ public class ShootInMotion extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turretDistanceTolerance = m_shooter.getTurretTolerance(m_shooter.calculatedCameraDistance);
-    tiltDistanceTolerance = m_shooter.getTiltTolerance(m_shooter.calculatedCameraDistance);
-
+    
     loopctr++;
 
     boolean inAuto = DriverStation.getInstance().isAutonomous();
 
-    m_shooter.okToShoot = (m_limelight.getVertOnTarget(tiltDistanceTolerance)
-        && m_limelight.getHorOnTarget(turretDistanceTolerance));
+    m_shooter.okToShoot = (m_limelight.getVertOnTarget(m_tilt.tiltVisionTolerance)
+        && m_limelight.getHorOnTarget(m_turret.turretVisionTolerance));
 
-    if (m_shooter.okToShoot)
-      m_shooter.startShooter = true;
 
     if (m_shooter.atSpeed() && m_shooter.okToShoot || m_shooter.isShooting) {
 

@@ -24,7 +24,6 @@ import frc.robot.commands.Shooter.EndShootLog;
 import frc.robot.commands.Shooter.SetLogShooterItems;
 import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.commands.Shooter.ShootInMotion;
-import frc.robot.commands.Shooter.StartShooter;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.EndTiltLog;
 import frc.robot.commands.Tilt.PositionHoldTilt;
@@ -85,7 +84,7 @@ public class AutoModeTrenchShootOnTheMove extends SequentialCommandGroup {
                                                                                 new PositionHoldTurret(turret, shooter,
                                                                                                 limelight)),
 
-                                new ParallelCommandGroup(new SetShootSpeed(shooter, 34), new StartShooter(shooter),
+                                new ParallelCommandGroup(new SetShootSpeed(shooter, 34), 
                                                 new PickupMove(drive, retractDistance, .25, .25))
 
                                                                 .deadlineWith(new ParallelCommandGroup(

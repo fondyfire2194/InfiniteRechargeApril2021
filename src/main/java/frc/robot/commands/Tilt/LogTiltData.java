@@ -17,9 +17,9 @@ public class LogTiltData extends CommandBase {
    * Creates a new LogDistanceData.
    */
   public final String[] names = { "Time", "ProgRunning", "UseVision", "ValidTarget", "TargetAngle", "TiltAngle",
-      "Offset", "Tolerance", "LockPE", "DegHorToTgt", "CorrEndPt", "Out", "Speed" };
+      "Offset", "LockPE", "DegHorToTgt", "CorrEndPt", "Out", "Speed" };
 
-  public static String[] units = { "Sec", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees", "Degrees", "Degrees", "Degrees",
+  public static String[] units = { "Sec", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees",  "Degrees", "Degrees",
       "PU", "Degrees", "PU", "MPSec" };
   private int loopCtr;
   private boolean fileOpenNow;
@@ -85,7 +85,7 @@ public class LogTiltData extends CommandBase {
 
           useVision, validTargetSeen, m_tilt.targetAngle, m_tilt.getAngle(), m_tilt.targetVerticalOffset,
 
-          m_tilt.tiltDistanceTolerance, m_tilt.tiltLockController.getPositionError(),
+           m_tilt.tiltLockController.getPositionError(),
 
           m_limelight.getdegVerticalToTarget(), m_tilt.correctedEndpoint, m_tilt.getOut(), m_tilt.getSpeed());
     }

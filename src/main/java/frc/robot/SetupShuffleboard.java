@@ -41,7 +41,6 @@ import frc.robot.commands.Shooter.EndShootLog;
 import frc.robot.commands.Shooter.LogDistanceData;
 import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StartShooterWheels;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.EndTiltLog;
@@ -274,7 +273,7 @@ public class SetupShuffleboard {
                  * Shooter Turret
                  * 
                  */
-                if (m_showTurret)
+                if (m_showTurret && !liveMatch)
 
                 {
                         ShuffleboardLayout turretCommands = Shuffleboard.getTab("SetupTurret")
@@ -338,7 +337,8 @@ public class SetupShuffleboard {
                         turretValues2.addBoolean("InPosition", () -> m_turret.atTargetAngle());
 
                         turretValues2.addBoolean("BrakeMode", () -> m_turret.isBrake());
-                        turretValues2.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget(.5));
+                        turretValues2.addBoolean("TargetHorOK",
+                                        () -> m_limelight.getHorOnTarget(m_turret.turretVisionTolerance));
 
                         turretValues2.addBoolean("OKTune", () -> (m_turret.tuneOnv && m_turret.lastTuneOnv));
 
@@ -378,7 +378,7 @@ public class SetupShuffleboard {
                 /**
                  * Shooter Tilt
                  */
-                if (m_showTilt) {
+                if (m_showTilt && !liveMatch) {
                         ShuffleboardLayout tiltCommands = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("Tilt", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT")); //
@@ -439,8 +439,8 @@ public class SetupShuffleboard {
                         tiltValues2.addBoolean("+SWLimit", () -> m_tilt.onPlusSoftwareLimit());
                         tiltValues2.addBoolean("-SWLimit", () -> m_tilt.onMinusSoftwareLimit());
                         tiltValues2.addBoolean("SWLimitEn", () -> m_tilt.getSoftwareLimitsEnabled());
-                        tiltValues2.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget(1));
-                        
+                        tiltValues2.addBoolean("TargetVertOK",
+                                        () -> m_limelight.getVertOnTarget(m_tilt.tiltVisionTolerance));
 
                         ShuffleboardLayout tiltGains = Shuffleboard.getTab("SetupTilt")
 
@@ -480,7 +480,7 @@ public class SetupShuffleboard {
                  * Shooter and Transport
                  * 
                  */
-                if (m_showShooter)
+                if (m_showShooter && !liveMatch)
 
                 {
                         ShuffleboardLayout shooterCommands = Shuffleboard.getTab("SetupShooter")
@@ -488,7 +488,6 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT")); // labels for
                                                                                            // commands
 
-                        shooterCommands.add("Shooter Motor Start", new StartShooterWheels(m_shooter, 10));
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
                         shooterCommands.add("Shoot", new ShootCells(m_shooter, m_tilt, m_turret, m_limelight,
                                         m_transport, m_compressor, 0));
@@ -759,9 +758,11 @@ public class SetupShuffleboard {
 
                         visionBools.addBoolean("Connected", () -> m_limelight.isConnected());
 
-                        visionBools.addBoolean("TargetVertOK", () -> m_limelight.getVertOnTarget(1.75));
+                        visionBools.addBoolean("TargetVertOK",
+                                        () -> m_limelight.getVertOnTarget(m_tilt.tiltVisionTolerance));
 
-                        visionBools.addBoolean("TargetHorOK", () -> m_limelight.getHorOnTarget(1.75));
+                        visionBools.addBoolean("TargetHorOK",
+                                        () -> m_limelight.getHorOnTarget(m_turret.turretVisionTolerance));
 
                         visionBools.addBoolean("TargetFound", () -> m_limelight.getIsTargetFound());
 
