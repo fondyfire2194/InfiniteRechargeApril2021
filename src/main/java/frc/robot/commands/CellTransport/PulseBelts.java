@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.CellTransportSubsystem;
 
-public class RunBelts extends CommandBase {
+public class PulseBelts extends CommandBase {
   /** Creates a new RunRollers. */
   private final CellTransportSubsystem m_transport;
   private double rollerStartTime;
   private final double speed = .5;
 
-  public RunBelts(CellTransportSubsystem transport) {
+  public PulseBelts(CellTransportSubsystem transport) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_transport = transport;
   }
@@ -29,8 +29,9 @@ public class RunBelts extends CommandBase {
   @Override
   public void execute() {
 
-    m_transport.runLeftBeltMotor(-speed);
-    m_transport.runRightBeltMotor(speed);
+    m_transport.pulseLeftBelt(.5, 1, 1);
+
+    m_transport.pulseLeftBelt(-.5, 1.1, 1.1);
 
   }
 

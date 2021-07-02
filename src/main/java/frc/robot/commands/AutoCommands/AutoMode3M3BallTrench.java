@@ -97,7 +97,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                                                                                 limelight)),
                                 // 2nd pickup
 
-                                new PickupMove(drive, retractDistance1, .6, .5).deadlineWith(new ParallelCommandGroup(
+                                new PickupMove(drive, retractDistance1, .6).deadlineWith(new ParallelCommandGroup(
                                                 new IntakeArmLower(intake), new RunIntakeMotor(intake, .75))),
                                 // // 2nd lock
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset1),

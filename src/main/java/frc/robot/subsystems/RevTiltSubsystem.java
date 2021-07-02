@@ -118,6 +118,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private boolean tuneOnv;
     public boolean testLock;
     public boolean notUseVision;
+	public double tiltOffsetAdder;
+	public double tiltOffsetChange;
 
     /** 
      * 
@@ -382,6 +384,10 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public void clearFaults() {
         m_motor.clearFaults();
         faultSeen = 0;
+    }
+
+    public double getVerticalTargetOffset(){
+        return targetVerticalOffset;
     }
 
     public int getFaults() {

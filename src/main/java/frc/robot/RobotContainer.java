@@ -31,6 +31,7 @@ import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellTransport.JogLeftBelt;
 import frc.robot.commands.CellTransport.JogRightBelt;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
+import frc.robot.commands.CellTransport.StopBelts;
 import frc.robot.commands.CellTransport.StopRollers;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
@@ -245,6 +246,7 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport))
                         .whenPressed(new StopRollers(m_transport))
+                        .whenPressed(new StopBelts(m_transport))
                         .whenPressed(new SetUpLimelightForNoVision(m_limelight))
                         .whenPressed(new PositionTurret(m_turret, 0))
                         .whenReleased(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle));

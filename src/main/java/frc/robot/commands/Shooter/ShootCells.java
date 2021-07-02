@@ -85,7 +85,7 @@ public class ShootCells extends CommandBase {
 
     okToShoot = (m_limelight.getVertOnTarget(m_tilt.tiltVisionTolerance)
         && m_limelight.getHorOnTarget(m_turret.turretVisionTolerance)) || m_shooter.useDriverSpeed;
-    SmartDashboard.putBoolean("OK@S", okToShoot);
+    
     if (m_shooter.atSpeed() && m_transport.rollersAtSpeed && okToShoot || m_shooter.isShooting) {
 
       m_shooter.isShooting = true;

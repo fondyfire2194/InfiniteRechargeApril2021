@@ -7,6 +7,7 @@ package frc.robot.commands.AutoCommands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.TimeDelay;
+import frc.robot.commands.CellTransport.PulseBelts;
 import frc.robot.commands.CellTransport.RunBelts;
 import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.Shooter.RunShooter;
@@ -24,9 +25,9 @@ public class StartAllShooter extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
 
-        new SetShootSpeed(shooter, 20),
+        new TimeDelay(delay),
 
-        new ParallelCommandGroup(new RunShooter(shooter), new RunRollers(transport), new RunBelts(transport))
+        new ParallelCommandGroup(new RunShooter(shooter), new RunRollers(transport), new PulseBelts(transport))
 
     );
   }

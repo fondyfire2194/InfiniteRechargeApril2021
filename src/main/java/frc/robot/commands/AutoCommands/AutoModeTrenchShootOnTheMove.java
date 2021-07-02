@@ -85,7 +85,7 @@ public class AutoModeTrenchShootOnTheMove extends SequentialCommandGroup {
                                                                                                 limelight)),
 
                                 new ParallelCommandGroup(new SetShootSpeed(shooter, 34), 
-                                                new PickupMove(drive, retractDistance, .25, .25))
+                                                new PickupMove(drive, retractDistance, .25))
 
                                                                 .deadlineWith(new ParallelCommandGroup(
                                                                                 new PositionHoldTilt(tilt, shooter,
@@ -94,7 +94,7 @@ public class AutoModeTrenchShootOnTheMove extends SequentialCommandGroup {
                                                                                                 limelight),
                                                                                 new ShootInMotion(shooter, tilt, turret,
                                                                                                 limelight, transport,
-                                                                                                compressor, shootTime),
+                                                                                                drive, compressor, shootTime),
                                                                                 new IntakeArmLower(intake),
                                                                                 new RunIntakeMotor(intake, .75))),
 

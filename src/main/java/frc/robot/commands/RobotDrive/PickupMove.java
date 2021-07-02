@@ -26,7 +26,7 @@ public class PickupMove extends CommandBase {
 
   private int loopCtr;
 
-  public PickupMove(RevDrivetrain drive, double endpoint, double speed, double accel) {
+  public PickupMove(RevDrivetrain drive, double endpoint, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_drive = drive;
     m_endpoint = endpoint;

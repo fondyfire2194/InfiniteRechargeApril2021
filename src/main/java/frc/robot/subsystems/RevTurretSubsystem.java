@@ -93,11 +93,13 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public SimpleCSVLogger turretLogger;
     public boolean logTurretItems;
     public boolean turretLogInProgress;
-    public double turretVisionTolerance =1;
+    public double turretVisionTolerance = 1;
     public double testLockFromThrottle;
     public boolean testLock;
 
     public boolean notUseVision;
+    public double turretOffsetAdder;
+	public double turretOffsetChange;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -204,6 +206,10 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public void positionTurret(double angle, int slotNumber) {
         mPidController.setReference(angle, ControlType.kPosition, slotNumber);
 
+    }
+
+    public double getTargetHorOffset() {
+        return targetHorizontalOffset;
     }
 
     @Override

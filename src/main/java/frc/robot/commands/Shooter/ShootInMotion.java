@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.subsystems.CellTransportSubsystem;
+import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
@@ -27,6 +28,7 @@ public class ShootInMotion extends CommandBase {
   private final RevShooterSubsystem m_shooter;
   private final RevTiltSubsystem m_tilt;
   private final RevTurretSubsystem m_turret;
+  private final RevDrivetrain m_drive;
   private final CellTransportSubsystem m_transport;
   private final Compressor m_compressor;
   private final LimeLight m_limelight;
@@ -44,14 +46,31 @@ public class ShootInMotion extends CommandBase {
   private double cellReleasedStartTime;
 
   private int loopctr;
-  private double tiltDistanceTolerance;
-  private double turretDistanceTolerance;
+
+  public static double startTiltAngle = 24;
+  public static double startTurretAngle = -36;
+  public static double startShootSpeed = 30;
+  public static double startTiltOffset;
+  public static double startTurretOffset;
+
+  public static double endTiltAngle = 13;
+  public static double endTurretAngle = -16;
+  public static double endShootSpeed = 40;
+  public static double endTiltOffset = 6;
+  public static double endTurretOffset = 0;
+
+  public static double distance = 4;
+
+  private double turretOffsetChangePerMeter = (endTurretOffset - startTurretOffset) / distance;
+  private double tiltOffsetChangePerMeter = (endTiltOffset - startTiltOffset) / distance;
+  private double shootMPSChangePerMeter = (endShootSpeed - startShootSpeed) / distance;
 
   public ShootInMotion(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret,
-      LimeLight limelight, CellTransportSubsystem transport, Compressor compressor, double time) {
+      LimeLight limelight, CellTransportSubsystem transport, RevDrivetrain drive, Compressor compressor, double time) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
     m_transport = transport;
+    m_drive = drive;
     m_compressor = compressor;
     m_limelight = limelight;
     m_tilt = tilt;
@@ -75,29 +94,22 @@ public class ShootInMotion extends CommandBase {
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.useVision = true;
-    
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
+
     loopctr++;
 
-    boolean inAuto = DriverStation.getInstance().isAutonomous();
+    okToShoot = (m_limelight.getVertOnTarget(m_tilt.tiltVisionTolerance)
+        && m_limelight.getHorOnTarget(m_turret.turretVisionTolerance)) && m_shooter.atSpeed();
 
-    m_shooter.okToShoot = (m_limelight.getVertOnTarget(m_tilt.tiltVisionTolerance)
-        && m_limelight.getHorOnTarget(m_turret.turretVisionTolerance));
-
-
-    if (m_shooter.atSpeed() && m_shooter.okToShoot || m_shooter.isShooting) {
-
-      m_shooter.isShooting = true;
-
-    }
+    m_shooter.isShooting = okToShoot || m_shooter.isShooting;
 
     if (m_shooter.isShooting) {
-      
+
       m_transport.runLeftBeltMotor(.5);
       m_transport.runRightBeltMotor(-.5);
 
@@ -121,9 +133,9 @@ public class ShootInMotion extends CommandBase {
       m_shooter.shotInProgress = false;
     }
 
-    m_shooter.okToShoot = okToShoot && m_shooter.isShooting;
+    m_shooter.okToShoot = okToShoot && m_shooter.isShooting && m_shooter.atSpeed();
 
-    getNextCell = m_shooter.okToShoot && !m_shooter.shotInProgress && !cellAvailable && m_shooter.atSpeed();
+    getNextCell = m_shooter.okToShoot && !m_shooter.shotInProgress && !cellAvailable;
 
     if (getNextCell || cellReleased) {
       releaseOneCell();
@@ -135,19 +147,37 @@ public class ShootInMotion extends CommandBase {
     // SmartDashboard.putBoolean("CAvail ", cellAvailable);
     // SmartDashboard.putNumber("CLSSHT", cellsShot);
 
+    distance = -m_drive.getAverageDistance();
+
+    m_tilt.tiltOffsetChange = distance * tiltOffsetChangePerMeter;
+    m_turret.turretOffsetChange = distance * turretOffsetChangePerMeter;
+    m_shooter.shooterFPSChange = distance * shootMPSChangePerMeter;
+
+    m_tilt.targetVerticalOffset += m_tilt.tiltOffsetChange;
+    m_turret.targetHorizontalOffset += m_turret.turretOffsetChange;
+
+    m_limelight.setHorizontalOffset(m_tilt.targetVerticalOffset);
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_transport.holdCell();
-    m_transport.stopBelts();
-    m_transport.stopRollers();
     m_compressor.start();
     m_shooter.shotInProgress = false;
     m_shooter.endShootFile = true;
     m_shooter.isShooting = false;
-    m_shooter.setNotOKShootDriver();
+
+    m_shooter.shooterFPSChange = 0;
+
+    m_tilt.targetVerticalOffset -= m_tilt.tiltOffsetChange;
+    m_turret.targetHorizontalOffset -= m_turret.turretOffsetChange;
+    m_tilt.tiltOffsetChange = 0;
+    m_turret.turretOffsetChange = 0;
+
+    m_transport.stopBelts();
+
   }
 
   // Returns true when the command should end.

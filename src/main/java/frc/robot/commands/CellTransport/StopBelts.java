@@ -4,17 +4,16 @@
 
 package frc.robot.commands.CellTransport;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.CellTransportSubsystem;
 
-public class RunBelts extends CommandBase {
+public class StopBelts extends CommandBase {
   /** Creates a new RunRollers. */
   private final CellTransportSubsystem m_transport;
-  private double rollerStartTime;
+
   private final double speed = .5;
 
-  public RunBelts(CellTransportSubsystem transport) {
+  public StopBelts(CellTransportSubsystem transport) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_transport = transport;
   }
@@ -29,8 +28,8 @@ public class RunBelts extends CommandBase {
   @Override
   public void execute() {
 
-    m_transport.runLeftBeltMotor(-speed);
-    m_transport.runRightBeltMotor(speed);
+    m_transport.stopBelts();
+    m_transport.haltBelts = true;
 
   }
 
@@ -38,12 +37,11 @@ public class RunBelts extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_transport.stopBelts();
-    m_transport.haltBelts = false;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_transport.haltBelts;
+    return false;
   }
 }

@@ -156,7 +156,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double programSpeed;
     public String[] speedSource = { "Program", "Camera", "Driver", "Setup" };
     public String activeSpeedSource = "Program";
-    
+    public double shooterFPSAdder;
+	public Object shooterFPSChange;
 
     public RevShooterSubsystem() {
 
@@ -221,7 +222,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     }
 
     public void runShooter() {
-
+        requiredMps += shooterFPSAdder;
         spinAtMetersPerSec(-requiredMps);
     }
 
@@ -268,7 +269,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     public boolean atSpeed() {
 
-        return  Math.abs(requiredMps + getMPS()) < (requiredMps * .2);
+        return Math.abs(requiredMps + getMPS()) < (requiredMps * .2);
 
     }
 

@@ -129,8 +129,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         mFollowerLeft.follow(mLeadLeft, false);
         mFollowerRight.follow(mLeadRight, false);
-        mLeadLeft.setClosedLoopRampRate(.25);
-        mLeadRight.setClosedLoopRampRate(.25);
+        mLeadLeft.setOpenLoopRampRate(.5);
+        mLeadRight.setOpenLoopRampRate(.5);
         mGyro = new AHRS();
 
         mDrive = new DifferentialDrive(mLeadLeft, mLeadRight);

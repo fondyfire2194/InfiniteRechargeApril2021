@@ -49,7 +49,8 @@ public class CellTransportSubsystem extends SubsystemBase {
   public boolean rollersAtSpeed;
   public double rollerSpeed;
   public boolean haltRollers;
-  private double rollerStartTime;
+  public boolean haltBelts;
+ 
 
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
@@ -185,6 +186,7 @@ public class CellTransportSubsystem extends SubsystemBase {
     moveCellArm(cellArmHoldCell);
   }
 
+
   public void releaseCell() {
     moveCellArm(cellArmReleaseCell);
   }
@@ -199,6 +201,14 @@ public class CellTransportSubsystem extends SubsystemBase {
 
   public double getArmPosition() {
     return cellArm.getPosition();
+  }
+
+  public boolean getCellArmDown() {
+    return getArmAngle() > 110;
+  }
+
+  public boolean getCellArmUp() {
+    return getArmAngle() < 50;
   }
 
   public int getArmType() {

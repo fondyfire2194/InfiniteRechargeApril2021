@@ -24,7 +24,7 @@ public class Position2Macro extends SequentialCommandGroup {
       RevTiltSubsystem tilt, CellTransportSubsystem transport, LimeLight limelight) {
     // Add your commands in the a drive,ddCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new ResetGyro(drive), new ResetEncoders(drive), new PickupMove(drive, 2.5, .4, .5),
+    addCommands(new ResetGyro(drive), new ResetEncoders(drive), new PickupMove(drive, 2.5, .4),
         new SetShotPosition2(shooter, turret, tilt, transport, limelight));
   }
 }

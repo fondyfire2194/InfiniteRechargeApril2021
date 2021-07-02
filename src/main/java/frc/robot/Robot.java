@@ -150,7 +150,7 @@ public class Robot extends TimedRobot {
 
         setStartingPose(FieldMap.startPosition[0]);
 
-        m_autonomousCommand = new PickupMove(m_robotContainer.m_robotDrive, -1, .5, .02);
+        m_autonomousCommand = new PickupMove(m_robotContainer.m_robotDrive, -1, .5);
 
         // m_robotContainer.m_shooter.stop();
 
