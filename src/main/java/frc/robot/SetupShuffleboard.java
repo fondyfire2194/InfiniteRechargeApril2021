@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
+import frc.robot.commands.AutoCommands.StartAllShooter;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
@@ -495,7 +496,7 @@ public class SetupShuffleboard {
                         shooterCommands.add("Cmd", m_shooter);
                         shooterCommands.add("LogDataRun",
                                         new LogDistanceData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
-
+                        shooterCommands.add("RunAllShooters", new StartAllShooter(shooter, transport, 5));
                         shooterCommands.add("UseSpeedSlider", new ChooseShooterSpeedSource(shooter, tilt, turret, 3));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")

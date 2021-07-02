@@ -22,7 +22,7 @@ public class StopShoot extends InstantCommand {
   public StopShoot(RevShooterSubsystem shooter, CellTransportSubsystem transport) {
     m_shooter = shooter;
     m_transport = transport;
-   // addRequirements();
+    addRequirements(m_shooter);
 
   }
 

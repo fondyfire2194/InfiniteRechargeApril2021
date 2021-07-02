@@ -186,7 +186,7 @@ public class RobotContainer {
 
             m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_shooter, m_limelight));
 
-            m_shooter.setDefaultCommand(new RunShooter(m_shooter));
+            m_shooter.setDefaultCommand(getJogShooterCommand());
 
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
                         m_limelight, m_intake, m_trajectory, isMatch);
