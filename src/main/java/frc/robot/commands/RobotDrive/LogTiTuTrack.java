@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.RevDrivetrain;
+import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 
@@ -18,11 +19,11 @@ public class LogTiTuTrack extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Time", "AveDist", "LeftRate", "GyroYaw", "TiltAng", "TiltRate", "DegVert", "OnTgt",
-      "TurretAngle", "TurretRate", "DegHor", "HOnTgt" };
+  public final String[] names = { "Time", "AveDist", "LeftRate", "GyroYaw", "TiltAng", "TiltRate", "TiltPU", "DegVert",
+      "VOnTgt", "TurretAngle", "TurretRate", "TurretPU", "DegHor", "HOnTgt", "AtSpeed","OKshoot" ,"ISSHO","ShIP"};
 
-  public static String[] units = { "Sec", "M", "MPS", "Degrees", "Degrees", "DPS", "Degrees", "T/F", "Degrees", "DPS",
-      "Degrees", "T/F" };
+  public static String[] units = { "Sec", "M", "MPS", "Degrees", "Degrees", "DPS", "PU", "Degrees", "T/F", "Degrees",
+      "DPS", "PU", "Degrees", "T/F" , "T/F" , "T/F" , "T/F" , "T/F" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -31,19 +32,26 @@ public class LogTiTuTrack extends CommandBase {
   private final RevTiltSubsystem m_tilt;
   private final RevTurretSubsystem m_turret;
   private final LimeLight m_limelight;
+  private final RevShooterSubsystem m_shooter;
 
   private double logTime;
 
   private double horOnTgt;
   private double vertOnTgt;
+  private double isShooting;
+  private double atSpeed;
+  private double okToShoot;
+  private double shotInProgress;
 
-  public LogTiTuTrack(RevDrivetrain drive, RevTiltSubsystem tilt, RevTurretSubsystem turret, LimeLight limelight) {
+  public LogTiTuTrack(RevDrivetrain drive, RevTiltSubsystem tilt, RevTurretSubsystem turret, LimeLight limelight,
+      RevShooterSubsystem shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     m_drive = drive;
     m_tilt = tilt;
     m_turret = turret;
     m_limelight = limelight;
+    m_shooter = shooter;
   }
 
   // Called when the command is initially scheduled.
@@ -62,8 +70,12 @@ public class LogTiTuTrack extends CommandBase {
 
     horOnTgt = 0;
     vertOnTgt = 0;
+    atSpeed = 0;
+    okToShoot = 0;
+    isShooting = 0;
+    shotInProgress = 0;
 
-    // allow 1 second for file to be opened
+    // allow 1 sec=0ond for file to be opened
 
     if (!fileOpenNow)
       loopCtr++;
@@ -87,11 +99,21 @@ public class LogTiTuTrack extends CommandBase {
       if (m_limelight.getHorOnTarget(1))
         vertOnTgt = 1;
 
+      if (m_shooter.shotInProgress)
+        shotInProgress = 1;
+      if (m_shooter.atSpeed())
+        atSpeed = 1;
+      if (m_shooter.okToShoot)
+        okToShoot = 1;
+      if (m_shooter.isShooting)
+        isShooting = 1;
+
       logTime = Timer.getFPGATimestamp();
 
       m_drive.driveLogger.writeData(logTime, m_drive.getAverageDistance(), m_drive.getLeftRate(), m_drive.getYaw(),
-          m_tilt.getAngle(), m_tilt.getSpeed(), m_limelight.getdegVerticalToTarget(), vertOnTgt, m_turret.getAngle(),
-          m_turret.getSpeed(), m_limelight.getdegRotationToTarget(), horOnTgt);
+          m_tilt.getAngle(), m_tilt.getSpeed(), m_tilt.getOut(), m_limelight.getdegVerticalToTarget(), vertOnTgt,
+          m_turret.getAngle(), m_turret.getSpeed(), m_turret.getOut(), m_limelight.getdegRotationToTarget(), horOnTgt,
+          atSpeed, okToShoot, isShooting, shotInProgress);
     }
 
   }
@@ -104,7 +126,7 @@ public class LogTiTuTrack extends CommandBase {
 
   }
 
-  // Returns true when the command should end.
+  // Returns true when the command should end.,
   @Override
   public boolean isFinished() {
     return m_drive.endDriveFile;

@@ -85,6 +85,7 @@ public class ShootInMotion extends CommandBase {
 
     startTime = Timer.getFPGATimestamp();
     m_shooter.shootTime = m_time;
+    m_shooter.shotInProgress = false;
     m_compressor.stop();
     m_shooter.isShooting = false;
     m_transport.holdCell();
@@ -106,13 +107,12 @@ public class ShootInMotion extends CommandBase {
     okToShoot = (m_limelight.getVertOnTarget(m_tilt.tiltVisionTolerance)
         && m_limelight.getHorOnTarget(m_turret.turretVisionTolerance)) && m_shooter.atSpeed();
 
-    m_shooter.isShooting = okToShoot || m_shooter.isShooting;
+    m_shooter.isShooting = okToShoot;
 
-    if (m_shooter.isShooting) {
+    getNextCell = okToShoot && !m_shooter.shotInProgress && !cellAvailable;
 
-      m_transport.runLeftBeltMotor(.5);
-      m_transport.runRightBeltMotor(-.5);
-
+    if (getNextCell || cellReleased) {
+      releaseOneCell();
     }
 
     if (okToShoot && cellAvailable && !m_shooter.shotInProgress) {
@@ -123,29 +123,15 @@ public class ShootInMotion extends CommandBase {
 
     }
 
-    // if (shotInProgress) {
-    // m_limelight.setSnapshot(Snapshot.kon);
-    // } else {
-    // m_limelight.setSnapshot(Snapshot.koff);
-    // }
-
-    if (m_shooter.shotInProgress && Timer.getFPGATimestamp() > (shotStartTime + shotTime) && m_shooter.atSpeed()) {
+    if (m_shooter.shotInProgress && Timer.getFPGATimestamp() > (shotStartTime + shotTime)) {
       m_shooter.shotInProgress = false;
     }
 
-    m_shooter.okToShoot = okToShoot && m_shooter.isShooting && m_shooter.atSpeed();
+    SmartDashboard.putBoolean("OKShoot", okToShoot);
+    SmartDashboard.putBoolean("SHIP", m_shooter.shotInProgress);
 
-    getNextCell = m_shooter.okToShoot && !m_shooter.shotInProgress && !cellAvailable;
-
-    if (getNextCell || cellReleased) {
-      releaseOneCell();
-    }
-
-    // SmartDashboard.putBoolean("OKShoot", okToShoot);
-    // SmartDashboard.putBoolean("SHIP", m_shooter.shotInProgress);
-    // SmartDashboard.putBoolean("SHSTD", shootStarted);
-    // SmartDashboard.putBoolean("CAvail ", cellAvailable);
-    // SmartDashboard.putNumber("CLSSHT", cellsShot);
+    SmartDashboard.putBoolean("CAvail ", cellAvailable);
+    SmartDashboard.putNumber("CLSSHT", cellsShot);
 
     distance = -m_drive.getAverageDistance();
 

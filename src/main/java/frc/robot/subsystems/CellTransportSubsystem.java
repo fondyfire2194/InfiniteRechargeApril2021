@@ -50,6 +50,7 @@ public class CellTransportSubsystem extends SubsystemBase {
   public double rollerSpeed;
   public boolean haltRollers;
   public boolean haltBelts;
+public int cellsShot;
  
 
   public CellTransportSubsystem() {

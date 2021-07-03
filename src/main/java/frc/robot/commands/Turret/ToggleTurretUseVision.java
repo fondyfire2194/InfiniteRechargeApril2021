@@ -21,9 +21,9 @@ public class ToggleTurretUseVision extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (m_turret.notUseVision)
-      m_turret.notUseVision = false;
+    if (m_turret.turretUseVision)
+      m_turret.turretUseVision = false;
     else
-      m_turret.notUseVision = true;
+      m_turret.turretUseVision = true;
   }
 }

@@ -107,7 +107,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double positionError;
     public double correctedEndpoint;
     public double visionErrorDifference;
-    public boolean useTiltVision;
     public double highTolerance;
     public double lowTolerance;
     public double cameraAngle;
@@ -117,7 +116,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private boolean lastTuneOnv;
     private boolean tuneOnv;
     public boolean testLock;
-    public boolean notUseVision;
+    public boolean tiltUseVision;;
 	public double tiltOffsetAdder;
 	public double tiltOffsetChange;
 

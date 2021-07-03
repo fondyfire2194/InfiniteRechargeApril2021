@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.AutoCommands;
+package frc.robot.commands.AutoCommands.TrenchBasic;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -87,7 +87,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                                                                 new IntakeArmLower(intake)),
                                 // 1st Shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
-                                                new SetShootSpeed(shooter, shootSpeed), new UseVision(limelight, false),
+                                                new SetShootSpeed(shooter, shootSpeed), new UseVision(limelight, true),
 
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
                                                                 shootTime)).deadlineWith(
@@ -97,20 +97,22 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                                                                                 limelight)),
                                 // 2nd pickup
 
-                                new PickupMove(drive, retractDistance1, .6).deadlineWith(new ParallelCommandGroup(
-                                                new IntakeArmLower(intake), new RunIntakeMotor(intake, .75))),
-                                // // 2nd lock
-                                new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset1),
-                                                new SetTurretOffset(turret, turretOffset1),
+                                new PickupMove(drive, retractDistance1, .7)
 
-                                                new PositionTiltToVision(tilt, limelight, tiltAngle1 + tiltOffset1),
-                                                new PositionTurretToVision(turret, limelight,
-                                                                turretAngle1 + turretOffset1)).deadlineWith(
-                                                                                new UseVision(limelight, true),
-                                                                                new StopIntakeMotor(intake)),
+                                                .deadlineWith(new UseVision(limelight, false),
+                                                                new SetTiltOffset(tilt, tiltOffset1),
+                                                                new SetTurretOffset(turret, turretOffset1),
+
+                                                                new PositionTilt(tilt, tiltAngle1 + tiltOffset1),
+                                                                new PositionTurret(turret,
+                                                                                turretAngle1 + turretOffset1),
+                                                                new IntakeArmLower(intake),
+                                                                new RunIntakeMotor(intake, .75)),
+
                                 // // 2nd shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot2Started"),
-                                                new SetShootSpeed(shooter, shootSpeed1),
+                                                new StopIntakeMotor(intake), new SetShootSpeed(shooter, shootSpeed1),
+                                                new UseVision(limelight, true),
 
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
                                                                 shootTime)).deadlineWith(

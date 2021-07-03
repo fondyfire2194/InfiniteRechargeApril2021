@@ -2,14 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.AutoCommands;
+package frc.robot.commands.AutoCommands.TrenchBasic;
 
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.LimeLight;
-import frc.robot.commands.CellTransport.RunBelts;
-import frc.robot.commands.CellTransport.RunRollers;
+import frc.robot.commands.AutoCommands.StartAllShooter;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -20,9 +18,9 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ShootWhileMoving extends ParallelRaceGroup {
+public class Trench3BallShootPlusPickup extends ParallelRaceGroup {
   /** Creates a new Trench3BAllShootPlusPickup. */
-  public ShootWhileMoving(RevShooterSubsystem shooter, RevDrivetrain drive, RevTiltSubsystem tilt,
+  public Trench3BallShootPlusPickup(RevShooterSubsystem shooter, RevDrivetrain drive, RevTiltSubsystem tilt,
       RevTurretSubsystem turret, CellTransportSubsystem transport, RearIntakeSubsystem intake, LimeLight limelight,
       Compressor compressor) {
 
@@ -31,8 +29,9 @@ public class ShootWhileMoving extends ParallelRaceGroup {
 
     addCommands(
 
-        new StartAllShooter(shooter, transport, .75),
-
-        new AutoModeTrenchShootOnTheMove(shooter, turret, tilt, transport, drive, limelight, compressor, intake));
+         new StartAllShooter(shooter, transport, .25),
+        
+        
+        new AutoMode3M3BallTrench(shooter, turret, tilt, transport, drive, limelight, compressor, intake));
   }
 }

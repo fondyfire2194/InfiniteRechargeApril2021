@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.AutoCommands;
+package frc.robot.commands.AutoCommands.TrenchShootMoving;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -17,6 +17,7 @@ import frc.robot.commands.MessageCommand;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
+import frc.robot.commands.RobotDrive.EndDriveLog;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
@@ -38,6 +39,7 @@ import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.SetLogTurretItems;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForNoVision;
+import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -55,12 +57,12 @@ public class AutoModeTrenchShootOnTheMove extends SequentialCommandGroup {
          * Start in front of power port and shoot
          */
         static double retractDistance = ShootData.trench3M3BallShotConstants.retractDistance;
-        static double tiltAngle = ShootData.trench5BallShotConstants.tiltAngle;
-        static double turretAngle = ShootData.trench5BallShotConstants.turretAngle;
-        static double shootSpeed = ShootData.trench5BallShotConstants.shootSpeed;
-        static double tiltOffset = ShootData.trench5BallShotConstants.tiltOffset;
-        static double turretOffset = ShootData.trench5BallShotConstants.turretOffset;
-        static double shootTime = ShootData.trench5BallShotConstants.shootTime;
+        static double tiltAngle = ShootData.trench3M3BallShotConstants.tiltAngle;
+        static double turretAngle = ShootData.trench3M3BallShotConstants.turretAngle;
+        static double shootSpeed = ShootData.trench3M3BallShotConstants.shootSpeed;
+        static double tiltOffset = ShootData.trench3M3BallShotConstants.tiltOffset;
+        static double turretOffset = ShootData.trench3M3BallShotConstants.turretOffset;
+        static double shootTime = ShootData.trench3M3BallShotConstants.shootTime;
 
         public AutoModeTrenchShootOnTheMove(RevShooterSubsystem shooter, RevTurretSubsystem turret,
                         RevTiltSubsystem tilt, CellTransportSubsystem transport, RevDrivetrain drive,
@@ -78,13 +80,10 @@ public class AutoModeTrenchShootOnTheMove extends SequentialCommandGroup {
                                                 new PositionTurretToVision(turret, limelight,
                                                                 turretAngle + turretOffset),
                                                 new SetTiltOffset(tilt, tiltOffset),
-                                                new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset))
-                                                                .deadlineWith(new PositionHoldTilt(tilt, shooter,
-                                                                                limelight),
-                                                                                new PositionHoldTurret(turret, shooter,
-                                                                                                limelight)),
+                                                new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
+                                                new UseVision(limelight, true)),
 
-                                new ParallelCommandGroup(new SetShootSpeed(shooter, 34), 
+                                new ParallelCommandGroup(new SetShootSpeed(shooter, 34),
                                                 new PickupMove(drive, retractDistance, .25))
 
                                                                 .deadlineWith(new ParallelCommandGroup(
@@ -94,15 +93,17 @@ public class AutoModeTrenchShootOnTheMove extends SequentialCommandGroup {
                                                                                                 limelight),
                                                                                 new ShootInMotion(shooter, tilt, turret,
                                                                                                 limelight, transport,
-                                                                                                drive, compressor, shootTime),
+                                                                                                drive, compressor,
+                                                                                                shootTime),
                                                                                 new IntakeArmLower(intake),
+
                                                                                 new RunIntakeMotor(intake, .75))),
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
                                                 new SetLogTiltItems(tilt, true), new SetLogTurretItems(turret, true),
                                                 new SetLogShooterItems(shooter, true), new EndTiltLog(tilt),
                                                 new EndTurretLog(turret), new EndShootLog(shooter),
-                                                new StopShoot(shooter, transport), new IntakeArmRaise(intake),
+                                                new IntakeArmRaise(intake), new EndDriveLog(drive),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new SetUpLimelightForNoVision(limelight),
                                                 new PositionTurret(turret, 0)));

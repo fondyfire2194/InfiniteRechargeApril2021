@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Tilt;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -59,7 +60,7 @@ public class PositionHoldTilt extends CommandBase {
     if (!m_limelight.useVision)
       visionFoundCounter = 0;
 
-    targetSeen = m_limelight.getIsTargetFound() && m_limelight.useVision && !m_tilt.notUseVision;
+    targetSeen = m_limelight.getIsTargetFound() && m_limelight.useVision;// && m_tilt.tiltUseVision;
 
     if (targetSeen && m_tilt.validTargetSeen) {
 
@@ -99,7 +100,7 @@ public class PositionHoldTilt extends CommandBase {
 
     m_tilt.motorEndpointDegrees = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
 
-    if (!m_shooter.okToShoot)
+    if (!m_shooter.shotInProgress)
       lastVerticalError = m_tilt.adjustedVerticalError;
 
     if (!m_tilt.validTargetSeen) {

@@ -46,7 +46,8 @@ public class PositionTiltToVision extends CommandBase {
   @Override
   public void initialize() {
     m_tilt.programRunning = 3;
-    m_limelight.useVision = false;
+    m_tilt.tiltUseVision = false;
+    m_limelight.useVision=false;
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_tilt.targetAngle = m_endpoint;
@@ -113,6 +114,7 @@ public class PositionTiltToVision extends CommandBase {
   public void end(boolean interrupted) {
     m_tilt.targetAngle = m_tilt.getAngle();
     m_tilt.logTiltItems = false;
+    m_tilt.tiltUseVision = true;
 
   }
 

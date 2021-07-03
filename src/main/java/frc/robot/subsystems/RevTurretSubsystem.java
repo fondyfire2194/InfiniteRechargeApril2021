@@ -97,7 +97,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double testLockFromThrottle;
     public boolean testLock;
 
-    public boolean notUseVision;
+    public boolean turretUseVision;
     public double turretOffsetAdder;
 	public double turretOffsetChange;
 

@@ -47,6 +47,7 @@ public class PositionTurretToVision extends CommandBase {
     visionFoundCounter = 0;
     loopCtr = 0;
     m_limelight.horizontalOffset = m_turret.targetHorizontalOffset;
+    m_turret.turretUseVision = false;
     m_limelight.useVision = false;
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.setLEDMode(LedMode.kpipeLine);
@@ -71,7 +72,7 @@ public class PositionTurretToVision extends CommandBase {
   public void execute() {
     loopCtr++;
 
-    targetSeen = m_limelight.useVision && m_limelight.getIsTargetFound();
+    targetSeen = m_limelight.getIsTargetFound();
 
     if (targetSeen && !m_turret.validTargetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
@@ -108,6 +109,7 @@ public class PositionTurretToVision extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_turret.logTurretItems = false;
+    m_turret.turretUseVision = true;
   }
 
   // Returns true when the command should end.

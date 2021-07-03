@@ -21,9 +21,9 @@ public class ToggleTiltUseVision extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (m_tilt.notUseVision)
-      m_tilt.notUseVision = false;
+    if (m_tilt.tiltUseVision)
+      m_tilt.tiltUseVision = false;
     else
-      m_tilt.notUseVision = true;
+      m_tilt.tiltUseVision = true;
   }
 }

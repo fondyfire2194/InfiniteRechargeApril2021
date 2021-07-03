@@ -230,7 +230,7 @@ public class SetupShuffleboard {
                         competition1.addNumber("DriverHorOffsetM", () -> m_turret.driverHorizontalOffsetMeters);
                         competition1.addNumber("TargetVertOffsetDeg", () -> m_tilt.targetVerticalOffset);
                         competition1.addNumber("TargetHorOffsetDeg", () -> m_turret.targetHorizontalOffset);
-
+                        competition1.addNumber("CellsShot", () -> m_transport.cellsShot);
                         ShuffleboardLayout shoot = Shuffleboard.getTab("Competition")
                                         .getLayout("Shoot", BuiltInLayouts.kList).withPosition(1, 0).withSize(2, 1)
                                         .withProperties(Map.of("Label position", "HIDDEN"));
@@ -261,12 +261,15 @@ public class SetupShuffleboard {
                         competition.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
                         competition.addBoolean("RollersAtSpeed", () -> m_transport.rollersAtSpeed);
 
-                        Shuffleboard.getTab("Competition").addNumber("TimeRemaining", () -> m_robotDrive.getMatchTime())
-                                        .withWidget(BuiltInWidgets.kTextView).withPosition(9, 0).withSize(1, 1);
-                        Shuffleboard.getTab("Competition").addNumber("Battery", () -> getPDPInfo()[0])
-                                        .withWidget(BuiltInWidgets.kTextView).withPosition(9, 1).withSize(1, 1);
-                        Shuffleboard.getTab("Competition").addNumber("TotalEnegy Ah", () -> getPDPInfo()[2])
-                                        .withWidget(BuiltInWidgets.kTextView).withPosition(9, 2).withSize(1, 1);
+                        // Shuffleboard.getTab("Competition").addNumber("TimeRemaining", () ->
+                        // m_robotDrive.getMatchTime())
+                        // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 0).withSize(1, 1);
+                        // Shuffleboard.getTab("Competition").addNumber("Battery", () ->
+                        // getPDPInfo()[0])
+                        // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 1).withSize(1, 1);
+                        // Shuffleboard.getTab("Competition").addNumber("TotalEnegy Ah", () ->
+                        // getPDPInfo()[2])
+                        // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 2).withSize(1, 1);
 
                         if (RobotBase.isReal()) {
 
@@ -403,8 +406,7 @@ public class SetupShuffleboard {
                         tiltCommands.add("Position To 25", new PositionTilt(m_tilt, 25));
                         tiltCommands.add("Position To 15", new PositionTilt(m_tilt, 15));
                         tiltCommands.add("Position To 5", new PositionTilt(m_tilt, 5));
-                        // tiltCommands.add("PositionToVision", new PositionTiltToVision(m_tilt,
-                        // m_limelight,
+                        tiltCommands.add("PositionToVision", new PositionTiltToVision(m_tilt, m_limelight, 10));
                         // HoodedShooterConstants.TILT_MIN_ANGLE));
                         tiltCommands.add(new PositionTiltToVision(m_tilt, m_limelight, m_tilt.tiltMinAngle));
                         tiltCommands.add("PositionToSwitch", new TiltMoveToReverseLimit(m_tilt));
@@ -440,6 +442,7 @@ public class SetupShuffleboard {
                         tiltValues3.addNumber("LockError", () -> m_tilt.tiltLockController.getPositionError());
                         tiltValues3.addBoolean(("LockController"), () -> m_tilt.validTargetSeen);
                         tiltValues3.addBoolean("LockOnTarget", () -> m_tilt.getLockAtTarget());
+                        tiltValues3.addBoolean("ValTgt", ()->m_tilt.validTargetSeen);
 
                         ShuffleboardLayout tiltValues2 = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("States", BuiltInLayouts.kGrid).withPosition(4, 2).withSize(3, 2)
@@ -636,8 +639,8 @@ public class SetupShuffleboard {
                                 robotCommands.add("To -4(.6)", new PickupMove(m_robotDrive, -4, .6));
                                 robotCommands.add("To 0", new PickupMove(m_robotDrive, 0, .5));
                                 robotCommands.add("Cmd", m_robotDrive);
-                                robotCommands.add("LogTITU",
-                                                new LogTiTuTrack(m_robotDrive, m_tilt, m_turret, m_limelight));
+                                robotCommands.add("LogTITU", new LogTiTuTrack(m_robotDrive, m_tilt, m_turret,
+                                                m_limelight, m_shooter));
                                 robotCommands.add("EndLog", new EndDriveLog(m_robotDrive));
 
                                 ShuffleboardLayout robotValues = Shuffleboard.getTab("SetupRobot")

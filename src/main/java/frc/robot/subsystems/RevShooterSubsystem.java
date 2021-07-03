@@ -157,7 +157,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public String[] speedSource = { "Program", "Camera", "Driver", "Setup" };
     public String activeSpeedSource = "Program";
     public double shooterFPSAdder;
-	public Object shooterFPSChange;
+    public Object shooterFPSChange;
 
     public RevShooterSubsystem() {
 
@@ -169,7 +169,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mPidController = mLeftMotor.getPIDController();
         mLeftMotor.restoreFactoryDefaults();
         mLeftMotor.setOpenLoopRampRate(5.);
-        mLeftMotor.setClosedLoopRampRate(1.);
+        mLeftMotor.setClosedLoopRampRate(3.);
 
         mRightMotor.restoreFactoryDefaults();
         mRightMotor.follow(mLeftMotor, true);
