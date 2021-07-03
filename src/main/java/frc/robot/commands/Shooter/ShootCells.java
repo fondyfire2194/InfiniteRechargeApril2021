@@ -10,7 +10,6 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.LimelightControlMode.LedMode;
@@ -100,7 +99,7 @@ public class ShootCells extends CommandBase {
 
     }
 
-    if (m_shooter.shotInProgress && Timer.getFPGATimestamp() > (shotStartTime + shotTime) && m_shooter.atSpeed()) {
+    if (m_shooter.shotInProgress && Timer.getFPGATimestamp() > shotStartTime + shotTime ){
       m_shooter.shotInProgress = false;
     }
 

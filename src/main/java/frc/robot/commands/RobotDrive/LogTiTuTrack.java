@@ -18,10 +18,11 @@ public class LogTiTuTrack extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Time", "AveDist", "LeftRate", "TltAngle", "TurretAngle", "DegVert", "DegHor",
-      "VOnTgt", "HOnTgt", "GyroYaw" };
+  public final String[] names = { "Time", "AveDist", "LeftRate", "GyroYaw", "TiltAng", "TiltRate", "DegVert", "OnTgt",
+      "TurretAngle", "TurretRate", "DegHor", "HOnTgt" };
 
-  public static String[] units = { "Sec", "M", "MPS", "Degrees", "Degrees", "Degrees", "Degrees", "T/F", "T/F", "DEG" };
+  public static String[] units = { "Sec", "M", "MPS", "Degrees", "Degrees", "DPS", "Degrees", "T/F", "Degrees", "DPS",
+      "Degrees", "T/F" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -88,9 +89,9 @@ public class LogTiTuTrack extends CommandBase {
 
       logTime = Timer.getFPGATimestamp();
 
-      m_drive.driveLogger.writeData(logTime, m_drive.getAverageDistance(), m_drive.getLeftRate(), m_tilt.getAngle(),
-          m_turret.getAngle(), m_limelight.getdegVerticalToTarget(), m_limelight.getdegRotationToTarget(), vertOnTgt,
-          horOnTgt, m_drive.getYaw());
+      m_drive.driveLogger.writeData(logTime, m_drive.getAverageDistance(), m_drive.getLeftRate(), m_drive.getYaw(),
+          m_tilt.getAngle(), m_tilt.getSpeed(), m_limelight.getdegVerticalToTarget(), vertOnTgt, m_turret.getAngle(),
+          m_turret.getSpeed(), m_limelight.getdegRotationToTarget(), horOnTgt);
     }
 
   }
