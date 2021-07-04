@@ -8,17 +8,16 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.commands.AutoCommands.PowerPort.AutoCenterShootMove;
-import frc.robot.commands.AutoCommands.TrenchShootMoving.ShootWhileMoving;
+import frc.robot.commands.AutoCommands.ShieldGen.ShieldGenAuto;
+import frc.robot.commands.AutoCommands.TrenchBasic.TrenchAuto;
+import frc.robot.commands.AutoCommands.TrenchShootMoving.ShootInMotionAuto;
 import frc.robot.commands.AutoCommands.TrenchShootMoving.TiltTurretToVision;
-import frc.robot.commands.AutoCommands.TrenchBasic.Trench3BallShootPlusPickup;
-import frc.robot.commands.AutoCommands.ShieldGen.ShieldGenShoot3Pickup2;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
-import frc.robot.commands.AutoCommands.StartAllShooter;
 
 /** Add your docs here. */
 public class AutoFactory {
@@ -56,21 +55,21 @@ public class AutoFactory {
 
     public ParallelRaceGroup getAutonomousCommand2() {
 
-        return new ShieldGenShoot3Pickup2(m_shooter, m_tilt, m_turret, m_robotDrive, m_transport, m_limelight, m_intake,
+        return new ShieldGenAuto(m_shooter, m_tilt, m_turret, m_robotDrive, m_transport, m_limelight, m_intake,
                 m_compressor);
 
     }
 
     // front of trench or shoot 3 move pickup shoot 3
     public ParallelRaceGroup getAutonomousCommand3() {
-        return new Trench3BallShootPlusPickup(m_shooter, m_robotDrive, m_tilt, m_turret, m_transport, m_intake,
+        return new TrenchAuto(m_shooter, m_robotDrive, m_tilt, m_turret, m_transport, m_intake,
                 m_limelight, m_compressor);
     }
 
     // front of trench move pickup and and shoot together
     public ParallelRaceGroup getAutonomousCommand4() {
 
-        return new ShootWhileMoving(m_shooter, m_robotDrive, m_tilt, m_turret, m_transport, m_intake, m_limelight,
+        return new ShootInMotionAuto(m_shooter, m_robotDrive, m_tilt, m_turret, m_transport, m_intake, m_limelight,
                 m_compressor);
 
     }

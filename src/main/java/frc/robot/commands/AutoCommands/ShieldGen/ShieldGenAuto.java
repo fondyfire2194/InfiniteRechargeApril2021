@@ -23,8 +23,8 @@ import frc.robot.commands.AutoCommands.StartAllShooter;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ShieldGenAuto extends ParallelRaceGroup {
   /** Creates a new TestAuto. */
-  public ShieldGenAuto(RevShooterSubsystem shooter, RevDrivetrain drive, RevTiltSubsystem tilt,
-      RevTurretSubsystem turret, CellTransportSubsystem transport, RearIntakeSubsystem intake, LimeLight limelight,
+  public ShieldGenAuto(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret,
+      RevDrivetrain drive, CellTransportSubsystem transport, LimeLight limelight, RearIntakeSubsystem intake,
       Compressor compressor) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
@@ -32,7 +32,7 @@ public class ShieldGenAuto extends ParallelRaceGroup {
         new ParallelCommandGroup(new StartAllShooter(shooter, transport, .75), new RunRollers(transport),
             new RunBelts(transport)),
 
-        new AutoModeShieldGen(shooter, turret, tilt, transport, drive, limelight, compressor, intake));
+        new ShieldGenRoutine(shooter, turret, tilt, transport, drive, limelight, compressor, intake));
 
   }
 }

@@ -18,9 +18,9 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class Trench3BallShootPlusPickup extends ParallelRaceGroup {
+public class TrenchAuto extends ParallelRaceGroup {
   /** Creates a new Trench3BAllShootPlusPickup. */
-  public Trench3BallShootPlusPickup(RevShooterSubsystem shooter, RevDrivetrain drive, RevTiltSubsystem tilt,
+  public TrenchAuto(RevShooterSubsystem shooter, RevDrivetrain drive, RevTiltSubsystem tilt,
       RevTurretSubsystem turret, CellTransportSubsystem transport, RearIntakeSubsystem intake, LimeLight limelight,
       Compressor compressor) {
 

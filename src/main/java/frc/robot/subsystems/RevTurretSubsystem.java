@@ -71,7 +71,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public boolean turretMotorConnected;
 
-    public double pidLockOut;
+    public double lockPIDOut;
     public boolean visionOnTarget;
     public double adjustMeters = .15;// 6"
     private double maxAdjustMeters = .5;
@@ -220,18 +220,24 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public void lockTurretToVision(double cameraError) {
 
-        pidLockOut = m_turretLockController.calculate(cameraError, 0);
-        runAtVelocity(pidLockOut);
+        lockPIDOut = m_turretLockController.calculate(cameraError, 0);
+
+        if (lockPIDOut >= kMaxOutput * .95)
+            lockPIDOut = kMaxOutput * .95;
+
+        if (lockPIDOut <= kMinOutput * .95)
+            lockPIDOut = kMinOutput * .95;
+
+        runAtVelocity(lockPIDOut);
+
         targetAngle = getAngle();
     }
 
     public void lockTurretToThrottle(double throttleError) {
-        SmartDashboard.putNumber("TTHERR", throttleError);
-        pidLockOut = m_turretLockController.calculate(throttleError, 0);
-        SmartDashboard.putNumber("PIDL OUT", pidLockOut);
-        SmartDashboard.putNumber("PIDL Err", m_turretLockController.getPositionError());
-
-        runAtVelocity(pidLockOut);
+        
+        lockPIDOut = m_turretLockController.calculate(throttleError, 0);
+  
+        runAtVelocity(lockPIDOut);
         targetAngle = getAngle();
     }
 

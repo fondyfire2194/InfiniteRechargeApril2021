@@ -117,8 +117,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     private boolean tuneOnv;
     public boolean testLock;
     public boolean tiltUseVision;;
-	public double tiltOffsetAdder;
-	public double tiltOffsetChange;
+    public double tiltOffsetAdder;
+    public double tiltOffsetChange;
 
     /** 
      * 
@@ -199,7 +199,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         if (RobotBase.isReal() && DriverStation.getInstance().isDisabled())
             targetAngle = getAngle();
 
-        // SmartDashboard.putNumber("CTA", calculateTiltAngle());
 
         if (faultSeen != 0)
             faultSeen = getFaults();
@@ -258,7 +257,15 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public void lockTiltToVision(double cameraError) {
         lockPIDOut = tiltLockController.calculate(cameraError, 0);
+
+        if (lockPIDOut >= kMaxOutput * .95)
+            lockPIDOut = kMaxOutput * .95;
+
+        if (lockPIDOut <= kMinOutput * .95)
+            lockPIDOut = kMinOutput * .95;
+
         runAtVelocity(lockPIDOut);
+        
         targetAngle = getAngle();
     }
 
@@ -385,7 +392,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         faultSeen = 0;
     }
 
-    public double getVerticalTargetOffset(){
+    public double getVerticalTargetOffset() {
         return targetVerticalOffset;
     }
 

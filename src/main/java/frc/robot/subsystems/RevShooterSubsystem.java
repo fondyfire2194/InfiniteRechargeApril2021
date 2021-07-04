@@ -269,7 +269,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     public boolean atSpeed() {
 
-        return Math.abs(requiredMps + getMPS()) < (requiredMps * .2);
+        return Math.abs(requiredMps + getMPS()) < (requiredMps * .05);//getmps is -
 
     }
 
