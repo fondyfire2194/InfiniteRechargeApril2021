@@ -5,7 +5,6 @@
 package frc.robot.commands.RobotDrive;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Pref;
 import frc.robot.subsystems.RevDrivetrain;
@@ -15,10 +14,10 @@ public class PickupMove extends CommandBase {
   private final RevDrivetrain m_drive;
   private double m_endpoint;
   private double m_speed;
-  private double m_accelTime;
+  private double minSpeed = .2;
   private double currentSpeed;
-  
-  private boolean accelerating;
+  private double decelDistance;
+  private double kp;
   private boolean plusDirection;
   private double remainingDistance;
 
@@ -39,9 +38,11 @@ public class PickupMove extends CommandBase {
   @Override
   public void initialize() {
 
-    plusDirection = true;
-    currentSpeed = m_speed;
+    kp = m_speed / decelDistance;
 
+    plusDirection = m_endpoint > m_drive.getAverageDistance();
+
+    currentSpeed = m_speed;
 
     if (DriverStation.getInstance().isOperatorControlEnabled()) {
       m_drive.logDriveItems = true;
@@ -66,12 +67,20 @@ public class PickupMove extends CommandBase {
       plusDirection = false;
     }
 
+    currentSpeed = kp * Math.abs(remainingDistance);
+
+    if (currentSpeed >= m_speed)
+      currentSpeed = m_speed;
+    if (currentSpeed < minSpeed)
+      currentSpeed = minSpeed;
+
     useSpeed = currentSpeed;
 
     if (!plusDirection)
       useSpeed = -useSpeed;
 
     m_drive.arcadeDrive(useSpeed, -m_drive.getYaw() * Pref.getPref("dRStKp"));
+    
   }
 
   // Called once the command ends or is interrupted.
@@ -86,7 +95,7 @@ public class PickupMove extends CommandBase {
   @Override
   public boolean isFinished() {
 
-    return  plusDirection && m_drive.getLeftDistance() > m_endpoint
+    return plusDirection && m_drive.getLeftDistance() > m_endpoint
         || !plusDirection && m_drive.getLeftDistance() < m_endpoint;
 
   }

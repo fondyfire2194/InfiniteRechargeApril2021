@@ -64,8 +64,8 @@ public class AutoModeTrenchShootOnTheMove extends SequentialCommandGroup {
         static double turretOffset = ShootData.trench3M3BallShotConstants.turretOffset;
         static double shootTime = ShootData.trench3M3BallShotConstants.shootTime;
 
-        public AutoModeTrenchShootOnTheMove(RevShooterSubsystem shooter, RevTurretSubsystem turret,
-                        RevTiltSubsystem tilt, CellTransportSubsystem transport, RevDrivetrain drive,
+        public AutoModeTrenchShootOnTheMove(RevShooterSubsystem shooter, RevTurretSubsystem tilt,
+                        RevTiltSubsystem turret, CellTransportSubsystem transport, RevDrivetrain drive,
                         LimeLight limelight, Compressor compressor, RearIntakeSubsystem intake) {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
@@ -73,40 +73,25 @@ public class AutoModeTrenchShootOnTheMove extends SequentialCommandGroup {
 
                 super(new ResetEncoders(drive), new ResetGyro(drive),
 
-                                new ParallelCommandGroup(new SetLogTiltItems(tilt, true),
-                                                new SetLogTurretItems(turret, true),
-                                                new SetLogShooterItems(shooter, true),
-                                                new SetTurretOffset(turret, turretOffset),
-                                                new PositionTurretToVision(turret, limelight,
-                                                                turretAngle + turretOffset),
-                                                new SetTiltOffset(tilt, tiltOffset),
-                                                new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
-                                                new UseVision(limelight, true)),
-
                                 new ParallelCommandGroup(new SetShootSpeed(shooter, 34),
                                                 new PickupMove(drive, retractDistance, .25))
 
                                                                 .deadlineWith(new ParallelCommandGroup(
-                                                                                new PositionHoldTilt(tilt, shooter,
-                                                                                                limelight),
-                                                                                new PositionHoldTurret(turret, shooter,
-                                                                                                limelight),
+
                                                                                 new ShootInMotion(shooter, tilt, turret,
                                                                                                 limelight, transport,
                                                                                                 drive, compressor,
                                                                                                 shootTime),
                                                                                 new IntakeArmLower(intake),
 
-                                                                                new RunIntakeMotor(intake, .75))),
+                                                                                new RunIntakeMotor(intake, .5))),
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
-                                                new SetLogTiltItems(tilt, true), new SetLogTurretItems(turret, true),
-                                                new SetLogShooterItems(shooter, true), new EndTiltLog(tilt),
-                                                new EndTurretLog(turret), new EndShootLog(shooter),
+
+                                                new SetLogShooterItems(shooter, true), new EndShootLog(shooter),
                                                 new IntakeArmRaise(intake), new EndDriveLog(drive),
-                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
-                                                new SetUpLimelightForNoVision(limelight),
-                                                new PositionTurret(turret, 0)));
+
+                                                new SetUpLimelightForNoVision(limelight)));
 
         }
 }

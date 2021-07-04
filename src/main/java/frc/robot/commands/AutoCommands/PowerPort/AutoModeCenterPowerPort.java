@@ -34,6 +34,7 @@ import frc.robot.commands.Turret.SetLogTurretItems;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
+import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -71,12 +72,12 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
-                                                new PickupMove(drive, -1, .5),
+                                                new PickupMove(drive, -1, .3),
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
                                                 new PositionTurretToVision(turret, limelight,
                                                                 turretAngle + turretOffset)),
 
-                                new SetUpLimelightForTarget(limelight),
+                                new UseVision(limelight, true),
 
                                 new ParallelCommandGroup(new MessageCommand("ShootIs3Started"),
                                                 new SetLogShooterItems(shooter, true),

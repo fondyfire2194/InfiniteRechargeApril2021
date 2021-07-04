@@ -18,8 +18,7 @@ public class LogDriveData extends CommandBase {
   public final String[] names = { "Time", "LeftDist", "LeftRate", "LeftAmps", "LeftOut", "RightDist", "RightRate",
       "RightAmps", "RightOut", "GyroYaw" };
 
-  public static String[] units = { "Sec", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees", "Degrees", "PU", "Degrees", "PU",
-      "MPSec" };
+  public static String[] units = { "Sec", "M", "MPS", "Amps", "PU", "M", "MPS", "Amps", "PU", "Deg" };
   private int loopCtr;
   private boolean fileOpenNow;
 

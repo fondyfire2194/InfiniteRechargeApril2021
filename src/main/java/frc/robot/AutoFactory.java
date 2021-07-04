@@ -5,9 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.commands.AutoCommands.PowerPort.AutoCenterShootMove;
 import frc.robot.commands.AutoCommands.TrenchShootMoving.ShootWhileMoving;
+import frc.robot.commands.AutoCommands.TrenchShootMoving.TiltTurretToVision;
 import frc.robot.commands.AutoCommands.TrenchBasic.Trench3BallShootPlusPickup;
 import frc.robot.commands.AutoCommands.ShieldGen.ShieldGenShoot3Pickup2;
 import frc.robot.subsystems.CellTransportSubsystem;
@@ -72,5 +74,11 @@ public class AutoFactory {
                 m_compressor);
 
     }
+
+    public ParallelCommandGroup getAutonomousCommand5() {
+        return new TiltTurretToVision(m_tilt, m_turret, m_limelight);
+    }
+
+    
 
 }

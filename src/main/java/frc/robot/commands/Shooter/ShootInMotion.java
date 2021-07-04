@@ -65,7 +65,7 @@ public class ShootInMotion extends CommandBase {
   private double tiltOffsetChangePerMeter = (endTiltOffset - startTiltOffset) / distance;
   private double shootMPSChangePerMeter = (endShootSpeed - startShootSpeed) / distance;
 
-  public ShootInMotion(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret,
+  public ShootInMotion(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
       LimeLight limelight, CellTransportSubsystem transport, RevDrivetrain drive, Compressor compressor, double time) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;

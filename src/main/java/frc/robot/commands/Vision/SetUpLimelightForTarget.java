@@ -14,11 +14,10 @@ import frc.robot.LimelightControlMode.LedMode;
 public class SetUpLimelightForTarget extends ParallelCommandGroup {
   /** Creates a new SetUpLimelightForTarget. */
 
-
-  public SetUpLimelightForTarget(LimeLight limelight) {
+  public SetUpLimelightForTarget(LimeLight limelight, boolean on) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new LimelightLeds(limelight, LedMode.kpipeLine),
-        new LimelightSetPipeline(limelight, limelight.noZoomPipeline), new UseVision(limelight, true));
+        new LimelightSetPipeline(limelight, limelight.noZoomPipeline), new UseVision(limelight, on));
   }
 }

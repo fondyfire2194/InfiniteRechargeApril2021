@@ -11,14 +11,11 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
-import frc.robot.commands.AutoCommands.StartAllShooter;
-import frc.robot.commands.Tilt.EndTiltLog;
+import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
-import frc.robot.commands.Tilt.SetLogTiltItems;
 import frc.robot.commands.Tilt.SetTiltOffset;
-import frc.robot.commands.Turret.EndTurretLog;
+import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
-import frc.robot.commands.Turret.SetLogTurretItems;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
@@ -45,26 +42,21 @@ public class SetShotPosition0 extends SequentialCommandGroup {
                 super(
 
                                 new ParallelCommandGroup(new SetActiveTeleopShootData(shooter, 0),
-                                                new SetLogTiltItems(tilt, true), new SetLogTurretItems(turret, true),
-                                                new SetLogShooterItems(shooter, true),
+
                                                 new ChooseShooterSpeedSource(shooter, tilt, turret, 0),
-                                                new SetUpLimelightForTarget(limelight),
+                                                new SetUpLimelightForTarget(limelight, false),
                                                 new SetTiltOffset(tilt, ShootData.centerPowerPortConstants.tiltOffset),
                                                 new SetTurretOffset(turret,
                                                                 ShootData.centerPowerPortConstants.turretOffset),
-                                                new PositionTiltToVision(tilt, limelight,
-                                                                ShootData.centerPowerPortConstants.tiltAngle
-                                                                                + ShootData.centerPowerPortConstants.tiltOffset),
-                                                new PositionTurretToVision(turret, limelight,
+                                                new PositionTiltToVision(tilt, limelight, ShootData.centerPowerPortConstants.tiltAngle
+                                                                + ShootData.centerPowerPortConstants.tiltOffset),
+                                                new PositionTurretToVision(turret,limelight,
                                                                 ShootData.centerPowerPortConstants.turretAngle
                                                                                 + ShootData.centerPowerPortConstants.turretOffset),
                                                 new SetShootSpeed(shooter,
-                                                                ShootData.centerPowerPortConstants.shootSpeed),
-                                                new UseVision(limelight, true),
-                                                new StartAllShooter(shooter, transport, 2)),
+                                                                ShootData.centerPowerPortConstants.shootSpeed)),
 
-                                new SetLogTiltItems(tilt, false), new SetLogTurretItems(turret, false),
-                                new SetLogShooterItems(shooter, false), new EndTiltLog(tilt), new EndTurretLog(turret),
-                                new EndShootLog(shooter));
+                                new UseVision(limelight, true));
+
         }
 }

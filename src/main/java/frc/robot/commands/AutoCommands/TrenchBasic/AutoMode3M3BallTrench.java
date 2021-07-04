@@ -14,7 +14,6 @@ import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
-import frc.robot.commands.TimeDelay;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
@@ -24,7 +23,6 @@ import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.commands.Shooter.ShootCells;
-import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
@@ -80,7 +78,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                 // 1st lock
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
-                                                new SetUpLimelightForTarget(limelight), new UseVision(limelight, false),
+                                                new SetUpLimelightForTarget(limelight,false), new UseVision(limelight, false),
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
                                                 new PositionTurretToVision(turret, limelight,
                                                                 turretAngle + turretOffset)).deadlineWith(
@@ -107,7 +105,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                                                 new PositionTurret(turret,
                                                                                 turretAngle1 + turretOffset1),
                                                                 new IntakeArmLower(intake),
-                                                                new RunIntakeMotor(intake, .75)),
+                                                                new RunIntakeMotor(intake, .5)),
 
                                 // // 2nd shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot2Started"),

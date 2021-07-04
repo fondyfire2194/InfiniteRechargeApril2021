@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
@@ -37,8 +38,6 @@ import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
 import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.JogShooter;
-import frc.robot.commands.Shooter.Position2Macro;
-import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.SetShotPosition0;
 import frc.robot.commands.Shooter.SetShotPosition1;
 import frc.robot.commands.Shooter.SetShotPosition2;
@@ -46,12 +45,14 @@ import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
+import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Tilt.TiltJogVelocity;
 import frc.robot.commands.Tilt.TiltWaitForStop;
 import frc.robot.commands.Tilt.ToggleTiltUseVision;
 import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
+import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.ToggleTurretUseVision;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretJogVelocity;
@@ -245,8 +246,7 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 5).whenPressed(new StartAllShooter(m_shooter, m_transport, 0.1));
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport))
-                        .whenPressed(new StopRollers(m_transport))
-                        .whenPressed(new StopBelts(m_transport))
+                        .whenPressed(new StopRollers(m_transport)).whenPressed(new StopBelts(m_transport))
                         .whenPressed(new SetUpLimelightForNoVision(m_limelight))
                         .whenPressed(new PositionTurret(m_turret, 0))
                         .whenReleased(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle));
@@ -255,7 +255,7 @@ public class RobotContainer {
                         .whenPressed(new PositionTurret(m_turret, 0))
                         .whenPressed(new SetUpLimelightForNoVision(m_limelight));
 
-            new JoystickButton(m_driverController, 4).whenPressed(new SetUpLimelightForTarget(m_limelight));
+            new JoystickButton(m_driverController, 4).whenPressed(new SetUpLimelightForTarget(m_limelight, false));
 
             new JoystickButton(m_driverController, 7).whileHeld(new PositionTilt(m_tilt, m_tilt.tiltMinAngle))
                         .whenPressed(new PositionTurret(m_turret, 0))
@@ -320,7 +320,8 @@ public class RobotContainer {
              * Setup gamepad is used for testing functions
              */
 
-            // setupDownButton.whileHeld(
+            setupDownButton.whileHeld(new ParallelCommandGroup((new PositionTiltToVision(m_tilt, m_limelight, 24)),
+                        new PositionTurretToVision(m_turret, m_limelight, -32)));
 
             setupUpButton.whileHeld(() -> m_transport.runFrontRollerMotor(.5))
                         .whileHeld(() -> m_transport.runRearRollerMotor(.5))

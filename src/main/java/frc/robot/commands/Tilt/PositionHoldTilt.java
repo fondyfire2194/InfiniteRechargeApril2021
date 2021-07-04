@@ -37,6 +37,7 @@ public class PositionHoldTilt extends CommandBase {
   @Override
   public void initialize() {
     m_tilt.programRunning = 1;
+    
     if (!m_limelight.useVision)
       visionFoundCounter = 0;
 

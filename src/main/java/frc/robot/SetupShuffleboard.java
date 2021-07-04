@@ -19,14 +19,12 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.TimeDelay;
-import frc.robot.commands.AutoCommands.StartAllShooter;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
@@ -39,7 +37,6 @@ import frc.robot.commands.CellTransport.StopRollers;
 import frc.robot.commands.RobotDrive.ClearRobFaults;
 import frc.robot.commands.RobotDrive.EndDriveLog;
 import frc.robot.commands.RobotDrive.LogDriveData;
-import frc.robot.commands.RobotDrive.LogTiTuTrack;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
@@ -639,8 +636,7 @@ public class SetupShuffleboard {
                                 robotCommands.add("To -4(.6)", new PickupMove(m_robotDrive, -4, .6));
                                 robotCommands.add("To 0", new PickupMove(m_robotDrive, 0, .5));
                                 robotCommands.add("Cmd", m_robotDrive);
-                                robotCommands.add("LogTITU", new LogTiTuTrack(m_robotDrive, m_tilt, m_turret,
-                                                m_limelight, m_shooter));
+                                
                                 robotCommands.add("EndLog", new EndDriveLog(m_robotDrive));
 
                                 ShuffleboardLayout robotValues = Shuffleboard.getTab("SetupRobot")

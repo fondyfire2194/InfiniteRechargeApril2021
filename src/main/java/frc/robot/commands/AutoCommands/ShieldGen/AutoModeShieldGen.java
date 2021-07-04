@@ -34,14 +34,12 @@ import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
-import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
-import frc.robot.commands.AutoCommands.StartAllShooter;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -80,7 +78,7 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                                                 new SetTurretOffset(turret, turretOffset),
 
                                                 
-                                                new SetUpLimelightForTarget(limelight), new UseVision(limelight, false),
+                                                new SetUpLimelightForTarget(limelight,false), 
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
                                                 new PositionTurretToVision(turret, limelight,
                                                                 turretAngle + turretOffset)).deadlineWith(
@@ -103,7 +101,7 @@ public class AutoModeShieldGen extends SequentialCommandGroup {
                                 // 2nd lock
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset1),
                                                 new SetTurretOffset(turret, turretOffset1),
-                                                new SetUpLimelightForTarget(limelight), new UseVision(limelight, false),
+                                                new SetUpLimelightForTarget(limelight,false), 
                                                 new PositionTiltToVision(tilt, limelight, tiltAngle1 + tiltOffset1),
                                                 new PositionTurretToVision(turret, limelight,
                                                                 turretAngle1 + turretOffset1)).deadlineWith(

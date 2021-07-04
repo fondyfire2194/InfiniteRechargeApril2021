@@ -17,10 +17,10 @@ public class LogShootData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Time", "ActSpeed", "AtSpeed", "IsShooting", "LeftCurrent", "CellReleasing",
+  public final String[] names = { "Time", "ActSpeed", "Amps", "AtSpeed", "okToShoot", "isShooting", "shotInProgress",
       "ArmPosn" };
 
-  public static String[] units = { "Seconds", "MPS", "T/F", "T/F", "Amps", "T/F", "T/F", "Degrees" };
+  public static String[] units = { "Seconds", "MPS", "Amps", "T/F", "T/F", "T/F", "T/F", "Degrees" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -31,7 +31,8 @@ public class LogShootData extends CommandBase {
   private double isShooting;
 
   private double shooterAtSpeed;
-  private double servoArmReleasing;
+  private double shotInProgress;
+  private double okToShoot;
   private double logTime;
 
   public LogShootData(RevShooterSubsystem shooter, CellTransportSubsystem transport) {
@@ -55,6 +56,8 @@ public class LogShootData extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    shooterAtSpeed = 0;
+    shotInProgress = 0;
 
     // allow i second for file to be opened
     if (!fileOpenNow)
@@ -66,24 +69,30 @@ public class LogShootData extends CommandBase {
     // log data every 100ms
     if (fileOpenNow)
       m_shooter.shootLogInProgress = true;
+
     if (logTime == 0)
       logTime = Timer.getFPGATimestamp();
 
-    if (m_shooter.logShooterItems && Timer.getFPGATimestamp() > logTime + .1) {
+    if (Timer.getFPGATimestamp() > logTime + .1) {
       logTime = Timer.getFPGATimestamp();
 
       if (m_shooter.atSpeed())
         shooterAtSpeed = 1;
-      else
-        shooterAtSpeed = 0;
 
       if (m_shooter.shotInProgress)
-        servoArmReleasing = 1;
-      else
-        servoArmReleasing = 0;
+        shotInProgress = 1;
 
-      m_shooter.shootLogger.writeData(logTime, m_shooter.getMPS(), shooterAtSpeed, isShooting, m_shooter.getLeftAmps(),
-          servoArmReleasing, (double) m_transport.getArmAngle());
+      if (m_shooter.atSpeed())
+        shooterAtSpeed = 1;
+
+      if (m_shooter.okToShoot)
+        okToShoot = 1;
+
+      if (m_shooter.isShooting)
+        isShooting = 1;
+
+      m_shooter.shootLogger.writeData(logTime, m_shooter.getMPS(), m_shooter.getLeftAmps(), shooterAtSpeed, okToShoot,
+          isShooting, shotInProgress, (double) m_transport.getArmAngle());
     }
 
   }

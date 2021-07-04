@@ -8,17 +8,14 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.RobotDrive.LogTiTuTrack;
+import frc.robot.commands.RobotDrive.LogDriveData;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.LogShootData;
@@ -122,14 +119,17 @@ public class Robot extends TimedRobot {
 
   public void autonomousInit() {
 
-    new LogTiTuTrack(m_robotContainer.m_robotDrive, m_robotContainer.m_tilt, m_robotContainer.m_turret,
-        m_robotContainer.m_limelight,m_robotContainer.m_shooter).schedule();
-    
+    new LogDriveData(m_robotContainer.m_robotDrive).schedule();
+
+    new LogTiltData(m_robotContainer.m_tilt,m_robotContainer.m_limelight).schedule();
+
+    new LogTurretData(m_robotContainer.m_turret,m_robotContainer.m_limelight).schedule();
+
+    new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport);
 
     if (RobotBase.isReal())
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
 
-    m_robotContainer.m_turret.enableSofLimits(true);
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
         m_robotContainer.m_shooter).schedule(true);
