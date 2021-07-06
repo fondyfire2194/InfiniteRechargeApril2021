@@ -92,9 +92,11 @@ public class Robot extends TimedRobot {
 
     m_robotContainer.m_shooter.driverThrottleValue = m_robotContainer.getThrottle();
 
-    // m_robotContainer.m_turret.testLock = m_robotContainer.m_driverController.getTrigger();
+    // m_robotContainer.m_tilt.testLock =
+    // m_robotContainer.m_driverController.getTrigger();
 
-    // m_robotContainer.m_turret.testLockFromThrottle = m_robotContainer.m_driverController.getThrottle();
+    // m_robotContainer.m_tilt.testLockFromThrottle =
+    // m_robotContainer.m_driverController.getThrottle();
 
   }
 
@@ -103,7 +105,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-
+    m_robotContainer.m_robotDrive.setIdleMode(false);
     CommandScheduler.getInstance().run();
     m_robotContainer.m_setup.checkCANDevices();
     // ShootData.showValues(1);
@@ -123,13 +125,17 @@ public class Robot extends TimedRobot {
 
   public void autonomousInit() {
 
-    new LogDriveData(m_robotContainer.m_robotDrive).schedule();
+    m_robotContainer.m_robotDrive.setIdleMode(true);
 
-    new LogTiltData(m_robotContainer.m_tilt, m_robotContainer.m_limelight).schedule();
+    // new LogDriveData(m_robotContainer.m_robotDrive).schedule();
 
-    new LogTurretData(m_robotContainer.m_turret, m_robotContainer.m_limelight).schedule();
+    // new LogTiltData(m_robotContainer.m_tilt,
+    // m_robotContainer.m_limelight).schedule();
 
-    new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport);
+    // new LogTurretData(m_robotContainer.m_turret,
+    // m_robotContainer.m_limelight).schedule();
+
+    // new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport);
 
     if (RobotBase.isReal())
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
@@ -232,9 +238,12 @@ public class Robot extends TimedRobot {
     Shuffleboard.update();
     Shuffleboard.startRecording();
 
-    m_robotContainer.m_shooter.startShooter = false;
+    m_robotContainer.m_robotDrive.setIdleMode(true);
 
     autoHasRun = false;
+
+    m_robotContainer.m_transport.holdCell();
+    m_robotContainer.m_transport.holdLeftChannel();
 
     if (RobotBase.isReal() && !m_robotContainer.m_tilt.positionResetDone)
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);

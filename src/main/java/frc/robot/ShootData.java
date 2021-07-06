@@ -66,8 +66,8 @@ public class ShootData {
         public static double retractDistance = -1;
         public static double tiltAngle = 19.6;
         public static double turretAngle = 0;
-        public static double shootSpeed = 32;
-        public static double tiltOffset = 0;
+        public static double shootSpeed = 36;
+        public static double tiltOffset = 03;
         public static double turretOffset = 0;
         public static double shootTime = 8;
 
@@ -115,7 +115,7 @@ public class ShootData {
         public static double retractDistance = -4;
         public static double tiltAngle = 24;
         public static double turretAngle = -32;
-        public static double shootSpeed = 32;
+        public static double shootSpeed = 33;
         public static double tiltOffset = 0;
         public static double turretOffset = 0;
         public static double shootTime = 2;
@@ -126,9 +126,9 @@ public class ShootData {
         public static double retractDistance = -3.5;
         public static double tiltAngle = 24;
         public static double turretAngle = -43;
-        public static double shootSpeed = 30;
-        public static double tiltOffset = 0;
-        public static double turretOffset = 0;
+        public static double shootSpeed = 37;
+        public static double tiltOffset = 7;
+        public static double turretOffset = 2;
         public static double shootTime = 10;
 
     }

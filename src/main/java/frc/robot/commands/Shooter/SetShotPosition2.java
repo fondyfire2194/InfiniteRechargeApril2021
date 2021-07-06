@@ -13,6 +13,7 @@ import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.TimeDelay;
 import frc.robot.commands.AutoCommands.StartAllShooter;
+import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurretToVision;
@@ -39,22 +40,23 @@ public class SetShotPosition2 extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new SetActiveTeleopShootData(shooter, 2), new SetUpLimelightForTarget(limelight,false),
+                super(new SetActiveTeleopShootData(shooter, 2), new SetUpLimelightForTarget(limelight, false),
                                 new TimeDelay(1.),
 
                                 new ParallelCommandGroup(new ChooseShooterSpeedSource(shooter, tilt, turret, 0),
                                                 new SetTiltOffset(tilt, ShootData.trench5BallShotConstants.tiltOffset),
                                                 new SetTurretOffset(turret,
-                                                                ShootData.trench5BallShotConstants.turretOffset),
-                                                new PositionTiltToVision(tilt, limelight,
-                                                                ShootData.trench5BallShotConstants.tiltAngle
-                                                                                + ShootData.trench5BallShotConstants.tiltOffset),
-                                                new PositionTurretToVision(turret, limelight,
-                                                                ShootData.trench5BallShotConstants.turretAngle
-                                                                                + ShootData.trench5BallShotConstants.turretOffset)),
+                                                                ShootData.trench5BallShotConstants.turretOffset)),
+                                // new PositionTiltToVision(tilt, limelight,
+                                // ShootData.trench5BallShotConstants.tiltAngle
+                                // + ShootData.trench5BallShotConstants.tiltOffset),
+                                // new PositionTurretToVision(turret, limelight,
+                                // ShootData.trench5BallShotConstants.turretAngle
+                                // + ShootData.trench5BallShotConstants.turretOffset)),
+                                new UseVision(limelight, true),
                                 new SetShootSpeed(shooter, ShootData.trench5BallShotConstants.shootSpeed),
-                                new StartAllShooter(shooter, transport, 2),
+                                new RunRollers(transport), new RunShooter(shooter)
 
-                                new UseVision(limelight, true));
+                );
         }
 }

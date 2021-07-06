@@ -78,11 +78,9 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                 // 1st lock
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
-                                                new SetUpLimelightForTarget(limelight,false),
-                                                new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
-                                                new PositionTurretToVision(turret, limelight,
-                                                                turretAngle + turretOffset)).deadlineWith(
-                                                                                new IntakeArmLower(intake)),
+                                                new SetUpLimelightForTarget(limelight, true))
+
+                                                                .deadlineWith(new IntakeArmLower(intake)),
                                 // 1st Shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
                                                 new SetShootSpeed(shooter, shootSpeed), new UseVision(limelight, true),

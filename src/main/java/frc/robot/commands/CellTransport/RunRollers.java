@@ -5,6 +5,7 @@
 package frc.robot.commands.CellTransport;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.CellTransportSubsystem;
 
@@ -24,12 +25,13 @@ public class RunRollers extends CommandBase {
   public void initialize() {
     rollerStartTime = Timer.getFPGATimestamp();
     m_transport.rollersAtSpeed = false;
+    SmartDashboard.putBoolean("ROLL", true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+    SmartDashboard.putBoolean("ROHlt", m_transport.haltRollers);
     m_transport.runFrontRollerMotor(speed);
     m_transport.runRearRollerMotor(speed);
 

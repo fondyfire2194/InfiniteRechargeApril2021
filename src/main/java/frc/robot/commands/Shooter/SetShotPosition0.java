@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
+import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
@@ -48,15 +49,12 @@ public class SetShotPosition0 extends SequentialCommandGroup {
                                                 new SetTiltOffset(tilt, ShootData.centerPowerPortConstants.tiltOffset),
                                                 new SetTurretOffset(turret,
                                                                 ShootData.centerPowerPortConstants.turretOffset),
-                                                new PositionTiltToVision(tilt, limelight, ShootData.centerPowerPortConstants.tiltAngle
-                                                                + ShootData.centerPowerPortConstants.tiltOffset),
-                                                new PositionTurretToVision(turret,limelight,
-                                                                ShootData.centerPowerPortConstants.turretAngle
-                                                                                + ShootData.centerPowerPortConstants.turretOffset),
-                                                new SetShootSpeed(shooter,
-                                                                ShootData.centerPowerPortConstants.shootSpeed)),
-
-                                new UseVision(limelight, true));
+                                                new PositionTiltToVision(tilt, limelight,
+                                                                ShootData.centerPowerPortConstants.tiltAngle
+                                                                                + ShootData.centerPowerPortConstants.tiltOffset),
+                                                new PositionTurretToVision(turret, limelight,
+                                                                ShootData.centerPowerPortConstants.turretAngle)),
+                                new UseVision(limelight, true), new RunRollers(transport), new RunShooter(shooter));
 
         }
 }

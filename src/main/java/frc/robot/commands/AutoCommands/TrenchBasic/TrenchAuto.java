@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.LimeLight;
 import frc.robot.commands.AutoCommands.StartAllShooter;
+import frc.robot.commands.CellTransport.RunRollers;
+import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -20,18 +22,16 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class TrenchAuto extends ParallelRaceGroup {
   /** Creates a new Trench3BAllShootPlusPickup. */
-  public TrenchAuto(RevShooterSubsystem shooter, RevDrivetrain drive, RevTiltSubsystem tilt,
-      RevTurretSubsystem turret, CellTransportSubsystem transport, RearIntakeSubsystem intake, LimeLight limelight,
-      Compressor compressor) {
+  public TrenchAuto(RevShooterSubsystem shooter, RevDrivetrain drive, RevTiltSubsystem tilt, RevTurretSubsystem turret,
+      CellTransportSubsystem transport, RearIntakeSubsystem intake, LimeLight limelight, Compressor compressor) {
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
 
     addCommands(
 
-         new StartAllShooter(shooter, transport, .25),
-        
-        
+        new RunRollers(transport), new RunShooter(shooter),
+
         new AutoMode3M3BallTrench(shooter, turret, tilt, transport, drive, limelight, compressor, intake));
   }
 }

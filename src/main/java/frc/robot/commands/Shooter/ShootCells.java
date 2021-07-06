@@ -42,6 +42,8 @@ public class ShootCells extends CommandBase {
   private boolean cellReleased;
   private double cellReleasedStartTime;
 
+  private boolean inAuto;
+
   private int loopctr;
   private double lastShooterAmps;
   private LinearFilter ampsMMA = LinearFilter.movingAverage(5);
@@ -81,7 +83,7 @@ public class ShootCells extends CommandBase {
   @Override
   public void execute() {
 
-    boolean inAuto = DriverStation.getInstance().isAutonomous();
+    inAuto = DriverStation.getInstance().isAutonomous();
 
     okToShoot = (m_limelight.getVertOnTarget(m_tilt.tiltVisionTolerance)
         && m_limelight.getHorOnTarget(m_turret.turretVisionTolerance)) || m_shooter.useDriverSpeed;
@@ -104,6 +106,12 @@ public class ShootCells extends CommandBase {
       m_shooter.shotInProgress = false;
     }
 
+    // if (m_shooter.isShooting && m_transport.leftArmDown)
+    //   m_transport.runRightBeltMotor(.2);
+
+    // if (m_shooter.isShooting && !m_transport.leftArmDown)
+    //   m_transport.runLeftBeltMotor(.2);
+
     m_shooter.okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
 
     getNextCell = m_shooter.okToShoot && !m_shooter.shotInProgress && !cellAvailable && m_shooter.atSpeed()
@@ -120,8 +128,9 @@ public class ShootCells extends CommandBase {
       // }
     }
 
-    if (m_transport.cellsShot >= 3)
+    if (m_transport.cellsShot >= 3 || inAuto && m_transport.cellsShot >= 2) {
       m_transport.releaseLeftChannel();
+    }
 
     double ampsAveraged = ampsMMA.calculate(m_shooter.getLeftAmps());
     boolean shotSeen;
@@ -142,6 +151,7 @@ public class ShootCells extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_transport.holdCell();
+    m_transport.holdLeftChannel();
     m_transport.stopBelts();
     m_transport.stopRollers();
     m_compressor.start();
@@ -154,7 +164,7 @@ public class ShootCells extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_transport.cellsShot > (int) m_time;
+    return inAuto && m_transport.cellsShot >= 5 || m_transport.cellsShot > (int) m_time;
   }
 
   public void releaseOneCell() {

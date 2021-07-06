@@ -452,7 +452,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     private void tuneGains() {
         fixedSettings();
-        double f = Pref.getPref("sHff");
+        double f = Pref.getPref("sHff");//5700 rpm = 95 rps = 95 * .638 = 
         double p = Pref.getPref("sHkp");
         double i = Pref.getPref("sHki");
         double d = Pref.getPref("sHkd");

@@ -8,10 +8,12 @@ import frc.robot.subsystems.RevDrivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import java.util.function.Supplier;
 
-public class ArcadeDrive extends CommandBase {
+public class ArcadeDriveVelocity extends CommandBase {
   private final RevDrivetrain m_drivetrain;
   private final Supplier<Double> m_xaxisSpeedSupplier;
   private final Supplier<Double> m_zaxisRotateSupplier;
+
+  private final double maxSpeed = 3;
 
   /**
    * Creates a new ArcadeDrive. This command will drive your robot according to
@@ -22,7 +24,7 @@ public class ArcadeDrive extends CommandBase {
    * @param xaxisSpeedSupplier   Lambda supplier of forward/backward speed
    * @param zaxisRotateSuppplier Lambda supplier of rotational speed
    */
-  public ArcadeDrive(RevDrivetrain drivetrain, Supplier<Double> xaxisSpeedSupplier,
+  public ArcadeDriveVelocity(RevDrivetrain drivetrain, Supplier<Double> xaxisSpeedSupplier,
       Supplier<Double> zaxisRotateSuppplier) {
     m_drivetrain = drivetrain;
     m_xaxisSpeedSupplier = xaxisSpeedSupplier;
@@ -39,16 +41,11 @@ public class ArcadeDrive extends CommandBase {
   @Override
   public void execute() {
 
-    double tempx = m_xaxisSpeedSupplier.get();
-    double tempRot = m_zaxisRotateSupplier.get();
+    double leftSpeed = maxSpeed * (m_xaxisSpeedSupplier.get() - m_zaxisRotateSupplier.get() / 2);
 
-    if (Math.abs(tempx) < .05)
-      tempx = 0;
+    double rightSpeed = maxSpeed * (m_xaxisSpeedSupplier.get() + m_zaxisRotateSupplier.get() / 2);
 
-    if (Math.abs(tempRot) < .05)
-      tempRot = 0;
-
-    m_drivetrain.arcadeDrive(tempx, tempRot / 2);
+    m_drivetrain.smartVelocityControlMetersPerSec(leftSpeed, rightSpeed);
 
   }
 

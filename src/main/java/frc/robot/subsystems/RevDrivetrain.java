@@ -65,6 +65,9 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public double startDistance;
 
     private int SMART_MOTION_SLOT = 0;
+
+    private int VELOCITY_SLOT = 1;
+
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxVel, minVel, maxAcc, allowedErr;
 
     public double lastkP, lastkp, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastMaxVel,
@@ -88,7 +91,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public boolean driveLogInProgress;
 
-	public boolean logDriveItems;
+    public boolean logDriveItems;
 
     public boolean endDriveFile;
 
@@ -142,6 +145,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         tuneGains();
 
+        setIdleMode(false);
+
         if (RobotBase.isSimulation()) {
             mSimulator = new DifferentialDrivetrainSimWrapper(DRIVETRAIN_CONSTANTS.createSim(),
                     new RevMotorControllerSimWrapper(mLeadLeft), new RevMotorControllerSimWrapper(mLeadRight),
@@ -161,10 +166,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         // Set current limiting on drive train to prevent brown outs
         Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
                 .forEach((SimableCANSparkMax spark) -> spark.setSmartCurrentLimit(35));
-
-        // Set motors to brake when idle. We don't want the drive train to coast.
-        Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
-                .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kBrake));
 
         kP = .4;
         kI = .1;
@@ -256,8 +257,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     @Override
     public void smartVelocityControlMetersPerSec(double leftVelocityMetersPerSec, double rightVelocityMetersPerSec) {
-        mLeftPidController.setReference(leftVelocityMetersPerSec, ControlType.kVelocity);
-        mRightPidController.setReference(rightVelocityMetersPerSec, ControlType.kVelocity);
+        mLeftPidController.setReference(leftVelocityMetersPerSec, ControlType.kVelocity, VELOCITY_SLOT);
+        mRightPidController.setReference(rightVelocityMetersPerSec, ControlType.kVelocity, VELOCITY_SLOT);
         mDrive.feed();
     }
 
@@ -399,6 +400,22 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         return Math.abs(getLeftRate()) < .5 && Math.abs(getRightRate()) < .5;
     }
 
+    public void setIdleMode(boolean brake) {
+        if (brake) {
+
+            // Set motors to brake when idle. We don't want the drive train to coast.
+            Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
+                    .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kBrake));
+        }
+
+        else {
+            // Set motors to brake when idle. We don't want the drive train to coast.
+            Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
+                    .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kCoast));
+
+        }
+    }
+
     public void setMaxVel(double maxVel) {
         mLeftPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
         mRightPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
@@ -406,6 +423,21 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public double getMatchTime() {
         return DriverStation.getInstance().getMatchTime();
+    }
+
+    private void setVGains() {
+        mLeftPidController.setFF(kFF, VELOCITY_SLOT);
+        mRightPidController.setFF(kFF, VELOCITY_SLOT);
+
+        mLeftPidController.setP(kP, VELOCITY_SLOT);
+        mRightPidController.setP(kP, VELOCITY_SLOT);
+
+        mLeftPidController.setI(kI, VELOCITY_SLOT);
+        mRightPidController.setI(kI, VELOCITY_SLOT);
+
+        mLeftPidController.setD(kD, VELOCITY_SLOT);
+        mRightPidController.setD(kD, VELOCITY_SLOT);
+
     }
 
     @Override
@@ -424,7 +456,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
         double iz = Pref.getPref("dRKiz");
         double ff = Pref.getPref("dRKff");
-        maxAcc = Pref.getPref("dRacc");
+
+        setVGains();
 
     }
 

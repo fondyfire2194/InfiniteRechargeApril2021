@@ -17,6 +17,7 @@
 
 package frc.robot.commands.Turret;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -59,7 +60,7 @@ public class PositionHoldTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+SmartDashboard.putNumber("THOF", m_turret.testHorOffset);
     if (!m_limelight.useVision)
       visionFoundCounter = 0;
 
@@ -70,7 +71,7 @@ public class PositionHoldTurret extends CommandBase {
       m_turret.adjustedCameraError = cameraHorizontalError
           - (m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffsetDegrees + m_turret.testHorOffset);
       m_limelight.setHorizontalOffset(
-          -(m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffsetDegrees + m_turret.testHorOffset));
+          (m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffsetDegrees + m_turret.testHorOffset));
 
     } else {
       cameraHorizontalError = 0;
