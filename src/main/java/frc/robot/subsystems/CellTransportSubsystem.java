@@ -14,8 +14,10 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Pref;
@@ -44,14 +46,22 @@ public class CellTransportSubsystem extends SubsystemBase {
   private final Servo cellArm;
   public double cellArmReleaseCell = .25;
   public double cellArmHoldCell = .1;
+
+  private Servo leftChannel;
+
+  private AnalogInput rightChannelBallDetect;
+
+  private double leftHoldPosition;
+  private double leftReleasePosition;
+
   public boolean startRollers;
   public double cellPassTime = .25;
   public boolean rollersAtSpeed;
   public double rollerSpeed;
   public boolean haltRollers;
   public boolean haltBelts;
-public int cellsShot;
- 
+  public int cellsShot;
+  public boolean leftArmDown;
 
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
@@ -59,6 +69,9 @@ public int cellsShot;
     m_frontRollerMotor = new TalonSRXWrapper(CANConstants.FRONT_ROLLER);
     m_rearRollerMotor = new TalonSRXWrapper(CANConstants.REAR_ROLLER);
     cellArm = new Servo(9);
+    leftChannel = new Servo(8);
+    rightChannelBallDetect = new AnalogInput(1);
+
 
     if (Robot.isReal()) {
       m_leftBeltMotor.configFactoryDefault();
@@ -74,6 +87,7 @@ public int cellsShot;
       setRearRollerBrakeOn(true);
       setBeltBrakeOn(true);
       holdCell();
+      holdLeftChannel();
     }
 
   }
@@ -93,8 +107,22 @@ public int cellsShot;
     }
 
     cellPassTime = Pref.getPref("CellReleaseTime");
-  }
 
+    // left channel servo
+
+    if (Pref.getPref("LeftRelPosn") != leftReleasePosition) {
+      leftReleasePosition = Pref.getPref("LeftRelPosn");
+      releaseLeftChannel();
+    }
+
+    if (Pref.getPref("LeftHoldPosn") != leftHoldPosition) {
+      leftHoldPosition = Pref.getPref("LeftHoldPosn");
+      holdLeftChannel();
+    }
+SmartDashboard.putNumber("VOLTS", rightChannelBallDetect.getAverageVoltage());
+SmartDashboard.putBoolean("ball", getRightBallPresent());
+  }
+  
   public boolean checkCAN() {
 
     leftBeltMotorConnected = m_leftBeltMotor.getFirmwareVersion() != -1;
@@ -187,7 +215,6 @@ public int cellsShot;
     moveCellArm(cellArmHoldCell);
   }
 
-
   public void releaseCell() {
     moveCellArm(cellArmReleaseCell);
   }
@@ -214,6 +241,21 @@ public int cellsShot;
 
   public int getArmType() {
     return cellArm.getRaw();
+  }
+
+  public void holdLeftChannel() {
+    moveLeftArm(leftHoldPosition);
+    leftArmDown = true;
+  }
+
+  public void releaseLeftChannel() {
+
+    moveLeftArm(leftReleasePosition);
+    leftArmDown = false;
+  }
+
+  public boolean getRightBallPresent() {
+    return rightChannelBallDetect.getAverageVoltage() > 1.1;
   }
 
   public void setBeltBrakeOn(boolean on) {
@@ -281,6 +323,10 @@ public int cellsShot;
 
   public void moveCellArm(double position) {
     cellArm.set(position);
+  }
+
+  public void moveLeftArm(double position) {
+    leftChannel.set(position);
   }
 
   public void simulationInit() {

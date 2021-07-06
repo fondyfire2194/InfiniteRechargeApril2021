@@ -34,6 +34,8 @@ public class PositionTiltToVision extends CommandBase {
   private int correctionCtr;
   double pidOut;
 
+  private boolean lookForTarget;
+
   public PositionTiltToVision(RevTiltSubsystem tilt, LimeLight limelight, double endpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
@@ -47,7 +49,7 @@ public class PositionTiltToVision extends CommandBase {
   public void initialize() {
     m_tilt.programRunning = 3;
     m_tilt.tiltUseVision = false;
-    m_limelight.useVision=false;
+    m_limelight.useVision = false;
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_tilt.targetAngle = m_endpoint;
@@ -57,7 +59,7 @@ public class PositionTiltToVision extends CommandBase {
       m_endpoint = HoodedShooterConstants.TILT_MAX_ANGLE;
     m_tilt.correctedEndpoint = m_endpoint;
     loopCtr = 0;
-
+    lookForTarget = false;
     m_limelight.setVerticalOffset(m_tilt.targetVerticalOffset);
 
     if (DriverStation.getInstance().isOperatorControlEnabled())

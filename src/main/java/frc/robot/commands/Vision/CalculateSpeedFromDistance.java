@@ -5,6 +5,7 @@
 package frc.robot.commands.Vision;
 
 import edu.wpi.first.wpilibj.LinearFilter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.LimeLight;
@@ -57,8 +58,6 @@ public class CalculateSpeedFromDistance extends CommandBase {
     double speedChangeFromCameraVerticalError = m_shooter
         .calculateSpeedChangeFromCameraVerticalError(m_limelight.getdegVerticalToTarget(), baseSpeed);
     tempSpeed = baseSpeed + speedChangeFromCameraVerticalError;
-
-    m_shooter.cameraCalculatedSpeed = m_filter.calculate(baseSpeed);
 
   }
 

@@ -31,7 +31,7 @@ public class StartIntake extends CommandBase {
     Timer.getFPGATimestamp();
     Shuffleboard.selectTab("Intake");
     m_transport.moveCellArm(m_transport.cellArmHoldCell);
-
+    m_transport.holdLeftChannel();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

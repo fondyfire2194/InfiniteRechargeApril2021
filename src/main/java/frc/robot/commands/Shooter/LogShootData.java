@@ -58,6 +58,8 @@ public class LogShootData extends CommandBase {
   public void execute() {
     shooterAtSpeed = 0;
     shotInProgress = 0;
+    okToShoot = 0;
+    isShooting = 0;
 
     // allow i second for file to be opened
     if (!fileOpenNow)

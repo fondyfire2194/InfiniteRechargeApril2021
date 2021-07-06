@@ -44,6 +44,7 @@ import frc.robot.commands.Shooter.SetShotPosition2;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
+import frc.robot.commands.Tilt.PositionHoldTiltTest;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.TiltJog;
@@ -51,6 +52,7 @@ import frc.robot.commands.Tilt.TiltJogVelocity;
 import frc.robot.commands.Tilt.TiltWaitForStop;
 import frc.robot.commands.Tilt.ToggleTiltUseVision;
 import frc.robot.commands.Turret.PositionHoldTurret;
+import frc.robot.commands.Turret.PositionHoldTurretTest;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.ToggleTurretUseVision;
@@ -61,6 +63,7 @@ import frc.robot.commands.Vision.SetUpLimelightForDriver;
 import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.SetVisionMode;
+import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -189,8 +192,10 @@ public class RobotContainer {
             m_trajectory = new FondyFireTrajectory(m_robotDrive);
 
             m_tilt.setDefaultCommand(new PositionHoldTilt(m_tilt, m_shooter, m_limelight));
+            // m_tilt.setDefaultCommand(new PositionHoldTiltTest(m_tilt));
 
             m_turret.setDefaultCommand(new PositionHoldTurret(m_turret, m_shooter, m_limelight));
+            // m_turret.setDefaultCommand(new PositionHoldTurretTest(m_turret));
 
             m_shooter.setDefaultCommand(getJogShooterCommand());
 
@@ -302,8 +307,8 @@ public class RobotContainer {
             // trench in front of control panel
             codriverA.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt, m_transport, m_limelight));
 
-            //
-            // codriverB.whenPressed
+            
+           // codriverB.whileHeld(getJogTurretVelocityCommand(codriverGamepad));
 
             //
             codriverRightTrigger.whileHeld(getJogTiltCommand(codriverGamepad))
@@ -320,7 +325,7 @@ public class RobotContainer {
              * Setup gamepad is used for testing functions
              */
 
-            setupDownButton.whileHeld(new ParallelCommandGroup((new PositionTiltToVision(m_tilt, m_limelight, 24)),
+            setupDownButton.whenPressed(new ParallelCommandGroup((new PositionTiltToVision(m_tilt, m_limelight, 24)),
                         new PositionTurretToVision(m_turret, m_limelight, -32)));
 
             setupUpButton.whileHeld(() -> m_transport.runFrontRollerMotor(.5))
@@ -338,8 +343,9 @@ public class RobotContainer {
 
             setupBack.whileHeld(new StartIntake(m_intake, m_transport)).whenReleased(new StopIntake(m_intake));
 
-            setupX.whileHeld(getJogTiltVelocityCommand()).whileHeld(getJogTurretVelocityCommand(setupGamepad))
-                        .whenReleased(new TiltWaitForStop(m_tilt)).whenReleased(new TurretWaitForStop(m_turret));
+            setupX.whileHeld(getJogTiltVelocityCommand(setupGamepad))
+                        .whileHeld(getJogTurretVelocityCommand(setupGamepad)).whenReleased(new TiltWaitForStop(m_tilt))
+                        .whenReleased(new TurretWaitForStop(m_turret));
 
             setupY.whileHeld(getJogTiltCommand(setupGamepad)).whileHeld(getJogTurretCommand(setupGamepad))
                         .whenReleased(new TiltWaitForStop(m_tilt)).whenReleased(new TurretWaitForStop(m_turret));
@@ -384,12 +390,33 @@ public class RobotContainer {
             return new TiltJog(m_tilt, () -> -gamepad.getRawAxis(1) / 5, gamepad);
       }
 
+      /**
+       * Use to tune velocity loop for use inside vision position loops. Goal is to
+       * correct 5 degrees of vision error in 1 second.
+       * 
+       * One tilt motor rev is .25 degrees. 11000rpm = 180 rps = 45 dps max
+       * 
+       * 5 degrees vision = 20 motor revs per second.,approx 10% full speed
+       * 
+       * 
+       * 
+       * One turret motor rev is 1.41 degrees. 11000 rpm = 180 rps = 250 dps
+       * 
+       * So 5 degrees in one second 5 approx 1/150 or 7% full speed
+       * 
+       * 
+       * 
+       * 
+       * @param gamepad
+       * @return
+       */
+
       public Command getJogTurretVelocityCommand(XboxController gamepad) {
-            return new TurretJogVelocity(m_turret, () -> -gamepad.getRawAxis(0) / 5, gamepad);
+            return new TurretJogVelocity(m_turret, () -> -gamepad.getRawAxis(0), gamepad);
       }
 
-      public Command getJogTiltVelocityCommand() {
-            return new TiltJogVelocity(m_tilt, () -> -setupGamepad.getRawAxis(1) / 5);
+      public Command getJogTiltVelocityCommand(XboxController gamepad) {
+            return new TiltJogVelocity(m_tilt, () -> -gamepad.getRawAxis(1), gamepad);
       }
 
       public Command getJogShooterCommand() {

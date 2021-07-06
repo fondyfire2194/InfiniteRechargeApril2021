@@ -5,13 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.commands.AutoCommands.PowerPort.AutoCenterShootMove;
 import frc.robot.commands.AutoCommands.ShieldGen.ShieldGenAuto;
 import frc.robot.commands.AutoCommands.TrenchBasic.TrenchAuto;
-import frc.robot.commands.AutoCommands.TrenchShootMoving.ShootInMotionAuto;
-import frc.robot.commands.AutoCommands.TrenchShootMoving.TiltTurretToVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -64,18 +61,6 @@ public class AutoFactory {
     public ParallelRaceGroup getAutonomousCommand3() {
         return new TrenchAuto(m_shooter, m_robotDrive, m_tilt, m_turret, m_transport, m_intake,
                 m_limelight, m_compressor);
-    }
-
-    // front of trench move pickup and and shoot together
-    public ParallelRaceGroup getAutonomousCommand4() {
-
-        return new ShootInMotionAuto(m_shooter, m_robotDrive, m_tilt, m_turret, m_transport, m_intake, m_limelight,
-                m_compressor);
-
-    }
-
-    public ParallelCommandGroup getAutonomousCommand5() {
-        return new TiltTurretToVision(m_tilt, m_turret, m_limelight);
     }
 
     

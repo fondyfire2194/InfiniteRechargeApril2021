@@ -25,9 +25,7 @@ public class StartAllShooter extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
 
-        new TimeDelay(delay),
-
-        new ParallelCommandGroup(new RunShooter(shooter), new RunRollers(transport), new PulseBelts(transport))
+        new ParallelCommandGroup(new RunShooter(shooter), new RunRollers(transport))
 
     );
   }

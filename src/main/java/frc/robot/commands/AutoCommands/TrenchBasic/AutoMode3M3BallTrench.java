@@ -105,7 +105,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                                                 new PositionTurret(turret,
                                                                                 turretAngle1 + turretOffset1),
                                                                 new IntakeArmLower(intake),
-                                                                new RunIntakeMotor(intake, .5)),
+                                                                new RunIntakeMotor(intake, .75)),
 
                                 // // 2nd shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot2Started"),

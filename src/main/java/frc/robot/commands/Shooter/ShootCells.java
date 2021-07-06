@@ -67,6 +67,8 @@ public class ShootCells extends CommandBase {
     m_compressor.stop();
     m_shooter.isShooting = false;
     m_transport.holdCell();
+
+    m_transport.holdLeftChannel();
     m_transport.cellsShot = 0;
     shotStartTime = 0;
     cellAvailable = false;
@@ -104,11 +106,22 @@ public class ShootCells extends CommandBase {
 
     m_shooter.okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
 
-    getNextCell = m_shooter.okToShoot && !m_shooter.shotInProgress && !cellAvailable && m_shooter.atSpeed();
+    getNextCell = m_shooter.okToShoot && !m_shooter.shotInProgress && !cellAvailable && m_shooter.atSpeed()
+        && m_transport.rollersAtSpeed;
 
     if (getNextCell || cellReleased) {
       releaseOneCell();
+      // if (m_transport.leftArmDown) {
+      // m_transport.runRightBeltMotor(.5);
+      // }
+
+      // if (!m_transport.leftArmDown) {
+      // m_transport.runLeftBeltMotor(.5);
+      // }
     }
+
+    if (m_transport.cellsShot >= 3)
+      m_transport.releaseLeftChannel();
 
     double ampsAveraged = ampsMMA.calculate(m_shooter.getLeftAmps());
     boolean shotSeen;

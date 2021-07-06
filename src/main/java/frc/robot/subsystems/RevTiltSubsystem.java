@@ -72,7 +72,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public final double degreesPerRev = HoodedShooterConstants.tiltDegreesPerRev;// degrees per motor turn
     public final double tiltMinAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
 
-    public double pset, iset, dset, ffset, izset;
+    public double pset, iset, dset, ffset, izset,maxAccset,maxVelset;
     public double psetv, isetv, dsetv, ffsetv, izsetv;
     public double lpset, liset, ldset, lizset;
 
@@ -209,6 +209,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
             testVerticalOffset = 0;
         }
 
+        SmartDashboard.putNumber("TIMTRGETT", m_motor.getAppliedOutput());
+
     }
 
     public boolean checkCAN() {
@@ -226,6 +228,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     public void runAtVelocity(double speed) {
         targetAngle = getAngle();
+        SmartDashboard.putNumber("TILSPEED", speed);
         mPidController.setReference(speed, ControlType.kVelocity);
     }
 
@@ -258,11 +261,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public void lockTiltToVision(double cameraError) {
         lockPIDOut = tiltLockController.calculate(cameraError, 0);
 
-        if (lockPIDOut >= kMaxOutput * .95)
-            lockPIDOut = kMaxOutput * .95;
-
-        if (lockPIDOut <= kMinOutput * .95)
-            lockPIDOut = kMinOutput * .95;
 
         runAtVelocity(lockPIDOut);
         
@@ -518,9 +516,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     private void setFF_MaxOuts() {
         kFF = .0004;// 10000 rpm = 10000 * .25 deg per rev= 2500 1/2500 = .0004
-        kFFv = .000;
+        kFFv = 0.00;
         kMinOutput = -.5;
-        kMaxOutput = .75;
+        kMaxOutput = .6;
 
         mPidController.setFF(kFF, SMART_MOTION_SLOT);
         mPidController.setFF(kFFv, VELOCITY_SLOT);
@@ -614,6 +612,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         iset = mPidController.getI(SMART_MOTION_SLOT);
         dset = mPidController.getD(SMART_MOTION_SLOT);
         izset = mPidController.getIZone(SMART_MOTION_SLOT);
+        maxAccset = mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT);
+        maxVelset= mPidController.getSmartMotionMaxVelocity(SMART_MOTION_SLOT);
 
     }
 

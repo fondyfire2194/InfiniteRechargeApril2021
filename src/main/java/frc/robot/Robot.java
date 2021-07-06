@@ -92,6 +92,10 @@ public class Robot extends TimedRobot {
 
     m_robotContainer.m_shooter.driverThrottleValue = m_robotContainer.getThrottle();
 
+    // m_robotContainer.m_turret.testLock = m_robotContainer.m_driverController.getTrigger();
+
+    // m_robotContainer.m_turret.testLockFromThrottle = m_robotContainer.m_driverController.getThrottle();
+
   }
 
   /**
@@ -121,17 +125,19 @@ public class Robot extends TimedRobot {
 
     new LogDriveData(m_robotContainer.m_robotDrive).schedule();
 
-    new LogTiltData(m_robotContainer.m_tilt,m_robotContainer.m_limelight).schedule();
+    new LogTiltData(m_robotContainer.m_tilt, m_robotContainer.m_limelight).schedule();
 
-    new LogTurretData(m_robotContainer.m_turret,m_robotContainer.m_limelight).schedule();
+    new LogTurretData(m_robotContainer.m_turret, m_robotContainer.m_limelight).schedule();
 
     new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport);
 
     if (RobotBase.isReal())
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
 
-
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
+        m_robotContainer.m_shooter).schedule(true);
+
+    new CalculateSpeedFromDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
         m_robotContainer.m_shooter).schedule(true);
 
     new ChooseShooterSpeedSource(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_turret, 0)
@@ -181,13 +187,6 @@ public class Robot extends TimedRobot {
         setStartingPose(FieldMap.startPosition[3]);
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
-
-        break;
-      case 4:// Trench 4 ball
-
-        setStartingPose(FieldMap.startPosition[3]);
-
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand4();
 
         break;
 

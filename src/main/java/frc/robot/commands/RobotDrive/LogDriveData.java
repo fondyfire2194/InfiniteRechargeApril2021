@@ -59,7 +59,7 @@ public class LogDriveData extends CommandBase {
       m_drive.driveLogInProgress = true;
     if (logTime == 0)
       logTime = Timer.getFPGATimestamp();
-
+      m_drive.logDriveItems=true;
     if (m_drive.logDriveItems && Timer.getFPGATimestamp() > logTime + .1) {
 
       logTime = Timer.getFPGATimestamp();

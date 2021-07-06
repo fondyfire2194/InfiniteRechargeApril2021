@@ -6,6 +6,8 @@ package frc.robot.commands.Tilt;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTiltSubsystem;
 
@@ -14,12 +16,14 @@ public class TiltJogVelocity extends CommandBase {
 
   private final RevTiltSubsystem m_tilt;
   private final Supplier<Double> m_xaxisSpeedSupplier;
-  private double maxSpeed = 2000;
+  private double maxSpeed = 45;
+  private XboxController m_controller;
 
-  public TiltJogVelocity(RevTiltSubsystem tilt, Supplier<Double> xaxisSpeedSupplier) {
+  public TiltJogVelocity(RevTiltSubsystem tilt, Supplier<Double> xaxisSpeedSupplier, XboxController controller) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_tilt = tilt;
     m_xaxisSpeedSupplier = xaxisSpeedSupplier;
+    m_controller=controller;
     addRequirements(m_tilt);
   }
 
@@ -36,7 +40,7 @@ public class TiltJogVelocity extends CommandBase {
       m_tilt.moveManually(0);
     else
       m_tilt.runAtVelocity(m_xaxisSpeedSupplier.get() * maxSpeed);
-    // SmartDashboard.putNumber("TUSP", m_xaxisSpeedSupplier.get() * maxSpeed);
+     SmartDashboard.putNumber("TISP", m_xaxisSpeedSupplier.get() * maxSpeed);
   }
 
   // Called once the command ends or is interrupted.

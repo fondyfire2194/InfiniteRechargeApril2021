@@ -28,6 +28,7 @@ public class PositionTurretToVision extends CommandBase {
   private boolean targetSeen;
   boolean endIt;
   private int correctionCtr;
+  private boolean lookForTarget;
 
   public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double endpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -52,10 +53,15 @@ public class PositionTurretToVision extends CommandBase {
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_turret.correctedEndpoint = m_endpoint;
-
+    lookForTarget = false;
     if (DriverStation.getInstance().isOperatorControlEnabled())
+
       m_turret.logTurretItems = true;
+
+    visionFoundCounter = filterCount;
   }
+
+  
 
   // Called every time the scheduler runs while the command is scheduled.
 

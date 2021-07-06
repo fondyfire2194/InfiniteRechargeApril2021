@@ -99,6 +99,7 @@ public class PositionHoldTurret extends CommandBase {
     }
     if (!m_shooter.shotInProgress)
       lastHorizontalError = -m_turret.adjustedCameraError;
+      
     if (!m_turret.validTargetSeen) {
 
       m_turret.goToPositionMotionMagic(m_turret.targetAngle);

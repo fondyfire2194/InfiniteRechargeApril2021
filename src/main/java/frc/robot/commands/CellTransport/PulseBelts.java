@@ -11,8 +11,7 @@ import frc.robot.subsystems.CellTransportSubsystem;
 public class PulseBelts extends CommandBase {
   /** Creates a new RunRollers. */
   private final CellTransportSubsystem m_transport;
-  private double rollerStartTime;
-  private final double speed = .5;
+  private double beltsStartTime;
 
   public PulseBelts(CellTransportSubsystem transport) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -22,16 +21,19 @@ public class PulseBelts extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    beltsStartTime = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    m_transport.pulseLeftBelt(.5, 1, 1);
+    if (Timer.getFPGATimestamp() > beltsStartTime + 3) {
 
-    m_transport.pulseLeftBelt(-.5, 1.1, 1.1);
+      m_transport.pulseLeftBelt(.5, 1, 1);
+
+      m_transport.pulseLeftBelt(-.5, 1.1, 1.1);
+    }
 
   }
 

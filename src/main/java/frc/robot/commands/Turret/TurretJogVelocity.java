@@ -7,6 +7,7 @@ package frc.robot.commands.Turret;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RevTurretSubsystem;
 
@@ -17,7 +18,7 @@ public class TurretJogVelocity extends CommandBase {
   private XboxController m_controller;
 
   private final Supplier<Double> m_xaxisSpeedSupplier;
-  private double maxSpeed = 2000;
+  private double maxSpeed = 250;
 
   public TurretJogVelocity(RevTurretSubsystem turret, Supplier<Double> xaxisSpeedSupplier, XboxController controller) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -40,7 +41,7 @@ public class TurretJogVelocity extends CommandBase {
       m_turret.moveManually(0);
     else
       m_turret.runAtVelocity(m_xaxisSpeedSupplier.get() * maxSpeed);
-    // SmartDashboard.putNumber("TUSP", m_xaxisSpeedSupplier.get() * maxSpeed);
+     SmartDashboard.putNumber("TUSP", m_xaxisSpeedSupplier.get() * maxSpeed);
   }
 
   // Called once the command ends or is interrupted.

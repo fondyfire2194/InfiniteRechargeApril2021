@@ -30,6 +30,8 @@ import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
 import frc.robot.commands.CellIntake.StopIntakeMotor;
 import frc.robot.commands.CellTransport.HoldCell;
+import frc.robot.commands.CellTransport.LowerLeftArm;
+import frc.robot.commands.CellTransport.RaiseLeftArm;
 import frc.robot.commands.CellTransport.ReleaseCell;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.CellTransport.RunRollers;
@@ -141,8 +143,6 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Trench 3 M 3", 3);
 
-                        autoChooser.addOption("Trench Shoot on the Move", 4);
-
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
 
@@ -228,34 +228,15 @@ public class SetupShuffleboard {
                         competition1.addNumber("TargetVertOffsetDeg", () -> m_tilt.targetVerticalOffset);
                         competition1.addNumber("TargetHorOffsetDeg", () -> m_turret.targetHorizontalOffset);
                         competition1.addNumber("CellsShot", () -> m_transport.cellsShot);
-                        ShuffleboardLayout shoot = Shuffleboard.getTab("Competition")
-                                        .getLayout("Shoot", BuiltInLayouts.kList).withPosition(1, 0).withSize(2, 1)
-                                        .withProperties(Map.of("Label position", "HIDDEN"));
-
-                        shoot.addBoolean("SHOOT",
-                                        () -> (m_shooter.atSpeed()
-                                                        && ((m_turret.atTargetAngle() && m_tilt.atTargetAngle())
-                                                                        || m_shooter.driverOKShoot)));
-
-                        ShuffleboardLayout setup = Shuffleboard.getTab("Competition")
-                                        .getLayout("Setup", BuiltInLayouts.kList).withPosition(1, 1).withSize(2, 1)
-                                        .withProperties(Map.of("Label position", "TOP"));
-
-                        setup.addString("PositionforShot",
-                                        () -> m_shooter.teleopSetupPosition[m_shooter.teleopSetupIndex]);
-                        setup.addString("SpeedSource", () -> m_shooter.activeSpeedSource);
 
                         ShuffleboardLayout competition = Shuffleboard.getTab("Competition")
-                                        .getLayout("Values", BuiltInLayouts.kGrid).withPosition(1, 2).withSize(2, 3)
-                                        .withProperties(Map.of("Label position", "TOP"));
+                                        .getLayout("ShootConditions", BuiltInLayouts.kGrid).withPosition(1, 0)
+                                        .withSize(2, 2).withProperties(Map.of("Label position", "TOP"));
 
-                        competition.addBoolean("IntakeArm Down", () -> m_intake.getArmLowered());
-                        competition.addBoolean("TiltOnTarget", () -> m_tilt.atTargetAngle());
-                        competition.addBoolean("TurretOnTarget", () -> m_turret.atTargetAngle());
+                        competition.addBoolean("TiltOnTarget", () -> m_limelight.getVertOnTarget(1));
+                        competition.addBoolean("TurretOnTarget", () -> m_limelight.getHorOnTarget(1));
                         competition.addBoolean("ShooterAtSpeed", () -> m_shooter.atSpeed());
                         competition.addBoolean("Use Vision", () -> m_limelight.useVision);
-                        competition.addBoolean("Shooting", () -> m_shooter.isShooting);
-                        competition.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
                         competition.addBoolean("RollersAtSpeed", () -> m_transport.rollersAtSpeed);
 
                         // Shuffleboard.getTab("Competition").addNumber("TimeRemaining", () ->
@@ -309,10 +290,6 @@ public class SetupShuffleboard {
                         turretCommands.addNumber("Faults", () -> m_turret.getFaults());
                         turretCommands.addString("To Jog", () -> "SetupXBox Btn A left X");
                         turretCommands.addString("OvrRideSoftLim", () -> "Setup RightBmpr");
-                        turretCommands.add("A", new ParallelRaceGroup(new Two(),
-                                        new SequentialCommandGroup(new One(), new Three())));
-
-                        turretCommands.add("B", new SequentialCommandGroup(new TimeDelay(.1), new One()));
 
                         ShuffleboardLayout turretValues = Shuffleboard.getTab("SetupTurret")
                                         .getLayout("TurretValues", BuiltInLayouts.kList).withPosition(2, 0)
@@ -371,6 +348,8 @@ public class SetupShuffleboard {
                         turretGains.addNumber("I", () -> m_turret.iset);
                         turretGains.addNumber("D", () -> m_turret.dset);
                         turretGains.addNumber("IZ", () -> m_turret.izset);
+                        turretGains.addNumber("MaxAcc", () -> m_turret.maxAccset);
+                        turretGains.addNumber("MaxV", () -> m_turret.maxVelset);
 
                         ShuffleboardLayout turretVGains = Shuffleboard.getTab("SetupTurret")
 
@@ -439,7 +418,7 @@ public class SetupShuffleboard {
                         tiltValues3.addNumber("LockError", () -> m_tilt.tiltLockController.getPositionError());
                         tiltValues3.addBoolean(("LockController"), () -> m_tilt.validTargetSeen);
                         tiltValues3.addBoolean("LockOnTarget", () -> m_tilt.getLockAtTarget());
-                        tiltValues3.addBoolean("ValTgt", ()->m_tilt.validTargetSeen);
+                        tiltValues3.addBoolean("ValTgt", () -> m_tilt.validTargetSeen);
 
                         ShuffleboardLayout tiltValues2 = Shuffleboard.getTab("SetupTilt")
                                         .getLayout("States", BuiltInLayouts.kGrid).withPosition(4, 2).withSize(3, 2)
@@ -469,7 +448,8 @@ public class SetupShuffleboard {
                         tiltGains.addNumber("I", () -> m_tilt.iset);
                         tiltGains.addNumber("D", () -> m_tilt.dset);
                         tiltGains.addNumber("IZ", () -> m_tilt.izset);
-
+                        tiltGains.addNumber("MaxAcc", () -> m_tilt.maxAccset);
+                        tiltGains.addNumber("MaxV", () -> m_tilt.maxVelset);
                         ShuffleboardLayout tiltVGains = Shuffleboard.getTab("SetupTilt")
 
                                         .getLayout("VelGains", BuiltInLayouts.kList).withPosition(7, 0).withSize(1, 1)
@@ -592,6 +572,10 @@ public class SetupShuffleboard {
                                 transportCellArm.addNumber(("CellArmPosn"), () -> m_transport.getArmPosition());
                                 // for
                                 transportCellArm.add("Release Cell", new ReleaseCell(transport));
+
+                                transportCellArm.add("RaiseLeft", new RaiseLeftArm(transport));
+                                transportCellArm.add("LowerLeft", new LowerLeftArm(transport));
+
                                 transportCellArm.addBoolean("Arm Up", () -> m_transport.getCellArmUp());
                                 transportCellArm.addBoolean("Arm Down", () -> m_transport.getCellArmDown());
 
@@ -636,7 +620,7 @@ public class SetupShuffleboard {
                                 robotCommands.add("To -4(.6)", new PickupMove(m_robotDrive, -4, .6));
                                 robotCommands.add("To 0", new PickupMove(m_robotDrive, 0, .5));
                                 robotCommands.add("Cmd", m_robotDrive);
-                                
+
                                 robotCommands.add("EndLog", new EndDriveLog(m_robotDrive));
 
                                 ShuffleboardLayout robotValues = Shuffleboard.getTab("SetupRobot")

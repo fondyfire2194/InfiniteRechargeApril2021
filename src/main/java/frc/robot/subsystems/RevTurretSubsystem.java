@@ -54,7 +54,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double targetAngle;
     private double inPositionBandwidth = 2;
     public double targetHorizontalOffset;
-    public double pset, iset, dset, ffset, izset;
+    public double pset, iset, dset, ffset, izset,maxAccset,maxVelset;
     public double psetv, isetv, dsetv, ffsetv, izsetv;
     public double lpset, liset, ldset, lizset;
 
@@ -179,7 +179,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         } else {
             testHorOffset = 0;
         }
-
+SmartDashboard.putNumber("TUMGETT", m_motor.getAppliedOutput());
     }
 
     public boolean checkCAN() {
@@ -222,11 +222,6 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
         lockPIDOut = m_turretLockController.calculate(cameraError, 0);
 
-        if (lockPIDOut >= kMaxOutput * .95)
-            lockPIDOut = kMaxOutput * .95;
-
-        if (lockPIDOut <= kMinOutput * .95)
-            lockPIDOut = kMinOutput * .95;
 
         runAtVelocity(lockPIDOut);
 
@@ -424,7 +419,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     private void setFF_MaxOuts() {
         kFF = .0004;
-        kFFv = .0000;
+        kFFv = .0;
         kMinOutput = -.5;
         kMaxOutput = .5;
         mPidController.setOutputRange(kMinOutput, kMaxOutput, SMART_MOTION_SLOT);
@@ -524,7 +519,9 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         iset = mPidController.getI(SMART_MOTION_SLOT);
         dset = mPidController.getD(SMART_MOTION_SLOT);
         izset = mPidController.getIZone(SMART_MOTION_SLOT);
-
+        maxAccset = mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT);
+        maxVelset = mPidController.getSmartMotionMaxVelocity(SMART_MOTION_SLOT);
+ 
     }
 
     public void getVelGains() {

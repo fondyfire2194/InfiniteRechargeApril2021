@@ -37,8 +37,8 @@ public class Pref {
     prefDict.put("tIKi", .001);
     prefDict.put("tIKd", 0.);
     prefDict.put("tIKiz", 1.);
-    prefDict.put("tIMaxV", 1000.);// 1000 deg per min
-    prefDict.put("tIMaxA", 1250.);// deg per min/sec
+    prefDict.put("tIMaxV", 250.);// 1000 deg per min
+    prefDict.put("tIMaxA", 700.);// deg per min/sec
     prefDict.put("tITune", 0.);
 
     // tilt vel
@@ -46,8 +46,8 @@ public class Pref {
     prefDict.put("tIKiv", .001);
     prefDict.put("tIKdv", 0.);
     prefDict.put("tIKizv", 1.);
-    prefDict.put("tIMaxVv", 1000.);// 1000 deg per min
-    prefDict.put("tIMaxAv", 1250.);// deg per min/sec
+    prefDict.put("tIMaxVv", 45.);// these are in revs(deg)per second 
+    prefDict.put("tIMaxAv", 125.);// deg per min/sec
     prefDict.put("tITunev", 0.);
 
     // Tilt Lock
@@ -64,8 +64,8 @@ public class Pref {
     prefDict.put("tURKi", .0001);
     prefDict.put("tURKd", .0002);
     prefDict.put("tURKiz", 1.);
-    prefDict.put("tURMaxV", 1000.);// deg/sec motor
-    prefDict.put("tURMaxA", 850.);// deg/sec motor
+    prefDict.put("tURMaxV", 250.);// deg/sec motor
+    prefDict.put("tURMaxA", 600.);// deg/sec motor
     prefDict.put("tURTune", 0.);
 
     // turret vel
@@ -74,7 +74,7 @@ public class Pref {
     prefDict.put("tURKiv", .000);
     prefDict.put("tURKdv", .000);
     prefDict.put("tURKizv", 1.);
-    prefDict.put("tURMaxVv", 1000.);// deg/sec motor
+    prefDict.put("tURMaxVv", 250.);// deg/sec motor
     prefDict.put("tURMaxAv", 850.);// deg/sec motor
     prefDict.put("tURTunev", 0.);
 
@@ -112,6 +112,12 @@ public class Pref {
     prefDict.put("CellRelPosn", .25);
     prefDict.put("CellHoldPosn", .1);
     prefDict.put("CellReleaseTime", .25);
+
+
+    //left channel servo
+
+    prefDict.put("LeftRelPosn", .25);
+    prefDict.put("LeftHoldPosn", .1);
 
     // camera
 
