@@ -4,7 +4,8 @@
 
 package frc.robot.commands.RobotDrive;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Pref;
 import frc.robot.subsystems.RevDrivetrain;
@@ -14,18 +15,29 @@ public class PickupMoveVelocity extends CommandBase {
   private final RevDrivetrain m_drive;
   private double m_endpoint;
   private double m_speed;
-  private double minSpeed = .2;
-  private double currentSpeed;
+  private double currentMPS;
   private double decelDistance;
-  private double kp;
+  private double maxDecel = 5;// mps/s
   private boolean plusDirection;
   private double remainingDistance;
+  private double decelTime;
+  private double maxAccel = 5;// mps/s
+  private double accelTime;
+  private double accelIncrementper20ms;
 
-  private final double maxSpeed = 3.5;// mps
-
-  private double useSpeed;
+  private double startTime;
+  private boolean endIt;
+  private double useMPS;
 
   private int loopCtr;
+
+  private boolean accelDone;
+  private boolean decelerating;
+  private double minSpeed = .1;
+
+  private boolean dontStart;
+
+  private boolean currentDirection;
 
   public PickupMoveVelocity(RevDrivetrain drive, double endpoint, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -40,17 +52,40 @@ public class PickupMoveVelocity extends CommandBase {
   @Override
   public void initialize() {
 
-    kp = m_speed / decelDistance;
+    accelTime = m_speed / maxAccel;
 
-    plusDirection = m_endpoint > m_drive.getAverageDistance();
+    accelIncrementper20ms = m_speed / (accelTime * 50);
 
-    currentSpeed = m_speed;
+    decelTime = m_speed / maxDecel; // ex 3.5/7 =.5 sec
 
-    if (DriverStation.getInstance().isOperatorControlEnabled()) {
-      m_drive.logDriveItems = true;
-    }
+    decelDistance = (m_speed * decelTime) / 2; // ex (3.5 * .5)/2 = .
 
-    m_drive.resetGyro();
+    currentMPS = 0;
+
+    SmartDashboard.putNumber("EndPt", m_endpoint);
+    SmartDashboard.putNumber("Speed", m_speed);
+    SmartDashboard.putNumber("DeceLTime", decelTime);
+
+    SmartDashboard.putNumber("decdis", decelDistance);
+
+    SmartDashboard.putNumber("AccTime", accelTime);
+
+    SmartDashboard.putNumber("AccInc", accelIncrementper20ms);
+
+    plusDirection = m_endpoint > m_drive.getLeftDistance();
+    SmartDashboard.putBoolean("Dir", plusDirection);
+    startTime = Timer.getFPGATimestamp();
+
+    endIt = false;
+
+    decelerating = false;
+
+    accelDone = false;
+
+    useMPS = 0;
+    loopCtr = 0;
+
+    dontStart = Math.abs(m_endpoint - m_drive.getLeftDistance()) < .2;
 
   }
 
@@ -62,49 +97,91 @@ public class PickupMoveVelocity extends CommandBase {
      * direction
      * 
      */
+    loopCtr++;
+    currentDirection = m_endpoint > m_drive.getLeftDistance();
+    SmartDashboard.putBoolean("Acc", accelDone);
+    SmartDashboard.putBoolean("Dcc", decelerating);
+    SmartDashboard.putNumber("CurrMPS", currentMPS);
 
-    remainingDistance = m_endpoint - m_drive.getLeftDistance();//
+    if (!dontStart && !accelDone && !decelerating && currentMPS < m_speed) {
 
-    if (remainingDistance < 0) {
-      plusDirection = false;
+      currentMPS += accelIncrementper20ms;
+
+      SmartDashboard.putNumber("AccTime", Timer.getFPGATimestamp() - startTime);
+
     }
 
-    currentSpeed = kp * Math.abs(remainingDistance);
+    if (!accelDone && currentMPS >= m_speed) {
 
-    if (currentSpeed >= m_speed)
-      currentSpeed = m_speed;
-    if (currentSpeed < minSpeed)
-      currentSpeed = minSpeed;
+      accelDone = true;
 
-    useSpeed = currentSpeed;
+      currentMPS = m_speed;
 
-    if (!plusDirection)
-      useSpeed = -useSpeed;
+    }
 
-    double useMPS = useSpeed + maxSpeed;
+    remainingDistance = m_endpoint - m_drive.getLeftDistance();
 
-    double yawCorrection = useSpeed * Pref.getPref("dRStKp");
+    if (accelDone && !decelerating && Math.abs(remainingDistance) <= decelDistance) {
 
-    // m_drive.arcadeDrive(useSpeed, -m_drive.getYaw() * Pref.getPref("dRStKp"));
+      decelerating = true;
+
+      SmartDashboard.putNumber("TimeTo Dec", Timer.getFPGATimestamp() - startTime);
+
+    }
+
+    if (decelerating && !endIt) {
+
+      currentMPS = (m_speed * Math.abs(remainingDistance)) / decelDistance;
+
+      if (currentMPS < minSpeed)
+
+        currentMPS = minSpeed;
+
+    }
+
+    if (currentMPS >= m_speed)
+      currentMPS = m_speed;
+    // if (currentMPS < minSpeed)
+    // currentMPS = minSpeed;
+
+    useMPS = currentMPS;
+
+    if (!plusDirection) {
+
+      useMPS = -useMPS;
+
+    }
+
+    SmartDashboard.putNumber("UseSp", useMPS);
+    SmartDashboard.putNumber("LCTR", loopCtr);
+    double yawCorrection = useMPS * Pref.getPref("dRStKp");
 
     m_drive.smartVelocityControlMetersPerSec(useMPS - yawCorrection, useMPS + yawCorrection);
+
+    endIt = dontStart || currentDirection != plusDirection
+        || loopCtr > 10 && Math.abs(remainingDistance) < .1 && (plusDirection && m_drive.getLeftDistance() > m_endpoint)
+        || (!plusDirection && m_drive.getLeftDistance() < m_endpoint) || endIt;
+
+    SmartDashboard.putBoolean("ENDIT", endIt);
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    currentSpeed = 0;
-    m_drive.arcadeDrive(0, 0);
-    m_drive.logDriveItems = false;
+    currentMPS = 0;
+    endIt = false;
+    useMPS = 0;
+    m_drive.stop();
+    SmartDashboard.putNumber("Move Time", Timer.getFPGATimestamp() - startTime);
+
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
 
-    return plusDirection && m_drive.getLeftDistance() > m_endpoint
-        || !plusDirection && m_drive.getLeftDistance() < m_endpoint;
+    return endIt;
 
   }
 }

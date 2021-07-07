@@ -41,9 +41,17 @@ public class ArcadeDriveVelocity extends CommandBase {
   @Override
   public void execute() {
 
-    double leftSpeed = maxSpeed * (m_xaxisSpeedSupplier.get() - m_zaxisRotateSupplier.get() / 2);
+    double tempX = m_xaxisSpeedSupplier.get();
+    double tempRot = m_zaxisRotateSupplier.get();
 
-    double rightSpeed = maxSpeed * (m_xaxisSpeedSupplier.get() + m_zaxisRotateSupplier.get() / 2);
+    if (Math.abs(tempX) < .05)
+      tempX = 0;
+    if (Math.abs(tempRot) < .05)
+      tempRot = 0;
+
+    double leftSpeed = maxSpeed * (tempX + tempRot / 2);
+
+    double rightSpeed = maxSpeed * (tempX - tempRot / 2);
 
     m_drivetrain.smartVelocityControlMetersPerSec(leftSpeed, rightSpeed);
 

@@ -20,12 +20,14 @@ import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PDPConstants;
@@ -95,6 +97,9 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public boolean endDriveFile;
 
+    private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts,
+            DriveConstants.kvVoltSecondsPerMeter, DriveConstants.kaVoltSecondsSquaredPerMeter);
+
     public RevDrivetrain() {
         mLeadLeft = new SimableCANSparkMax(CANConstants.DRIVETRAIN_LEFT_MASTER,
                 CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -134,6 +139,12 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mFollowerRight.follow(mLeadRight, false);
         mLeadLeft.setOpenLoopRampRate(.5);
         mLeadRight.setOpenLoopRampRate(.5);
+
+        mLeadLeft.setClosedLoopRampRate(1);
+        mLeadRight.setClosedLoopRampRate(1);
+
+
+
         mGyro = new AHRS();
 
         mDrive = new DifferentialDrive(mLeadLeft, mLeadRight);
@@ -398,6 +409,24 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public boolean getStopped() {
         return Math.abs(getLeftRate()) < .5 && Math.abs(getRightRate()) < .5;
+
+    }
+
+    /**
+     * Attempts to follow the given drive states using offboard PID.
+     *
+     * @param left  The left wheel state.
+     * @param right The right wheel state.
+     */
+    public void setDriveStates(TrapezoidProfile.State left, TrapezoidProfile.State right) {
+
+        mLeftPidController.setReference(left.position, ControlType.kPosition);
+
+        m_feedforward.calculate(left.velocity);
+
+        mRightPidController.setReference(right.position, ControlType.kPosition);
+
+        m_feedforward.calculate(right.velocity);
     }
 
     public void setIdleMode(boolean brake) {
@@ -455,7 +484,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         kD = Pref.getPref("dRKd");
 
         double iz = Pref.getPref("dRKiz");
-        double ff = Pref.getPref("dRKff");
+        double ff = Pref.getPref("dRKff");//90 rps * .0467 = 4.2 meters per second. 1/4.2 = .238 kff
 
         setVGains();
 

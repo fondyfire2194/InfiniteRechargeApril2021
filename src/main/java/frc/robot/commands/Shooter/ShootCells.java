@@ -107,10 +107,10 @@ public class ShootCells extends CommandBase {
     }
 
     // if (m_shooter.isShooting && m_transport.leftArmDown)
-    //   m_transport.runRightBeltMotor(.2);
+    // m_transport.runRightBeltMotor(.2);
 
     // if (m_shooter.isShooting && !m_transport.leftArmDown)
-    //   m_transport.runLeftBeltMotor(.2);
+    // m_transport.runLeftBeltMotor(.2);
 
     m_shooter.okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
 
@@ -119,13 +119,10 @@ public class ShootCells extends CommandBase {
 
     if (getNextCell || cellReleased) {
       releaseOneCell();
-      // if (m_transport.leftArmDown) {
-      // m_transport.runRightBeltMotor(.5);
-      // }
+    }
 
-      // if (!m_transport.leftArmDown) {
-      // m_transport.runLeftBeltMotor(.5);
-      // }
+    if (!m_transport.leftIsBlocked && m_transport.getLeftBallPresent()) {
+      m_transport.releaseLeftChannel();
     }
 
     if (m_transport.cellsShot >= 3 || inAuto && m_transport.cellsShot >= 2) {

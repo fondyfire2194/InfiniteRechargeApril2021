@@ -40,6 +40,7 @@ import frc.robot.commands.RobotDrive.ClearRobFaults;
 import frc.robot.commands.RobotDrive.EndDriveLog;
 import frc.robot.commands.RobotDrive.LogDriveData;
 import frc.robot.commands.RobotDrive.PickupMove;
+import frc.robot.commands.RobotDrive.PickupMoveVelocity;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.RobotDrive.StopRobot;
@@ -578,6 +579,8 @@ public class SetupShuffleboard {
 
                                 transportCellArm.addBoolean("Arm Up", () -> m_transport.getCellArmUp());
                                 transportCellArm.addBoolean("Arm Down", () -> m_transport.getCellArmDown());
+                                transportCellArm.addBoolean("Left Arm Up", () -> m_transport.getLeftArmUp());
+                                transportCellArm.addBoolean("Left Arm Down", () -> m_transport.getLeftArmDown());
 
                                 ShuffleboardLayout transportValues1 = Shuffleboard.getTab("SetupTransport")
                                                 .getLayout("TransportStates", BuiltInLayouts.kGrid).withPosition(4, 0)
@@ -614,10 +617,10 @@ public class SetupShuffleboard {
 
                                 robotCommands.add("ClearFaults", new ClearRobFaults(m_robotDrive));
                                 robotCommands.add("Stop Robot", new StopRobot(m_robotDrive));
-                                robotCommands.add("To -4(.25)", new PickupMove(m_robotDrive, -4, .25));
-                                robotCommands.add("To -4(.4)", new PickupMove(m_robotDrive, -4, .4));
-                                robotCommands.add("To -4(.5)", new PickupMove(m_robotDrive, 4, .5));
-                                robotCommands.add("To -4(.6)", new PickupMove(m_robotDrive, -4, .6));
+                                robotCommands.add("To -4(2)", new PickupMoveVelocity(m_robotDrive, -4, 2));
+                                robotCommands.add("To -4(3)", new PickupMoveVelocity(m_robotDrive, -4, 3));
+                                robotCommands.add("To -4(1)", new PickupMoveVelocity(m_robotDrive, 4, 1));
+                                robotCommands.add("To 0(1)", new PickupMoveVelocity(m_robotDrive, 0, 1));
                                 robotCommands.add("To 0", new PickupMove(m_robotDrive, 0, .5));
                                 robotCommands.add("Cmd", m_robotDrive);
 

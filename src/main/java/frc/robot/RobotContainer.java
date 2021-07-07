@@ -38,6 +38,7 @@ import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.CellTransport.StopBelts;
 import frc.robot.commands.CellTransport.StopRollers;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
+import frc.robot.commands.RobotDrive.ArcadeDriveVelocity;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
 import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.JogShooter;
@@ -255,7 +256,6 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 5).whenPressed(new RunShooter(m_shooter))
                         .whenPressed(new RunRollers(m_transport));
 
-
             new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport))
                         .whenPressed(new StopRollers(m_transport)).whenPressed(new StopBelts(m_transport))
                         .whenPressed(new SetUpLimelightForNoVision(m_limelight))
@@ -275,7 +275,7 @@ public class RobotContainer {
                         .whenReleased(new SetVisionMode(m_limelight))
                         .whenReleased(new SetUpLimelightForNoVision(m_limelight));
 
-            new JoystickButton(m_driverController, 8).whenPressed(getDriveStraightCommand());
+            new JoystickButton(m_driverController, 8).whileHeld(getDriveStraightCommand());
 
             new JoystickButton(m_driverController, 9)
                         .whenPressed(new ChooseShooterSpeedSource(m_shooter, m_tilt, m_turret, 1));
@@ -287,8 +287,11 @@ public class RobotContainer {
                         .whenReleased(() -> m_shooter.shootOne());
 
             // Hold to shoot all
-            new JoystickButton(m_driverController, 12).whileHeld(() -> m_shooter.shootAll())
-                        .whenReleased(() -> m_shooter.shootOne());
+            // new JoystickButton(m_driverController, 12).whileHeld(() ->
+            // m_shooter.shootAll())
+            // .whenReleased(() -> m_shooter.shootOne());
+
+            new JoystickButton(m_driverController, 12).whileHeld(getArcadeDriveVelocityCommand());
 
             driverUpButton.whenPressed(() -> m_tilt.aimHigher());
 
@@ -307,8 +310,9 @@ public class RobotContainer {
             // front of power port one meter back
             codriverY.whenPressed(new SetShotPosition0(m_shooter, m_turret, m_tilt, m_transport, m_limelight));
 
-            // 
-        //    codriverX.whenPressed(new SetShotPosition1(m_shooter, m_turret, m_tilt, m_transport, m_limelight));
+            //
+            // codriverX.whenPressed(new SetShotPosition1(m_shooter, m_turret, m_tilt,
+            // m_transport, m_limelight));
 
             // trench in front of control panel
             codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt, m_transport, m_limelight));
@@ -326,6 +330,8 @@ public class RobotContainer {
             // coDriverLT.whenPressed(
 
             // coDriverA.whenPressed
+
+      
             /**
              * Setup gamepad is used for testing functions
              */
@@ -380,6 +386,11 @@ public class RobotContainer {
 
       public Command getArcadeDriveCommand() {
             return new ArcadeDrive(m_robotDrive, () -> -m_driverController.getY(), () -> m_driverController.getTwist());
+      }
+
+      public Command getArcadeDriveVelocityCommand() {
+            return new ArcadeDriveVelocity(m_robotDrive, () -> -m_driverController.getY(),
+                        () -> m_driverController.getTwist());
       }
 
       public Command getDriveStraightCommand() {

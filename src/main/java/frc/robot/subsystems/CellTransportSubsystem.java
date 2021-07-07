@@ -49,7 +49,11 @@ public class CellTransportSubsystem extends SubsystemBase {
 
   private Servo leftChannel;
 
-  private AnalogInput rightChannelBallDetect;
+  private AnalogInput leftChannelBallDetect;
+
+  private AnalogInput ballWaitShootDetect;// next to be released for shooting
+
+  private AnalogInput ballBlockLeft;// wait to go into shoot position
 
   private double leftHoldPosition;
   private double leftReleasePosition;
@@ -63,15 +67,25 @@ public class CellTransportSubsystem extends SubsystemBase {
   public int cellsShot;
   public boolean leftArmDown;
 
+  private int ballBlockLeftCtr;
+  public boolean leftIsBlocked;
+  private int ballAtShooterCtr;
+  public boolean ballAtShooter;
+
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
     m_rightBeltMotor = new TalonSRXWrapper(CANConstants.RIGHT_BELT_MOTOR);
     m_frontRollerMotor = new TalonSRXWrapper(CANConstants.FRONT_ROLLER);
     m_rearRollerMotor = new TalonSRXWrapper(CANConstants.REAR_ROLLER);
+
     cellArm = new Servo(9);
     leftChannel = new Servo(8);
-    rightChannelBallDetect = new AnalogInput(1);
 
+    leftChannelBallDetect = new AnalogInput(0);
+
+    ballBlockLeft = new AnalogInput(1);
+
+    ballWaitShootDetect = new AnalogInput(2);
 
     if (Robot.isReal()) {
       m_leftBeltMotor.configFactoryDefault();
@@ -119,10 +133,49 @@ public class CellTransportSubsystem extends SubsystemBase {
       leftHoldPosition = Pref.getPref("LeftHoldPosn");
       holdLeftChannel();
     }
-SmartDashboard.putNumber("VOLTS", rightChannelBallDetect.getAverageVoltage());
-SmartDashboard.putBoolean("ball", getRightBallPresent());
+
+    SmartDashboard.putNumber("LeftVOLTS", leftChannelBallDetect.getVoltage());
+
+    SmartDashboard.putNumber("LeftBlockVOLTS", ballBlockLeft.getVoltage());
+
+    SmartDashboard.putNumber("AtSHootVOLTS", ballWaitShootDetect.getVoltage());
+
+    SmartDashboard.putBoolean("leftball", getLeftBallPresent());
+
+    SmartDashboard.putBoolean("LeftBlocked", leftIsBlocked);
+
+    SmartDashboard.putBoolean("BallAtShoot", ballAtShooter);
+
+    if (getBallBlockLeft()) {
+      ballBlockLeftCtr = 30;
+      leftIsBlocked = true;
+    }
+
+    if (!getBallBlockLeft())
+      ballBlockLeftCtr--;
+
+    if (!getBallBlockLeft() && ballBlockLeftCtr <= 0) {
+      leftIsBlocked = false;
+    }
+
+    if (getBallPreShoot()) {
+      ballAtShooterCtr = 30;
+      ballAtShooter = true;
+    }
+
+    if (!getBallPreShoot())
+      ballAtShooterCtr--;
+
+    if (!getBallPreShoot() && ballAtShooterCtr <= 0) {
+      ballAtShooter = false;
+    }
+
   }
-  
+
+  public boolean getNoCellsLeft() {
+    return !leftIsBlocked && !getBallPreShoot() && !getLeftBallPresent();
+  }
+
   public boolean checkCAN() {
 
     leftBeltMotorConnected = m_leftBeltMotor.getFirmwareVersion() != -1;
@@ -232,15 +285,23 @@ SmartDashboard.putBoolean("ball", getRightBallPresent());
   }
 
   public boolean getCellArmDown() {
-    return getArmAngle() > 110;
+    return getArmAngle() < 20;
   }
 
   public boolean getCellArmUp() {
-    return getArmAngle() < 50;
+    return getArmAngle() > 40;
   }
 
   public int getArmType() {
     return cellArm.getRaw();
+  }
+
+  public double getLeftAngle() {
+    return leftChannel.getAngle();
+  }
+
+  public double getLeftPosition() {
+    return leftChannel.getPosition();
   }
 
   public void holdLeftChannel() {
@@ -254,8 +315,24 @@ SmartDashboard.putBoolean("ball", getRightBallPresent());
     leftArmDown = false;
   }
 
-  public boolean getRightBallPresent() {
-    return rightChannelBallDetect.getAverageVoltage() > 1.1;
+  public boolean getLeftArmDown() {
+    return getLeftAngle() > 6;
+  }
+
+  public boolean getLeftArmUp() {
+    return getLeftAngle() > 26;
+  }
+
+  public boolean getLeftBallPresent() {
+    return leftChannelBallDetect.getVoltage() > 1.1;
+  }
+
+  public boolean getBallPreShoot() {
+    return ballWaitShootDetect.getVoltage() > 1.1;
+  }
+
+  public boolean getBallBlockLeft() {
+    return ballBlockLeft.getVoltage() > 1.1;
   }
 
   public void setBeltBrakeOn(boolean on) {
