@@ -37,7 +37,7 @@ public class PositionHoldTilt extends CommandBase {
   @Override
   public void initialize() {
     m_tilt.programRunning = 1;
-    
+
     if (!m_limelight.useVision)
       visionFoundCounter = 0;
 
@@ -67,11 +67,12 @@ public class PositionHoldTilt extends CommandBase {
 
       cameraVerticalError = m_limelight.getdegVerticalToTarget();
 
-      m_tilt.adjustedVerticalError = cameraVerticalError
-          + (m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset);
+      m_tilt.adjustedVerticalError = cameraVerticalError + (m_tilt.targetVerticalOffset
+          + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset + m_tilt.cameraCalculatedTiltOffset);
 
       m_limelight.setVerticalOffset(
-          -(m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset));
+          -(m_tilt.targetVerticalOffset + m_tilt.driverVerticalOffsetDegrees + m_tilt.testVerticalOffset)
+              + m_tilt.cameraCalculatedTiltOffset);
 
     } else {
       cameraVerticalError = 0;
@@ -101,7 +102,7 @@ public class PositionHoldTilt extends CommandBase {
 
     m_tilt.motorEndpointDegrees = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
 
-    if (!m_shooter.shotInProgress)
+    if (!m_shooter.isShooting)
       lastVerticalError = m_tilt.adjustedVerticalError;
 
     if (!m_tilt.validTargetSeen) {

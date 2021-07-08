@@ -24,12 +24,10 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
-import frc.robot.commands.AutoCommands.StartAllShooter;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
 import frc.robot.commands.CellIntake.StartIntake;
-import frc.robot.commands.CellIntake.StopIntake;
 import frc.robot.commands.CellIntake.StopIntakeMotor;
 import frc.robot.commands.CellTransport.JogLeftBelt;
 import frc.robot.commands.CellTransport.JogRightBelt;
@@ -40,27 +38,23 @@ import frc.robot.commands.CellTransport.StopRollers;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.ArcadeDriveVelocity;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
+import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.JogShooter;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.SetShotPosition0;
-import frc.robot.commands.Shooter.SetShotPosition1;
 import frc.robot.commands.Shooter.SetShotPosition2;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.PositionHoldTilt;
-import frc.robot.commands.Tilt.PositionHoldTiltTest;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.TiltJog;
 import frc.robot.commands.Tilt.TiltJogVelocity;
 import frc.robot.commands.Tilt.TiltWaitForStop;
-import frc.robot.commands.Tilt.ToggleTiltUseVision;
 import frc.robot.commands.Turret.PositionHoldTurret;
-import frc.robot.commands.Turret.PositionHoldTurretTest;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
-import frc.robot.commands.Turret.ToggleTurretUseVision;
 import frc.robot.commands.Turret.TurretJog;
 import frc.robot.commands.Turret.TurretJogVelocity;
 import frc.robot.commands.Turret.TurretWaitForStop;
@@ -68,7 +62,6 @@ import frc.robot.commands.Vision.SetUpLimelightForDriver;
 import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.SetVisionMode;
-import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -262,11 +255,11 @@ public class RobotContainer {
                         .whenPressed(new PositionTurret(m_turret, 0))
                         .whenReleased(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle));
 
-            new JoystickButton(m_driverController, 6).whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
+            new JoystickButton(m_driverController, 4).whenPressed(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle))
                         .whenPressed(new PositionTurret(m_turret, 0))
                         .whenPressed(new SetUpLimelightForNoVision(m_limelight));
 
-            new JoystickButton(m_driverController, 4).whenPressed(new SetUpLimelightForTarget(m_limelight, false));
+            new JoystickButton(m_driverController, 6).whenPressed(new SetUpLimelightForTarget(m_limelight, true));
 
             new JoystickButton(m_driverController, 7).whileHeld(new PositionTilt(m_tilt, m_tilt.tiltMinAngle))
                         .whenPressed(new PositionTurret(m_turret, 0))
@@ -275,13 +268,11 @@ public class RobotContainer {
                         .whenReleased(new SetVisionMode(m_limelight))
                         .whenReleased(new SetUpLimelightForNoVision(m_limelight));
 
-            new JoystickButton(m_driverController, 8).whileHeld(getDriveStraightCommand());
+            new JoystickButton(m_driverController, 8)
+                        .whenPressed(new ChooseShooterSpeedSource(m_shooter, m_tilt, m_turret, 0));
 
-            new JoystickButton(m_driverController, 9)
-                        .whenPressed(new ChooseShooterSpeedSource(m_shooter, m_tilt, m_turret, 1));
-
-            new JoystickButton(m_driverController, 10)
-                        .whenPressed(new ChooseShooterSpeedSource(m_shooter, m_tilt, m_turret, 2));
+            new JoystickButton(m_driverController, 9).and(new JoystickButton(m_driverController, 10)
+                        .whenPressed(new ChooseShooterSpeedSource(m_shooter, m_tilt, m_turret, 1)));
 
             new JoystickButton(m_driverController, 11).whileHeld(() -> m_shooter.shootAll())
                         .whenReleased(() -> m_shooter.shootOne());
@@ -308,16 +299,14 @@ public class RobotContainer {
              */
 
             // front of power port one meter back
-            codriverY.whenPressed(new SetShotPosition0(m_shooter, m_turret, m_tilt, m_transport, m_limelight));
+            codriverY.whenPressed(
+                        new SetShotPosition0(m_shooter, m_turret, m_tilt, m_transport, m_intake, m_limelight));
 
-            //
-            // codriverX.whenPressed(new SetShotPosition1(m_shooter, m_turret, m_tilt,
-            // m_transport, m_limelight));
-
+            codriverX.whenPressed(() -> m_intake.armSolenoidOff());
+            // coDriverA.whenPressed
             // trench in front of control panel
-            codriverB.whenPressed(new SetShotPosition2(m_shooter, m_turret, m_tilt, m_transport, m_limelight));
-
-            // codriverB.whileHeld(getJogTurretVelocityCommand(codriverGamepad));
+            codriverB.whenPressed(
+                        new SetShotPosition2(m_shooter, m_turret, m_tilt, m_transport, m_intake, m_limelight));
 
             //
             codriverRightTrigger.whileHeld(getJogTiltCommand(codriverGamepad))
@@ -326,12 +315,10 @@ public class RobotContainer {
             codriverLeftTrigger.whileHeld(getJogTurretCommand(codriverGamepad))
                         .whenReleased(new TiltWaitForStop(m_tilt));
 
-            // low goal shot
-            // coDriverLT.whenPressed(
-
-            // coDriverA.whenPressed
-
-      
+            codriverUpButton.whenPressed(new ChangeShooterSpeed(m_shooter, +1));
+            codriverDownButton.whenPressed(new ChangeShooterSpeed(m_shooter, -1));
+            codriverRightButton.whenPressed(new ChangeShooterSpeed(m_shooter, +2));
+            codriverLeftButton.whenPressed(new ChangeShooterSpeed(m_shooter, -2));
             /**
              * Setup gamepad is used for testing functions
              */
@@ -346,13 +333,11 @@ public class RobotContainer {
 
             setupLeftButton.whenPressed(new ReleaseOneCell(m_transport));
 
-            setupLeftTrigger.whileHeld(() -> m_transport.pulseLeftBelt(.5, .5, .5))
-                        .whenReleased(() -> m_transport.stopLeftBeltMotor());
+            // setupLeftTrigger.
 
-            setupRightTrigger.whileHeld(() -> m_transport.pulseRightBelt(-.55, .25, .4))
-                        .whenReleased(() -> m_transport.stopRightBeltMotor());
+            // setupRightTrigger.
 
-            setupBack.whileHeld(new StartIntake(m_intake, m_transport)).whenReleased(new StopIntake(m_intake));
+            // setupBack.
 
             setupX.whileHeld(getJogTiltVelocityCommand(setupGamepad))
                         .whileHeld(getJogTurretVelocityCommand(setupGamepad)).whenReleased(new TiltWaitForStop(m_tilt))
@@ -361,13 +346,13 @@ public class RobotContainer {
             setupY.whileHeld(getJogTiltCommand(setupGamepad)).whileHeld(getJogTurretCommand(setupGamepad))
                         .whenReleased(new TiltWaitForStop(m_tilt)).whenReleased(new TurretWaitForStop(m_turret));
 
-            setupB.whileHeld(new RunIntakeMotor(m_intake, .5)).whenReleased(new StopIntakeMotor(m_intake));
+            // setupB.whileHeld(
 
             setupA.whileHeld(new RunIntakeMotor(m_intake, .75)).whenReleased(new StopIntakeMotor(m_intake));
 
-            setupLeftStick.whileHeld(getJogLeftBeltCommand());
+            // setupLeftStick.
 
-            setupRightStick.whileHeld(getJogRightBeltCommand());
+            // setupRightStick.
 
             LiveWindow.disableAllTelemetry();
 

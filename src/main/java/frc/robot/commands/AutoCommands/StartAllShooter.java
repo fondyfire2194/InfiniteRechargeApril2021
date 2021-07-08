@@ -6,12 +6,8 @@ package frc.robot.commands.AutoCommands;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.TimeDelay;
-import frc.robot.commands.CellTransport.PulseBelts;
-import frc.robot.commands.CellTransport.RunBelts;
 import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.Shooter.RunShooter;
-import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
 

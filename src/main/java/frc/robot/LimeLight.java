@@ -4,6 +4,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LimelightControlMode.Advanced_Crosshair;
 import frc.robot.LimelightControlMode.Advanced_Target;
@@ -33,6 +34,8 @@ public class LimeLight {
     public int twoTimesZoomPipeline = 2;
     public int threeTimesZoomPipeline = 3;
     public int ledsOffPipeline = 8;
+
+    private double useVisionTimer;
 
     class PeriodicRunnable implements java.lang.Runnable {
         public void run() {
@@ -460,17 +463,31 @@ public class LimeLight {
 
     public void periodic() {
 
-        SmartDashboard.putNumber("DegHToTarget", getdegRotationToTarget());
-        SmartDashboard.putNumber("DegVertToTarget", getdegVerticalToTarget());
-        SmartDashboard.putNumber("Pipeline #", getPipeline());
+        // SmartDashboard.putNumber("DegHToTarget", getdegRotationToTarget());
+        // SmartDashboard.putNumber("DegVertToTarget", getdegVerticalToTarget());
+        // SmartDashboard.putNumber("Pipeline #", getPipeline());
 
-        SmartDashboard.putNumber("TargetArea", getTargetArea());
-        SmartDashboard.putNumber("BNDBoxWidth", getBoundingBoxWidth());
-        SmartDashboard.putNumber("BndBoxHeight", getBoundingBoxHeight());
+        // SmartDashboard.putNumber("TargetArea", getTargetArea());
+        // SmartDashboard.putNumber("BNDBoxWidth", getBoundingBoxWidth());
+        // SmartDashboard.putNumber("BndBoxHeight", getBoundingBoxHeight());
 
-        SmartDashboard.putNumber("PerspAngle", getPerspectiveAngle());
-        SmartDashboard.putNumber("3d X", getCamtranX());
-        SmartDashboard.putNumber("TargetDistance", getCamtranZ());
+        // SmartDashboard.putNumber("PerspAngle", getPerspectiveAngle());
+        // SmartDashboard.putNumber("3d X", getCamtranX());
+        // SmartDashboard.putNumber("TargetDistance", getCamtranZ());
+
+        if (useVision && !getIsTargetFound() && useVisionTimer == 0) {
+            useVisionTimer = Timer.getFPGATimestamp();
+        }
+
+        if (useVision && Timer.getFPGATimestamp() > useVisionTimer + 5) {
+            useVision = false;
+            useVisionTimer = 0;
+        }
+
+        if (useVision && getIsTargetFound()) {
+            useVisionTimer = 0;
+        }
+
 
     }
 

@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.commands.AutoCommands.PowerPort.AutoCenterShootMove;
-import frc.robot.commands.AutoCommands.ShieldGen.ShieldGenAuto;
 import frc.robot.commands.AutoCommands.TrenchBasic.TrenchAuto;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
@@ -50,12 +49,6 @@ public class AutoFactory {
         // right of center line retract shoot
     }
 
-    public ParallelRaceGroup getAutonomousCommand2() {
-
-        return new ShieldGenAuto(m_shooter, m_tilt, m_turret, m_robotDrive, m_transport, m_limelight, m_intake,
-                m_compressor);
-
-    }
 
     // front of trench or shoot 3 move pickup shoot 3
     public ParallelRaceGroup getAutonomousCommand3() {

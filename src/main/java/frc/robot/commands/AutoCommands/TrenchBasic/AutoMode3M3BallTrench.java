@@ -107,8 +107,8 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
 
                                 // // 2nd shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot2Started"),
-                                                new StopIntakeMotor(intake), new SetShootSpeed(shooter, shootSpeed1),
-                                                new UseVision(limelight, true),
+                                                new RunIntakeMotor(intake, -.2),
+                                                new SetShootSpeed(shooter, shootSpeed1), new UseVision(limelight, true),
 
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
                                                                 shootTime)).deadlineWith(
@@ -118,7 +118,6 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                                                                                 limelight)),
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
-                                                // new StopShoot(shooter, transport),
                                                 new IntakeArmRaise(intake), new StopIntakeMotor(intake),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new SetUpLimelightForNoVision(limelight),

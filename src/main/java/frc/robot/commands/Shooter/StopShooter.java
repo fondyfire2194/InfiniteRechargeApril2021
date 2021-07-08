@@ -17,11 +17,9 @@ import frc.robot.subsystems.RevShooterSubsystem;
 public class StopShooter extends InstantCommand {
   private final RevShooterSubsystem m_shooter;
 
-  
-
   public StopShooter(RevShooterSubsystem shooter) {
     m_shooter = shooter;
- 
+
     addRequirements(m_shooter);
 
   }
@@ -29,7 +27,7 @@ public class StopShooter extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-   m_shooter.startShooter=false;
+
     m_shooter.stop();
   }
 }

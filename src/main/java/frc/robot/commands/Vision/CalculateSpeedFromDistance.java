@@ -53,12 +53,23 @@ public class CalculateSpeedFromDistance extends CommandBase {
   @Override
   public void execute() {
 
-    double baseSpeed = m_shooter.calculateMPSFromDistance(m_shooter.calculatedCameraDistance);
+    if (m_shooter.useCameraSpeed) {
+      double baseSpeed = m_shooter.calculateMPSFromDistance(m_shooter.calculatedCameraDistance);
 
-    double speedChangeFromCameraVerticalError = m_shooter
-        .calculateSpeedChangeFromCameraVerticalError(m_limelight.getdegVerticalToTarget(), baseSpeed);
-    tempSpeed = baseSpeed + speedChangeFromCameraVerticalError;
+      double speedChangeFromCameraVerticalError = m_shooter
+          .calculateSpeedChangeFromCameraVerticalError(m_limelight.getdegVerticalToTarget(), baseSpeed);
 
+      tempSpeed = baseSpeed + speedChangeFromCameraVerticalError;
+
+      m_shooter.cameraCalculatedSpeed = baseSpeed;
+
+      m_tilt.cameraCalculatedTiltOffset = 4 - ((m_shooter.calculatedCameraDistance - 3) / 4);
+    }
+
+    else {
+      m_shooter.cameraCalculatedSpeed = 0;
+      m_tilt.cameraCalculatedTiltOffset = 0;
+    }
   }
 
   // Called once the command ends or is interrupted.

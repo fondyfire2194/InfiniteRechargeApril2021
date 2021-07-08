@@ -98,7 +98,7 @@ SmartDashboard.putNumber("THOF", m_turret.testHorOffset);
       visionFoundCounter = 0;
       cameraHorizontalError = 0;
     }
-    if (!m_shooter.shotInProgress)
+    if (!m_shooter.isShooting)
       lastHorizontalError = -m_turret.adjustedCameraError;
       
     if (!m_turret.validTargetSeen) {

@@ -25,6 +25,6 @@ public class Position2Macro extends SequentialCommandGroup {
     // Add your commands in the a drive,ddCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new ResetGyro(drive), new ResetEncoders(drive), new PickupMove(drive, 2.5, .4),
-        new SetShotPosition2(shooter, turret, tilt, transport, limelight));
+        new SetShotPosition2(shooter, turret, tilt, transport, null, limelight));
   }
 }

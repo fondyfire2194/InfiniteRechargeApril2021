@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LinearFilter;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.LimelightControlMode.LedMode;
@@ -47,6 +48,12 @@ public class ShootCells extends CommandBase {
   private int loopctr;
   private double lastShooterAmps;
   private LinearFilter ampsMMA = LinearFilter.movingAverage(5);
+  private boolean useSensors;
+  private int cellAvailableCounter;
+  private int shooterAtSpeedCtr;
+  private boolean atSpeedReturn;
+  private int shotsMade;
+  private boolean atSpeedLast;
 
   public ShootCells(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret, LimeLight limelight,
       CellTransportSubsystem transport, Compressor compressor, double time) {
@@ -77,6 +84,8 @@ public class ShootCells extends CommandBase {
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.useVision = true;
+
+    shotsMade = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -102,15 +111,19 @@ public class ShootCells extends CommandBase {
 
     }
 
+    if (m_shooter.isShooting && atSpeedLast && !m_shooter.atSpeed()) {
+      shotsMade++;
+      atSpeedLast = false;
+    }
+    SmartDashboard.putNumber("ATSPPEDSHOTS", shotsMade);
+
+    if (m_shooter.isShooting && m_shooter.atSpeed()) {
+      atSpeedLast = true;
+    }
+
     if (m_shooter.shotInProgress && Timer.getFPGATimestamp() > shotStartTime + shotTime) {
       m_shooter.shotInProgress = false;
     }
-
-    // if (m_shooter.isShooting && m_transport.leftArmDown)
-    // m_transport.runRightBeltMotor(.2);
-
-    // if (m_shooter.isShooting && !m_transport.leftArmDown)
-    // m_transport.runLeftBeltMotor(.2);
 
     m_shooter.okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
 
@@ -121,35 +134,40 @@ public class ShootCells extends CommandBase {
       releaseOneCell();
     }
 
-    if (!m_transport.leftIsBlocked && m_transport.getLeftBallPresent()) {
+    if (useSensors && !m_transport.leftIsBlocked && m_transport.getLeftBallPresent()) {
       m_transport.releaseLeftChannel();
     }
 
-    if (m_transport.cellsShot >= 3 || inAuto && m_transport.cellsShot >= 2) {
+    if (cellAvailable) {
+      cellAvailableCounter++;
+    } else {
+      cellAvailableCounter = 0;
+    }
+
+    if (m_transport.cellsShot >= 3 || inAuto && m_transport.cellsShot >= 2 && cellAvailableCounter >= 20) {
       m_transport.releaseLeftChannel();
     }
 
     double ampsAveraged = ampsMMA.calculate(m_shooter.getLeftAmps());
-    boolean shotSeen;
-    if (Math.abs(m_shooter.getLeftAmps()) - ampsAveraged > 5) {
-      shotSeen = true;
-
-    }
-
-    // SmartDashboard.putBoolean("OKShoot", okToShoot);
-    // SmartDashboard.putBoolean("SHIP", m_shooter.shotInProgress);
-    // SmartDashboard.putBoolean("SHSTD", shootStarted);
-    // SmartDashboard.putBoolean("CAvail ", cellAvailable);
-    // SmartDashboard.putNumber("CLSSHT", cellsShot);
 
   }
+
+  // SmartDashboard.putBoolean("OKShoot", okToShoot);
+  // SmartDashboard.putBoolean("SHIP", m_shooter.shotInProgress);
+  // SmartDashboard.putBoolean("SHSTD", shootStarted);
+  // SmartDashboard.putBoolean("CAvail ", cellAvailable);
+  // SmartDashboard.putNumber("CLSSHT", cellsShot);
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_transport.holdCell();
-    m_transport.holdLeftChannel();
-    m_transport.stopBelts();
+
+    if (!inAuto) {
+      m_transport.holdLeftChannel();
+    }
+
+    // m_transport.stopBelts();
     m_transport.stopRollers();
     m_compressor.start();
     m_shooter.shotInProgress = false;
@@ -172,6 +190,7 @@ public class ShootCells extends CommandBase {
     }
     if (cellReleased && Timer.getFPGATimestamp() > cellReleasedStartTime + m_transport.cellPassTime) {
       m_transport.holdCell();
+
       cellReleasedStartTime = 0;
 
       cellAvailable = true;

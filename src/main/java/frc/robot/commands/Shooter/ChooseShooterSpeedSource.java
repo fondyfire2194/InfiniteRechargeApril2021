@@ -43,6 +43,7 @@ public class ChooseShooterSpeedSource extends InstantCommand {
 
         m_tilt.useSetupVertOffset = false;
         m_turret.useSetupHorOffset = false;
+        m_tilt.cameraCalculatedTiltOffset = 0;
 
       }
         break;
@@ -65,6 +66,7 @@ public class ChooseShooterSpeedSource extends InstantCommand {
         m_shooter.useDriverSpeed = true;
         m_tilt.useSetupVertOffset = false;
         m_turret.useSetupHorOffset = false;
+        m_tilt.cameraCalculatedTiltOffset = 0;
       }
 
         break;
@@ -75,6 +77,7 @@ public class ChooseShooterSpeedSource extends InstantCommand {
         m_shooter.useDriverSpeed = false;
         m_tilt.useSetupVertOffset = true;
         m_turret.useSetupHorOffset = true;
+        m_tilt.cameraCalculatedTiltOffset = 0;
       }
 
         break;

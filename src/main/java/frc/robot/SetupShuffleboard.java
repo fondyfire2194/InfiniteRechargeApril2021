@@ -19,12 +19,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
-import frc.robot.commands.TimeDelay;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
@@ -52,9 +49,6 @@ import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
-import frc.robot.commands.TestStuff.One;
-import frc.robot.commands.TestStuff.Three;
-import frc.robot.commands.TestStuff.Two;
 import frc.robot.commands.Tilt.ClearFaults;
 import frc.robot.commands.Tilt.EndTiltLog;
 import frc.robot.commands.Tilt.LogTiltData;
@@ -140,7 +134,7 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Center Start Retract Shoot", 1);
 
-                        autoChooser.addOption("Left Start Shoot Retract Shoot", 2);
+                        autoChooser.addOption("Not Available", 2);
 
                         autoChooser.addOption("Trench 3 M 3", 3);
 
@@ -180,6 +174,7 @@ public class SetupShuffleboard {
                         logCmd.add("EndLogTilt", new EndTiltLog(tilt));
                         logCmd.add("EndLogTurret", new EndTurretLog(turret));
                         logCmd.add("EndLogShoot", new EndShootLog(shooter));
+                        logCmd.add("EndDriveLog", new EndDriveLog(drive));
 
                         LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
                         Shuffleboard.getTab("Pre-Round").add("Limelight", LLFeed)
@@ -240,16 +235,6 @@ public class SetupShuffleboard {
                         competition.addBoolean("Use Vision", () -> m_limelight.useVision);
                         competition.addBoolean("RollersAtSpeed", () -> m_transport.rollersAtSpeed);
 
-                        // Shuffleboard.getTab("Competition").addNumber("TimeRemaining", () ->
-                        // m_robotDrive.getMatchTime())
-                        // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 0).withSize(1, 1);
-                        // Shuffleboard.getTab("Competition").addNumber("Battery", () ->
-                        // getPDPInfo()[0])
-                        // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 1).withSize(1, 1);
-                        // Shuffleboard.getTab("Competition").addNumber("TotalEnegy Ah", () ->
-                        // getPDPInfo()[2])
-                        // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 2).withSize(1, 1);
-
                         if (RobotBase.isReal()) {
 
                                 LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
@@ -260,6 +245,63 @@ public class SetupShuffleboard {
                                                                                                                         // widget
                                                                                                                         // properties
                         } // here
+
+                }
+                {
+                        ShuffleboardLayout miscComp = Shuffleboard.getTab("CompetitionMisc")
+                                        .getLayout("Misc1", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 4)
+                                        .withProperties(Map.of("Label position", "LEFT"));
+
+                        miscComp.add("Reset to 0", new ResetTurretAngle(m_turret));
+                        miscComp.addNumber("TUAngle", () -> m_turret.getAngle());
+                        miscComp.addNumber("TiltAngle", () -> m_tilt.getAngle());
+                        miscComp.addNumber("LeftMPS", () -> m_shooter.getMPS());
+                        miscComp.addNumber("LeftAmps", () -> m_shooter.getLeftAmps());
+                        miscComp.addNumber("RightRPM", () -> m_shooter.getRightRPM());
+                        miscComp.addNumber("RightAmps", () -> m_shooter.getRightAmps());
+
+                        miscComp.add("No Zoom", new LimelightSetPipeline(m_limelight, 1));
+                        miscComp.add("Vision On", new UseVision(limelight, true));
+                        miscComp.add("Vision Off", new UseVision(limelight, false));
+                        miscComp.addNumber("RQDMPS", () -> m_shooter.requiredMps);
+
+                        ShuffleboardLayout misComp1 = Shuffleboard.getTab("CompetitionMisc")
+                                        .getLayout("Misc2", BuiltInLayouts.kList).withPosition(2, 0).withSize(2, 4)
+                                        .withProperties(Map.of("Label position", "LEFT"));
+
+                        misComp1.add("Hold Cell", new HoldCell(transport));
+                        misComp1.add("ReleaseOneCell", new ReleaseOneCell(transport));
+                        misComp1.addNumber(("CellArmAngle"), () -> m_transport.getArmAngle());
+                        misComp1.addNumber(("CellArmPosn"), () -> m_transport.getArmPosition());
+                        // for
+                        misComp1.add("Release Cell", new ReleaseCell(transport));
+
+                        misComp1.add("RaiseLeft", new RaiseLeftArm(transport));
+                        misComp1.add("LowerLeft", new LowerLeftArm(transport));
+                        misComp1.addBoolean("BallBlock", () -> m_transport.getBallBlockLeft());
+                        misComp1.addBoolean("BallAtLeft", () -> m_transport.getLeftBallPresent());
+                        misComp1.addBoolean("Arm Up", () -> m_transport.getCellArmUp());
+                        misComp1.addBoolean("Arm Down", () -> m_transport.getCellArmDown());
+                        misComp1.addBoolean("Left Arm Up", () -> m_transport.getLeftArmUp());
+                        misComp1.addBoolean("Left Arm Down", () -> m_transport.getLeftArmDown());
+
+                        ShuffleboardLayout misComp2 = Shuffleboard.getTab("CompetitionMisc")
+                                        .getLayout("Misc3", BuiltInLayouts.kList).withPosition(4, 0).withSize(2, 4)
+                                        .withProperties(Map.of("Label position", "LEFT"));
+
+                        misComp2.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
+                        misComp2.addNumber("CameraSpeed", () -> m_shooter.cameraCalculatedSpeed);
+                        misComp2.addNumber("CameraTilt", ()->m_tilt.cameraCalculatedTiltOffset);
+
+                        // Shuffleboard.getTab("Competition").addNumber("TimeRemaining", () ->
+                        // m_robotDrive.getMatchTime())
+                        // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 0).withSize(1, 1);
+                        // Shuffleboard.getTab("Competition").addNumber("Battery", () ->
+                        // getPDPInfo()[0])
+                        // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 1).withSize(1, 1);
+                        // Shuffleboard.getTab("Competition").addNumber("TotalEnegy Ah", () ->
+                        // getPDPInfo()[2])
+                        // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 2).withSize(1, 1);
 
                 }
 
@@ -529,7 +571,6 @@ public class SetupShuffleboard {
                         shooterValues1.addBoolean("BothConnected (6,7)", () -> m_shooter.allConnected);
                         shooterValues1.addBoolean("DriverOKShoot", () -> m_shooter.driverOKShoot);
                         shooterValues1.addBoolean("ShootOne", () -> m_shooter.shootOne);
-                        shooterValues1.addBoolean("Shooter Running", () -> m_shooter.startShooter);
                         shooterValues1.addBoolean("UsingSliders", () -> m_shooter.useSetupSlider);
 
                         ShuffleboardLayout shooterValues2 = Shuffleboard.getTab("SetupShooter")
@@ -619,7 +660,7 @@ public class SetupShuffleboard {
                                 robotCommands.add("Stop Robot", new StopRobot(m_robotDrive));
                                 robotCommands.add("To -4(2)", new PickupMoveVelocity(m_robotDrive, -4, 2));
                                 robotCommands.add("To -4(3)", new PickupMoveVelocity(m_robotDrive, -4, 3));
-                                robotCommands.add("To -4(1)", new PickupMoveVelocity(m_robotDrive, 4, 1));
+                                robotCommands.add("To -4(1)", new PickupMoveVelocity(m_robotDrive, -4, 1));
                                 robotCommands.add("To 0(1)", new PickupMoveVelocity(m_robotDrive, 0, 1));
                                 robotCommands.add("To 0", new PickupMove(m_robotDrive, 0, .5));
                                 robotCommands.add("Cmd", m_robotDrive);
@@ -658,8 +699,15 @@ public class SetupShuffleboard {
                                 robotValues2.addBoolean("RInPosition", () -> m_robotDrive.getInPositionRight());
                                 robotValues2.addBoolean("LFoll", () -> m_robotDrive.getLeftFollower());
                                 robotValues2.addBoolean("RFoll", () -> m_robotDrive.getRightFollower());
-                                robotValues2.addBoolean("LBurnOK", () -> m_robotDrive.leftBurnOK);
-                                robotValues2.addBoolean("RBurnOK", () -> m_robotDrive.rightBurnOK);
+
+                                ShuffleboardLayout robotGains = Shuffleboard.getTab("SetupRobot")
+                                                .getLayout("Gains", BuiltInLayouts.kGrid).withPosition(6, 0)
+                                                .withSize(1, 2).withProperties(Map.of("Label position", "TOP")); // labels
+
+                                robotGains.addNumber("LFF", () -> m_robotDrive.ffset);
+                                robotGains.addNumber("LP", () -> m_robotDrive.pset);
+                                robotGains.addNumber("RFF", () -> m_robotDrive.rffset);
+                                robotGains.addNumber("RP", () -> m_robotDrive.rpset);
 
                         }
                         /**

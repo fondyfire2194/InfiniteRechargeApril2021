@@ -315,12 +315,12 @@ public class CellTransportSubsystem extends SubsystemBase {
     leftArmDown = false;
   }
 
-  public boolean getLeftArmDown() {
-    return getLeftAngle() > 6;
+  public boolean getLeftArmUp() {
+    return getLeftAngle() <.2;
   }
 
-  public boolean getLeftArmUp() {
-    return getLeftAngle() > 26;
+  public boolean getLeftArmDown() {
+    return getLeftAngle() > .3;
   }
 
   public boolean getLeftBallPresent() {

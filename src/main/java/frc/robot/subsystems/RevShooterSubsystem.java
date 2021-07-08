@@ -158,6 +158,9 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public String activeSpeedSource = "Program";
     public double shooterFPSAdder;
     public Object shooterFPSChange;
+    public double cameraCalculatedTiltOffset;
+    public double maxMPS = 40;
+    public double minMPS = 23;
 
     public RevShooterSubsystem() {
 
@@ -187,18 +190,18 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mEncoder.setPositionConversionFactor(metersPerRev);
         mEncoder.setVelocityConversionFactor(metersPerRev / 60);
 
-        
-
+        if (!Constants.isMatch) {
             shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
                     .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 15, "Max", 50)).getEntry();
-
-        
+        }
         tuneGains();
         getGains();
         requiredMps = 23;
         shootOne = true;
         simpleCSVLogger = new SimpleCSVLogger();
         shootLogger = new SimpleCSVLogger();
+
+        programSpeed = minMPS;
     }
 
     @Override
@@ -240,10 +243,18 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             requiredMps = cameraCalculatedSpeed;
         if (useDriverSpeed)
             requiredMps = getDriverMPS();
-        if (useSetupSlider)
-            requiredMps = shooterSpeed.getDouble(20);
-        if (useProgramSpeed)
+        if (!Constants.isMatch) {
+            if (useSetupSlider)
+                requiredMps = shooterSpeed.getDouble(20);
+        }
+        if (useProgramSpeed) {
             requiredMps = programSpeed;
+        }
+
+        if (cameraCalculatedSpeed < 12 || cameraCalculatedSpeed > 40) {
+            useCameraSpeed = false;
+            useProgramSpeed = true;
+        }
 
     }
 
@@ -269,7 +280,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     public boolean atSpeed() {
 
-        return Math.abs(requiredMps + getMPS()) < (requiredMps * .05);//getmps is -
+        return Math.abs(requiredMps + getMPS()) < (requiredMps * .05);// getmps is -
 
     }
 
@@ -452,7 +463,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
 
     private void tuneGains() {
         fixedSettings();
-        double f = Pref.getPref("sHff");//5700 rpm = 95 rps = 95 * .638 = 
+        double f = Pref.getPref("sHff");// 5700 rpm = 95 rps = 95 * .638 =
         double p = Pref.getPref("sHkp");
         double i = Pref.getPref("sHki");
         double d = Pref.getPref("sHkd");

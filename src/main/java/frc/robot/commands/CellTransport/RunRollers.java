@@ -26,6 +26,7 @@ public class RunRollers extends CommandBase {
     rollerStartTime = Timer.getFPGATimestamp();
     m_transport.rollersAtSpeed = false;
     SmartDashboard.putBoolean("ROLL", true);
+    m_transport.haltRollers = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

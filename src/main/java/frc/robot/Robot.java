@@ -66,7 +66,8 @@ public class Robot extends TimedRobot {
 
     if (Constants.logShoot)
       new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport).schedule(true);
-
+    m_robotContainer.m_transport.holdCell();
+    m_robotContainer.m_transport.holdLeftChannel();
   }
 
   /**
@@ -92,6 +93,8 @@ public class Robot extends TimedRobot {
 
     m_robotContainer.m_shooter.driverThrottleValue = m_robotContainer.getThrottle();
 
+    m_robotContainer.m_limelight.periodic();
+
     // m_robotContainer.m_tilt.testLock =
     // m_robotContainer.m_driverController.getTrigger();
 
@@ -105,7 +108,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    m_robotContainer.m_robotDrive.setIdleMode(false);
+    if (m_robotContainer.m_robotDrive.isStopped()) {
+      m_robotContainer.m_robotDrive.setIdleMode(false);
+    }
     CommandScheduler.getInstance().run();
     m_robotContainer.m_setup.checkCANDevices();
     // ShootData.showValues(1);
@@ -182,9 +187,7 @@ public class Robot extends TimedRobot {
 
       case 2:// Left start close to center line
 
-        setStartingPose(FieldMap.startPosition[2]);
-
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
+        // not used
 
         break;
 
@@ -257,7 +260,7 @@ public class Robot extends TimedRobot {
     new CalculateSpeedFromDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
         m_robotContainer.m_shooter).schedule(true);
 
-    new ChooseShooterSpeedSource(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_turret, 1)
+    new ChooseShooterSpeedSource(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_turret, 0)
         .schedule(true);
 
   }

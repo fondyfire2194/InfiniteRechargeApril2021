@@ -17,7 +17,7 @@ public class PickupMoveVelocity extends CommandBase {
   private double m_speed;
   private double currentMPS;
   private double decelDistance;
-  private double maxDecel = 5;// mps/s
+  private double maxDecel = 2;// mps/s
   private boolean plusDirection;
   private double remainingDistance;
   private double decelTime;
@@ -35,9 +35,12 @@ public class PickupMoveVelocity extends CommandBase {
   private boolean decelerating;
   private double minSpeed = .1;
 
+  private double maxTime;
+
   private boolean dontStart;
 
   private boolean currentDirection;
+  private double accelDistance;
 
   public PickupMoveVelocity(RevDrivetrain drive, double endpoint, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -56,18 +59,23 @@ public class PickupMoveVelocity extends CommandBase {
 
     accelIncrementper20ms = m_speed / (accelTime * 50);
 
+    accelDistance = (m_speed * accelTime) / 2;
+
     decelTime = m_speed / maxDecel; // ex 3.5/7 =.5 sec
 
     decelDistance = (m_speed * decelTime) / 2; // ex (3.5 * .5)/2 = .
+
+    maxTime = accelTime + decelTime + ((Math.abs(m_endpoint) - accelDistance - decelDistance) / m_speed);
 
     currentMPS = 0;
 
     SmartDashboard.putNumber("EndPt", m_endpoint);
     SmartDashboard.putNumber("Speed", m_speed);
     SmartDashboard.putNumber("DeceLTime", decelTime);
+    SmartDashboard.putNumber("TotTime", maxTime);
 
     SmartDashboard.putNumber("decdis", decelDistance);
-
+    SmartDashboard.putNumber("accdis", accelDistance);
     SmartDashboard.putNumber("AccTime", accelTime);
 
     SmartDashboard.putNumber("AccInc", accelIncrementper20ms);
@@ -83,6 +91,7 @@ public class PickupMoveVelocity extends CommandBase {
     accelDone = false;
 
     useMPS = 0;
+
     loopCtr = 0;
 
     dontStart = Math.abs(m_endpoint - m_drive.getLeftDistance()) < .2;
@@ -154,9 +163,9 @@ public class PickupMoveVelocity extends CommandBase {
 
     SmartDashboard.putNumber("UseSp", useMPS);
     SmartDashboard.putNumber("LCTR", loopCtr);
-    double yawCorrection = useMPS * Pref.getPref("dRStKp");
+    double yawCorrection = 0;//useMPS * Pref.getPref("dRStKp");
 
-    m_drive.smartVelocityControlMetersPerSec(useMPS - yawCorrection, useMPS + yawCorrection);
+    m_drive.smartVelocityControlMetersPerSec(useMPS + yawCorrection, useMPS - yawCorrection);
 
     endIt = dontStart || currentDirection != plusDirection
         || loopCtr > 10 && Math.abs(remainingDistance) < .1 && (plusDirection && m_drive.getLeftDistance() > m_endpoint)

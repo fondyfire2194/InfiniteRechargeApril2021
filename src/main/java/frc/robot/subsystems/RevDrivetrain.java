@@ -143,8 +143,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         mLeadLeft.setClosedLoopRampRate(1);
         mLeadRight.setClosedLoopRampRate(1);
 
-
-
         mGyro = new AHRS();
 
         mDrive = new DifferentialDrive(mLeadLeft, mLeadRight);
@@ -446,6 +444,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     public void setMaxVel(double maxVel) {
+
         mLeftPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
         mRightPidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_SLOT);
     }
@@ -483,10 +482,19 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         kI = Pref.getPref("dRKi");
         kD = Pref.getPref("dRKd");
 
-        double iz = Pref.getPref("dRKiz");
-        double ff = Pref.getPref("dRKff");//90 rps * .0467 = 4.2 meters per second. 1/4.2 = .238 kff
+        kIz = Pref.getPref("dRKiz");
+        kFF = Pref.getPref("dRKff");// 90 rps * .0467 = 4.2 meters per second. 1/4.2 = .238 kff
 
         setVGains();
+        getGains();
+
+    }
+
+    private void getGains() {
+        ffset = mLeftPidController.getFF(VELOCITY_SLOT);
+        pset = mLeftPidController.getP(VELOCITY_SLOT);
+        rffset = mRightPidController.getFF(VELOCITY_SLOT);
+        rpset = mRightPidController.getP(VELOCITY_SLOT);
 
     }
 

@@ -119,6 +119,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public boolean tiltUseVision;;
     public double tiltOffsetAdder;
     public double tiltOffsetChange;
+	public double cameraCalculatedTiltOffset;
 
     /** 
      * 
