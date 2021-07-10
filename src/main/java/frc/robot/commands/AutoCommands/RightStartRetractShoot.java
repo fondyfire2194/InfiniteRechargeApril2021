@@ -63,7 +63,7 @@ public class RightStartRetractShoot extends SequentialCommandGroup {
                                 new SetUpLimelightForTarget(limelight,false),
                                 new ParallelCommandGroup(new MessageCommand("ShootIs3Started"),
                                                 
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, drive, compressor,
                                                                 shootTime)).deadlineWith(
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),

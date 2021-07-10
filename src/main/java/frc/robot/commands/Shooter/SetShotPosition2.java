@@ -47,9 +47,10 @@ public class SetShotPosition2 extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new ChooseShooterSpeedSource(shooter, tilt, turret, 0),
                                                 new IntakeArmLower(intake),
-                                                new SetTiltOffset(tilt, ShootData.trench5BallShotConstants.tiltOffset),
+                                                new SetTiltOffset(tilt,
+                                                                ShootData.trench5BallShotConstants.tiltOffset + 1.5),
                                                 new SetTurretOffset(turret,
-                                                                ShootData.trench5BallShotConstants.turretOffset)),
+                                                                ShootData.trench5BallShotConstants.turretOffset + 1)),
                                 // new PositionTiltToVision(tilt, limelight,
                                 // ShootData.trench5BallShotConstants.tiltAngle
                                 // + ShootData.trench5BallShotConstants.tiltOffset),

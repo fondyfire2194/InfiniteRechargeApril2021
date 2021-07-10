@@ -102,7 +102,7 @@ public class PositionHoldTilt extends CommandBase {
 
     m_tilt.motorEndpointDegrees = m_tilt.tiltMaxAngle - m_tilt.targetAngle;
 
-    if (!m_shooter.isShooting)
+    if (!m_shooter.shotInProgress)
       lastVerticalError = m_tilt.adjustedVerticalError;
 
     if (!m_tilt.validTargetSeen) {

@@ -64,9 +64,12 @@ public class Robot extends TimedRobot {
     if (Constants.logTurret)
       new LogTurretData(m_robotContainer.m_turret, m_robotContainer.m_limelight).schedule(true);
 
-    if (Constants.logShoot)
-      new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport).schedule(true);
+    // if (Constants.logShoot)
+    // new LogShootData(m_robotContainer.m_shooter,
+    // m_robotContainer.m_transport).schedule(true);
+
     m_robotContainer.m_transport.holdCell();
+
     m_robotContainer.m_transport.holdLeftChannel();
   }
 
@@ -93,7 +96,7 @@ public class Robot extends TimedRobot {
 
     m_robotContainer.m_shooter.driverThrottleValue = m_robotContainer.getThrottle();
 
-    m_robotContainer.m_limelight.periodic();
+    // m_robotContainer.m_limelight.periodic();
 
     // m_robotContainer.m_tilt.testLock =
     // m_robotContainer.m_driverController.getTrigger();
@@ -185,17 +188,27 @@ public class Robot extends TimedRobot {
 
         break;
 
-      case 2:// Left start close to center line
+      case 2:// Trench Pickup 1 ball
+        // new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport, m_robotContainer.m_robotDrive)
+        //     .schedule();
+        setStartingPose(FieldMap.startPosition[3]);
 
-        // not used
-
+        m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
         break;
 
-      case 3:// Trench
+      case 3:// Trench pickup 2 balls
 
         setStartingPose(FieldMap.startPosition[3]);
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
+
+        break;
+
+      case 4:// Trench pickup 3 balls
+
+        setStartingPose(FieldMap.startPosition[3]);
+
+        m_autonomousCommand = m_autoFactory.getAutonomousCommand4();
 
         break;
 
@@ -204,6 +217,7 @@ public class Robot extends TimedRobot {
         break;
 
     }
+
     startTime = Timer.getFPGATimestamp();
 
   }

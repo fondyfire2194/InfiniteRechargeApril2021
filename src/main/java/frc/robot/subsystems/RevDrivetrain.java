@@ -6,7 +6,6 @@ import java.util.Arrays;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
-import com.revrobotics.CANError;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -99,6 +98,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts,
             DriveConstants.kvVoltSecondsPerMeter, DriveConstants.kaVoltSecondsSquaredPerMeter);
+
+    private int robotStoppedCtr;
+
+    public boolean robotStoppedForOneSecond;
 
     public RevDrivetrain() {
         mLeadLeft = new SimableCANSparkMax(CANConstants.DRIVETRAIN_LEFT_MASTER,
@@ -312,6 +315,16 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public void periodic() {
         updateOdometry();
         checkTune();
+
+        if (!isStopped()) {
+            robotStoppedCtr = 0;
+          }
+      
+          if (isStopped() && robotStoppedCtr <= 50)
+            robotStoppedCtr++;
+      
+          robotStoppedForOneSecond = isStopped() && robotStoppedCtr >= 50;
+      
     }
 
     public boolean checkCAN() {
@@ -369,6 +382,16 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public boolean isStopped() {
         return Math.abs(mLeftEncoder.getVelocity()) < .2;
     }
+
+    public boolean gyroStopped() {
+        return !mGyro.isMoving();
+    }
+
+    public boolean gyroRotating() {
+        return mGyro.isRotating();
+    }
+
+
 
     public double getHeading() {
         return Math.IEEEremainder(mGyro.getAngle(), 360) * (DriveConstants.kGyroReversed ? -1.0 : 1.0);

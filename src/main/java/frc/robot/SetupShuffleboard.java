@@ -134,9 +134,11 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Center Start Retract Shoot", 1);
 
-                        autoChooser.addOption("Not Available", 2);
+                        autoChooser.addOption("Trench 3 M 1", 2);
 
-                        autoChooser.addOption("Trench 3 M 3", 3);
+                        autoChooser.addOption("Trench 3 M 2", 3);
+
+                        autoChooser.addOption("Trench 3 M 3", 4);
 
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
@@ -169,7 +171,7 @@ public class SetupShuffleboard {
 
                         logCmd.add("LogTilt", new LogTiltData(tilt, limelight));
                         logCmd.add("LogTurret", new LogTurretData(turret, limelight));
-                        logCmd.add("LogShoot", new LogShootData(shooter, transport));
+             //           logCmd.add("LogShoot", new LogShootData(shooter, transport));
                         logCmd.add("LogDrive", new LogDriveData(m_robotDrive));
                         logCmd.add("EndLogTilt", new EndTiltLog(tilt));
                         logCmd.add("EndLogTurret", new EndTurretLog(turret));
@@ -274,12 +276,12 @@ public class SetupShuffleboard {
                         misComp1.addNumber(("CellArmAngle"), () -> m_transport.getArmAngle());
                         misComp1.addNumber(("CellArmPosn"), () -> m_transport.getArmPosition());
                         // for
-                        misComp1.add("Release Cell", new ReleaseCell(transport));
 
+                        misComp1.add("Release Cell", new ReleaseCell(transport));
                         misComp1.add("RaiseLeft", new RaiseLeftArm(transport));
                         misComp1.add("LowerLeft", new LowerLeftArm(transport));
-                        misComp1.addBoolean("BallBlock", () -> m_transport.getBallBlockLeft());
-                        misComp1.addBoolean("BallAtLeft", () -> m_transport.getLeftBallPresent());
+                        misComp1.addBoolean("BallAtShoot", () -> m_transport.getBallAtShoot());
+                        misComp1.addBoolean("BallAtLeft", () -> m_transport.getBallAtLeft());
                         misComp1.addBoolean("Arm Up", () -> m_transport.getCellArmUp());
                         misComp1.addBoolean("Arm Down", () -> m_transport.getCellArmDown());
                         misComp1.addBoolean("Left Arm Up", () -> m_transport.getLeftArmUp());
@@ -291,13 +293,35 @@ public class SetupShuffleboard {
 
                         misComp2.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
                         misComp2.addNumber("CameraSpeed", () -> m_shooter.cameraCalculatedSpeed);
-                        misComp2.addNumber("CameraTilt", ()->m_tilt.cameraCalculatedTiltOffset);
+                        misComp2.addNumber("CameraTilt", () -> m_tilt.cameraCalculatedTiltOffset);
+                        misComp2.add("Reset Enc", new ResetEncoders(m_robotDrive));
+                        misComp2.add("Reset Gyro", new ResetGyro(m_robotDrive));
+
+                        misComp2.addNumber("LeftMeters", () -> m_robotDrive.getLeftDistance());
+                        misComp2.addNumber("RightMeters", () -> m_robotDrive.getRightDistance());
+
+             
+
+                        ShuffleboardLayout misComp3 = Shuffleboard.getTab("CompetitionMisc")
+                                        .getLayout("Misc4", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)
+                                        .withProperties(Map.of("Label position", "LEFT"));
+
+                        misComp3.addBoolean("RobotStopped", () -> m_robotDrive.robotStoppedForOneSecond);
+                        misComp3.addBoolean("BallAtShoot", () -> m_transport.getBallAtShoot());
+                        misComp3.addBoolean("BallAtLeft", () -> m_transport.getBallAtLeft());
+                        misComp3.addBoolean("No BallAtShoot", () -> m_transport.noBallatShooterForOneSecond);
+                        misComp3.addBoolean("NoBallAtLeft", () -> m_transport.noBallatLeftForOneSecond);
+                        misComp3.addBoolean("CellAvailable", () -> m_transport.cellAvailable);
+                        misComp3.addBoolean("IsShooting", () -> m_shooter.isShooting);
+                        misComp3.addBoolean("LLTGT",()->m_limelight.getIsTargetFound());
+                        misComp3.addBoolean("TiVT",()->m_tilt.validTargetSeen);
+                        misComp3.addBoolean("TuVT",()->m_turret.validTargetSeen);
 
                         // Shuffleboard.getTab("Competition").addNumber("TimeRemaining", () ->
                         // m_robotDrive.getMatchTime())
                         // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 0).withSize(1, 1);
                         // Shuffleboard.getTab("Competition").addNumber("Battery", () ->
-                        // getPDPInfo()[0])
+                        // getPDPInfo()[0])    
                         // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 1).withSize(1, 1);
                         // Shuffleboard.getTab("Competition").addNumber("TotalEnegy Ah", () ->
                         // getPDPInfo()[2])
@@ -530,7 +554,7 @@ public class SetupShuffleboard {
 
                         shooterCommands.add("Stop Shoot", new StopShoot(m_shooter, m_transport));
                         shooterCommands.add("Shoot", new ShootCells(m_shooter, m_tilt, m_turret, m_limelight,
-                                        m_transport, m_compressor, 0));
+                                        m_transport, drive, m_compressor, 0));
                         shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
                         shooterCommands.add("Cmd", m_shooter);
                         shooterCommands.add("LogDataRun",

@@ -24,6 +24,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
+import frc.robot.commands.AutoCommands.TrenchOne.TrenchShootOnly;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
@@ -31,6 +32,7 @@ import frc.robot.commands.CellIntake.StartIntake;
 import frc.robot.commands.CellIntake.StopIntakeMotor;
 import frc.robot.commands.CellTransport.JogLeftBelt;
 import frc.robot.commands.CellTransport.JogRightBelt;
+import frc.robot.commands.CellTransport.ReleaseLeftArm;
 import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.CellTransport.StopBelts;
@@ -41,6 +43,7 @@ import frc.robot.commands.RobotDrive.DriveStraightJoystick;
 import frc.robot.commands.Shooter.ChangeShooterSpeed;
 import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.JogShooter;
+import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.SetShotPosition0;
 import frc.robot.commands.Shooter.SetShotPosition2;
@@ -243,7 +246,7 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 1)
                         .whileHeld(new IntakeArmLower(m_intake)).whileHeld(new ShootCells(m_shooter, m_tilt, m_turret,
-                                    m_limelight, m_transport, m_compressor, 100))
+                                    m_limelight, m_transport, m_robotDrive, m_compressor, 100))
                         .whenReleased(new IntakeArmRaise(m_intake));
 
             new JoystickButton(m_driverController, 5).whenPressed(new RunShooter(m_shooter))
@@ -271,8 +274,7 @@ public class RobotContainer {
             new JoystickButton(m_driverController, 8)
                         .whenPressed(new ChooseShooterSpeedSource(m_shooter, m_tilt, m_turret, 0));
 
-            new JoystickButton(m_driverController, 9).and(new JoystickButton(m_driverController, 10)
-                        .whenPressed(new ChooseShooterSpeedSource(m_shooter, m_tilt, m_turret, 1)));
+            new JoystickButton(m_driverController, 9).whenPressed(new ReleaseLeftArm(m_transport));
 
             new JoystickButton(m_driverController, 11).whileHeld(() -> m_shooter.shootAll())
                         .whenReleased(() -> m_shooter.shootOne());
@@ -346,7 +348,10 @@ public class RobotContainer {
             setupY.whileHeld(getJogTiltCommand(setupGamepad)).whileHeld(getJogTurretCommand(setupGamepad))
                         .whenReleased(new TiltWaitForStop(m_tilt)).whenReleased(new TurretWaitForStop(m_turret));
 
-            // setupB.whileHeld(
+            setupB.whenPressed(new LogShootData(m_shooter, m_transport, m_robotDrive))
+
+                        .whenPressed(new TrenchShootOnly(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive,
+                                    m_limelight, m_compressor, m_intake));
 
             setupA.whileHeld(new RunIntakeMotor(m_intake, .75)).whenReleased(new StopIntakeMotor(m_intake));
 

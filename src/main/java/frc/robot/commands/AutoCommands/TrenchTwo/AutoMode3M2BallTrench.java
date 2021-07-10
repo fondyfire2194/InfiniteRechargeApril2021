@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.AutoCommands.TrenchBasic;
+package frc.robot.commands.AutoCommands.TrenchTwo;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -19,6 +19,7 @@ import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
 import frc.robot.commands.CellIntake.StopIntakeMotor;
 import frc.robot.commands.RobotDrive.PickupMove;
+import frc.robot.commands.RobotDrive.PickupMoveVelocity;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.SetShootSpeed;
@@ -44,7 +45,7 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class AutoMode3M3BallTrench extends SequentialCommandGroup {
+public class AutoMode3M2BallTrench extends SequentialCommandGroup {
         /**
          * Creates a new Auto0.
          * 
@@ -58,15 +59,15 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
         static double turretOffset = ShootData.trench3M3BallShotConstants.turretOffset;
         static double shootTime = ShootData.trench3M3BallShotConstants.shootTime;
 
-        static double retractDistance1 = ShootData.trench6BallShotConstants.retractDistance;
-        static double tiltAngle1 = ShootData.trench6BallShotConstants.tiltAngle;
-        static double turretAngle1 = ShootData.trench6BallShotConstants.turretAngle;
-        static double shootSpeed1 = ShootData.trench6BallShotConstants.shootSpeed;
-        static double tiltOffset1 = ShootData.trench6BallShotConstants.tiltOffset;
-        static double turretOffset1 = ShootData.trench6BallShotConstants.turretOffset;
-        static double shootTime1 = ShootData.trench6BallShotConstants.shootTime;
+        static double retractDistance1 = ShootData.trench5BallShotConstants.retractDistance;
+        static double tiltAngle1 = ShootData.trench5BallShotConstants.tiltAngle;
+        static double turretAngle1 = ShootData.trench5BallShotConstants.turretAngle;
+        static double shootSpeed1 = ShootData.trench5BallShotConstants.shootSpeed;
+        static double tiltOffset1 = ShootData.trench5BallShotConstants.tiltOffset;
+        static double turretOffset1 = ShootData.trench5BallShotConstants.turretOffset;
+        static double shootTime1 = ShootData.trench5BallShotConstants.shootTime;
 
-        public AutoMode3M3BallTrench(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+        public AutoMode3M2BallTrench(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
                         Compressor compressor, RearIntakeSubsystem intake) {
                 // Add your commands in the super() call, e.g.
@@ -85,7 +86,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
                                                 new SetShootSpeed(shooter, shootSpeed), new UseVision(limelight, true),
 
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, drive, compressor,
                                                                 shootTime)).deadlineWith(
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),
@@ -93,7 +94,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                                                                                 limelight)),
                                 // 2nd pickup
 
-                                new PickupMove(drive, retractDistance1, .7)
+                                new PickupMoveVelocity(drive, retractDistance1, 1.8)
 
                                                 .deadlineWith(new UseVision(limelight, false),
                                                                 new SetTiltOffset(tilt, tiltOffset1),
@@ -107,10 +108,10 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
 
                                 // // 2nd shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot2Started"),
-                                                new RunIntakeMotor(intake, -.2),
+                                                new RunIntakeMotor(intake, .75),
                                                 new SetShootSpeed(shooter, shootSpeed1), new UseVision(limelight, true),
 
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, drive, compressor,
                                                                 shootTime)).deadlineWith(
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),

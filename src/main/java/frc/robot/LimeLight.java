@@ -474,7 +474,10 @@ public class LimeLight {
         // SmartDashboard.putNumber("PerspAngle", getPerspectiveAngle());
         // SmartDashboard.putNumber("3d X", getCamtranX());
         // SmartDashboard.putNumber("TargetDistance", getCamtranZ());
-
+        
+        if (useVision && getIsTargetFound()) {
+            useVisionTimer = 0;
+        }
         if (useVision && !getIsTargetFound() && useVisionTimer == 0) {
             useVisionTimer = Timer.getFPGATimestamp();
         }
@@ -483,11 +486,6 @@ public class LimeLight {
             useVision = false;
             useVisionTimer = 0;
         }
-
-        if (useVision && getIsTargetFound()) {
-            useVisionTimer = 0;
-        }
-
 
     }
 

@@ -9,13 +9,12 @@ package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.LinearFilter;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.subsystems.CellTransportSubsystem;
+import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
@@ -29,6 +28,7 @@ public class ShootCells extends CommandBase {
   private final RevTiltSubsystem m_tilt;
   private final RevTurretSubsystem m_turret;
   private final CellTransportSubsystem m_transport;
+  private final RevDrivetrain m_drive;
   private final Compressor m_compressor;
   private final LimeLight m_limelight;
   private double m_time;
@@ -37,31 +37,23 @@ public class ShootCells extends CommandBase {
 
   private boolean okToShoot;
 
-  private double startTime;
   private boolean getNextCell;
-  private boolean cellAvailable;
+
   private boolean cellReleased;
   private double cellReleasedStartTime;
 
   private boolean inAuto;
-
-  private int loopctr;
-  private double lastShooterAmps;
-  private LinearFilter ampsMMA = LinearFilter.movingAverage(5);
-  private boolean useSensors;
-  private int cellAvailableCounter;
-  private int shooterAtSpeedCtr;
-  private boolean atSpeedReturn;
-  private int shotsMade;
-  private boolean atSpeedLast;
+  private boolean useSensors = false;
+  public boolean robotStoppedFor1Sec;
 
   public ShootCells(RevShooterSubsystem shooter, RevTiltSubsystem tilt, RevTurretSubsystem turret, LimeLight limelight,
-      CellTransportSubsystem transport, Compressor compressor, double time) {
+      CellTransportSubsystem transport, RevDrivetrain drive, Compressor compressor, double time) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
     m_transport = transport;
     m_compressor = compressor;
     m_limelight = limelight;
+    m_drive = drive;
     m_tilt = tilt;
     m_turret = turret;
     m_time = time;
@@ -71,103 +63,76 @@ public class ShootCells extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    startTime = Timer.getFPGATimestamp();
     m_shooter.shootTime = m_time;
     m_compressor.stop();
     m_shooter.isShooting = false;
     m_transport.holdCell();
-
     m_transport.holdLeftChannel();
     m_transport.cellsShot = 0;
     shotStartTime = 0;
-    cellAvailable = false;
+
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.useVision = true;
 
-    shotsMade = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
+    robotStoppedFor1Sec = m_drive.robotStoppedForOneSecond;
+
     inAuto = DriverStation.getInstance().isAutonomous();
 
     okToShoot = (m_limelight.getVertOnTarget(m_tilt.tiltVisionTolerance)
         && m_limelight.getHorOnTarget(m_turret.turretVisionTolerance)) || m_shooter.useDriverSpeed;
 
-    if (m_shooter.atSpeed() && m_transport.rollersAtSpeed && okToShoot || m_shooter.isShooting) {
+    if (m_shooter.atSpeed() && m_transport.rollersAtSpeed && okToShoot && robotStoppedFor1Sec || m_shooter.isShooting) {
 
       m_shooter.isShooting = true;
 
     }
 
-    if (m_shooter.isShooting && cellAvailable && !m_shooter.shotInProgress) {
+    if (m_shooter.isShooting && m_transport.cellAvailable && !m_shooter.shotInProgress) {
       shotStartTime = Timer.getFPGATimestamp();
       m_shooter.shotInProgress = true;
       m_transport.cellsShot++;
-      cellAvailable = false;
+      m_transport.cellAvailable = false;
 
-    }
-
-    if (m_shooter.isShooting && atSpeedLast && !m_shooter.atSpeed()) {
-      shotsMade++;
-      atSpeedLast = false;
-    }
-    SmartDashboard.putNumber("ATSPPEDSHOTS", shotsMade);
-
-    if (m_shooter.isShooting && m_shooter.atSpeed()) {
-      atSpeedLast = true;
     }
 
     if (m_shooter.shotInProgress && Timer.getFPGATimestamp() > shotStartTime + shotTime) {
+
       m_shooter.shotInProgress = false;
+
     }
 
     m_shooter.okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
 
-    getNextCell = m_shooter.okToShoot && !m_shooter.shotInProgress && !cellAvailable && m_shooter.atSpeed()
-        && m_transport.rollersAtSpeed;
+    getNextCell = m_shooter.okToShoot && !m_shooter.shotInProgress && !m_transport.cellAvailable && m_shooter.atSpeed()
+        && m_transport.rollersAtSpeed && m_transport.getBallAtShoot();
 
     if (getNextCell || cellReleased) {
       releaseOneCell();
     }
 
-    if (useSensors && !m_transport.leftIsBlocked && m_transport.getLeftBallPresent()) {
+    if (useSensors && !m_transport.noBallatShooterForOneSecond && m_transport.getBallAtLeft()) {
       m_transport.releaseLeftChannel();
     }
 
-    if (cellAvailable) {
-      cellAvailableCounter++;
-    } else {
-      cellAvailableCounter = 0;
-    }
-
-    if (m_transport.cellsShot >= 3 || inAuto && m_transport.cellsShot >= 2 && cellAvailableCounter >= 20) {
+    if (inAuto && m_transport.cellsShot > 2)
       m_transport.releaseLeftChannel();
-    }
-
-    double ampsAveraged = ampsMMA.calculate(m_shooter.getLeftAmps());
 
   }
-
-  // SmartDashboard.putBoolean("OKShoot", okToShoot);
-  // SmartDashboard.putBoolean("SHIP", m_shooter.shotInProgress);
-  // SmartDashboard.putBoolean("SHSTD", shootStarted);
-  // SmartDashboard.putBoolean("CAvail ", cellAvailable);
-  // SmartDashboard.putNumber("CLSSHT", cellsShot);
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_transport.holdCell();
 
-    if (!inAuto) {
-      m_transport.holdLeftChannel();
-    }
+    m_transport.holdLeftChannel();
 
-    // m_transport.stopBelts();
     m_transport.stopRollers();
     m_compressor.start();
     m_shooter.shotInProgress = false;
@@ -179,7 +144,8 @@ public class ShootCells extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return inAuto && m_transport.cellsShot >= 5 || m_transport.cellsShot > (int) m_time;
+
+    return m_transport.cellsShot > 5 || inAuto && m_transport.cellsShot >= 4;
   }
 
   public void releaseOneCell() {
@@ -188,12 +154,18 @@ public class ShootCells extends CommandBase {
       cellReleased = true;
       cellReleasedStartTime = Timer.getFPGATimestamp();
     }
+
     if (cellReleased && Timer.getFPGATimestamp() > cellReleasedStartTime + m_transport.cellPassTime) {
+
       m_transport.holdCell();
+    }
+
+    if (cellReleased && Timer.getFPGATimestamp() > cellReleasedStartTime + m_transport.cellPassTime) {
 
       cellReleasedStartTime = 0;
 
-      cellAvailable = true;
+      m_transport.cellAvailable = true;
+
       cellReleased = false;
     }
 

@@ -7,7 +7,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.commands.AutoCommands.PowerPort.AutoCenterShootMove;
-import frc.robot.commands.AutoCommands.TrenchBasic.TrenchAuto;
+import frc.robot.commands.AutoCommands.TrenchOne.TrenchAuto1;
+import frc.robot.commands.AutoCommands.TrenchThree.TrenchAuto3;
+import frc.robot.commands.AutoCommands.TrenchTwo.TrenchAuto2;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -49,10 +51,23 @@ public class AutoFactory {
         // right of center line retract shoot
     }
 
+  // front of trench or shoot 3 move pickup shoot 1
+  public ParallelRaceGroup getAutonomousCommand2() {
+    return new TrenchAuto1(m_shooter, m_robotDrive, m_tilt, m_turret, m_transport, m_intake,
+            m_limelight, m_compressor);
+}
+
+
+  // front of trench or shoot 3 move pickup shoot 2
+  public ParallelRaceGroup getAutonomousCommand3() {
+    return new TrenchAuto2(m_shooter, m_robotDrive, m_tilt, m_turret, m_transport, m_intake,
+            m_limelight, m_compressor);
+}
+
 
     // front of trench or shoot 3 move pickup shoot 3
-    public ParallelRaceGroup getAutonomousCommand3() {
-        return new TrenchAuto(m_shooter, m_robotDrive, m_tilt, m_turret, m_transport, m_intake,
+    public ParallelRaceGroup getAutonomousCommand4() {
+        return new TrenchAuto3(m_shooter, m_robotDrive, m_tilt, m_turret, m_transport, m_intake,
                 m_limelight, m_compressor);
     }
 

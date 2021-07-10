@@ -51,9 +51,9 @@ public class CellTransportSubsystem extends SubsystemBase {
 
   private AnalogInput leftChannelBallDetect;
 
-  private AnalogInput ballWaitShootDetect;// next to be released for shooting
+  private AnalogInput ballAtShootDetect;// next to be released for shooting
 
-  private AnalogInput ballBlockLeft;// wait to go into shoot position
+  // private AnalogInput ballBlockLeft;// wait to go into shoot position
 
   private double leftHoldPosition;
   private double leftReleasePosition;
@@ -67,10 +67,18 @@ public class CellTransportSubsystem extends SubsystemBase {
   public int cellsShot;
   public boolean leftArmDown;
 
-  private int ballBlockLeftCtr;
-  public boolean leftIsBlocked;
-  private int ballAtShooterCtr;
-  public boolean ballAtShooter;
+  public boolean noBallatLeftForOneSecond;
+
+  public boolean noBallatShooterForOneSecond;
+
+  private double noBallatShooterTime;
+
+  private double noBallatLeftTime;
+
+  private double ballDetectedVolts = 2.75;
+
+  public boolean cellAvailable = true;
+  private double ballTravelTime = 1;
 
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);
@@ -79,13 +87,14 @@ public class CellTransportSubsystem extends SubsystemBase {
     m_rearRollerMotor = new TalonSRXWrapper(CANConstants.REAR_ROLLER);
 
     cellArm = new Servo(9);
+
     leftChannel = new Servo(8);
 
-    leftChannelBallDetect = new AnalogInput(0);
+    leftChannelBallDetect = new AnalogInput(1);
 
-    ballBlockLeft = new AnalogInput(1);
+    // ballBlockLeft = new AnalogInput(0);
 
-    ballWaitShootDetect = new AnalogInput(2);
+    ballAtShootDetect = new AnalogInput(2);
 
     if (Robot.isReal()) {
       m_leftBeltMotor.configFactoryDefault();
@@ -136,44 +145,43 @@ public class CellTransportSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("LeftVOLTS", leftChannelBallDetect.getVoltage());
 
-    SmartDashboard.putNumber("LeftBlockVOLTS", ballBlockLeft.getVoltage());
+    SmartDashboard.putNumber("AtSHootVOLTS", ballAtShootDetect.getVoltage());
 
-    SmartDashboard.putNumber("AtSHootVOLTS", ballWaitShootDetect.getVoltage());
+    SmartDashboard.putBoolean("leftball", getBallAtLeft());
 
-    SmartDashboard.putBoolean("leftball", getLeftBallPresent());
+    SmartDashboard.putBoolean("BallAtShoot", getBallAtShoot());
 
-    SmartDashboard.putBoolean("LeftBlocked", leftIsBlocked);
-
-    SmartDashboard.putBoolean("BallAtShoot", ballAtShooter);
-
-    if (getBallBlockLeft()) {
-      ballBlockLeftCtr = 30;
-      leftIsBlocked = true;
+    if (getBallAtShoot()) {
+      noBallatShooterForOneSecond = false;
+      noBallatShooterTime = 0;
     }
 
-    if (!getBallBlockLeft())
-      ballBlockLeftCtr--;
-
-    if (!getBallBlockLeft() && ballBlockLeftCtr <= 0) {
-      leftIsBlocked = false;
+    if (!getBallAtShoot() && noBallatShooterTime == 0) {
+      noBallatShooterTime = Timer.getFPGATimestamp();
     }
 
-    if (getBallPreShoot()) {
-      ballAtShooterCtr = 30;
-      ballAtShooter = true;
+    if (!getBallAtShoot() && noBallatShooterTime != 0
+        && Timer.getFPGATimestamp() > noBallatShooterTime + ballTravelTime) {
+      noBallatShooterForOneSecond = true;
+    }
+    // left cell detection
+    if (getBallAtLeft()) {
+      noBallatLeftForOneSecond = false;
+      noBallatLeftTime = 0;
     }
 
-    if (!getBallPreShoot())
-      ballAtShooterCtr--;
+    if (!getBallAtShoot() && noBallatLeftTime == 0) {
+      noBallatLeftTime = Timer.getFPGATimestamp();
+    }
 
-    if (!getBallPreShoot() && ballAtShooterCtr <= 0) {
-      ballAtShooter = false;
+    if (!getBallAtShoot() && noBallatLeftTime != 0 && Timer.getFPGATimestamp() > noBallatLeftTime + ballTravelTime) {
+      noBallatLeftForOneSecond = true;
     }
 
   }
 
   public boolean getNoCellsLeft() {
-    return !leftIsBlocked && !getBallPreShoot() && !getLeftBallPresent();
+    return !getBallAtShoot() && !getBallAtLeft();
   }
 
   public boolean checkCAN() {
@@ -230,40 +238,6 @@ public class CellTransportSubsystem extends SubsystemBase {
     }
   }
 
-  public void pulseLeftBelt(double speed, double onTime, double offTime) {
-    if (beltPulseStartTime == 0) {
-      beltPulseStartTime = Timer.getFPGATimestamp();
-    }
-    if (Timer.getFPGATimestamp() < beltPulseStartTime + onTime) {
-      runLeftBeltMotor(-speed);
-    }
-    if (Timer.getFPGATimestamp() > beltPulseStartTime + onTime
-        && Timer.getFPGATimestamp() < beltPulseStartTime + onTime + offTime) {
-      stopLeftBeltMotor();
-    }
-    if (Timer.getFPGATimestamp() > beltPulseStartTime + onTime + offTime) {
-      beltPulseStartTime = 0;
-    }
-
-  }
-
-  public void pulseRightBelt(double speed, double onTime, double offTime) {
-    if (beltPulseStartTime == 0) {
-      beltPulseStartTime = Timer.getFPGATimestamp();
-    }
-    if (Timer.getFPGATimestamp() < beltPulseStartTime + onTime) {
-      runRightBeltMotor(-speed);
-    }
-    if (Timer.getFPGATimestamp() > beltPulseStartTime + onTime
-        && Timer.getFPGATimestamp() < beltPulseStartTime + onTime + offTime) {
-      stopRightBeltMotor();
-    }
-    if (Timer.getFPGATimestamp() > beltPulseStartTime + onTime + offTime) {
-      beltPulseStartTime = 0;
-    }
-
-  }
-
   public void holdCell() {
     moveCellArm(cellArmHoldCell);
   }
@@ -316,23 +290,20 @@ public class CellTransportSubsystem extends SubsystemBase {
   }
 
   public boolean getLeftArmUp() {
-    return getLeftAngle() <.2;
+    return getLeftAngle() < .2;
   }
 
   public boolean getLeftArmDown() {
     return getLeftAngle() > .3;
   }
 
-  public boolean getLeftBallPresent() {
-    return leftChannelBallDetect.getVoltage() > 1.1;
+  public boolean getBallAtLeft() {
+    return leftChannelBallDetect.getVoltage() > ballDetectedVolts;
+
   }
 
-  public boolean getBallPreShoot() {
-    return ballWaitShootDetect.getVoltage() > 1.1;
-  }
-
-  public boolean getBallBlockLeft() {
-    return ballBlockLeft.getVoltage() > 1.1;
+  public boolean getBallAtShoot() {
+    return ballAtShootDetect.getVoltage() > ballDetectedVolts;
   }
 
   public void setBeltBrakeOn(boolean on) {

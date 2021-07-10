@@ -83,7 +83,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                                 new SetLogShooterItems(shooter, true),
                                                 new SetShootSpeed(shooter, shootSpeed),
 
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, compressor,
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, drive, compressor,
                                                                 shootTime)).deadlineWith(
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),

@@ -28,7 +28,6 @@ public class ShootData {
     public static double innerTiltAngle = 12;
 
     private static double shotHeight = FieldConstants.SHOT_HEIGHT;
-    
 
     public static double activeTeleopShootSpeed;
     public static double activeTeleopTiltAngle;
@@ -75,7 +74,7 @@ public class ShootData {
 
     public final static class rightRetractShootConstants {
         public static double retractDistance = -2;
-        public static double tiltAngle = 15;// 
+        public static double tiltAngle = 15;//
         public static double turretAngle = -10;
         public static double shootSpeed = 32;
         public static double tiltOffset = 0;
@@ -84,57 +83,39 @@ public class ShootData {
 
     }
 
-    public final static class shieldGenConstants {
-        private static double yfromPort = Units.inchesToMeters((74));
-        public static double retractDistance = -4;
-        public static double tiltAngle = 24;
-        public static double turretAngle = 32;
-        public static double shootSpeed = 38;/// ?
-        public static double tiltOffset = 0;/// ?
-        public static double turretOffset = 0;/// ?
-        public static double shootTime = 5;
-
-    }
-    
- 
-   
-    public final static class trench4BallShotConstants {
-        public static double retractDistance = -3;
-        public static double tiltAngle = 17;
-        public static double turretAngle = -17;
-        public static double shootSpeed = 37;
-        public static double tiltOffset = 6;
-        public static double turretOffset = 0;
-        public static double shootTime = 4;
-
-    }
-
-   
-
     public final static class trench3M3BallShotConstants {
         public static double retractDistance = -4;
-        public static double tiltAngle = 24;
-        public static double turretAngle = -32;
+        public static double tiltAngle = 22.5;
+        public static double turretAngle = -31;
         public static double shootSpeed = 33;
         public static double tiltOffset = 0;
         public static double turretOffset = 0;
         public static double shootTime = 2;
+    }
 
+    public final static class trench4BallShotConstants {
+        public static double retractDistance = -2.5;
+        public static double tiltAngle = 15;
+        public static double turretAngle = -20;
+        public static double shootSpeed = 37;
+        public static double tiltOffset = 3;
+        public static double turretOffset = 0;
+        public static double shootTime = 4;
     }
 
     public final static class trench5BallShotConstants {
         public static double retractDistance = -3.5;
-        public static double tiltAngle = 24;
-        public static double turretAngle = -43;
-        public static double shootSpeed = 37;
-        public static double tiltOffset = 7;
-        public static double turretOffset = 2;
-        public static double shootTime = 10;
-
+        public static double tiltAngle = 13.5;
+        public static double turretAngle = -14;
+        public static double shootSpeed = 38;
+        public static double tiltOffset = 5;
+        public static double turretOffset = 0;
+        public static double shootTime = 5;
     }
+
     public final static class trench6BallShotConstants {
-        public static double retractDistance = -4;
-        public static double tiltAngle = 13;
+        public static double retractDistance = -4.5;
+        public static double tiltAngle = 12;
         public static double turretAngle = -16;
         public static double shootSpeed = 40;
         public static double tiltOffset = 6;

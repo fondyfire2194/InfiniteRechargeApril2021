@@ -7,7 +7,6 @@ package frc.robot.commands.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Pref;
 import frc.robot.subsystems.RevDrivetrain;
 
 public class PickupMoveVelocity extends CommandBase {
@@ -17,7 +16,7 @@ public class PickupMoveVelocity extends CommandBase {
   private double m_speed;
   private double currentMPS;
   private double decelDistance;
-  private double maxDecel = 2;// mps/s
+  private double maxDecel = 1;// mps/s
   private boolean plusDirection;
   private double remainingDistance;
   private double decelTime;
@@ -55,6 +54,8 @@ public class PickupMoveVelocity extends CommandBase {
   @Override
   public void initialize() {
 
+    maxDecel = m_speed;
+
     accelTime = m_speed / maxAccel;
 
     accelIncrementper20ms = m_speed / (accelTime * 50);
@@ -69,19 +70,19 @@ public class PickupMoveVelocity extends CommandBase {
 
     currentMPS = 0;
 
-    SmartDashboard.putNumber("EndPt", m_endpoint);
-    SmartDashboard.putNumber("Speed", m_speed);
-    SmartDashboard.putNumber("DeceLTime", decelTime);
-    SmartDashboard.putNumber("TotTime", maxTime);
+    // SmartDashboard.putNumber("EndPt", m_endpoint);
+    // SmartDashboard.putNumber("Speed", m_speed);
+    // SmartDashboard.putNumber("DeceLTime", decelTime);
+    // SmartDashboard.putNumber("TotTime", maxTime);
 
-    SmartDashboard.putNumber("decdis", decelDistance);
-    SmartDashboard.putNumber("accdis", accelDistance);
-    SmartDashboard.putNumber("AccTime", accelTime);
+    // SmartDashboard.putNumber("decdis", decelDistance);
+    // SmartDashboard.putNumber("accdis", accelDistance);
+    // SmartDashboard.putNumber("AccTime", accelTime);
 
-    SmartDashboard.putNumber("AccInc", accelIncrementper20ms);
+    // SmartDashboard.putNumber("AccInc", accelIncrementper20ms);
 
     plusDirection = m_endpoint > m_drive.getLeftDistance();
-    SmartDashboard.putBoolean("Dir", plusDirection);
+    // SmartDashboard.putBoolean("Dir", plusDirection);
     startTime = Timer.getFPGATimestamp();
 
     endIt = false;
@@ -163,7 +164,7 @@ public class PickupMoveVelocity extends CommandBase {
 
     SmartDashboard.putNumber("UseSp", useMPS);
     SmartDashboard.putNumber("LCTR", loopCtr);
-    double yawCorrection = 0;//useMPS * Pref.getPref("dRStKp");
+    double yawCorrection = 0;// useMPS * Pref.getPref("dRStKp");
 
     m_drive.smartVelocityControlMetersPerSec(useMPS + yawCorrection, useMPS - yawCorrection);
 
