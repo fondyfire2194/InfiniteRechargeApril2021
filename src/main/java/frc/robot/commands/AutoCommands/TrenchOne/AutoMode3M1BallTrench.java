@@ -71,13 +71,13 @@ public class AutoMode3M1BallTrench extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
                 //
-
                 super(new ResetEncoders(drive), new ResetGyro(drive),
 
-                                // 1st lock
-                                new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
+                new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
-                                                new SetUpLimelightForTarget(limelight, true))
+                                                new PositionTilt(tilt, tiltAngle + tiltOffset),
+                                                new PositionTurret(turret, turretAngle + turretOffset),
+                                                new SetUpLimelightForTarget(limelight, false))
 
                                                                 .deadlineWith(new IntakeArmLower(intake)),
                                 // 1st Shoot

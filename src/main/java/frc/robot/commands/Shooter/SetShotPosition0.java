@@ -49,12 +49,17 @@ public class SetShotPosition0 extends SequentialCommandGroup {
                                                 new SetShootSpeed(shooter,
                                                                 ShootData.centerPowerPortConstants.shootSpeed),
                                                 new ChooseShooterSpeedSource(shooter, tilt, turret, 0),
-                                                new SetUpLimelightForTarget(limelight, true),
+                                                new SetUpLimelightForTarget(limelight, false),
                                                 new SetTiltOffset(tilt, ShootData.centerPowerPortConstants.tiltOffset),
                                                 new SetTurretOffset(turret,
-                                                                ShootData.centerPowerPortConstants.turretOffset)),
+                                                                ShootData.centerPowerPortConstants.turretOffset),
+                                                new PositionTilt(tilt, ShootData.centerPowerPortConstants.tiltAngle
+                                                                + ShootData.centerPowerPortConstants.tiltOffset),
+                                                new PositionTurret(turret,
+                                                                ShootData.centerPowerPortConstants.turretAngle
+                                                                                + ShootData.centerPowerPortConstants.turretOffset)),
 
-                                new ParallelCommandGroup(new RunRollers(transport),
+                                new ParallelCommandGroup(new UseVision(limelight, true), new RunRollers(transport),
 
                                                 new RunShooter(shooter)));
 

@@ -19,8 +19,10 @@ import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Tilt.PositionHoldTilt;
+import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionHoldTurret;
+import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
@@ -67,10 +69,12 @@ public class TrenchShootOnly extends SequentialCommandGroup {
 
                                 // 1st lock
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
-                                                new SetTurretOffset(turret, turretOffset),
-                                                new SetUpLimelightForTarget(limelight, false))
+                                new SetTurretOffset(turret, turretOffset),
+                                new PositionTilt(tilt, tiltAngle + tiltOffset),
+                                new PositionTurret(turret, turretAngle + turretOffset),
+                                new SetUpLimelightForTarget(limelight, false))
 
-                                                                .deadlineWith(new IntakeArmLower(intake)),
+                                                .deadlineWith(new IntakeArmLower(intake)),
                                 // 1st Shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
                                                 new SetShootSpeed(shooter, shootSpeed), new UseVision(limelight, true),

@@ -15,8 +15,10 @@ import frc.robot.commands.TimeDelay;
 import frc.robot.commands.AutoCommands.StartAllShooter;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellTransport.RunRollers;
+import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
+import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
@@ -50,13 +52,12 @@ public class SetShotPosition2 extends SequentialCommandGroup {
                                                 new SetTiltOffset(tilt,
                                                                 ShootData.trench5BallShotConstants.tiltOffset + 1.5),
                                                 new SetTurretOffset(turret,
-                                                                ShootData.trench5BallShotConstants.turretOffset + 1)),
-                                // new PositionTiltToVision(tilt, limelight,
-                                // ShootData.trench5BallShotConstants.tiltAngle
-                                // + ShootData.trench5BallShotConstants.tiltOffset),
-                                // new PositionTurretToVision(turret, limelight,
-                                // ShootData.trench5BallShotConstants.turretAngle
-                                // + ShootData.trench5BallShotConstants.turretOffset)),
+                                                                ShootData.trench5BallShotConstants.turretOffset + 1),
+                                                new PositionTilt(tilt, ShootData.trench5BallShotConstants.tiltAngle
+                                                                + ShootData.trench5BallShotConstants.tiltOffset),
+                                                new PositionTurret(turret,
+                                                                ShootData.trench5BallShotConstants.turretAngle
+                                                                                + ShootData.trench5BallShotConstants.turretOffset)),
                                 new UseVision(limelight, true),
                                 new SetShootSpeed(shooter, ShootData.trench5BallShotConstants.shootSpeed),
                                 new ParallelCommandGroup(new RunRollers(transport), new RunShooter(shooter))

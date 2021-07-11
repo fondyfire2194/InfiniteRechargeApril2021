@@ -171,7 +171,7 @@ public class SetupShuffleboard {
 
                         logCmd.add("LogTilt", new LogTiltData(tilt, limelight));
                         logCmd.add("LogTurret", new LogTurretData(turret, limelight));
-             //           logCmd.add("LogShoot", new LogShootData(shooter, transport));
+                        // logCmd.add("LogShoot", new LogShootData(shooter, transport));
                         logCmd.add("LogDrive", new LogDriveData(m_robotDrive));
                         logCmd.add("EndLogTilt", new EndTiltLog(tilt));
                         logCmd.add("EndLogTurret", new EndTurretLog(turret));
@@ -263,6 +263,8 @@ public class SetupShuffleboard {
                         miscComp.addNumber("RightAmps", () -> m_shooter.getRightAmps());
 
                         miscComp.add("No Zoom", new LimelightSetPipeline(m_limelight, 1));
+
+                        miscComp.add("No Zoom Pipeline", new LimelightSetPipeline(m_limelight, 1));
                         miscComp.add("Vision On", new UseVision(limelight, true));
                         miscComp.add("Vision Off", new UseVision(limelight, false));
                         miscComp.addNumber("RQDMPS", () -> m_shooter.requiredMps);
@@ -300,8 +302,6 @@ public class SetupShuffleboard {
                         misComp2.addNumber("LeftMeters", () -> m_robotDrive.getLeftDistance());
                         misComp2.addNumber("RightMeters", () -> m_robotDrive.getRightDistance());
 
-             
-
                         ShuffleboardLayout misComp3 = Shuffleboard.getTab("CompetitionMisc")
                                         .getLayout("Misc4", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT"));
@@ -313,15 +313,15 @@ public class SetupShuffleboard {
                         misComp3.addBoolean("NoBallAtLeft", () -> m_transport.noBallatLeftForOneSecond);
                         misComp3.addBoolean("CellAvailable", () -> m_transport.cellAvailable);
                         misComp3.addBoolean("IsShooting", () -> m_shooter.isShooting);
-                        misComp3.addBoolean("LLTGT",()->m_limelight.getIsTargetFound());
-                        misComp3.addBoolean("TiVT",()->m_tilt.validTargetSeen);
-                        misComp3.addBoolean("TuVT",()->m_turret.validTargetSeen);
+                        misComp3.addBoolean("LLTGT", () -> m_limelight.getIsTargetFound());
+                        misComp3.addBoolean("TiVT", () -> m_tilt.validTargetSeen);
+                        misComp3.addBoolean("TuVT", () -> m_turret.validTargetSeen);
 
                         // Shuffleboard.getTab("Competition").addNumber("TimeRemaining", () ->
                         // m_robotDrive.getMatchTime())
                         // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 0).withSize(1, 1);
                         // Shuffleboard.getTab("Competition").addNumber("Battery", () ->
-                        // getPDPInfo()[0])    
+                        // getPDPInfo()[0])
                         // .withWidget(BuiltInWidgets.kTextView).withPosition(9, 1).withSize(1, 1);
                         // Shuffleboard.getTab("Competition").addNumber("TotalEnegy Ah", () ->
                         // getPDPInfo()[2])

@@ -37,6 +37,8 @@ import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.CellTransport.StopBelts;
 import frc.robot.commands.CellTransport.StopRollers;
+import frc.robot.commands.ControlPanel.MoveArm;
+import frc.robot.commands.ControlPanel.RunCPMotor;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.ArcadeDriveVelocity;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
@@ -66,6 +68,7 @@ import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.SetVisionMode;
 import frc.robot.subsystems.CellTransportSubsystem;
+import frc.robot.subsystems.ControlPanelSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -99,6 +102,8 @@ public class RobotContainer {
       public final RevTiltSubsystem m_tilt;
 
       public final RevShooterSubsystem m_shooter;
+
+      public final ControlPanelSubsystem m_cp;
 
       public static Preferences prefs;
 
@@ -177,6 +182,7 @@ public class RobotContainer {
             m_shooter = new RevShooterSubsystem();
             m_turret = new RevTurretSubsystem();
             m_tilt = new RevTiltSubsystem();
+            m_cp = new ControlPanelSubsystem();
 
             m_limelight = new LimeLight();
             m_limelight.setCamMode(CamMode.kvision);
@@ -271,8 +277,7 @@ public class RobotContainer {
                         .whenReleased(new SetVisionMode(m_limelight))
                         .whenReleased(new SetUpLimelightForNoVision(m_limelight));
 
-            new JoystickButton(m_driverController, 8)
-                        .whenPressed(new ChooseShooterSpeedSource(m_shooter, m_tilt, m_turret, 0));
+            new JoystickButton(m_driverController, 8).whenPressed(new ReleaseOneCell(m_transport));
 
             new JoystickButton(m_driverController, 9).whenPressed(new ReleaseLeftArm(m_transport));
 
@@ -280,11 +285,8 @@ public class RobotContainer {
                         .whenReleased(() -> m_shooter.shootOne());
 
             // Hold to shoot all
-            // new JoystickButton(m_driverController, 12).whileHeld(() ->
-            // m_shooter.shootAll())
-            // .whenReleased(() -> m_shooter.shootOne());
-
-            new JoystickButton(m_driverController, 12).whileHeld(getArcadeDriveVelocityCommand());
+            new JoystickButton(m_driverController, 12).whileHeld(() -> m_shooter.shootAll())
+                        .whenReleased(() -> m_shooter.shootOne());
 
             driverUpButton.whenPressed(() -> m_tilt.aimHigher());
 
@@ -305,22 +307,31 @@ public class RobotContainer {
                         new SetShotPosition0(m_shooter, m_turret, m_tilt, m_transport, m_intake, m_limelight));
 
             codriverX.whenPressed(() -> m_intake.armSolenoidOff());
-            // coDriverA.whenPressed
+            codriverA.whileHeld(getRunCPMotorCommand());
             // trench in front of control panel
             codriverB.whenPressed(
                         new SetShotPosition2(m_shooter, m_turret, m_tilt, m_transport, m_intake, m_limelight));
 
-            //
-            codriverRightTrigger.whileHeld(getJogTiltCommand(codriverGamepad))
-                        .whenReleased(new TiltWaitForStop(m_tilt));
+            // control panel
 
-            codriverLeftTrigger.whileHeld(getJogTurretCommand(codriverGamepad))
-                        .whenReleased(new TiltWaitForStop(m_tilt));
+            codriverBack.whileHeld(getRunCPMotorCommand());
 
-            codriverUpButton.whenPressed(new ChangeShooterSpeed(m_shooter, +1));
-            codriverDownButton.whenPressed(new ChangeShooterSpeed(m_shooter, -1));
-            codriverRightButton.whenPressed(new ChangeShooterSpeed(m_shooter, +2));
-            codriverLeftButton.whenPressed(new ChangeShooterSpeed(m_shooter, -2));
+            codriverRightTrigger.whenPressed(new MoveArm(m_cp, false));
+
+            codriverLeftTrigger.whenPressed(new MoveArm(m_cp, true));
+
+            codriverUpButton.whenPressed(() -> m_tilt.aimHigher());
+
+            codriverDownButton.whenPressed(() -> m_tilt.aimLower());
+
+            codriverLeftButton.whenPressed(() -> m_turret.aimFurtherLeft());// shoot right
+
+            codriverRightButton.whenPressed(() -> m_turret.aimFurtherRight());// shoot left
+
+            // codriverUpButton.whenPressed(new ChangeShooterSpeed(m_shooter, +1));
+            // codriverDownButton.whenPressed(new ChangeShooterSpeed(m_shooter, -1));
+            // codriverRightButton.whenPressed(new ChangeShooterSpeed(m_shooter, +2));
+            // codriverLeftButton.whenPressed(new ChangeShooterSpeed(m_shooter, -2));
             /**
              * Setup gamepad is used for testing functions
              */
@@ -435,6 +446,10 @@ public class RobotContainer {
 
       public Command getJogRightBeltCommand() {
             return new JogRightBelt(m_transport, () -> setupGamepad.getRawAxis(3));
+      }
+
+      public Command getRunCPMotorCommand() {
+            return new RunCPMotor(m_cp, () -> codriverGamepad.getRawAxis(3));
       }
 
       public double getThrottle() {

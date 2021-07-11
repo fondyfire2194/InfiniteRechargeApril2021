@@ -79,22 +79,24 @@ public class AutoMode3M2BallTrench extends SequentialCommandGroup {
                                 // 1st lock
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
-                                                new SetUpLimelightForTarget(limelight, true))
+                                                new PositionTilt(tilt, tiltAngle + tiltOffset),
+                                                new PositionTurret(turret, turretAngle + turretOffset),
+                                                new SetUpLimelightForTarget(limelight, false))
 
                                                                 .deadlineWith(new IntakeArmLower(intake)),
                                 // 1st Shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
                                                 new SetShootSpeed(shooter, shootSpeed), new UseVision(limelight, true),
 
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, drive, compressor,
-                                                                shootTime)).deadlineWith(
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, drive,
+                                                                compressor, shootTime)).deadlineWith(
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),
                                                                                 new PositionHoldTurret(turret, shooter,
                                                                                                 limelight)),
                                 // 2nd pickup
 
-                                new PickupMoveVelocity(drive, retractDistance1, 1.8)
+                                new PickupMoveVelocity(drive, retractDistance1, 1.5)
 
                                                 .deadlineWith(new UseVision(limelight, false),
                                                                 new SetTiltOffset(tilt, tiltOffset1),
@@ -111,8 +113,8 @@ public class AutoMode3M2BallTrench extends SequentialCommandGroup {
                                                 new RunIntakeMotor(intake, .75),
                                                 new SetShootSpeed(shooter, shootSpeed1), new UseVision(limelight, true),
 
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, drive, compressor,
-                                                                shootTime)).deadlineWith(
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, drive,
+                                                                compressor, shootTime)).deadlineWith(
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),
                                                                                 new PositionHoldTurret(turret, shooter,
