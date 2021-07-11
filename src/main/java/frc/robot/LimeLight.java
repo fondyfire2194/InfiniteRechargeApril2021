@@ -5,7 +5,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LimelightControlMode.Advanced_Crosshair;
 import frc.robot.LimelightControlMode.Advanced_Target;
 import frc.robot.LimelightControlMode.CamMode;
@@ -30,9 +29,12 @@ public class LimeLight {
     public boolean useVision;
 
     public int driverPipeline = 0;
-    public int noZoomPipeline = 1;
-    public int twoTimesZoomPipeline = 2;
-    public int threeTimesZoomPipeline = 3;
+    public int noZoomPipelineStraight = 1;
+    public int noZoomPipelineTrench = 2;
+    public int noZoomPipelineShieldGen = 3;  
+    public int twoTimesZoomPipeline = 4;
+    public int threeTimesZoomPipeline = 5;
+  
     public int ledsOffPipeline = 8;
 
     private double useVisionTimer;

@@ -268,7 +268,7 @@ public class RobotContainer {
                         .whenPressed(new PositionTurret(m_turret, 0))
                         .whenPressed(new SetUpLimelightForNoVision(m_limelight));
 
-            new JoystickButton(m_driverController, 6).whenPressed(new SetUpLimelightForTarget(m_limelight, true));
+            new JoystickButton(m_driverController, 6).whenPressed(new SetUpLimelightForTarget(m_limelight,m_limelight.noZoomPipelineStraight, true));
 
             new JoystickButton(m_driverController, 7).whileHeld(new PositionTilt(m_tilt, m_tilt.tiltMinAngle))
                         .whenPressed(new PositionTurret(m_turret, 0))

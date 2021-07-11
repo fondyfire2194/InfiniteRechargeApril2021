@@ -67,7 +67,6 @@ public class LogTurretData extends CommandBase {
     if (logTime == 0)
       logTime = Timer.getFPGATimestamp();
 
-      m_turret.logTurretItems=true;
 
     if (m_turret.logTurretItems && Timer.getFPGATimestamp() > logTime + .1) {
       logTime = Timer.getFPGATimestamp();

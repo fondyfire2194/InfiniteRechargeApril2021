@@ -50,7 +50,7 @@ public class PositionTurretToVision extends CommandBase {
     m_limelight.horizontalOffset = m_turret.targetHorizontalOffset;
     m_turret.turretUseVision = false;
     m_limelight.useVision = false;
-    m_limelight.setPipeline(m_limelight.noZoomPipeline);
+    m_limelight.setPipeline(m_limelight.noZoomPipelineStraight);
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_turret.correctedEndpoint = m_endpoint;
     lookForTarget = false;

@@ -12,14 +12,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.TimeDelay;
-import frc.robot.commands.AutoCommands.StartAllShooter;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.Tilt.PositionTilt;
-import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
-import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
@@ -44,7 +41,7 @@ public class SetShotPosition2 extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new SetActiveTeleopShootData(shooter, 2), new SetUpLimelightForTarget(limelight, false),
+                super(new SetActiveTeleopShootData(shooter, 2), new SetUpLimelightForTarget(limelight,limelight.noZoomPipelineTrench,false),
                                 new TimeDelay(1.),
 
                                 new ParallelCommandGroup(new ChooseShooterSpeedSource(shooter, tilt, turret, 0),

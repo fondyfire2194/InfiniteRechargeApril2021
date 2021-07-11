@@ -161,6 +161,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double cameraCalculatedTiltOffset;
     public double maxMPS = 40;
     public double minMPS = 23;
+	public double shootCellsRunning;
 
     public RevShooterSubsystem() {
 

@@ -79,7 +79,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                 new SetTurretOffset(turret, turretOffset),
                 new PositionTilt(tilt, tiltAngle + tiltOffset),
                 new PositionTurret(turret, turretAngle + turretOffset),
-                new SetUpLimelightForTarget(limelight, false))
+                new SetUpLimelightForTarget(limelight,limelight.noZoomPipelineTrench, false))
 
                                 .deadlineWith(new IntakeArmLower(intake)),
                                 // 1st Shoot
@@ -94,7 +94,7 @@ public class AutoMode3M3BallTrench extends SequentialCommandGroup {
                                                                                                 limelight)),
                                 // 2nd pickup
 
-                                new PickupMoveVelocity(drive, retractDistance, 2.0)
+                                new PickupMoveVelocity(drive, retractDistance, 1.5)
 
                                                 .deadlineWith(new UseVision(limelight, false),
                                                                 new SetTiltOffset(tilt, tiltOffset1),

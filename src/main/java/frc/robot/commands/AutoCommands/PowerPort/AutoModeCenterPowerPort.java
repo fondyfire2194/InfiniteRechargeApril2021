@@ -69,6 +69,8 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                 new ResetEncoders(drive), new ResetGyro(drive), new SetLogTiltItems(tilt, true),
 
                                 new SetLogTurretItems(turret, true),
+                                
+                                new SetUpLimelightForTarget(limelight, limelight.noZoomPipelineTrench, false),
 
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
@@ -83,8 +85,8 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                                 new SetLogShooterItems(shooter, true),
                                                 new SetShootSpeed(shooter, shootSpeed),
 
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, drive, compressor,
-                                                                shootTime)).deadlineWith(
+                                                new ShootCells(shooter, tilt, turret, limelight, transport, drive,
+                                                                compressor, shootTime)).deadlineWith(
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),
                                                                                 new PositionHoldTurret(turret, shooter,

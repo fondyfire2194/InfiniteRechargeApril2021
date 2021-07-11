@@ -84,7 +84,7 @@ public class ShootData {
     }
 
     public final static class trench3M3BallShotConstants {
-        public static double retractDistance = -4;
+        // public static double retractDistance = -4;
         public static double tiltAngle = 22.5;
         public static double turretAngle = -31;
         public static double shootSpeed = 33;
@@ -122,6 +122,37 @@ public class ShootData {
         public static double turretOffset = 0;
         public static double shootTime = 6;
 
+    }
+
+    public final static class shieldGen3MxBallShotConstants {
+        // public static double retractDistance = -4;
+        public static double tiltAngle = 22.5;
+        public static double turretAngle = 31;
+        public static double shootSpeed = 33;
+        public static double tiltOffset = 0;
+        public static double turretOffset = 0;
+        public static double shootTime = 2;
+    }
+
+    public final static class shieldGen4BallShotConstants {
+        public static double retractDistance = -2.5;
+        public static double tiltAngle = 15;
+        public static double turretAngle = 20;
+        public static double shootSpeed = 37;
+        public static double tiltOffset = 3;
+        public static double turretOffset = 0;
+        public static double shootTime = 4;
+    }
+
+    public final static class shieldGen5BallShotConstants {
+        public static double retractDistance = -3.5;
+        public static double returnPosition = -2.5;
+        public static double tiltAngle = 13.5;
+        public static double turretAngle = 14;
+        public static double shootSpeed = 38;
+        public static double tiltOffset = 5;
+        public static double turretOffset = 0;
+        public static double shootTime = 5;
     }
 
     public final static class behindControlPanelShotConstants {

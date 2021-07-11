@@ -5,8 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.AutoCommands.TrenchOne;
-
+package frc.robot.commands.AutoCommands.ShieldGenTwo;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -18,7 +17,6 @@ import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
 import frc.robot.commands.CellIntake.StopIntakeMotor;
-import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.PickupMoveVelocity;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
@@ -43,7 +41,7 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class AutoMode3M1BallTrench extends SequentialCommandGroup {
+public class AutoMode3M2BallShield extends SequentialCommandGroup {
         /**
          * Creates a new Auto0.
          * 
@@ -65,7 +63,7 @@ public class AutoMode3M1BallTrench extends SequentialCommandGroup {
         static double turretOffset1 = ShootData.trench4BallShotConstants.turretOffset;
         static double shootTime1 = ShootData.trench4BallShotConstants.shootTime;
 
-        public AutoMode3M1BallTrench(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+        public AutoMode3M2BallShield(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
                         Compressor compressor, RearIntakeSubsystem intake) {
                 // Add your commands in the super() call, e.g.
@@ -77,7 +75,7 @@ public class AutoMode3M1BallTrench extends SequentialCommandGroup {
                                                 new SetTurretOffset(turret, turretOffset),
                                                 new PositionTilt(tilt, tiltAngle + tiltOffset),
                                                 new PositionTurret(turret, turretAngle + turretOffset),
-                                                new SetUpLimelightForTarget(limelight,limelight.noZoomPipelineTrench, false))
+                                                new SetUpLimelightForTarget(limelight,limelight.noZoomPipelineStraight, false))
 
                                                                 .deadlineWith(new IntakeArmLower(intake)),
                                 // 1st Shoot

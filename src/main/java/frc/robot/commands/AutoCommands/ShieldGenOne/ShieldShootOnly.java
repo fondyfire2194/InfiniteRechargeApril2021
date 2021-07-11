@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.AutoCommands.TrenchOne;
+package frc.robot.commands.AutoCommands.ShieldGenOne;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -36,29 +36,36 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class TrenchShootOnly extends SequentialCommandGroup {
+public class ShieldShootOnly extends SequentialCommandGroup {
         /**
          * Creates a new Auto0.
          * 
          * Start in front of power port and shoot
          */
 
-        static double tiltAngle = ShootData.trench3M3BallShotConstants.tiltAngle;
-        static double turretAngle = ShootData.trench3M3BallShotConstants.turretAngle;
-        static double shootSpeed = ShootData.trench3M3BallShotConstants.shootSpeed;
-        static double tiltOffset = ShootData.trench3M3BallShotConstants.tiltOffset;
-        static double turretOffset = ShootData.trench3M3BallShotConstants.turretOffset;
-        static double shootTime = ShootData.trench3M3BallShotConstants.shootTime;
+        static double tiltAngle = ShootData.shieldGen3MxBallShotConstants.tiltAngle;
+        static double turretAngle = ShootData.shieldGen3MxBallShotConstants.turretAngle;
+        static double shootSpeed = ShootData.shieldGen3MxBallShotConstants.shootSpeed;
+        static double tiltOffset = ShootData.shieldGen3MxBallShotConstants.tiltOffset;
+        static double turretOffset = ShootData.shieldGen3MxBallShotConstants.turretOffset;
+        static double shootTime = ShootData.shieldGen3MxBallShotConstants.shootTime;
 
-        static double retractDistance = ShootData.trench4BallShotConstants.retractDistance;
-        static double tiltAngle1 = ShootData.trench4BallShotConstants.tiltAngle;
-        static double turretAngle1 = ShootData.trench4BallShotConstants.turretAngle;
-        static double shootSpeed1 = ShootData.trench4BallShotConstants.shootSpeed;
-        static double tiltOffset1 = ShootData.trench4BallShotConstants.tiltOffset;
-        static double turretOffset1 = ShootData.trench4BallShotConstants.turretOffset;
-        static double shootTime1 = ShootData.trench4BallShotConstants.shootTime;
+        static double retractDistance = ShootData.shieldGen4BallShotConstants.retractDistance;
+        static double tiltAngle1 = ShootData.shieldGen4BallShotConstants.tiltAngle;
+        static double turretAngle1 = ShootData.shieldGen4BallShotConstants.turretAngle;
+        static double shootSpeed1 = ShootData.shieldGen4BallShotConstants.shootSpeed;
+        static double tiltOffset1 = ShootData.shieldGen4BallShotConstants.tiltOffset;
+        static double turretOffset1 = ShootData.shieldGen4BallShotConstants.turretOffset;
+        static double shootTime1 = ShootData.shieldGen4BallShotConstants.shootTime;
 
-        public TrenchShootOnly(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+       
+
+
+
+
+
+
+        public ShieldShootOnly(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
                         Compressor compressor, RearIntakeSubsystem intake) {
                 // Add your commands in the super() call, e.g.
@@ -72,7 +79,7 @@ public class TrenchShootOnly extends SequentialCommandGroup {
                                 new SetTurretOffset(turret, turretOffset), 
                                 new PositionTilt(tilt, tiltAngle + tiltOffset),
                                 new PositionTurret(turret, turretAngle + turretOffset),
-                                new SetUpLimelightForTarget(limelight, limelight.noZoomPipelineTrench, false))
+                                new SetUpLimelightForTarget(limelight, limelight.noZoomPipelineStraight, false))
 
                                                 .deadlineWith(new IntakeArmLower(intake)),
                                 // 1st Shoot

@@ -20,10 +20,10 @@ public class LogDistanceData extends CommandBase {
    * Creates a new LogDistanceData.
    */
   public final String[] names = { "Step", "LeftMeters", "RightMeters", "AveMeters", "CameraDistance", "BBHeight",
-      "BBWidth", "TargetArea", "RobotSpeed", "TiltAngle", "VertToTarget", "Tilt+Vert", "TurretAngle", "HorToTarget",
-      "Turret+Hor", "GyroYaw" };
+      "BBWidth", "TargetArea", "AspectRatio", "RobotSpeed", "TiltAngle", "VertToTarget", "Tilt+Vert", "TurretAngle",
+      "HorToTarget", "Turret+Hor", "GyroYaw" };
   public static String[] units = { "Number", "Meters", "Meters", "Meters", "Meters", "Pixels", "Pixels", "SqPixels",
-      "MPS", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees" };
+      "Ratio", "MPS", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees", "Degrees" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -75,10 +75,11 @@ public class LogDistanceData extends CommandBase {
       step++;
       m_shooter.simpleCSVLogger.writeData((double) step, -m_drive.getLeftDistance(), -m_drive.getRightDistance(),
           -m_drive.getAverageDistance(), m_shooter.calculatedCameraDistance, m_limelight.getBoundingBoxHeight(),
-          m_limelight.getBoundingBoxWidth(), m_limelight.getTargetArea(), m_drive.getLeftRate(), m_tilt.getAngle(),
-          m_limelight.getdegVerticalToTarget(), m_tilt.getAngle() + m_limelight.getdegVerticalToTarget(),
-          m_turret.getAngle(), m_limelight.getdegRotationToTarget(),
-          m_turret.getAngle() + m_limelight.getdegRotationToTarget(), m_drive.getYaw());
+          m_limelight.getBoundingBoxWidth(), m_limelight.getTargetArea(), m_limelight.getAspectRatio(),
+          m_drive.getLeftRate(), m_tilt.getAngle(), m_limelight.getdegVerticalToTarget(),
+          m_tilt.getAngle() + m_limelight.getdegVerticalToTarget(), m_turret.getAngle(),
+          m_limelight.getdegRotationToTarget(), m_turret.getAngle() + m_limelight.getdegRotationToTarget(),
+          m_drive.getYaw());
     }
 
   }

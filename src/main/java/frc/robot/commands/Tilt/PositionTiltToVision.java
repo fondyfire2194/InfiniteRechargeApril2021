@@ -50,7 +50,6 @@ public class PositionTiltToVision extends CommandBase {
     m_tilt.programRunning = 3;
     m_tilt.tiltUseVision = false;
     m_limelight.useVision = false;
-    m_limelight.setPipeline(m_limelight.noZoomPipeline);
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_tilt.targetAngle = m_endpoint;
     if (m_endpoint < HoodedShooterConstants.TILT_MIN_ANGLE)

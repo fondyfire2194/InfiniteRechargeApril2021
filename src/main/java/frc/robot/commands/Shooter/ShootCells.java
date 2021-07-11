@@ -32,7 +32,7 @@ public class ShootCells extends CommandBase {
   private final Compressor m_compressor;
   private final LimeLight m_limelight;
   private double m_time;
-  private double shotTime = 1;
+  private double shotTime = .7;
   private double shotStartTime;
 
   private boolean okToShoot;
@@ -63,6 +63,8 @@ public class ShootCells extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_shooter.shootCellsRunning = 1.;
+    m_shooter.logShooterItems = true;
     m_shooter.shootTime = m_time;
     m_compressor.stop();
     m_shooter.isShooting = false;
@@ -72,7 +74,7 @@ public class ShootCells extends CommandBase {
     shotStartTime = 0;
 
     m_limelight.setLEDMode(LedMode.kpipeLine);
-    m_limelight.setPipeline(m_limelight.noZoomPipeline);
+
     m_limelight.useVision = true;
 
   }
@@ -110,8 +112,8 @@ public class ShootCells extends CommandBase {
 
     m_shooter.okToShoot = m_shooter.isShooting && (inAuto || !m_shooter.shootOne);
 
-    getNextCell = m_shooter.okToShoot && !m_shooter.shotInProgress && !m_transport.cellAvailable && m_shooter.atSpeed()
-        && m_transport.rollersAtSpeed && m_transport.getBallAtShoot();
+    getNextCell = m_shooter.okToShoot && !m_shooter.shotInProgress && !m_transport.cellAvailable
+        && m_transport.rollersAtSpeed && m_transport.getBallAtShoot() && m_shooter.atSpeed();
 
     if (getNextCell || cellReleased) {
       releaseOneCell();
@@ -130,7 +132,7 @@ public class ShootCells extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_transport.holdCell();
-
+    m_shooter.logShooterItems = false;
     m_transport.holdLeftChannel();
 
     m_transport.stopRollers();
@@ -139,6 +141,7 @@ public class ShootCells extends CommandBase {
     m_shooter.endShootFile = true;
     m_shooter.isShooting = false;
     m_shooter.setNotOKShootDriver();
+    m_shooter.shootCellsRunning = 0;
   }
 
   // Returns true when the command should end.

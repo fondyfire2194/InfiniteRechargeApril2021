@@ -46,7 +46,7 @@ public class Pref {
     prefDict.put("tIKiv", .001);
     prefDict.put("tIKdv", 0.);
     prefDict.put("tIKizv", 1.);
-    prefDict.put("tIMaxVv", 45.);// these are in revs(deg)per second 
+    prefDict.put("tIMaxVv", 45.);// these are in revs(deg)per second
     prefDict.put("tIMaxAv", 125.);// deg per min/sec
     prefDict.put("tITunev", 0.);
 
@@ -113,8 +113,7 @@ public class Pref {
     prefDict.put("CellHoldPosn", .1);
     prefDict.put("CellReleaseTime", .25);
 
-
-    //left channel servo
+    // left channel servo
 
     prefDict.put("LeftRelPosn", .25);
     prefDict.put("LeftHoldPosn", .1);
@@ -124,6 +123,10 @@ public class Pref {
     prefDict.put("LimelightHeight", .66);
     prefDict.put("LimelightMaxHeight", .686);
 
+    //Set to 1 befor power up to log
+    prefDict.put("LogTilt", 0.);
+    prefDict.put("LogTurret", 0.);
+    prefDict.put("LogShoot", 0.);
   }
 
   public static void ensureRioPrefs() {

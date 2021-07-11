@@ -20,7 +20,7 @@ public class LogShootData extends CommandBase {
    */
   public final String[] names = { "Time", "ActSpeed", "Amps",
 
-      "AtSpeed", "OkToShoot", "isShooting", "ShotInProgress", "Cell Available",
+      "AtSpeed", "ShCelRng", "OkToShoot", "isShooting", "ShotInProgress", "Cell Available",
 
       "BallAtLeft", "BallAtShooter", "NoBallLeft_1", "NoBallShoot_1", "RobotStopped",
 
@@ -28,7 +28,7 @@ public class LogShootData extends CommandBase {
 
   public static String[] units = { "Seconds", "MPS", "Amps",
 
-      "T/F", "T/F", "T/F", "T/F", "T/F",
+      "T/F", "T/F", "T/F", "T/F",
 
       "T/F", "T/F", "T/F", "T/F", "T/F",
 
@@ -72,8 +72,7 @@ public class LogShootData extends CommandBase {
     double cellAvailable = 0;
     double ballAtShooter = 0;
     double ballAtLeft = 0;
-    double noBallatShooterFor1Sec = 0;
-    double noBallatLeftFor1Sec = 0;
+
     double robotStopped1sec = 0;
 
     // allow i second for file to be opened
@@ -90,7 +89,7 @@ public class LogShootData extends CommandBase {
     if (logTime == 0)
       logTime = Timer.getFPGATimestamp();
 
-    if (Timer.getFPGATimestamp() > logTime + .1) {
+    if (m_shooter.logShooterItems && Timer.getFPGATimestamp() > logTime + .1) {
       logTime = Timer.getFPGATimestamp();
 
       if (m_shooter.atSpeed())
@@ -111,22 +110,15 @@ public class LogShootData extends CommandBase {
       if (m_transport.getBallAtShoot())
         ballAtShooter = 1;
 
-      if (m_transport.noBallatShooterForOneSecond)
-        noBallatShooterFor1Sec = 1;
-
       if (m_transport.getBallAtLeft())
         ballAtLeft = 1;
-
-      if (m_transport.noBallatLeftForOneSecond)
-        noBallatLeftFor1Sec = 1;
 
       if (m_drive.robotStoppedForOneSecond)
         robotStopped1sec = 1;
 
-      m_shooter.shootLogger.writeData(logTime, m_shooter.getMPS(), m_shooter.getLeftAmps(), shooterAtSpeed, okToShoot,
-          isShooting, shotInProgress, cellAvailable, ballAtLeft, ballAtShooter, noBallatLeftFor1Sec,
-          noBallatShooterFor1Sec, robotStopped1sec, (double) m_transport.getArmAngle(),
-          (double) m_transport.getLeftAngle());
+      m_shooter.shootLogger.writeData(logTime, m_shooter.shootCellsRunning, m_shooter.getMPS(), m_shooter.getLeftAmps(),
+          shooterAtSpeed, okToShoot, isShooting, shotInProgress, cellAvailable, ballAtLeft, ballAtShooter,
+          robotStopped1sec, (double) m_transport.getArmAngle(), (double) m_transport.getLeftAngle());
     }
 
   }

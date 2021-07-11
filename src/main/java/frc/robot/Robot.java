@@ -58,15 +58,14 @@ public class Robot extends TimedRobot {
 
     Shuffleboard.selectTab("Pre-Round");
 
-    if (Constants.logTilt)
+    if (Pref.getPref("LogTilt") == 1.)
       new LogTiltData(m_robotContainer.m_tilt, m_robotContainer.m_limelight).schedule(true);
 
-    if (Constants.logTurret)
+    if (Pref.getPref("LogTurret") == 1.)
       new LogTurretData(m_robotContainer.m_turret, m_robotContainer.m_limelight).schedule(true);
 
-    // if (Constants.logShoot)
-    // new LogShootData(m_robotContainer.m_shooter,
-    // m_robotContainer.m_transport).schedule(true);
+    if (Pref.getPref("LogShoot") == 1.)
+      new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport, null).schedule(true);
 
     m_robotContainer.m_transport.holdCell();
 
@@ -189,8 +188,9 @@ public class Robot extends TimedRobot {
         break;
 
       case 2:// Trench Pickup 1 ball
-        // new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport, m_robotContainer.m_robotDrive)
-        //     .schedule();
+        // new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport,
+        // m_robotContainer.m_robotDrive)
+        // .schedule();
         setStartingPose(FieldMap.startPosition[3]);
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
@@ -209,6 +209,23 @@ public class Robot extends TimedRobot {
         setStartingPose(FieldMap.startPosition[3]);
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand4();
+
+        break;
+
+        case 5:// ShieldGen Pickup 1 ball
+        // new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport,
+        // m_robotContainer.m_robotDrive)
+        // .schedule();
+        setStartingPose(FieldMap.startPosition[3]);
+
+        m_autonomousCommand = m_autoFactory.getAutonomousCommand5();
+        break;
+
+      case 6://  pickuShieldp 2 balls
+
+        setStartingPose(FieldMap.startPosition[3]);
+
+        m_autonomousCommand = m_autoFactory.getAutonomousCommand6();
 
         break;
 

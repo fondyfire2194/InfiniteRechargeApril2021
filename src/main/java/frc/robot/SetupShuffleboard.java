@@ -140,6 +140,12 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Trench 3 M 3", 4);
 
+                        autoChooser.addOption("ShieldGen 3 M 1", 5);
+
+                        autoChooser.addOption("Shield Gen 3 M 2", 6);
+
+  
+
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
 
