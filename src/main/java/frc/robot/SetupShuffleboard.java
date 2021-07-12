@@ -48,7 +48,6 @@ import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.EndShootLog;
 import frc.robot.commands.Shooter.LogDistanceData;
-import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
@@ -273,7 +272,7 @@ public class SetupShuffleboard {
                         miscComp.addNumber("BNDBoxWidth", () -> m_limelight.getBoundingBoxWidth());
                         miscComp.addNumber("BndBoxHeight", () -> m_limelight.getBoundingBoxHeight());
                         miscComp.addNumber("AspectRatio", () -> m_limelight.getAspectRatio());
-                       
+
                         miscComp.addNumber("RQDMPS", () -> m_shooter.requiredMps);
 
                         ShuffleboardLayout misComp1 = Shuffleboard.getTab("CompetitionMisc")
@@ -301,15 +300,14 @@ public class SetupShuffleboard {
                                         .withProperties(Map.of("Label position", "LEFT"));
 
                         misComp2.addNumber("TargetDistance", () -> m_shooter.calculatedCameraDistance);
-                        misComp2.addNumber("CameraSpeed", () -> m_shooter.cameraCalculatedSpeed);
-                        misComp2.addNumber("CameraTilt", () -> m_tilt.cameraCalculatedTiltOffset);
+                        misComp2.addNumber("CameraCalcSpeed", () -> m_shooter.cameraCalculatedSpeed);
+                        misComp2.addNumber("CameraCalcTilt", () -> m_tilt.cameraCalculatedTiltOffset);
                         misComp2.add("Reset Enc", new ResetEncoders(m_robotDrive));
                         misComp2.add("Reset Gyro", new ResetGyro(m_robotDrive));
                         misComp2.addNumber("LeftMeters", () -> m_robotDrive.getLeftDistance());
                         misComp2.addNumber("RightMeters", () -> m_robotDrive.getRightDistance());
 
-                        misComp2.add("To P-P Target",
-                                        new CenterPowerPortToTargetOnly(m_shooter, m_turret, m_tilt, m_limelight));
+                        misComp2.add("To P-P Target", new CenterPowerPortToTargetOnly(m_turret, m_tilt, m_limelight));
 
                         misComp2.add("To Trench Target", new ToTrenchTarget(m_turret, m_tilt, m_limelight));
 
@@ -630,6 +628,11 @@ public class SetupShuffleboard {
                         shooterValues2.addNumber("I", () -> m_shooter.iset);
                         shooterValues2.addNumber("D", () -> m_shooter.dset);
                         shooterValues2.addNumber("IZ", () -> m_shooter.izset);
+
+                        m_shooter.shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3)
+                                        .withWidget("Number Slider").withPosition(0, 3).withSize(4, 1)
+                                        .withProperties(Map.of("Min", 15, "Max", 50)).getEntry();
+
                 }
 
                 if (m_showTransport && !liveMatch) {

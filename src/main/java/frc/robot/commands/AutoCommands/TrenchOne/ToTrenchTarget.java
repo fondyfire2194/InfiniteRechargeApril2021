@@ -54,7 +54,7 @@ public class ToTrenchTarget extends SequentialCommandGroup {
 
                                 // 1st lock
                                 new ParallelCommandGroup(
-                                                new SetUpLimelightForTarget(limelight, limelight.noZoomPipelineTrench,
+                                                new SetUpLimelightForTarget(limelight, limelight.activeTrenchPipeline,
                                                                 false),
                                                 new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),

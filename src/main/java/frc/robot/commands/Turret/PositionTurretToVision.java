@@ -10,7 +10,6 @@
 
 package frc.robot.commands.Turret;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LimeLight;
 import frc.robot.LimelightControlMode.LedMode;
@@ -29,6 +28,7 @@ public class PositionTurretToVision extends CommandBase {
   boolean endIt;
   private int correctionCtr;
   private boolean lookForTarget;
+  private double remainingDistance;
 
   public PositionTurretToVision(RevTurretSubsystem turret, LimeLight limelight, double endpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -47,21 +47,15 @@ public class PositionTurretToVision extends CommandBase {
     targetSeen = false;
     visionFoundCounter = 0;
     loopCtr = 0;
-    m_limelight.horizontalOffset = m_turret.targetHorizontalOffset;
+    m_limelight.setHorizontalOffset(m_turret.targetHorizontalOffset);
     m_turret.turretUseVision = false;
     m_limelight.useVision = false;
-    m_limelight.setPipeline(m_limelight.noZoomPipelineStraight);
     m_limelight.setLEDMode(LedMode.kpipeLine);
     m_turret.correctedEndpoint = m_endpoint;
     lookForTarget = false;
-    if (DriverStation.getInstance().isOperatorControlEnabled())
-
-      m_turret.logTurretItems = true;
 
     visionFoundCounter = filterCount;
   }
-
-  
 
   // Called every time the scheduler runs while the command is scheduled.
 
@@ -76,9 +70,12 @@ public class PositionTurretToVision extends CommandBase {
    */
   @Override
   public void execute() {
+
     loopCtr++;
 
-    targetSeen = m_limelight.getIsTargetFound();
+    remainingDistance = Math.abs(m_endpoint - m_turret.getAngle());
+
+    targetSeen = remainingDistance < 5 && m_limelight.getIsTargetFound();
 
     if (targetSeen && !m_turret.validTargetSeen && visionFoundCounter < filterCount) {
       visionFoundCounter++;
@@ -121,6 +118,6 @@ public class PositionTurretToVision extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_limelight.getHorOnTarget(5) || m_turret.atTargetAngle() && loopCtr > 5 || loopCtr > 250;
+    return m_limelight.getHorOnTarget(3) || m_turret.atTargetAngle() && loopCtr > 5 || loopCtr > 250;
   }
 }

@@ -64,7 +64,6 @@ public class ShootCells extends CommandBase {
   @Override
   public void initialize() {
     m_shooter.shootCellsRunning = 1.;
-    m_shooter.logShooterItems = true;
     m_shooter.shootTime = m_time;
     m_compressor.stop();
     m_shooter.isShooting = false;
@@ -132,13 +131,13 @@ public class ShootCells extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_transport.holdCell();
-    m_shooter.logShooterItems = false;
-    m_transport.holdLeftChannel();
+    
+  //  m_transport.holdLeftChannel();
 
-    m_transport.stopRollers();
+  //  m_transport.stopRollers();
     m_compressor.start();
     m_shooter.shotInProgress = false;
-    m_shooter.endShootFile = true;
+ 
     m_shooter.isShooting = false;
     m_shooter.setNotOKShootDriver();
     m_shooter.shootCellsRunning = 0;

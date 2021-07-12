@@ -52,7 +52,7 @@ public class ToShieldGenTarget extends SequentialCommandGroup {
 
                 super(
 
-                                new SetUpLimelightForTarget(limelight, limelight.noZoomPipelineShieldGen, false),
+                                new SetUpLimelightForTarget(limelight, limelight.activeShieldGenPipeline, false),
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
                                                 new PositionTilt(tilt, tiltAngle + tiltOffset),

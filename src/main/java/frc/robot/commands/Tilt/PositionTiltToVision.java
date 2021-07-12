@@ -10,7 +10,6 @@
 
 package frc.robot.commands.Tilt;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimeLight;
@@ -33,6 +32,7 @@ public class PositionTiltToVision extends CommandBase {
   private final int filterCount = 5;
   private int correctionCtr;
   double pidOut;
+  private double remainingDistance;
 
   private boolean lookForTarget;
 
@@ -61,17 +61,16 @@ public class PositionTiltToVision extends CommandBase {
     lookForTarget = false;
     m_limelight.setVerticalOffset(m_tilt.targetVerticalOffset);
 
-    if (DriverStation.getInstance().isOperatorControlEnabled())
-      m_tilt.logTiltItems = true;
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     loopCtr++;
+    
+    remainingDistance = m_endpoint - m_tilt.getAngle();
 
-    targetSeen = m_limelight.getIsTargetFound();
+    targetSeen = remainingDistance < 5 && m_limelight.getIsTargetFound();
 
     if (!targetSeen && m_tilt.validTargetSeen) {
       visionFoundCounter--;
@@ -105,8 +104,8 @@ public class PositionTiltToVision extends CommandBase {
 
     m_tilt.goToPositionMotionMagic(m_tilt.motorEndpointDegrees);
 
-    endIt = m_limelight.getVertOnTarget(5) || !m_tilt.validTargetSeen && m_tilt.atTargetAngle() && loopCtr > 5
-        || loopCtr > 1250;
+    endIt = m_limelight.getVertOnTarget(3)
+        || !m_tilt.validTargetSeen && m_tilt.atTargetAngle() && loopCtr > 5 || loopCtr > 1250;
 
   }
 

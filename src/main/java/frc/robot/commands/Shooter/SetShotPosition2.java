@@ -41,7 +41,7 @@ public class SetShotPosition2 extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new SetActiveTeleopShootData(shooter, 2), new SetUpLimelightForTarget(limelight,limelight.noZoomPipelineTrench,false),
+                super(new SetActiveTeleopShootData(shooter, 2), new SetUpLimelightForTarget(limelight,limelight.activeTrenchPipeline,false),
                                 new TimeDelay(1.),
 
                                 new ParallelCommandGroup(new ChooseShooterSpeedSource(shooter, tilt, turret, 0),

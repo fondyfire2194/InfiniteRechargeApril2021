@@ -8,24 +8,23 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.RobotDrive.LogDriveData;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
-import frc.robot.commands.Shooter.LogShootData;
-import frc.robot.commands.Tilt.LogTiltData;
+import frc.robot.commands.Shooter.SetLogItemsState;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
-import frc.robot.commands.Turret.LogTurretData;
 import frc.robot.commands.Vision.CalculateSpeedFromDistance;
 import frc.robot.commands.Vision.CalculateTargetDistance;
 import frc.robot.commands.Vision.SetUpLimelightForDriver;
+import frc.robot.subsystems.RevDrivetrain;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,6 +44,8 @@ public class Robot extends TimedRobot {
   private double m_startDelay;
   private double startTime;
   public double timeToStart;
+  
+  private int loopCtr;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -60,14 +61,18 @@ public class Robot extends TimedRobot {
 
     Shuffleboard.selectTab("Pre-Round");
 
-    if (Pref.getPref("LogTilt") == 1.)
-      new LogTiltData(m_robotContainer.m_tilt, m_robotContainer.m_limelight).schedule(true);
+    
+    // if (Pref.getPref("LogTilt") == 1.)
+    // new LogTiltData(m_robotContainer.m_tilt,
+    // m_robotContainer.m_limelight).schedule(true);
 
-    if (Pref.getPref("LogTurret") == 1.)
-      new LogTurretData(m_robotContainer.m_turret, m_robotContainer.m_limelight).schedule(true);
+    // if (Pref.getPref("LogTurret") == 1.)
+    // new LogTurretData(m_robotContainer.m_turret,
+    // m_robotContainer.m_limelight).schedule(true);
 
-    if (Pref.getPref("LogShoot") == 1.)
-      new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport, null).schedule(true);
+    // if (Pref.getPref("LogShoot") == 1.)
+    // new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport,
+    // null).schedule(true);
 
     m_robotContainer.m_transport.holdCell();
 
@@ -104,9 +109,7 @@ public class Robot extends TimedRobot {
 
     // m_robotContainer.m_tilt.testLockFromThrottle =
     // m_robotContainer.m_driverController.getThrottle();
-
-    
-
+    loopCtr++;
   }
 
   /**
@@ -119,11 +122,9 @@ public class Robot extends TimedRobot {
     }
     CommandScheduler.getInstance().run();
     m_robotContainer.m_setup.checkCANDevices();
-    // ShootData.showValues(1);
-    // ShootData.showValues(2);
-    // ShootData.showValues(3);
 
     new SetUpLimelightForDriver(m_robotContainer.m_limelight).schedule();
+
   }
 
   @Override
@@ -138,17 +139,9 @@ public class Robot extends TimedRobot {
 
   public void autonomousInit() {
 
+    m_robotContainer.m_limelight.allianceIsBlue = DriverStation.getInstance().getAlliance() == Alliance.Blue;
+
     m_robotContainer.m_robotDrive.setIdleMode(true);
-
-    // new LogDriveData(m_robotContainer.m_robotDrive).schedule();
-
-    // new LogTiltData(m_robotContainer.m_tilt,
-    // m_robotContainer.m_limelight).schedule();
-
-    // new LogTurretData(m_robotContainer.m_turret,
-    // m_robotContainer.m_limelight).schedule();
-
-    // new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport);
 
     if (RobotBase.isReal())
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
@@ -172,7 +165,8 @@ public class Robot extends TimedRobot {
 
     autoChoice = m_robotContainer.m_setup.autoChooser.getSelected();
 
-    //
+    new SetLogItemsState(m_robotContainer.m_shooter, m_robotContainer.m_tilt, m_robotContainer.m_turret, true)
+        .schedule();
 
     switch (autoChoice) {
 
@@ -218,7 +212,7 @@ public class Robot extends TimedRobot {
 
         break;
 
-        case 5:// ShieldGen Pickup 1 ball
+      case 5:// ShieldGen Pickup 1 ball
         // new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport,
         // m_robotContainer.m_robotDrive)
         // .schedule();
@@ -227,7 +221,7 @@ public class Robot extends TimedRobot {
         m_autonomousCommand = m_autoFactory.getAutonomousCommand5();
         break;
 
-      case 6://  pickuShieldp 2 balls
+      case 6:// pickuShieldp 2 balls
 
         setStartingPose(FieldMap.startPosition[3]);
 
@@ -274,8 +268,15 @@ public class Robot extends TimedRobot {
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
+
+      // new SetLogItemsState(m_robotContainer.m_shooter, m_robotContainer.m_tilt,
+      // m_robotContainer.m_turret, false)
+      // .schedule();
+
     }
+
     Shuffleboard.update();
+
     Shuffleboard.startRecording();
 
     m_robotContainer.m_robotDrive.setIdleMode(true);
@@ -283,13 +284,13 @@ public class Robot extends TimedRobot {
     autoHasRun = false;
 
     m_robotContainer.m_transport.holdCell();
+
     m_robotContainer.m_transport.holdLeftChannel();
 
     if (RobotBase.isReal() && !m_robotContainer.m_tilt.positionResetDone)
       new TiltMoveToReverseLimit(m_robotContainer.m_tilt).schedule(true);
 
     m_robotContainer.m_limelight.useVision = false;
-    // new AutoSwitchZoom(m_robotContainer.m_limelight).schedule(true);
 
     new CalculateTargetDistance(m_robotContainer.m_limelight, m_robotContainer.m_tilt, m_robotContainer.m_turret,
         m_robotContainer.m_shooter).schedule(true);
@@ -336,13 +337,14 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
     // m_robotContainer.setupGamepad.setRumble(RumbleType.kLeftRumble, 1.0);
-
+   
   }
 
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+    
   }
 
   /**

@@ -77,7 +77,7 @@ public class AutoMode3M1BallTrench extends SequentialCommandGroup {
                                                 new SetTurretOffset(turret, turretOffset),
                                                 new PositionTilt(tilt, tiltAngle + tiltOffset),
                                                 new PositionTurret(turret, turretAngle + turretOffset),
-                                                new SetUpLimelightForTarget(limelight,limelight.noZoomPipelineTrench, false))
+                                                new SetUpLimelightForTarget(limelight,limelight.activeTrenchPipeline, false))
 
                                                                 .deadlineWith(new IntakeArmLower(intake)),
                                 // 1st Shoot

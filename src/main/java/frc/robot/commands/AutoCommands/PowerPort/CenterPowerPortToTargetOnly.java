@@ -17,7 +17,6 @@ import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
-import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 
@@ -30,15 +29,14 @@ public class CenterPowerPortToTargetOnly extends SequentialCommandGroup {
          * 
          * Start in front of power port, retract and shoot
          */
-        static double retractDistance = ShootData.centerPowerPortConstants.retractDistance;
         static double tiltAngle = ShootData.centerPowerPortConstants.tiltAngle;
         static double turretAngle = ShootData.centerPowerPortConstants.turretAngle;
-        static double shootSpeed = ShootData.centerPowerPortConstants.shootSpeed;
+
         static double tiltOffset = ShootData.centerPowerPortConstants.tiltOffset;
         static double turretOffset = ShootData.centerPowerPortConstants.turretOffset;
-        static double shootTime = ShootData.centerPowerPortConstants.shootTime;
 
-        public CenterPowerPortToTargetOnly(RevShooterSubsystem shooter, RevTurretSubsystem turret,
+
+        public CenterPowerPortToTargetOnly(RevTurretSubsystem turret,
                         RevTiltSubsystem tilt, LimeLight limelight) {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
@@ -46,7 +44,7 @@ public class CenterPowerPortToTargetOnly extends SequentialCommandGroup {
                 super(
 
 
-                                new SetUpLimelightForTarget(limelight, limelight.noZoomPipelineStraight, false),
+                                new SetUpLimelightForTarget(limelight, limelight.activeStraightPipeline, false),
 
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),

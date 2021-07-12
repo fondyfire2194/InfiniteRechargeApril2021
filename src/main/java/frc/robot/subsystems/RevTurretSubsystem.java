@@ -298,15 +298,15 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public void aimFurtherLeft() {
         if (driverHorizontalOffsetMeters > minAdjustMeters) {
-            driverHorizontalOffsetDegrees += driverAdjustAngle;
-            driverHorizontalOffsetMeters += adjustMeters;
+            driverHorizontalOffsetDegrees -= driverAdjustAngle;
+            driverHorizontalOffsetMeters -= adjustMeters;
         }
     }
 
     public void aimFurtherRight() {
         if (driverHorizontalOffsetMeters < maxAdjustMeters) {
-            driverHorizontalOffsetDegrees -= driverAdjustAngle;
-            driverHorizontalOffsetMeters -= adjustMeters;
+            driverHorizontalOffsetDegrees += driverAdjustAngle;
+            driverHorizontalOffsetMeters += adjustMeters;
         }
     }
 

@@ -22,13 +22,13 @@ public class LogShootData extends CommandBase {
 
       "AtSpeed", "ShCelRng", "OkToShoot", "isShooting", "ShotInProgress", "Cell Available",
 
-      "BallAtLeft", "BallAtShooter", "NoBallLeft_1", "NoBallShoot_1", "RobotStopped",
+      "BallAtLeft", "BallAtShooter", "RobotStopped",
 
       "ArmAngle", "LeftAngle" };
 
   public static String[] units = { "Seconds", "MPS", "Amps",
 
-      "T/F", "T/F", "T/F", "T/F",
+      "T/F", "T/F",
 
       "T/F", "T/F", "T/F", "T/F", "T/F",
 

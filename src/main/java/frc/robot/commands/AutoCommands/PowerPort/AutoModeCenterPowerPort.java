@@ -71,7 +71,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
 
                                 new SetLogTurretItems(turret, true),
 
-                                new SetUpLimelightForTarget(limelight, limelight.noZoomPipelineStraight, false),
+                                new SetUpLimelightForTarget(limelight, limelight.activeStraightPipeline, false),
 
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),

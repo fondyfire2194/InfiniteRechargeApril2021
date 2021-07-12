@@ -29,13 +29,25 @@ public class LimeLight {
     public boolean useVision;
 
     public int driverPipeline = 0;
-    public int noZoomPipelineStraight = 1;
-    public int noZoomPipelineTrench = 2;
-    public int noZoomPipelineShieldGen = 3;  
-    public int twoTimesZoomPipeline = 4;
-    public int threeTimesZoomPipeline = 5;
-  
+    public int redNoZoomPipelineStraight = 1;
+    public int redNoZoomPipelineTrench = 2;
+    public int redNoZoomPipelineShieldGen = 3;
+
+    public int blueNoZoomPipelineStraight = 4;
+    public int blueNoZoomPipelineTrench = 5;
+    public int blueNoZoomPipelineShieldGen = 6;
+
+
+    public int twoTimesZoomPipeline = 7;
+    
+
     public int ledsOffPipeline = 8;
+
+    public int activeStraightPipeline = redNoZoomPipelineStraight;
+    public int activeShieldGenPipeline = redNoZoomPipelineShieldGen;
+    public int activeTrenchPipeline = redNoZoomPipelineTrench;
+
+    public boolean allianceIsBlue;
 
     private double useVisionTimer;
 
@@ -57,6 +69,7 @@ public class LimeLight {
     }
 
     Notifier _hearBeat = new Notifier(new PeriodicRunnable());
+    
 
     /**
      * Using the Default Lime Light NT table
@@ -476,7 +489,7 @@ public class LimeLight {
         // SmartDashboard.putNumber("PerspAngle", getPerspectiveAngle());
         // SmartDashboard.putNumber("3d X", getCamtranX());
         // SmartDashboard.putNumber("TargetDistance", getCamtranZ());
-        
+
         if (useVision && getIsTargetFound()) {
             useVisionTimer = 0;
         }

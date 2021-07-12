@@ -60,7 +60,7 @@ public class RightStartRetractShoot extends SequentialCommandGroup {
                                 new SetTiltOffset(tilt, tiltOffset), new SetTurretOffset(turret, turretOffset),
                                 new PickupMove(drive, -1, .5), new PositionTilt(tilt, tiltAngle + tiltOffset),
                                 new PositionTurret(turret, turretAngle + turretOffset)),
-                                new SetUpLimelightForTarget(limelight,limelight.noZoomPipelineStraight, false),
+                                new SetUpLimelightForTarget(limelight,limelight.activeStraightPipeline, false),
                                 new ParallelCommandGroup(new MessageCommand("ShootIs3Started"),
                                                 
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, drive, compressor,

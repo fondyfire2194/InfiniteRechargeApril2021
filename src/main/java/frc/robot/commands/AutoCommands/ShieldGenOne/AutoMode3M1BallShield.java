@@ -75,7 +75,7 @@ public class AutoMode3M1BallShield extends SequentialCommandGroup {
                                                 new SetTurretOffset(turret, turretOffset),
                                                 new PositionTilt(tilt, tiltAngle + tiltOffset),
                                                 new PositionTurret(turret, turretAngle + turretOffset),
-                                                new SetUpLimelightForTarget(limelight,limelight.noZoomPipelineStraight, false))
+                                                new SetUpLimelightForTarget(limelight,limelight.activeShieldGenPipeline, false))
 
                                                                 .deadlineWith(new IntakeArmLower(intake)),
                                 // 1st Shoot

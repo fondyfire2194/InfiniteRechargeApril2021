@@ -60,18 +60,21 @@ public class PositionHoldTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-SmartDashboard.putNumber("THOF", m_turret.testHorOffset);
+    SmartDashboard.putNumber("THOF", m_turret.testHorOffset);
     if (!m_limelight.useVision)
       visionFoundCounter = 0;
 
     targetSeen = m_limelight.getIsTargetFound() && m_limelight.useVision;// && m_turret.turretUseVision;
 
     if (targetSeen && m_turret.validTargetSeen) {
+
       cameraHorizontalError = m_limelight.getdegRotationToTarget();
+
       m_turret.adjustedCameraError = cameraHorizontalError
-          - (m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffsetDegrees + m_turret.testHorOffset);
+          + (m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffsetDegrees + m_turret.testHorOffset);
+
       m_limelight.setHorizontalOffset(
-          (m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffsetDegrees + m_turret.testHorOffset));
+          -(m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffsetDegrees + m_turret.testHorOffset));
 
     } else {
       cameraHorizontalError = 0;
@@ -100,7 +103,7 @@ SmartDashboard.putNumber("THOF", m_turret.testHorOffset);
     }
     if (!m_shooter.shotInProgress)
       lastHorizontalError = -m_turret.adjustedCameraError;
-      
+
     if (!m_turret.validTargetSeen) {
 
       m_turret.goToPositionMotionMagic(m_turret.targetAngle);

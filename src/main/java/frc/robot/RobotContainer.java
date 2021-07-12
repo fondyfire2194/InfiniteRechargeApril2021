@@ -203,7 +203,7 @@ public class RobotContainer {
             // m_turret.setDefaultCommand(new PositionHoldTurretTest(m_turret));
 
             m_shooter.setDefaultCommand(getJogShooterCommand());
-            boolean isMatch = Pref.getPref("IsMatch") == 0.;
+            boolean isMatch = Pref.getPref("IsMatch") == 1.;
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
                         m_limelight, m_intake, m_trajectory, isMatch);
 
@@ -267,7 +267,7 @@ public class RobotContainer {
                         .whenPressed(new SetUpLimelightForNoVision(m_limelight));
 
             new JoystickButton(m_driverController, 6).whenPressed(
-                        new SetUpLimelightForTarget(m_limelight, m_limelight.noZoomPipelineStraight, true));
+                        new SetUpLimelightForTarget(m_limelight, m_limelight.activeStraightPipeline, true));
 
             new JoystickButton(m_driverController, 7).whileHeld(new PositionTilt(m_tilt, m_tilt.tiltMinAngle))
                         .whenPressed(new PositionTurret(m_turret, 0))
