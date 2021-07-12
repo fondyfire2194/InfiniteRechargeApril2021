@@ -54,7 +54,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
     public double targetAngle;
     private double inPositionBandwidth = 2;
     public double targetHorizontalOffset;
-    public double pset, iset, dset, ffset, izset,maxAccset,maxVelset;
+    public double pset, iset, dset, ffset, izset, maxAccset, maxVelset;
     public double psetv, isetv, dsetv, ffsetv, izsetv;
     public double lpset, liset, ldset, lizset;
 
@@ -99,7 +99,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
 
     public boolean turretUseVision;
     public double turretOffsetAdder;
-	public double turretOffsetChange;
+    public double turretOffsetChange;
 
     public RevTurretSubsystem() {
         m_motor = new SimableCANSparkMax(CANConstants.TURRET_ROTATE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -156,7 +156,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
                     new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
 
         }
-        if (!Constants.isMatch) {
+        if (Pref.getPref("IsMatch") == 0.) {
             setupHorOffset = Shuffleboard.getTab("SetupShooter").add("SetupHorOffset", 0).withWidget("Number Slider")
                     .withPosition(6, 3).withSize(2, 1).withProperties(Map.of("Min", -5, "Max", 5)).getEntry();
         }
@@ -179,7 +179,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         } else {
             testHorOffset = 0;
         }
-SmartDashboard.putNumber("TUMGETT", m_motor.getAppliedOutput());
+        SmartDashboard.putNumber("TUMGETT", m_motor.getAppliedOutput());
     }
 
     public boolean checkCAN() {
@@ -222,16 +222,15 @@ SmartDashboard.putNumber("TUMGETT", m_motor.getAppliedOutput());
 
         lockPIDOut = m_turretLockController.calculate(cameraError, 0);
 
-
         runAtVelocity(lockPIDOut);
 
         targetAngle = getAngle();
     }
 
     public void lockTurretToThrottle(double throttleError) {
-        
+
         lockPIDOut = m_turretLockController.calculate(throttleError, 0);
-  
+
         runAtVelocity(lockPIDOut);
         targetAngle = getAngle();
     }
@@ -521,7 +520,7 @@ SmartDashboard.putNumber("TUMGETT", m_motor.getAppliedOutput());
         izset = mPidController.getIZone(SMART_MOTION_SLOT);
         maxAccset = mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT);
         maxVelset = mPidController.getSmartMotionMaxVelocity(SMART_MOTION_SLOT);
- 
+
     }
 
     public void getVelGains() {

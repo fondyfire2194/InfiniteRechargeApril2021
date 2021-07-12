@@ -15,6 +15,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Vector;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -123,10 +125,14 @@ public class Pref {
     prefDict.put("LimelightHeight", .66);
     prefDict.put("LimelightMaxHeight", .686);
 
-    //Set to 1 befor power up to log
+    // Set to 1 before power up to log
     prefDict.put("LogTilt", 0.);
     prefDict.put("LogTurret", 0.);
     prefDict.put("LogShoot", 0.);
+
+    // Shuffleboard
+
+    prefDict.put("IsMatch", 1.);
   }
 
   public static void ensureRioPrefs() {

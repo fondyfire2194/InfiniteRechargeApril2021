@@ -131,7 +131,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean rightMotorConnected;
     public boolean allConnected;
     public double cameraAngleCalculatedSpeed;
-    public boolean hideSliders = Constants.isMatch;
+
     public boolean driverOKShoot;
     public boolean burnOK;
     public double shooterRecoverTime = .5;
@@ -161,7 +161,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public double cameraCalculatedTiltOffset;
     public double maxMPS = 40;
     public double minMPS = 23;
-	public double shootCellsRunning;
+    public double shootCellsRunning;
 
     public RevShooterSubsystem() {
 
@@ -191,7 +191,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         mEncoder.setPositionConversionFactor(metersPerRev);
         mEncoder.setVelocityConversionFactor(metersPerRev / 60);
 
-        if (!Constants.isMatch) {
+        if (Pref.getPref("IsMatch") == 0.) {
             shooterSpeed = Shuffleboard.getTab("SetupShooter").add("ShooterSpeed", 3).withWidget("Number Slider")
                     .withPosition(0, 3).withSize(4, 1).withProperties(Map.of("Min", 15, "Max", 50)).getEntry();
         }
@@ -244,7 +244,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
             requiredMps = cameraCalculatedSpeed;
         if (useDriverSpeed)
             requiredMps = getDriverMPS();
-        if (!Constants.isMatch) {
+        if (Pref.getPref("IsMatch") == 0) {
             if (useSetupSlider)
                 requiredMps = shooterSpeed.getDouble(20);
         }
