@@ -29,6 +29,7 @@ import frc.robot.commands.Tilt.SetLogTiltItems;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.EndTurretLog;
 import frc.robot.commands.Turret.PositionHoldTurret;
+import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.SetLogTurretItems;
 import frc.robot.commands.Turret.SetTurretOffset;
@@ -69,15 +70,14 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                 new ResetEncoders(drive), new ResetGyro(drive), new SetLogTiltItems(tilt, true),
 
                                 new SetLogTurretItems(turret, true),
-                                
-                                new SetUpLimelightForTarget(limelight, limelight.noZoomPipelineTrench, false),
+
+                                new SetUpLimelightForTarget(limelight, limelight.noZoomPipelineStraight, false),
 
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
                                                 new PickupMove(drive, -1, .3),
-                                                new PositionTiltToVision(tilt, limelight, tiltAngle + tiltOffset),
-                                                new PositionTurretToVision(turret, limelight,
-                                                                turretAngle + turretOffset)),
+                                                new PositionTilt(tilt, tiltAngle + tiltOffset),
+                                                new PositionTurret(turret, turretAngle + turretOffset)),
 
                                 new UseVision(limelight, true),
 
@@ -93,9 +93,7 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                                                                                 limelight)),
 
                                 new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
-                                                new SetLogTiltItems(tilt, false), new SetLogTurretItems(turret, false),
-                                                new EndTiltLog(tilt), new EndTurretLog(turret),
-                                                // new StopShoot(shooter, transport),
+
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new SetUpLimelightForNoVision(limelight)));
         }

@@ -22,6 +22,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
+import frc.robot.commands.AutoCommands.PowerPort.CenterPowerPortToTargetOnly;
+import frc.robot.commands.AutoCommands.ShieldGenOne.ToShieldGenTarget;
+import frc.robot.commands.AutoCommands.TrenchOne.ToTrenchTarget;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
@@ -144,8 +147,6 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Shield Gen 3 M 2", 6);
 
-  
-
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
 
@@ -165,6 +166,7 @@ public class SetupShuffleboard {
 
                         preMatch.addBoolean("Tilt Down OK", () -> m_tilt.m_reverseLimit.get());
                         preMatch.addBoolean("CellArmUp", () -> m_transport.getCellArmUp());
+                        preMatch.addBoolean("CellAtShoot", () -> m_transport.getBallAtShoot());
 
                         preMatch.addBoolean("CANConnected",
                                         () -> m_tilt.tiltMotorConnected && m_turret.turretMotorConnected
@@ -227,8 +229,6 @@ public class SetupShuffleboard {
                         competition1.addNumber("TurretPosn", () -> m_turret.getAngle());
                         competition1.addNumber("ShooterSetSpeed", () -> m_shooter.requiredMps);
                         competition1.addNumber("ShooterSpeed", () -> m_shooter.getMPS());
-                        competition1.addNumber("DriverVertOffsetM", () -> m_tilt.driverVerticalOffsetMeters);
-                        competition1.addNumber("DriverHorOffsetM", () -> m_turret.driverHorizontalOffsetMeters);
                         competition1.addNumber("TargetVertOffsetDeg", () -> m_tilt.targetVerticalOffset);
                         competition1.addNumber("TargetHorOffsetDeg", () -> m_turret.targetHorizontalOffset);
                         competition1.addNumber("CellsShot", () -> m_transport.cellsShot);
@@ -237,8 +237,10 @@ public class SetupShuffleboard {
                                         .getLayout("ShootConditions", BuiltInLayouts.kGrid).withPosition(1, 0)
                                         .withSize(2, 2).withProperties(Map.of("Label position", "TOP"));
 
-                        competition.addBoolean("TiltOnTarget", () -> m_limelight.getVertOnTarget(1));
-                        competition.addBoolean("TurretOnTarget", () -> m_limelight.getHorOnTarget(1));
+                        competition.addBoolean("TiltOnTarget",
+                                        () -> m_limelight.getVertOnTarget(m_tilt.tiltVisionTolerance));
+                        competition.addBoolean("TurretOnTarget",
+                                        () -> m_limelight.getHorOnTarget(m_turret.turretVisionTolerance));
                         competition.addBoolean("ShooterAtSpeed", () -> m_shooter.atSpeed());
                         competition.addBoolean("Use Vision", () -> m_limelight.useVision);
                         competition.addBoolean("RollersAtSpeed", () -> m_transport.rollersAtSpeed);
@@ -267,12 +269,11 @@ public class SetupShuffleboard {
                         miscComp.addNumber("LeftAmps", () -> m_shooter.getLeftAmps());
                         miscComp.addNumber("RightRPM", () -> m_shooter.getRightRPM());
                         miscComp.addNumber("RightAmps", () -> m_shooter.getRightAmps());
-
-                        miscComp.add("No Zoom", new LimelightSetPipeline(m_limelight, 1));
-
-                        miscComp.add("No Zoom Pipeline", new LimelightSetPipeline(m_limelight, 1));
-                        miscComp.add("Vision On", new UseVision(limelight, true));
-                        miscComp.add("Vision Off", new UseVision(limelight, false));
+                        miscComp.addNumber("TargetArea%Scrn", () -> m_limelight.getTargetArea());
+                        miscComp.addNumber("BNDBoxWidth", () -> m_limelight.getBoundingBoxWidth());
+                        miscComp.addNumber("BndBoxHeight", () -> m_limelight.getBoundingBoxHeight());
+                        miscComp.addNumber("AspectRatio", () -> m_limelight.getAspectRatio());
+                       
                         miscComp.addNumber("RQDMPS", () -> m_shooter.requiredMps);
 
                         ShuffleboardLayout misComp1 = Shuffleboard.getTab("CompetitionMisc")
@@ -304,9 +305,15 @@ public class SetupShuffleboard {
                         misComp2.addNumber("CameraTilt", () -> m_tilt.cameraCalculatedTiltOffset);
                         misComp2.add("Reset Enc", new ResetEncoders(m_robotDrive));
                         misComp2.add("Reset Gyro", new ResetGyro(m_robotDrive));
-
                         misComp2.addNumber("LeftMeters", () -> m_robotDrive.getLeftDistance());
                         misComp2.addNumber("RightMeters", () -> m_robotDrive.getRightDistance());
+
+                        misComp2.add("To P-P Target",
+                                        new CenterPowerPortToTargetOnly(m_shooter, m_turret, m_tilt, m_limelight));
+
+                        misComp2.add("To Trench Target", new ToTrenchTarget(m_turret, m_tilt, m_limelight));
+
+                        misComp2.add("To ShieldGen Target", new ToShieldGenTarget(m_turret, m_tilt, m_limelight));
 
                         ShuffleboardLayout misComp3 = Shuffleboard.getTab("CompetitionMisc")
                                         .getLayout("Misc4", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)
@@ -319,9 +326,19 @@ public class SetupShuffleboard {
                         misComp3.addBoolean("NoBallAtLeft", () -> m_transport.noBallatLeftForOneSecond);
                         misComp3.addBoolean("CellAvailable", () -> m_transport.cellAvailable);
                         misComp3.addBoolean("IsShooting", () -> m_shooter.isShooting);
-                        misComp3.addBoolean("LLTGT", () -> m_limelight.getIsTargetFound());
-                        misComp3.addBoolean("TiVT", () -> m_tilt.validTargetSeen);
-                        misComp3.addBoolean("TuVT", () -> m_turret.validTargetSeen);
+
+                        ShuffleboardLayout misComVis = Shuffleboard.getTab("CompetitionMisc")
+                                        .getLayout("MiscVis", BuiltInLayouts.kList).withPosition(8, 0).withSize(2, 4)
+                                        .withProperties(Map.of("Label position", "LEFT"));
+                        misComVis.add("No Zoom Power Port Pipeline", new LimelightSetPipeline(m_limelight, 1));
+                        misComVis.add("No Zoom Shield Gen Pipeline", new LimelightSetPipeline(m_limelight, 2));
+                        misComVis.add("No Zoom Trench Pipeline", new LimelightSetPipeline(m_limelight, 3));
+                        misComVis.add("Driver Pipeline", new LimelightSetPipeline(m_limelight, 0));
+                        misComVis.add("Vision On", new UseVision(limelight, true));
+                        misComVis.add("Vision Off", new UseVision(limelight, false));
+                        misComVis.addBoolean("LLTGT", () -> m_limelight.getIsTargetFound());
+                        misComVis.addBoolean("TiVT", () -> m_tilt.validTargetSeen);
+                        misComVis.addBoolean("TuVT", () -> m_turret.validTargetSeen);
 
                         // Shuffleboard.getTab("Competition").addNumber("TimeRemaining", () ->
                         // m_robotDrive.getMatchTime())

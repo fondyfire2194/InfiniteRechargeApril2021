@@ -24,7 +24,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
-import frc.robot.commands.AutoCommands.TrenchOne.TrenchShootOnly;
+import frc.robot.commands.AutoCommands.TrenchOne.ToTrenchTarget;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
@@ -119,8 +119,6 @@ public class RobotContainer {
 
       public AutoFactory m_autoFactory;
 
-      public boolean isMatch = Constants.isMatch;
-
       public boolean clickUp;
       // Co driver gamepad
 
@@ -205,7 +203,7 @@ public class RobotContainer {
             // m_turret.setDefaultCommand(new PositionHoldTurretTest(m_turret));
 
             m_shooter.setDefaultCommand(getJogShooterCommand());
-
+            boolean isMatch = Pref.getPref("IsMatch") == 0.;
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
                         m_limelight, m_intake, m_trajectory, isMatch);
 
@@ -268,7 +266,8 @@ public class RobotContainer {
                         .whenPressed(new PositionTurret(m_turret, 0))
                         .whenPressed(new SetUpLimelightForNoVision(m_limelight));
 
-            new JoystickButton(m_driverController, 6).whenPressed(new SetUpLimelightForTarget(m_limelight,m_limelight.noZoomPipelineStraight, true));
+            new JoystickButton(m_driverController, 6).whenPressed(
+                        new SetUpLimelightForTarget(m_limelight, m_limelight.noZoomPipelineStraight, true));
 
             new JoystickButton(m_driverController, 7).whileHeld(new PositionTilt(m_tilt, m_tilt.tiltMinAngle))
                         .whenPressed(new PositionTurret(m_turret, 0))
@@ -277,7 +276,8 @@ public class RobotContainer {
                         .whenReleased(new SetVisionMode(m_limelight))
                         .whenReleased(new SetUpLimelightForNoVision(m_limelight));
 
-            new JoystickButton(m_driverController, 8).whenPressed(new ReleaseOneCell(m_transport));
+            // new JoystickButton(m_driverController, 8).whenPressed(new
+            // ReleaseOneCell(m_transport));
 
             new JoystickButton(m_driverController, 9).whenPressed(new ReleaseLeftArm(m_transport));
 
@@ -359,10 +359,7 @@ public class RobotContainer {
             setupY.whileHeld(getJogTiltCommand(setupGamepad)).whileHeld(getJogTurretCommand(setupGamepad))
                         .whenReleased(new TiltWaitForStop(m_tilt)).whenReleased(new TurretWaitForStop(m_turret));
 
-            setupB.whenPressed(new LogShootData(m_shooter, m_transport, m_robotDrive))
-
-                        .whenPressed(new TrenchShootOnly(m_shooter, m_turret, m_tilt, m_transport, m_robotDrive,
-                                    m_limelight, m_compressor, m_intake));
+            // setupB.whenPressed(
 
             setupA.whileHeld(new RunIntakeMotor(m_intake, .75)).whenReleased(new StopIntakeMotor(m_intake));
 

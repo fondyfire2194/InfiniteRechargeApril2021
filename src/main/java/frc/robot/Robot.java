@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RobotDrive.LogDriveData;
@@ -24,6 +25,7 @@ import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.LogTurretData;
 import frc.robot.commands.Vision.CalculateSpeedFromDistance;
 import frc.robot.commands.Vision.CalculateTargetDistance;
+import frc.robot.commands.Vision.SetUpLimelightForDriver;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -103,6 +105,8 @@ public class Robot extends TimedRobot {
     // m_robotContainer.m_tilt.testLockFromThrottle =
     // m_robotContainer.m_driverController.getThrottle();
 
+    
+
   }
 
   /**
@@ -118,6 +122,8 @@ public class Robot extends TimedRobot {
     // ShootData.showValues(1);
     // ShootData.showValues(2);
     // ShootData.showValues(3);
+
+    new SetUpLimelightForDriver(m_robotContainer.m_limelight).schedule();
   }
 
   @Override
