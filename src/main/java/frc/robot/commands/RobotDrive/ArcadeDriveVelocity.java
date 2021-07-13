@@ -4,6 +4,7 @@
 
 package frc.robot.commands.RobotDrive;
 
+import frc.robot.Pref;
 import frc.robot.subsystems.RevDrivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import java.util.function.Supplier;
@@ -52,6 +53,12 @@ public class ArcadeDriveVelocity extends CommandBase {
     double leftSpeed = maxSpeed * (tempX + tempRot / 2);
 
     double rightSpeed = maxSpeed * (tempX - tempRot / 2);
+
+    double yawComp = m_drivetrain.getYaw() * Pref.getPref("dRStKp");
+
+    leftSpeed -= yawComp;
+    
+    rightSpeed += yawComp;
 
     m_drivetrain.smartVelocityControlMetersPerSec(leftSpeed, rightSpeed);
 

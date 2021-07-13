@@ -8,12 +8,13 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.LimeLight;
 import frc.robot.commands.AutoCommands.StartAllShooter;
+import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.subsystems.CellTransportSubsystem;
+import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
-
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -21,14 +22,16 @@ import frc.robot.subsystems.RevTurretSubsystem;
 public class AutoCenterShootMove extends ParallelRaceGroup {
   /** Creates a new AutoCenterShootMove. */
   public AutoCenterShootMove(RevShooterSubsystem shooter, RevDrivetrain drive, RevTurretSubsystem turret,
-      RevTiltSubsystem tilt, LimeLight limelight, Compressor compressor, CellTransportSubsystem transport) {
+      RevTiltSubsystem tilt, LimeLight limelight, Compressor compressor, CellTransportSubsystem transport,
+      RearIntakeSubsystem intake) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
+    
     addCommands(
 
-        new StartAllShooter(shooter, transport, 2),
+        new StartAllShooter(shooter, transport, 2), new LogShootData(shooter, transport, drive),
 
-        new AutoModeCenterPowerPort(shooter, turret, tilt, transport, drive, limelight, compressor)
+        new AutoModeCenterPowerPort(shooter, turret, tilt, transport, drive, intake, limelight, compressor)
 
     );
   }

@@ -79,6 +79,7 @@ public class CellTransportSubsystem extends SubsystemBase {
 
   public boolean cellAvailable = true;
   private double ballTravelTime = 1;
+  public int cellsToBeShot = 3;
 
   public CellTransportSubsystem() {
     m_leftBeltMotor = new TalonSRXWrapper(CANConstants.LEFT_BELT_MOTOR);

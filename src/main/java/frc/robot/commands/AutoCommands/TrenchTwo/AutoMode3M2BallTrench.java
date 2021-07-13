@@ -14,15 +14,21 @@ import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
+import frc.robot.commands.AutoCommands.TrenchOne.ToTrenchTarget;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
 import frc.robot.commands.CellIntake.StopIntakeMotor;
+import frc.robot.commands.CellTransport.LowerLeftArm;
+import frc.robot.commands.CellTransport.SetLeftReleaseShots;
 import frc.robot.commands.RobotDrive.PickupMoveVelocity;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
+import frc.robot.commands.Shooter.EndShootLog;
+import frc.robot.commands.Shooter.SetLogShooterItems;
 import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.commands.Shooter.ShootCells;
+import frc.robot.commands.Shooter.WaitTiltTurretLocked;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
@@ -71,22 +77,19 @@ public class AutoMode3M2BallTrench extends SequentialCommandGroup {
                 // super(new FooCommand(), new BarCommand());
                 //
 
-                super(new ResetEncoders(drive), new ResetGyro(drive),
-
+                super(new ResetEncoders(drive), new ResetGyro(drive), new ToTrenchTarget(turret, tilt, limelight),
                                 // 1st lock
-                                new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
-                                                new SetTurretOffset(turret, turretOffset),
-                                                new PositionTilt(tilt, tiltAngle + tiltOffset),
-                                                new PositionTurret(turret, turretAngle + turretOffset),
-                                                new SetUpLimelightForTarget(limelight,limelight.activeTrenchPipeline, false))
 
-                                                                .deadlineWith(new IntakeArmLower(intake)),
                                 // 1st Shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
-                                                new SetShootSpeed(shooter, shootSpeed), new UseVision(limelight, true),
+
+                                                new SetLeftReleaseShots(transport, 2),
+
+                                                new SetShootSpeed(shooter, shootSpeed),
 
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, drive,
                                                                 compressor, shootTime)).deadlineWith(
+                                                                                new IntakeArmLower(intake),
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),
                                                                                 new PositionHoldTurret(turret, shooter,
@@ -95,30 +98,43 @@ public class AutoMode3M2BallTrench extends SequentialCommandGroup {
 
                                 new PickupMoveVelocity(drive, retractDistance1, 1.5)
 
-                                                .deadlineWith(new UseVision(limelight, false),
+                                                .deadlineWith(new SetLeftReleaseShots(transport, 1),
+                                                                new UseVision(limelight, false),
+
                                                                 new SetTiltOffset(tilt, tiltOffset1),
+
                                                                 new SetTurretOffset(turret, turretOffset1),
 
                                                                 new PositionTilt(tilt, tiltAngle1 + tiltOffset1),
+
                                                                 new PositionTurret(turret,
                                                                                 turretAngle1 + turretOffset1),
                                                                 new IntakeArmLower(intake),
+
+                                                                new SetShootSpeed(shooter, shootSpeed1),
+
                                                                 new RunIntakeMotor(intake, .75)),
+                                new UseVision(limelight, true),
+                                
+                                new WaitTiltTurretLocked(tilt, turret).deadlineWith(
+                                                new ParallelCommandGroup(new PositionHoldTilt(tilt, shooter, limelight),
+                                                                new PositionHoldTurret(turret, shooter, limelight))),
 
                                 // // 2nd shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot2Started"),
-                                                new RunIntakeMotor(intake, .75),
-                                                new SetShootSpeed(shooter, shootSpeed1), new UseVision(limelight, true),
 
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, drive,
                                                                 compressor, shootTime)).deadlineWith(
+
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),
+
                                                                                 new PositionHoldTurret(turret, shooter,
                                                                                                 limelight)),
 
                                 new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
-                                                new IntakeArmRaise(intake), new StopIntakeMotor(intake),
+                                                new SetLogShooterItems(shooter, false), new IntakeArmRaise(intake),
+                                                new StopIntakeMotor(intake),
                                                 new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
                                                 new SetUpLimelightForNoVision(limelight),
                                                 new PositionTurret(turret, 0)));

@@ -14,10 +14,12 @@ import frc.robot.Constants.HoodedShooterConstants;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.MessageCommand;
+import frc.robot.commands.AutoCommands.ShieldGenOne.ToShieldGenTarget;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
 import frc.robot.commands.CellIntake.StopIntakeMotor;
+import frc.robot.commands.CellTransport.SetLeftReleaseShots;
 import frc.robot.commands.RobotDrive.PickupMoveVelocity;
 import frc.robot.commands.RobotDrive.ResetEncoders;
 import frc.robot.commands.RobotDrive.ResetGyro;
@@ -70,23 +72,15 @@ public class AutoMode3M2BallShield extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
                 //
-                super(new ResetEncoders(drive), new ResetGyro(drive),
+                super(new ResetEncoders(drive), new ResetGyro(drive), new ToShieldGenTarget(turret, tilt, limelight),
 
-                                new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
-                                                new SetTurretOffset(turret, turretOffset),
-                                                new PositionTilt(tilt, tiltAngle + tiltOffset),
-                                                new PositionTurret(turret, turretAngle + turretOffset),
-                                                new SetUpLimelightForTarget(limelight, limelight.activeShieldGenPipeline,
-                                                                false))
-
-                                                                                .deadlineWith(new IntakeArmLower(
-                                                                                                intake)),
                                 // 1st Shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot1Started"),
                                                 new SetShootSpeed(shooter, shootSpeed), new UseVision(limelight, true),
-
+                                                new SetLeftReleaseShots(transport, 2),
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, drive,
                                                                 compressor, shootTime)).deadlineWith(
+                                                                                new IntakeArmLower(intake),
                                                                                 new PositionHoldTilt(tilt, shooter,
                                                                                                 limelight),
                                                                                 new PositionHoldTurret(turret, shooter,
@@ -107,10 +101,10 @@ public class AutoMode3M2BallShield extends SequentialCommandGroup {
 
                                 // // 2nd shoot
                                 new ParallelCommandGroup(new MessageCommand("Shoot2Started"),
-                                             //   new PickupMoveVelocity(drive, retractDistance + 1, 1.4),
+                                                // new PickupMoveVelocity(drive, retractDistance + 1, 1.4),
                                                 new RunIntakeMotor(intake, .75),
                                                 new SetShootSpeed(shooter, shootSpeed1), new UseVision(limelight, true),
-
+                                                new SetLeftReleaseShots(transport, 0),
                                                 new ShootCells(shooter, tilt, turret, limelight, transport, drive,
                                                                 compressor, shootTime)).deadlineWith(
                                                                                 new PositionHoldTilt(tilt, shooter,

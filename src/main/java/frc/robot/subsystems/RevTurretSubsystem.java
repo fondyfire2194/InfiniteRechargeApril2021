@@ -459,7 +459,7 @@ public class RevTurretSubsystem extends SubsystemBase implements ElevatorSubsyst
         m_turretLockController.setD(Pref.getPref("TuLkD"));
         lizset = Pref.getPref("TuLkIZ");
         m_turretLockController.setIntegratorRange(-lizset, lizset);
-        m_turretLockController.setTolerance(.1);
+        m_turretLockController.setTolerance(.5);
     }
 
     private void checkTune() {

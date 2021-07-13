@@ -18,13 +18,13 @@ public class LogShootData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Time", "ActSpeed", "Amps",
+  public final String[] names = { "Time", "ShCelRng", "ActSpeed", "Amps",
 
-      "AtSpeed", "ShCelRng", "OkToShoot", "isShooting", "ShotInProgress", "Cell Available",
+      "AtSpeed", "OkToShoot", "isShooting", "ShotInProgress", "Cell Available",
 
       "BallAtLeft", "BallAtShooter", "RobotStopped",
 
-      "ArmAngle", "LeftAngle" };
+      "ArmAngle", "LeftAngle", "Yaw" };
 
   public static String[] units = { "Seconds", "MPS", "Amps",
 
@@ -32,7 +32,7 @@ public class LogShootData extends CommandBase {
 
       "T/F", "T/F", "T/F", "T/F", "T/F",
 
-      "Degrees", "Degrees" };
+      "Degrees", "Degrees", "Degrees" };
 
   private int loopCtr;
   private boolean fileOpenNow;
@@ -118,7 +118,7 @@ public class LogShootData extends CommandBase {
 
       m_shooter.shootLogger.writeData(logTime, m_shooter.shootCellsRunning, m_shooter.getMPS(), m_shooter.getLeftAmps(),
           shooterAtSpeed, okToShoot, isShooting, shotInProgress, cellAvailable, ballAtLeft, ballAtShooter,
-          robotStopped1sec, (double) m_transport.getArmAngle(), (double) m_transport.getLeftAngle());
+          robotStopped1sec, (double) m_transport.getArmAngle(), (double) m_transport.getLeftAngle(), m_drive.getYaw());
     }
 
   }

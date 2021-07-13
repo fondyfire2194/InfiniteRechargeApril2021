@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANError;
@@ -20,12 +19,10 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Pref;
 import frc.robot.SimpleCSVLogger;
@@ -69,6 +66,8 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public SimpleCSVLogger shootLogger;
 
     public SimpleCSVLogger shootSetupLogger;
+
+
 
     public boolean logSetup;
 
@@ -201,7 +200,6 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         shootOne = true;
         simpleCSVLogger = new SimpleCSVLogger();
         shootLogger = new SimpleCSVLogger();
-
         programSpeed = minMPS;
     }
 

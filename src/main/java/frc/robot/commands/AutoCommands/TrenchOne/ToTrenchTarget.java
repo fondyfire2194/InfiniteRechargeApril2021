@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
+import frc.robot.commands.Shooter.WaitTiltTurretLocked;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
@@ -60,7 +61,7 @@ public class ToTrenchTarget extends SequentialCommandGroup {
                                                 new SetTurretOffset(turret, turretOffset),
                                                 new PositionTilt(tilt, tiltAngle + tiltOffset),
                                                 new PositionTurret(turret, turretAngle + turretOffset)),
-                                new UseVision(limelight, true));
+                                new UseVision(limelight, true), new WaitTiltTurretLocked(tilt, turret));
 
         }
 }

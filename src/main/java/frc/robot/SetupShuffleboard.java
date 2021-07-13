@@ -307,7 +307,7 @@ public class SetupShuffleboard {
                         misComp2.addNumber("LeftMeters", () -> m_robotDrive.getLeftDistance());
                         misComp2.addNumber("RightMeters", () -> m_robotDrive.getRightDistance());
 
-                        misComp2.add("To P-P Target", new CenterPowerPortToTargetOnly(m_turret, m_tilt, m_limelight));
+                        misComp2.add("To P-P Target", new CenterPowerPortToTargetOnly(m_turret, m_tilt, shooter, m_limelight));
 
                         misComp2.add("To Trench Target", new ToTrenchTarget(m_turret, m_tilt, m_limelight));
 

@@ -276,8 +276,8 @@ public class RobotContainer {
                         .whenReleased(new SetVisionMode(m_limelight))
                         .whenReleased(new SetUpLimelightForNoVision(m_limelight));
 
-            // new JoystickButton(m_driverController, 8).whenPressed(new
-            // ReleaseOneCell(m_transport));
+            new JoystickButton(m_driverController, 8).whenPressed(
+                        new SetUpLimelightForTarget(m_limelight, m_limelight.activeStraightPipeline, true));
 
             new JoystickButton(m_driverController, 9).whenPressed(new ReleaseLeftArm(m_transport));
 

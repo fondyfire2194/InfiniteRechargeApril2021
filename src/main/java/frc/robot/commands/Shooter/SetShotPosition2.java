@@ -11,15 +11,13 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
-import frc.robot.commands.TimeDelay;
+import frc.robot.commands.AutoCommands.TrenchOne.ToTeleopTrenchTarget;
+import frc.robot.commands.AutoCommands.TrenchOne.ToTrenchTarget;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellTransport.RunRollers;
-import frc.robot.commands.Tilt.PositionTilt;
-import frc.robot.commands.Tilt.SetTiltOffset;
-import frc.robot.commands.Turret.PositionTurret;
-import frc.robot.commands.Turret.SetTurretOffset;
-import frc.robot.commands.Vision.SetUpLimelightForTarget;
-import frc.robot.commands.Vision.UseVision;
+import frc.robot.commands.CellTransport.SetLeftReleaseShots;
+import frc.robot.commands.Tilt.PositionHoldTilt;
+import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -31,9 +29,9 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
 public class SetShotPosition2 extends SequentialCommandGroup {
         /**
-         * Creates a new Auto0.
+         * C
          * 
-         * Start in front of power port, retract and shoot
+         * S
          */
 
         public SetShotPosition2(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
@@ -41,23 +39,17 @@ public class SetShotPosition2 extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new SetActiveTeleopShootData(shooter, 2), new SetUpLimelightForTarget(limelight,limelight.activeTrenchPipeline,false),
-                                new TimeDelay(1.),
+                super(new ToTeleopTrenchTarget(turret, tilt, limelight),
 
-                                new ParallelCommandGroup(new ChooseShooterSpeedSource(shooter, tilt, turret, 0),
-                                                new IntakeArmLower(intake),
-                                                new SetTiltOffset(tilt,
-                                                                ShootData.trench5BallShotConstants.tiltOffset + 1.5),
-                                                new SetTurretOffset(turret,
-                                                                ShootData.trench5BallShotConstants.turretOffset + 1),
-                                                new PositionTilt(tilt, ShootData.trench5BallShotConstants.tiltAngle
-                                                                + ShootData.trench5BallShotConstants.tiltOffset),
-                                                new PositionTurret(turret,
-                                                                ShootData.trench5BallShotConstants.turretAngle
-                                                                                + ShootData.trench5BallShotConstants.turretOffset)),
-                                new UseVision(limelight, true),
-                                new SetShootSpeed(shooter, ShootData.trench5BallShotConstants.shootSpeed),
-                                new ParallelCommandGroup(new RunRollers(transport), new RunShooter(shooter))
+                                new ParallelCommandGroup(new SetLeftReleaseShots(transport, 3),
+                                                new SetActiveTeleopShootData(shooter, 0),
+                                                new ChooseShooterSpeedSource(shooter, tilt, turret, 0),
+                                                new SetShootSpeed(shooter,
+                                                                ShootData.trench5BallShotConstants.shootSpeed),
+                                                new IntakeArmLower(intake), new RunShooter(shooter)).deadlineWith(
+                                                                new RunRollers(transport),
+                                                                new PositionHoldTilt(tilt, shooter, limelight),
+                                                                new PositionHoldTurret(turret, shooter, limelight))
 
                 );
         }

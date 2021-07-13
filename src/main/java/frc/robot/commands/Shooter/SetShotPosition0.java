@@ -11,14 +11,12 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
+import frc.robot.commands.AutoCommands.PowerPort.CenterPowerPortToTargetOnly;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellTransport.RunRollers;
-import frc.robot.commands.Tilt.PositionTilt;
-import frc.robot.commands.Tilt.SetTiltOffset;
-import frc.robot.commands.Turret.PositionTurret;
-import frc.robot.commands.Turret.SetTurretOffset;
-import frc.robot.commands.Vision.SetUpLimelightForTarget;
-import frc.robot.commands.Vision.UseVision;
+import frc.robot.commands.CellTransport.SetLeftReleaseShots;
+import frc.robot.commands.Tilt.PositionHoldTilt;
+import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -40,28 +38,17 @@ public class SetShotPosition0 extends SequentialCommandGroup {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(
+                super(new CenterPowerPortToTargetOnly(turret, tilt, shooter, limelight),
 
-                                new ParallelCommandGroup(new SetActiveTeleopShootData(shooter, 0),
-                                                new SetLogItemsState(shooter, tilt, turret, true),
+                                new ParallelCommandGroup(new SetLeftReleaseShots(transport, 3),
                                                 new IntakeArmLower(intake),
                                                 new SetShootSpeed(shooter,
                                                                 ShootData.centerPowerPortConstants.shootSpeed),
                                                 new ChooseShooterSpeedSource(shooter, tilt, turret, 0),
-                                                new SetUpLimelightForTarget(limelight, limelight.activeStraightPipeline,
-                                                                false),
-                                                new SetTiltOffset(tilt, ShootData.centerPowerPortConstants.tiltOffset),
-                                                new SetTurretOffset(turret,
-                                                                ShootData.centerPowerPortConstants.turretOffset),
-                                                new PositionTilt(tilt, ShootData.centerPowerPortConstants.tiltAngle
-                                                                + ShootData.centerPowerPortConstants.tiltOffset),
-                                                new PositionTurret(turret,
-                                                                ShootData.centerPowerPortConstants.turretAngle
-                                                                                + ShootData.centerPowerPortConstants.turretOffset)),
 
-                                new ParallelCommandGroup(new UseVision(limelight, true), new RunRollers(transport),
-
-                                                new RunShooter(shooter)));
+                                                new RunShooter(shooter)).deadlineWith(new RunRollers(transport),
+                                                                new PositionHoldTilt(tilt, shooter, limelight),
+                                                                new PositionHoldTurret(turret, shooter, limelight)));
 
         }
 }

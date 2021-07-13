@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
+import frc.robot.commands.Shooter.WaitTiltTurretLocked;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
 import frc.robot.commands.Turret.PositionTurret;
@@ -27,7 +28,7 @@ public class ToShieldGenTarget extends SequentialCommandGroup {
         /**
          * Creates a new Auto0.
          * 
-         * Start in front of power port and shoot
+         * 
          */
 
         static double tiltAngle = ShootData.shieldGen3MxBallShotConstants.tiltAngle;
@@ -55,10 +56,11 @@ public class ToShieldGenTarget extends SequentialCommandGroup {
                                 new SetUpLimelightForTarget(limelight, limelight.activeShieldGenPipeline, false),
                                 new ParallelCommandGroup(new SetTiltOffset(tilt, tiltOffset),
                                                 new SetTurretOffset(turret, turretOffset),
+
                                                 new PositionTilt(tilt, tiltAngle + tiltOffset),
                                                 new PositionTurret(turret, turretAngle + turretOffset)),
 
-                                new UseVision(limelight, true));
+                                new UseVision(limelight, true), new WaitTiltTurretLocked(tilt, turret));
 
         }
 }

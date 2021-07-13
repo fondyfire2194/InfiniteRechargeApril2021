@@ -44,8 +44,8 @@ public class LimeLight {
     public int ledsOffPipeline = 8;
 
     public int activeStraightPipeline = redNoZoomPipelineStraight;
-    public int activeShieldGenPipeline = redNoZoomPipelineShieldGen;
-    public int activeTrenchPipeline = redNoZoomPipelineTrench;
+    public int activeShieldGenPipeline = redNoZoomPipelineStraight;
+    public int activeTrenchPipeline = redNoZoomPipelineStraight;
 
     public boolean allianceIsBlue;
 

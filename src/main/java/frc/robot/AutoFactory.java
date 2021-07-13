@@ -48,7 +48,7 @@ public class AutoFactory {
   // front of power port move and shoot
   public ParallelRaceGroup getAutonomousCommand1() {
 
-    return new AutoCenterShootMove(m_shooter, m_robotDrive, m_turret, m_tilt, m_limelight, m_compressor, m_transport);
+    return new AutoCenterShootMove(m_shooter, m_robotDrive, m_turret, m_tilt, m_limelight, m_compressor, m_transport, m_intake);
     // right of center line retract shoot
   }
 

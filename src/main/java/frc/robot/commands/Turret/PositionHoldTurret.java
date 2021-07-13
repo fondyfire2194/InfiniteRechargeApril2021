@@ -71,10 +71,10 @@ public class PositionHoldTurret extends CommandBase {
       cameraHorizontalError = m_limelight.getdegRotationToTarget();
 
       m_turret.adjustedCameraError = cameraHorizontalError
-          + (m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffsetDegrees + m_turret.testHorOffset);
+          - (m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffsetDegrees + m_turret.testHorOffset);
 
       m_limelight.setHorizontalOffset(
-          -(m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffsetDegrees + m_turret.testHorOffset));
+          +(m_turret.targetHorizontalOffset + m_turret.driverHorizontalOffsetDegrees + m_turret.testHorOffset));
 
     } else {
       cameraHorizontalError = 0;

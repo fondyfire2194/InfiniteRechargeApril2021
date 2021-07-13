@@ -67,6 +67,7 @@ public class ShootCells extends CommandBase {
     m_shooter.shootTime = m_time;
     m_compressor.stop();
     m_shooter.isShooting = false;
+    m_transport.cellAvailable = true;
     m_transport.holdCell();
     m_transport.holdLeftChannel();
     m_transport.cellsShot = 0;
@@ -118,11 +119,9 @@ public class ShootCells extends CommandBase {
       releaseOneCell();
     }
 
-    if (useSensors && !m_transport.noBallatShooterForOneSecond && m_transport.getBallAtLeft()) {
-      m_transport.releaseLeftChannel();
-    }
+   
 
-    if (inAuto && m_transport.cellsShot > 2)
+    if (m_transport.cellsShot > m_transport.cellsToBeShot)
       m_transport.releaseLeftChannel();
 
   }
@@ -131,13 +130,13 @@ public class ShootCells extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_transport.holdCell();
-    
-  //  m_transport.holdLeftChannel();
 
-  //  m_transport.stopRollers();
+    // m_transport.holdLeftChannel();
+
+    // m_transport.stopRollers();
     m_compressor.start();
     m_shooter.shotInProgress = false;
- 
+
     m_shooter.isShooting = false;
     m_shooter.setNotOKShootDriver();
     m_shooter.shootCellsRunning = 0;

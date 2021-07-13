@@ -70,19 +70,8 @@ public class PickupMoveVelocity extends CommandBase {
 
     currentMPS = 0;
 
-    // SmartDashboard.putNumber("EndPt", m_endpoint);
-    // SmartDashboard.putNumber("Speed", m_speed);
-    // SmartDashboard.putNumber("DeceLTime", decelTime);
-    // SmartDashboard.putNumber("TotTime", maxTime);
-
-    // SmartDashboard.putNumber("decdis", decelDistance);
-    // SmartDashboard.putNumber("accdis", accelDistance);
-    // SmartDashboard.putNumber("AccTime", accelTime);
-
-    // SmartDashboard.putNumber("AccInc", accelIncrementper20ms);
-
     plusDirection = m_endpoint > m_drive.getLeftDistance();
-    // SmartDashboard.putBoolean("Dir", plusDirection);
+    
     startTime = Timer.getFPGATimestamp();
 
     endIt = false;
