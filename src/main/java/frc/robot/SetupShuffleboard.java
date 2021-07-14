@@ -24,7 +24,7 @@ import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
 import frc.robot.commands.AutoCommands.PowerPort.CenterPowerPortToTargetOnly;
 import frc.robot.commands.AutoCommands.ShieldGenOne.ToShieldGenTarget;
-import frc.robot.commands.AutoCommands.TrenchOne.ToTrenchTarget;
+import frc.robot.commands.AutoCommands.TrenchTwo.ToTrenchTarget;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
@@ -38,7 +38,6 @@ import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.CellTransport.StopRollers;
 import frc.robot.commands.RobotDrive.ClearRobFaults;
 import frc.robot.commands.RobotDrive.EndDriveLog;
-import frc.robot.commands.RobotDrive.LogDriveData;
 import frc.robot.commands.RobotDrive.PickupMove;
 import frc.robot.commands.RobotDrive.PickupMoveVelocity;
 import frc.robot.commands.RobotDrive.ResetEncoders;
@@ -47,20 +46,17 @@ import frc.robot.commands.RobotDrive.StopRobot;
 import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.EndShootLog;
+import frc.robot.commands.Shooter.FFLogShootData;
 import frc.robot.commands.Shooter.LogDistanceData;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
 import frc.robot.commands.Tilt.ClearFaults;
-import frc.robot.commands.Tilt.EndTiltLog;
-import frc.robot.commands.Tilt.LogTiltData;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
 import frc.robot.commands.Tilt.StopTilt;
 import frc.robot.commands.Tilt.TiltMoveToReverseLimit;
 import frc.robot.commands.Turret.ClearTurFaults;
-import frc.robot.commands.Turret.EndTurretLog;
-import frc.robot.commands.Turret.LogTurretData;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.PositionTurretToVision;
 import frc.robot.commands.Turret.ResetTurretAngle;
@@ -562,9 +558,14 @@ public class SetupShuffleboard {
                                         m_transport, drive, m_compressor, 0));
                         shooterCommands.add("ClearFaults", new ClearShFaults(m_shooter));
                         shooterCommands.add("Cmd", m_shooter);
+                        shooterCommands.add("EndLog", new EndShootLog(shooter));
                         shooterCommands.add("LogDataRun",
                                         new LogDistanceData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
-                        shooterCommands.add("RunAllShooters", new RunShooter(shooter));
+
+shooterCommands.add("FFLog", new FFLogShootData(shooter, transport, drive));
+shooterCommands.add("EndFFLog", new EndShootLog(shooter));
+
+                                        shooterCommands.add("RunAllShooters", new RunShooter(shooter));
                         shooterCommands.add("UseSpeedSlider", new ChooseShooterSpeedSource(shooter, tilt, turret, 3));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")

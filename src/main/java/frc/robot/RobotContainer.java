@@ -24,7 +24,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
-import frc.robot.commands.AutoCommands.TrenchOne.ToTrenchTarget;
+import frc.robot.commands.AutoCommands.TrenchTwo.ToTrenchTarget;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
@@ -120,6 +120,8 @@ public class RobotContainer {
       public AutoFactory m_autoFactory;
 
       public boolean clickUp;
+
+     
       // Co driver gamepad
 
       // Setup gamepad LOGITECH

@@ -14,7 +14,7 @@ import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
 
-public class LogShootData extends CommandBase {
+public class FFLogShootData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
@@ -44,7 +44,7 @@ public class LogShootData extends CommandBase {
   private double logTime;
   private double firstLogTime;
 
-  public LogShootData(RevShooterSubsystem shooter, CellTransportSubsystem transport, RevDrivetrain drive) {
+  public FFLogShootData(RevShooterSubsystem shooter, CellTransportSubsystem transport, RevDrivetrain drive) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     m_shooter = shooter;
@@ -60,6 +60,7 @@ public class LogShootData extends CommandBase {
     loopCtr = 0;
     fileOpenNow = false;
     logTime = 0;
+    firstLogTime=0;
 
   }
 
@@ -80,12 +81,13 @@ public class LogShootData extends CommandBase {
 
     if (logTime == 0)
       logTime = Timer.getFPGATimestamp();
-
+m_shooter.logShooterItems=true;
     if (m_shooter.logShooterItems && Timer.getFPGATimestamp() > logTime + .1) {
       logTime = Timer.getFPGATimestamp();
 
       if (firstLogTime == 0)
         firstLogTime = logTime;
+        SmartDashboard.putNumber("FTL", firstLogTime);
 
       m_shooter.shootLogger.writeData(logTime, logTime - firstLogTime, m_shooter.shootCellsRunning, m_shooter.getMPS(),
           m_shooter.getLeftAmps(), m_shooter.atSpeed() ? 1.0 : 0.0, m_shooter.okToShoot ? 1.0 : 0.0,

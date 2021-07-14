@@ -89,7 +89,8 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
                                                                                                 
                                                                                 new PositionHoldTurret(turret, shooter,
                                                                                                 limelight)),
-
+ // s_trajectory.getRamsete(s_trajectory.centerStart).andThen(() ->
+        // drive.tankDriveVolts(0, 0)),
                                                 new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
                                                                 new SetLogTiltItems(tilt, false),
                                                                 new EndShootLog(shooter), new StopIntake(intake),

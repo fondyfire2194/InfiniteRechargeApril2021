@@ -15,16 +15,18 @@ public class LogDriveData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Time", "LeftDist", "LeftRate", "LeftAmps", "LeftOut", "RightDist", "RightRate",
-      "RightAmps", "RightOut", "GyroYaw" };
+  public final String[] names = { "Time", "ElTime", "LeftDist", "LeftRate", "LeftAmps", "LeftOut", "RightDist",
+      "RightRate", "RightAmps", "RightOut", "GyroYaw" };
 
-  public static String[] units = { "Sec", "M", "MPS", "Amps", "PU", "M", "MPS", "Amps", "PU", "Deg" };
+  public static String[] units = { "Sec", "Sec", "M", "MPS", "Amps", "PU", "M", "MPS", "Amps", "PU", "Deg" };
   private int loopCtr;
   private boolean fileOpenNow;
 
   private final RevDrivetrain m_drive;
 
   private double logTime;
+
+  private double firstLogTime;
 
   public LogDriveData(RevDrivetrain drive) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -59,13 +61,16 @@ public class LogDriveData extends CommandBase {
       m_drive.driveLogInProgress = true;
     if (logTime == 0)
       logTime = Timer.getFPGATimestamp();
-      m_drive.logDriveItems=true;
+
+    if (firstLogTime == 0)
+      firstLogTime = logTime;
+
     if (m_drive.logDriveItems && Timer.getFPGATimestamp() > logTime + .1) {
 
       logTime = Timer.getFPGATimestamp();
 
-      m_drive.driveLogger.writeData(logTime, m_drive.getLeftDistance(), m_drive.getLeftRate(), m_drive.getLeftAmps(),
-          m_drive.getLeftOut(),
+      m_drive.driveLogger.writeData(logTime, logTime - firstLogTime, m_drive.getLeftDistance(), m_drive.getLeftRate(),
+          m_drive.getLeftAmps(), m_drive.getLeftOut(),
 
           m_drive.getRightDistance(), m_drive.getRightRate(), m_drive.getRightAmps(), m_drive.getRightOut(),
           m_drive.getYaw());

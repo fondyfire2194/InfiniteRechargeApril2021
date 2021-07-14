@@ -16,10 +16,10 @@ public class LogTiltData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Time", "ProgRunning", "UseVision", "ValidTarget", "TargetAngle", "TiltAngle",
-      "Offset", "LockPE", "DegHorToTgt", "CorrEndPt", "Out", "Speed" };
+  public final String[] names = { "Time", "ElapsedTime", "ProgRunning", "UseVision", "ValidTarget", "TargetAngle",
+      "TiltAngle", "Offset", "LockPE", "DegHorToTgt", "CorrEndPt", "Out", "Speed" };
 
-  public static String[] units = { "Sec", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees", "Degrees", "Degrees", "PU",
+  public static String[] units = { "Sec", "Sec", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees", "Degrees", "Degrees", "PU",
       "Degrees", "PU", "MPSec" };
   private int loopCtr;
   private boolean fileOpenNow;
@@ -27,9 +27,8 @@ public class LogTiltData extends CommandBase {
   private final LimeLight m_limelight;
   private final RevTiltSubsystem m_tilt;
 
-  private double validTargetSeen;
-  private double useVision;
   private double logTime;
+  private double firstLogTime = 0;
 
   public LogTiltData(RevTiltSubsystem tilt, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -64,26 +63,21 @@ public class LogTiltData extends CommandBase {
     // log data every shot
     if (fileOpenNow)
       m_tilt.tiltLogInProgress = true;
+
     if (logTime == 0)
       logTime = Timer.getFPGATimestamp();
-  
+
     if (m_tilt.logTiltItems && Timer.getFPGATimestamp() > logTime + .1) {
 
       logTime = Timer.getFPGATimestamp();
 
-      if (m_limelight.useVision)
-        useVision = 1;
-      else
-        useVision = 0;
+      if (firstLogTime == 0)
+        firstLogTime = logTime;
 
-      if (m_tilt.validTargetSeen)
-        validTargetSeen = 1;
-      else
-        validTargetSeen = 0;
+      m_tilt.tiltLogger.writeData(logTime, logTime - firstLogTime, m_tilt.programRunning,
 
-      m_tilt.tiltLogger.writeData(logTime, m_tilt.programRunning,
-
-          useVision, validTargetSeen, m_tilt.targetAngle, m_tilt.getAngle(), m_tilt.targetVerticalOffset,
+          m_limelight.useVision ? 1.0 : 0.0, m_tilt.validTargetSeen ? 1.0 : 0.0, m_tilt.targetAngle, m_tilt.getAngle(),
+          m_tilt.targetVerticalOffset,
 
           m_tilt.tiltLockController.getPositionError(),
 

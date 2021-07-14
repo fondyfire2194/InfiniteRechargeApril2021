@@ -16,21 +16,19 @@ public class LogTurretData extends CommandBase {
   /**
    * Creates a new LogDistanceData.
    */
-  public final String[] names = { "Step", "ProgRunning", "UseVision", "ValidTarget", "TargetAngle", "TurretAngle",
-      "Tolerance", "LockPE", "DegVertToTgt", "CorrEndPt", "Out", "Speed" };
+  public final String[] names = { "Time", "ElTime", "ProgRunning", "UseVision", "ValidTarget", "TargetAngle",
+      "TurretAngle", "Tolerance", "LockPE", "DegVertToTgt", "CorrEndPt", "Out", "Speed" };
 
-  public static String[] units = { "Number", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees", "Degrees", "PU", "Degrees", "PU",
-      "MPS" };
+  public static String[] units = { "Secs", "Secs", "1Hold2Pos3Vis", "T/F", "T/F", "Degrees", "Degrees", "PU", "Degrees",
+      "PU", "MPS" };
 
   private int loopCtr;
   private boolean fileOpenNow;
   private double logTime;
+  private double firstLogTime;
 
   private final LimeLight m_limelight;
   private final RevTurretSubsystem m_turret;
-
-  private double validTargetSeen;
-  private double useVision;
 
   public LogTurretData(RevTurretSubsystem turret, LimeLight limelight) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -46,6 +44,7 @@ public class LogTurretData extends CommandBase {
     int ope4 = m_turret.turretLogger.init("TestRun", "Turret", names, units);
 
     loopCtr = 0;
+
     fileOpenNow = false;
 
   }
@@ -67,23 +66,17 @@ public class LogTurretData extends CommandBase {
     if (logTime == 0)
       logTime = Timer.getFPGATimestamp();
 
-
     if (m_turret.logTurretItems && Timer.getFPGATimestamp() > logTime + .1) {
       logTime = Timer.getFPGATimestamp();
 
-      if (m_limelight.useVision)
-        useVision = 1;
-      else
-        useVision = 0;
+      if (firstLogTime == 0)
+        firstLogTime = logTime;
 
-      if (m_turret.validTargetSeen)
-        validTargetSeen = 1;
-      else
-        validTargetSeen = 0;
+      m_turret.turretLogger.writeData(logTime, logTime - firstLogTime, m_turret.programRunning,
 
-      m_turret.turretLogger.writeData(logTime, m_turret.programRunning,
-
-          useVision, validTargetSeen, m_turret.targetAngle, m_turret.getAngle(), m_turret.targetHorizontalOffset,
+          m_limelight.useVision ? 1.0 : 0.0, m_turret.validTargetSeen ? 1.0 : 0.0, m_turret.targetAngle,
+          
+          m_turret.getAngle(), m_turret.targetHorizontalOffset,
 
           m_turret.m_turretLockController.getPositionError(), m_limelight.getdegVerticalToTarget(),
 

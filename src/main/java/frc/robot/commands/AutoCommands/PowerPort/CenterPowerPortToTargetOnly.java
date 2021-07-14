@@ -55,6 +55,7 @@ public class CenterPowerPortToTargetOnly extends SequentialCommandGroup {
                                                 new PositionTurret(turret, turretAngle + turretOffset)),
 
                                 new UseVision(limelight, true),
+                                
                                 new WaitTiltTurretLocked(tilt, turret).deadlineWith(
                                                 new PositionHoldTilt(tilt, shooter, limelight),
                                                 new PositionHoldTurret(turret, shooter, limelight)));

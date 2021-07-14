@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
+import frc.robot.FFCSVLogger;
 import frc.robot.Pref;
 import frc.robot.SimpleCSVLogger;
 import frc.robot.sim.ShooterSubsystem;
@@ -52,6 +53,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public boolean useSetupSlider;
     public boolean useDriverSpeed;
     public NetworkTableEntry shooterSpeed;
+    public FFCSVLogger logger = new FFCSVLogger();
 
     public boolean startShooter;
 
