@@ -37,8 +37,8 @@ import frc.robot.commands.CellTransport.ReleaseOneCell;
 import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.CellTransport.StopBelts;
 import frc.robot.commands.CellTransport.StopRollers;
-import frc.robot.commands.ControlPanel.MoveArm;
-import frc.robot.commands.ControlPanel.RunCPMotor;
+import frc.robot.commands.Climber.ClimberArm;
+import frc.robot.commands.Climber.JogClimber;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.ArcadeDriveVelocity;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
@@ -68,7 +68,7 @@ import frc.robot.commands.Vision.SetUpLimelightForNoVision;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.SetVisionMode;
 import frc.robot.subsystems.CellTransportSubsystem;
-import frc.robot.subsystems.ControlPanelSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -103,7 +103,7 @@ public class RobotContainer {
 
       public final RevShooterSubsystem m_shooter;
 
-      public final ControlPanelSubsystem m_cp;
+      public final ClimberSubsystem m_climber;
 
       public static Preferences prefs;
 
@@ -180,7 +180,7 @@ public class RobotContainer {
             m_shooter = new RevShooterSubsystem();
             m_turret = new RevTurretSubsystem();
             m_tilt = new RevTiltSubsystem();
-            m_cp = new ControlPanelSubsystem();
+            m_climber = new ClimberSubsystem();
 
             m_limelight = new LimeLight();
             m_limelight.setCamMode(CamMode.kvision);
@@ -307,18 +307,18 @@ public class RobotContainer {
                         new SetShotPosition0(m_shooter, m_turret, m_tilt, m_transport, m_intake, m_limelight));
 
             codriverX.whenPressed(() -> m_intake.armSolenoidOff());
-            codriverA.whileHeld(getRunCPMotorCommand());
+        //    codriverA.
             // trench in front of control panel
             codriverB.whenPressed(
                         new SetShotPosition2(m_shooter, m_turret, m_tilt, m_transport, m_intake, m_limelight));
 
             // control panel
 
-            codriverBack.whileHeld(getRunCPMotorCommand());
+            codriverBack.whileHeld(getRunClimberMotorCommand());
 
-            codriverRightTrigger.whenPressed(new MoveArm(m_cp, false));
+            codriverRightTrigger.whenPressed(new ClimberArm(m_climber, true));
 
-            codriverLeftTrigger.whenPressed(new MoveArm(m_cp, true));
+            codriverLeftTrigger.whenPressed(new ClimberArm(m_climber, false));
 
             codriverUpButton.whenPressed(() -> m_tilt.aimHigher());
 
@@ -445,8 +445,8 @@ public class RobotContainer {
             return new JogRightBelt(m_transport, () -> setupGamepad.getRawAxis(3));
       }
 
-      public Command getRunCPMotorCommand() {
-            return new RunCPMotor(m_cp, () -> codriverGamepad.getRawAxis(3));
+      public Command getRunClimberMotorCommand() {
+            return new JogClimber(m_climber, () -> codriverGamepad.getRawAxis(3));
       }
 
       public double getThrottle() {

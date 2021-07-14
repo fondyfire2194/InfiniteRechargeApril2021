@@ -172,19 +172,6 @@ public class SetupShuffleboard {
                                                         && m_transport.allConnected && m_shooter.allConnected
                                                         && m_robotDrive.allConnected && m_intake.intakeMotorConnected);
 
-                        ShuffleboardLayout logCmd = Shuffleboard.getTab("Pre-Round")
-                                        .getLayout("LogCommands", BuiltInLayouts.kList).withPosition(2, 1)
-                                        .withSize(2, 4).withProperties(Map.of("Label position", "LEFT"));
-
-                        logCmd.add("LogTilt", new LogTiltData(tilt, limelight));
-                        logCmd.add("LogTurret", new LogTurretData(turret, limelight));
-                        // logCmd.add("LogShoot", new LogShootData(shooter, transport));
-                        logCmd.add("LogDrive", new LogDriveData(m_robotDrive));
-                        logCmd.add("EndLogTilt", new EndTiltLog(tilt));
-                        logCmd.add("EndLogTurret", new EndTurretLog(turret));
-                        logCmd.add("EndLogShoot", new EndShootLog(shooter));
-                        logCmd.add("EndDriveLog", new EndDriveLog(drive));
-
                         LLFeed = new HttpCamera("limelight", "http://limelight.local:5800/stream.mjpg");
                         Shuffleboard.getTab("Pre-Round").add("Limelight", LLFeed)
                                         .withWidget(BuiltInWidgets.kCameraStream).withPosition(4, 0).withSize(3, 2)
@@ -281,9 +268,7 @@ public class SetupShuffleboard {
 
                         misComp1.add("Hold Cell", new HoldCell(transport));
                         misComp1.add("ReleaseOneCell", new ReleaseOneCell(transport));
-                        misComp1.addNumber(("CellArmAngle"), () -> m_transport.getArmAngle());
-                        misComp1.addNumber(("CellArmPosn"), () -> m_transport.getArmPosition());
-                        // for
+                        misComp1.addNumber("CellArmAngle", () -> m_transport.getArmAngle());
 
                         misComp1.add("Release Cell", new ReleaseCell(transport));
                         misComp1.add("RaiseLeft", new RaiseLeftArm(transport));
@@ -307,7 +292,8 @@ public class SetupShuffleboard {
                         misComp2.addNumber("LeftMeters", () -> m_robotDrive.getLeftDistance());
                         misComp2.addNumber("RightMeters", () -> m_robotDrive.getRightDistance());
 
-                        misComp2.add("To P-P Target", new CenterPowerPortToTargetOnly(m_turret, m_tilt, shooter, m_limelight));
+                        misComp2.add("To P-P Target",
+                                        new CenterPowerPortToTargetOnly(m_turret, m_tilt, shooter, m_limelight));
 
                         misComp2.add("To Trench Target", new ToTrenchTarget(m_turret, m_tilt, m_limelight));
 
@@ -329,8 +315,6 @@ public class SetupShuffleboard {
                                         .getLayout("MiscVis", BuiltInLayouts.kList).withPosition(8, 0).withSize(2, 4)
                                         .withProperties(Map.of("Label position", "LEFT"));
                         misComVis.add("No Zoom Power Port Pipeline", new LimelightSetPipeline(m_limelight, 1));
-                        misComVis.add("No Zoom Shield Gen Pipeline", new LimelightSetPipeline(m_limelight, 2));
-                        misComVis.add("No Zoom Trench Pipeline", new LimelightSetPipeline(m_limelight, 3));
                         misComVis.add("Driver Pipeline", new LimelightSetPipeline(m_limelight, 0));
                         misComVis.add("Vision On", new UseVision(limelight, true));
                         misComVis.add("Vision Off", new UseVision(limelight, false));

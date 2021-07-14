@@ -32,7 +32,7 @@ public class FondyFireTrajectory {
         public Trajectory crossLine, example;
         public Trajectory trenchStartOne, trenchStartTwo, trenchStartThree;
         public Trajectory controlPanelStartOne, controlPanelStartTwo;
-        public Trajectory centerStart, leftStart, rightStart;
+        public Trajectory centerStartPickup, leftStart, rightStart;
         public Trajectory leftStartCurve, rightStartCurve;
         private RevDrivetrain m_drive;
 
@@ -72,8 +72,8 @@ public class FondyFireTrajectory {
                 //                 List.of(new Pose2d(13, 0, new Rotation2d(0)), new Pose2d(12, 0, new Rotation2d(0))),
                 //                 configReversed);
 
-                // straight line opposite power port
-                centerStart = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, 5.7, new Rotation2d(0)),
+                // picks up after center start
+                centerStartPickup = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, 5.7, new Rotation2d(0)),
                                 new Pose2d(11, 4.5, new Rotation2d(0))), configReversed);
 
                 // straight line left of power port
@@ -100,9 +100,9 @@ public class FondyFireTrajectory {
                                 // Start at the origin facing the +X direction
                                 new Pose2d(2, 0, new Rotation2d(0)),
                                 // Pass through these two interior waypoints, making an 's' curve path
-                                List.of(new Translation2d(3, 1), new Translation2d(4, 1)),
+                                List.of(new Translation2d(3, 1), new Translation2d(4, -1)),
                                 // End 3 meters straight ahead of where we started, facing forward
-                                new Pose2d(2, 0, new Rotation2d(0)),
+                                new Pose2d(4, 0, new Rotation2d(0)),
                                 // Pass config
                                 configForward);
 
