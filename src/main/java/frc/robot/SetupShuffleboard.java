@@ -19,10 +19,11 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
-import frc.robot.commands.AutoCommands.PowerPort.CenterPowerPortToTargetOnly;
+import frc.robot.commands.AutoCommands.PowerPort.ToPowerPortTarget;
 import frc.robot.commands.AutoCommands.ShieldGenOne.ToShieldGenTarget;
 import frc.robot.commands.AutoCommands.TrenchTwo.ToTrenchTarget;
 import frc.robot.commands.CellIntake.IntakeArmLower;
@@ -46,7 +47,6 @@ import frc.robot.commands.RobotDrive.StopRobot;
 import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
 import frc.robot.commands.Shooter.ClearShFaults;
 import frc.robot.commands.Shooter.EndShootLog;
-import frc.robot.commands.Shooter.FFLogShootData;
 import frc.robot.commands.Shooter.LogDistanceData;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.commands.Shooter.ShootCells;
@@ -288,12 +288,12 @@ public class SetupShuffleboard {
                         misComp2.addNumber("LeftMeters", () -> m_robotDrive.getLeftDistance());
                         misComp2.addNumber("RightMeters", () -> m_robotDrive.getRightDistance());
 
-                        misComp2.add("To P-P Target",
-                                        new CenterPowerPortToTargetOnly(m_turret, m_tilt, shooter, m_limelight));
+                        misComp2.add("To P-P Target", new ToPowerPortTarget(m_turret, m_tilt, shooter, m_limelight));
 
-                        misComp2.add("To Trench Target", new ToTrenchTarget(m_turret, m_tilt, m_limelight));
+                        misComp2.add("To Trench Target", new ToTrenchTarget(m_turret, m_tilt, shooter, m_limelight));
 
-                        misComp2.add("To ShieldGen Target", new ToShieldGenTarget(m_turret, m_tilt, m_limelight));
+                        misComp2.add("To ShieldGen Target",
+                                        new ToShieldGenTarget(m_turret, m_tilt, shooter, m_limelight));
 
                         ShuffleboardLayout misComp3 = Shuffleboard.getTab("CompetitionMisc")
                                         .getLayout("Misc4", BuiltInLayouts.kList).withPosition(6, 0).withSize(2, 4)
@@ -562,10 +562,7 @@ public class SetupShuffleboard {
                         shooterCommands.add("LogDataRun",
                                         new LogDistanceData(m_robotDrive, m_turret, m_tilt, m_shooter, m_limelight));
 
-shooterCommands.add("FFLog", new FFLogShootData(shooter, transport, drive));
-shooterCommands.add("EndFFLog", new EndShootLog(shooter));
-
-                                        shooterCommands.add("RunAllShooters", new RunShooter(shooter));
+                        shooterCommands.add("RunAllShooters", new RunShooter(shooter));
                         shooterCommands.add("UseSpeedSlider", new ChooseShooterSpeedSource(shooter, tilt, turret, 3));
 
                         ShuffleboardLayout shooterValues = Shuffleboard.getTab("SetupShooter")

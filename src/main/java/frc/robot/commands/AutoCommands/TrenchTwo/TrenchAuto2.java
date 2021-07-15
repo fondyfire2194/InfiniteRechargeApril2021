@@ -7,6 +7,8 @@ package frc.robot.commands.AutoCommands.TrenchTwo;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.LimeLight;
+import frc.robot.ShootData;
+import frc.robot.commands.AutoCommands.SetActive2ndShootData;
 import frc.robot.commands.AutoCommands.StartAllShooter;
 import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.Shooter.LogShootData;
@@ -33,6 +35,8 @@ public class TrenchAuto2 extends ParallelRaceGroup {
 
         new RunRollers(transport), new RunShooter(shooter), new LogShootData(shooter, transport, drive),
 
-        new AutoMode3M2BallTrench(shooter, turret, tilt, transport, drive, limelight, compressor, intake));
+        new SetActive2ndShootData(ShootData.trench5Ball),
+
+        new AutoMode3MnBallTrench(shooter, turret, tilt, transport, drive, limelight, compressor, intake));
   }
 }

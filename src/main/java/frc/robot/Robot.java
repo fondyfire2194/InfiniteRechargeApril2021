@@ -181,7 +181,7 @@ public class Robot extends TimedRobot {
         break;
       case 1:// in front of power port, move back use shooter data index 1
 
-        setStartingPose(FieldMap.startPosition[1]);
+        setStartingPose(FieldMap.startPosition[3]);
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand1();
 

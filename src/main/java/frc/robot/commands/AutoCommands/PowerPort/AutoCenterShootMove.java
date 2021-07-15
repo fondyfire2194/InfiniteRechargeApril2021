@@ -29,7 +29,7 @@ public class AutoCenterShootMove extends ParallelRaceGroup {
     
     addCommands(
 
-        new StartAllShooter(shooter, transport, 2), new LogShootData(shooter, transport, drive),
+        new StartAllShooter(shooter, transport, 2),
 
         new AutoModeCenterPowerPort(shooter, turret, tilt, transport, drive, intake, limelight, compressor)
 

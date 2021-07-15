@@ -19,7 +19,9 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import frc.robot.FieldMap;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.RevDrivetrain;
@@ -69,31 +71,45 @@ public class FondyFireTrajectory {
 
                 // // straight line
                 // crossLine = TrajectoryGenerator.generateTrajectory(
-                //                 List.of(new Pose2d(13, 0, new Rotation2d(0)), new Pose2d(12, 0, new Rotation2d(0))),
-                //                 configReversed);
+                // List.of(new Pose2d(13, 0, new Rotation2d(0)), new Pose2d(12, 0, new
+                // Rotation2d(0))),
+                // configReversed);
 
                 // picks up after center start
-                centerStartPickup = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, 5.7, new Rotation2d(0)),
-                                new Pose2d(11, 4.5, new Rotation2d(0))), configReversed);
+                centerStartPickup = TrajectoryGenerator.generateTrajectory(List.of(
+                                new Pose2d(FieldMap.startPositionX - 1, FieldMap.targetCenterPointY,
+                                                new Rotation2d(Units.degreesToRadians(180))),
+
+                                new Pose2d(FieldMap.startPositionX - 1.5, FieldMap.targetCenterPointY + .2,
+                                                new Rotation2d(Units.degreesToRadians(-170))),
+
+                                new Pose2d(FieldMap.startPositionX - 1.9, FieldMap.targetCenterPointY + .2,
+                                                new Rotation2d(Units.degreesToRadians(-70))),
+
+                                new Pose2d(FieldMap.startPositionX - 2, FieldMap.targetCenterPointY + 2,
+                                                new Rotation2d(Units.degreesToRadians(-60)))),
+
+                                configReversed);
 
                 // straight line left of power port
-                leftStart = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, 5.2, new Rotation2d(0)),
-                                new Pose2d(12, 5.2, new Rotation2d(0))), configReversed);
+                leftStart = TrajectoryGenerator.generateTrajectory(
+                                List.of(new Pose2d(13, 5.2, new Rotation2d(0)), new Pose2d(12, 5.2, new Rotation2d(0))),
+                                configReversed);
 
                 // straight line right of power port
-                rightStart = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, 6.3, new Rotation2d(0)),
-                                new Pose2d(12, 6.3, new Rotation2d(0))), configReversed);
+                rightStart = TrajectoryGenerator.generateTrajectory(
+                                List.of(new Pose2d(13, 6.3, new Rotation2d(0)), new Pose2d(12, 6.3, new Rotation2d(0))),
+                                configReversed);
 
                 // start left of power port curve back for straight shot
-                leftStartCurve = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(13, 5.2, new Rotation2d(0)),
-                                new Pose2d(12, 5.3, new Rotation2d(0))), configReversed);
+                leftStartCurve = TrajectoryGenerator.generateTrajectory(
+                                List.of(new Pose2d(13, 5.2, new Rotation2d(0)), new Pose2d(12, 5.3, new Rotation2d(0))),
+                                configReversed);
 
                 // start right of power port curve back for straight shot
-                rightStartCurve = TrajectoryGenerator
-                                .generateTrajectory(
-                                                List.of(new Pose2d(13, 6.3, new Rotation2d(0)),
-                                                                new Pose2d(12, 5.3, new Rotation2d(0))),
-                                                configReversed);
+                rightStartCurve = TrajectoryGenerator.generateTrajectory(
+                                List.of(new Pose2d(13, 6.3, new Rotation2d(0)), new Pose2d(12, 5.3, new Rotation2d(0))),
+                                configReversed);
 
                 // zig zag
                 example = TrajectoryGenerator.generateTrajectory(
@@ -107,7 +123,7 @@ public class FondyFireTrajectory {
                                 configForward);
 
                 trenchStartOne = TrajectoryGenerator.generateTrajectory(
-                                
+
                                 new Pose2d(0, 0, new Rotation2d(0)),
                                 List.of(new Translation2d(1, 0), new Translation2d(2, 0)),
                                 new Pose2d(4, 0.1, new Rotation2d(0)),
@@ -132,8 +148,6 @@ public class FondyFireTrajectory {
                                 new Pose2d(1, 0.1, new Rotation2d(0)),
                                 // pass config
                                 configForward);
-
- 
 
         }
 

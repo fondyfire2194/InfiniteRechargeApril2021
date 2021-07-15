@@ -12,12 +12,15 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
 import frc.robot.commands.Shooter.WaitTiltTurretLocked;
+import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
+import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
+import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
 
@@ -38,15 +41,9 @@ public class ToShieldGenTarget extends SequentialCommandGroup {
         static double turretOffset = ShootData.shieldGen3MxBallShotConstants.turretOffset;
         static double shootTime = ShootData.shieldGen3MxBallShotConstants.shootTime;
 
-        static double retractDistance = ShootData.shieldGen4BallShotConstants.retractDistance;
-        static double tiltAngle1 = ShootData.shieldGen4BallShotConstants.tiltAngle;
-        static double turretAngle1 = ShootData.shieldGen4BallShotConstants.turretAngle;
-        static double shootSpeed1 = ShootData.shieldGen4BallShotConstants.shootSpeed;
-        static double tiltOffset1 = ShootData.shieldGen4BallShotConstants.tiltOffset;
-        static double turretOffset1 = ShootData.shieldGen4BallShotConstants.turretOffset;
-        static double shootTime1 = ShootData.shieldGen4BallShotConstants.shootTime;
-
-        public ToShieldGenTarget(RevTurretSubsystem turret, RevTiltSubsystem tilt, LimeLight limelight) {
+     
+        public ToShieldGenTarget(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevShooterSubsystem shooter,
+                        LimeLight limelight) {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
                 //
@@ -60,7 +57,11 @@ public class ToShieldGenTarget extends SequentialCommandGroup {
                                                 new PositionTilt(tilt, tiltAngle + tiltOffset),
                                                 new PositionTurret(turret, turretAngle + turretOffset)),
 
-                                new UseVision(limelight, true), new WaitTiltTurretLocked(tilt, turret));
+                                new UseVision(limelight, true),
+
+                                new WaitTiltTurretLocked(tilt, turret).deadlineWith(
+                                                new PositionHoldTilt(tilt, shooter, limelight),
+                                                new PositionHoldTurret(turret, shooter, limelight)));
 
         }
 }

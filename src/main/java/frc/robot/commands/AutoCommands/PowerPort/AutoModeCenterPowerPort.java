@@ -23,7 +23,7 @@ import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.EndShootLog;
 import frc.robot.commands.Shooter.SetLogShooterItems;
 import frc.robot.commands.Shooter.SetShootSpeed;
-import frc.robot.commands.Shooter.SetShotPosition0;
+import frc.robot.commands.Shooter.SetShotPositionPowerPort;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
@@ -63,39 +63,33 @@ public class AutoModeCenterPowerPort extends SequentialCommandGroup {
 
                 super(new ResetEncoders(drive), new ResetGyro(drive), new PickupMoveVelocity(drive, -1, 2),
 
-                                new ParallelCommandGroup(
+                                new ParallelCommandGroup(new SetLogTiltItems(tilt, true),
 
-                                                new SetShotPosition0(shooter, turret, tilt, transport, intake,
-                                                                limelight),
+                                                new SetLogTurretItems(turret, true),
 
-                                                new ParallelCommandGroup(
+                                                new ToPowerPortTarget(turret, tilt, shooter, limelight),
 
-                                                                new SetLogTiltItems(tilt, true),
+                                                new SetLeftReleaseShots(transport, 2),
 
-                                                                new SetLeftReleaseShots(transport, 2),
+                                                new SetLogShooterItems(shooter, true),
 
-                                                                new SetLogTurretItems(turret, true),
+                                                new SetShootSpeed(shooter, shootSpeed)),
 
-                                                                new SetLogShooterItems(shooter, true),
+                                new ShootCells(shooter, tilt, turret, limelight, transport, drive,
 
-                                                                new SetShootSpeed(shooter, shootSpeed)),
+                                                compressor, shootTime).deadlineWith(
 
-                                                new ShootCells(shooter, tilt, turret, limelight, transport, drive,
+                                                                new PositionHoldTilt(tilt, shooter, limelight),
 
-                                                                compressor, shootTime).deadlineWith(
+                                                                new PositionHoldTurret(turret, shooter, limelight)),
 
-                                                                                new PositionHoldTilt(tilt, shooter,
-                                                                                                limelight),
-                                                                                                
-                                                                                new PositionHoldTurret(turret, shooter,
-                                                                                                limelight)),
- // s_trajectory.getRamsete(s_trajectory.centerStart).andThen(() ->
-        // drive.tankDriveVolts(0, 0)),
-                                                new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
-                                                                new SetLogTiltItems(tilt, false),
-                                                                new EndShootLog(shooter), new StopIntake(intake),
-                                                                new PositionTilt(tilt,
-                                                                                HoodedShooterConstants.TILT_MAX_ANGLE),
-                                                                new SetUpLimelightForNoVision(limelight))));
+                                // s_trajectory.getRamsete(s_trajectory.centerStart).andThen(() ->
+                                // drive.tankDriveVolts(0, 0)),
+
+                                new ParallelCommandGroup(new MessageCommand("ReturnAxesStarted"),
+                                                new SetLogTiltItems(tilt, false), new EndShootLog(shooter),
+                                                new StopIntake(intake),
+                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
+                                                new SetUpLimelightForNoVision(limelight)));
         }
 }

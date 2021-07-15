@@ -11,8 +11,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
-import frc.robot.commands.AutoCommands.TrenchTwo.ToTeleopTrenchTarget;
-import frc.robot.commands.AutoCommands.TrenchTwo.ToTrenchTarget;
+import frc.robot.commands.AutoCommands.TrenchOne.ToTrenchTarget4;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.CellTransport.SetLeftReleaseShots;
@@ -27,27 +26,33 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class SetShotPosition2 extends SequentialCommandGroup {
+public class SetShotPositionTrenchFirstBall extends SequentialCommandGroup {
         /**
          * C
          * 
          * S
          */
 
-        public SetShotPosition2(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+        // static double retractDistance1 = ShootData.trench4Ball[0];
+        // static double tiltAngle1 = ShootData.trench4Ball[1];
+        // static double turretAngle1 = ShootData.trench4Ball[2];
+         static double shootSpeed1 = ShootData.trench4Ball[3];
+        // static double tiltOffset1 = ShootData.trench4Ball[4];
+        // static double turretOffset1 = ShootData.trench4Ball[5];
+        // static double shootTime1 = ShootData.trench4Ball[6];
+
+        public SetShotPositionTrenchFirstBall(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RearIntakeSubsystem intake, LimeLight limelight) {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new ToTeleopTrenchTarget(turret, tilt, limelight),
+                super(new ToTrenchTarget4(turret, tilt, shooter, transport, limelight),
 
                                 new ParallelCommandGroup(new SetLeftReleaseShots(transport, 3),
                                                 new SetActiveTeleopShootData(shooter, 0),
                                                 new ChooseShooterSpeedSource(shooter, tilt, turret, 0),
-                                                new SetShootSpeed(shooter,
-                                                                ShootData.trench5BallShotConstants.shootSpeed),
-                                                new IntakeArmLower(intake), new RunShooter(shooter)).deadlineWith(
-                                                                new RunRollers(transport),
+                                                new SetShootSpeed(shooter, shootSpeed1), new IntakeArmLower(intake),
+                                                new RunShooter(shooter)).deadlineWith(new RunRollers(transport),
                                                                 new PositionHoldTilt(tilt, shooter, limelight),
                                                                 new PositionHoldTurret(turret, shooter, limelight))
 

@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
-import frc.robot.commands.AutoCommands.PowerPort.CenterPowerPortToTargetOnly;
+import frc.robot.commands.AutoCommands.TrenchTwo.ToTrenchTarget5;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.CellTransport.SetLeftReleaseShots;
@@ -26,31 +26,31 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class SetShotPosition0 extends SequentialCommandGroup {
+public class SetShotPositionTrenchSecondBall extends SequentialCommandGroup {
         /**
-         * Creates a new Auto0.
+         * C
          * 
-         * Start in front of power port, retract and shoot
+         * S
          */
 
-        public SetShotPosition0(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+      
+         static double shootSpeed1 = ShootData.trench5Ball[3];
+
+        public SetShotPositionTrenchSecondBall(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RearIntakeSubsystem intake, LimeLight limelight) {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
 
-                super(new CenterPowerPortToTargetOnly(turret, tilt, shooter, limelight),
+                super(new ToTrenchTarget5(turret, tilt, shooter, transport, limelight),
 
                                 new ParallelCommandGroup(new SetLeftReleaseShots(transport, 3),
-                                                new IntakeArmLower(intake),
-                                                new SetShootSpeed(shooter,
-                                                                ShootData.centerPowerPortConstants.shootSpeed),
+                                                new SetActiveTeleopShootData(shooter, 0),
                                                 new ChooseShooterSpeedSource(shooter, tilt, turret, 0),
-
-                                                
-
+                                                new SetShootSpeed(shooter, shootSpeed1), new IntakeArmLower(intake),
                                                 new RunShooter(shooter)).deadlineWith(new RunRollers(transport),
                                                                 new PositionHoldTilt(tilt, shooter, limelight),
-                                                                new PositionHoldTurret(turret, shooter, limelight)));
+                                                                new PositionHoldTurret(turret, shooter, limelight))
 
+                );
         }
 }

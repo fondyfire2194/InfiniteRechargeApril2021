@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,7 +26,6 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightControlMode.CamMode;
 import frc.robot.LimelightControlMode.LedMode;
 import frc.robot.LimelightControlMode.StreamType;
-import frc.robot.commands.AutoCommands.TrenchTwo.ToTrenchTarget;
 import frc.robot.commands.CellIntake.IntakeArmLower;
 import frc.robot.commands.CellIntake.IntakeArmRaise;
 import frc.robot.commands.CellIntake.RunIntakeMotor;
@@ -42,15 +43,16 @@ import frc.robot.commands.Climber.JogClimber;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.ArcadeDriveVelocity;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
-import frc.robot.commands.Shooter.ChangeShooterSpeed;
-import frc.robot.commands.Shooter.ChooseShooterSpeedSource;
+import frc.robot.commands.RobotDrive.ResetEncoders;
+import frc.robot.commands.RobotDrive.ResetGyro;
 import frc.robot.commands.Shooter.JogShooter;
-import frc.robot.commands.Shooter.LogShootData;
 import frc.robot.commands.Shooter.RunShooter;
-import frc.robot.commands.Shooter.SetShotPosition0;
-import frc.robot.commands.Shooter.SetShotPosition2;
+import frc.robot.commands.Shooter.SetShotPositionPowerPort;
+import frc.robot.commands.Shooter.SetShotPositionShieldGen;
+import frc.robot.commands.Shooter.SetShotPositionTrenchFirstBall;
 import frc.robot.commands.Shooter.ShootCells;
 import frc.robot.commands.Shooter.StopShoot;
+import frc.robot.commands.Shooter.Trench4Macro;
 import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.PositionTiltToVision;
@@ -115,13 +117,12 @@ public class RobotContainer {
 
       private Compressor m_compressor;
 
-      private FondyFireTrajectory m_trajectory;
+      public FondyFireTrajectory m_trajectory;
 
       public AutoFactory m_autoFactory;
 
       public boolean clickUp;
 
-     
       // Co driver gamepad
 
       // Setup gamepad LOGITECH
@@ -305,18 +306,31 @@ public class RobotContainer {
              */
 
             // front of power port one meter back
+
             codriverY.whenPressed(
-                        new SetShotPosition0(m_shooter, m_turret, m_tilt, m_transport, m_intake, m_limelight));
+                        new SetShotPositionPowerPort(m_shooter, m_turret, m_tilt, m_transport, m_intake, m_limelight));
 
-            codriverX.whenPressed(() -> m_intake.armSolenoidOff());
-        //    codriverA.
             // trench in front of control panel
-            codriverB.whenPressed(
-                        new SetShotPosition2(m_shooter, m_turret, m_tilt, m_transport, m_intake, m_limelight));
 
-            // control panel
+            codriverB.whenPressed(new SetShotPositionTrenchFirstBall(m_shooter, m_turret, m_tilt, m_transport, m_intake,
+                        m_limelight));
+
+            // shield gen
+
+            codriverX.whenPressed(
+                        new SetShotPositionShieldGen(m_shooter, m_turret, m_tilt, m_transport, m_intake, m_limelight));
+
+            // move from trench behind control panel to trench shoot position, lock on
+            // target and start shooter
+
+            codriverA.whenPressed(new Trench4Macro(m_robotDrive, m_shooter, m_turret, m_tilt, m_transport, m_intake,
+                        m_limelight));
+
+            // climber
 
             codriverBack.whileHeld(getRunClimberMotorCommand());
+
+            //codriverStart
 
             codriverRightTrigger.whenPressed(new ClimberArm(m_climber, true));
 

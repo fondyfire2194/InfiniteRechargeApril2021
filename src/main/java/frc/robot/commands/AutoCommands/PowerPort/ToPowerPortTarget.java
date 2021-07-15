@@ -27,7 +27,7 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class CenterPowerPortToTargetOnly extends SequentialCommandGroup {
+public class ToPowerPortTarget extends SequentialCommandGroup {
         /**
          * Creates a new Auto0.
          * 
@@ -39,7 +39,7 @@ public class CenterPowerPortToTargetOnly extends SequentialCommandGroup {
         static double tiltOffset = ShootData.centerPowerPortConstants.tiltOffset;
         static double turretOffset = ShootData.centerPowerPortConstants.turretOffset;
 
-        public CenterPowerPortToTargetOnly(RevTurretSubsystem turret, RevTiltSubsystem tilt,
+        public ToPowerPortTarget(RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         RevShooterSubsystem shooter, LimeLight limelight) {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());

@@ -11,15 +11,16 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.LimeLight;
 import frc.robot.ShootData;
+import frc.robot.commands.AutoCommands.StartAllShooter;
+import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.commands.Shooter.WaitTiltTurretLocked;
-import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
-import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
 import frc.robot.commands.Vision.UseVision;
+import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RevShooterSubsystem;
 import frc.robot.subsystems.RevTiltSubsystem;
 import frc.robot.subsystems.RevTurretSubsystem;
@@ -27,23 +28,22 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class ToTrenchTarget extends SequentialCommandGroup {
+public class ToTrenchTarget5 extends SequentialCommandGroup {
         /**
          * Creates a new Auto0.
          * 
          * Start in front of power port and shoot
          */
+        static double retractDistance1 = ShootData.trench5Ball[0];
+        static double tiltAngle1 = ShootData.trench5Ball[1];
+        static double turretAngle1 = ShootData.trench5Ball[2];
+        static double shootSpeed1 = ShootData.trench5Ball[3];
+        static double tiltOffset1 = ShootData.trench5Ball[4];
+        static double turretOffset1 = ShootData.trench5Ball[5];
+        static double shootTime1 = ShootData.trench5Ball[6];
 
-        static double tiltAngle = ShootData.trench3M3BallShotConstants.tiltAngle;
-        static double turretAngle = ShootData.trench3M3BallShotConstants.turretAngle;
-        static double shootSpeed = ShootData.trench3M3BallShotConstants.shootSpeed;
-        static double tiltOffset = ShootData.trench3M3BallShotConstants.tiltOffset;
-        static double turretOffset = ShootData.trench3M3BallShotConstants.turretOffset;
-        static double shootTime = ShootData.trench3M3BallShotConstants.shootTime;
-
-
-        public ToTrenchTarget(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevShooterSubsystem shooter,
-                        LimeLight limelight) {
+        public ToTrenchTarget5(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevShooterSubsystem shooter,
+                        CellTransportSubsystem transport, LimeLight limelight) {
                 // Add your commands in the super() call, e.g.
                 // super(new FooCommand(), new BarCommand());
                 //
@@ -54,16 +54,14 @@ public class ToTrenchTarget extends SequentialCommandGroup {
                                 new ParallelCommandGroup(
                                                 new SetUpLimelightForTarget(limelight, limelight.activeTrenchPipeline,
                                                                 false),
-                                                new SetTiltOffset(tilt, tiltOffset),
-                                                new SetTurretOffset(turret, turretOffset),
-                                                new PositionTilt(tilt, tiltAngle + tiltOffset),
-                                                new PositionTurret(turret, turretAngle + turretOffset)),
-                                                
-                                new UseVision(limelight, true),
+                                                new SetTiltOffset(tilt, tiltOffset1),
+                                                new SetShootSpeed(shooter, shootSpeed1),
+                                                new SetTurretOffset(turret, turretOffset1),
+                                                new PositionTilt(tilt, tiltAngle1 + tiltOffset1),
+                                                new PositionTurret(turret, turretAngle1 + turretOffset1)),
+                                new UseVision(limelight, true), new WaitTiltTurretLocked(tilt, turret),
 
-                                new WaitTiltTurretLocked(tilt, turret).deadlineWith(
-                                                new PositionHoldTilt(tilt, shooter, limelight),
-                                                new PositionHoldTurret(turret, shooter, limelight)));
+                                new StartAllShooter(shooter, transport, 0));
 
         }
 }

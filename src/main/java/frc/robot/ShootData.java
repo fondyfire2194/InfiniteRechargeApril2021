@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.commands.AutoCommands.SetActive2ndShootData;
 
 /** Add your docs here. */
 public class ShootData {
@@ -29,11 +30,17 @@ public class ShootData {
 
     private static double shotHeight = FieldConstants.SHOT_HEIGHT;
 
-    public static double activeTeleopShootSpeed;
-    public static double activeTeleopTiltAngle;
-    public static double activeTeleopTiltOffset;
-    public static double activeTeleopTurretAngle;
-    public static double activeTeleopTurretOffset;
+    /**
+     * array values order is
+     * 
+     * retractDistace, tiltAngle, turretAngle, shootSpeed,
+     * 
+     * turretOffset, tiltOffset, shootTime
+     * 
+     * 
+     */
+
+    public static double[] activeValues = { 0, 0, 0, 0, 0, 0, 0 };
 
     public static double frontOfRobotToCenterofTiltTurret = .25;// meters
 
@@ -93,36 +100,42 @@ public class ShootData {
         public static double shootTime = 2;
     }
 
-    public final static class trench4BallShotConstants {
-        public static double retractDistance = -2.5;
-        public static double tiltAngle = 15;
-        public static double turretAngle = -20;
-        public static double shootSpeed = 37;
-        public static double tiltOffset = 3;
-        public static double turretOffset = 0;
-        public static double shootTime = 4;
-    }
+    public static double[] trench4Ball = { -2.5, 15, -20, 37, 3, 0, 4 };
 
-    public final static class trench5BallShotConstants {
-        public static double retractDistance = -3.5;
-        public static double tiltAngle = 13.5;
-        public static double turretAngle = -14;
-        public static double shootSpeed = 38;
-        public static double tiltOffset = 5;
-        public static double turretOffset = 2;
-        public static double shootTime = 5;
-    }
+    // public final static class trench4BallShotConstants {
+    //     public static double retractDistance = -2.5;
+    //     public static double tiltAngle = 15;
+    //     public static double turretAngle = -20;
+    //     public static double shootSpeed = 37;
+    //     public static double tiltOffset = 3;
+    //     public static double turretOffset = 0;
+    //     public static double shootTime = 4;
+    // }
 
-    public final static class trench6BallShotConstants {
-        public static double retractDistance = -4.5;
-        public static double tiltAngle = 12;
-        public static double turretAngle = -16;
-        public static double shootSpeed = 40;
-        public static double tiltOffset = 6;
-        public static double turretOffset = 0;
-        public static double shootTime = 6;
+    public static double[] trench5Ball = { -3.5, 13.5, -14, 38, 5, 2, 5 };
 
-    }
+    // public final static class trench5BallShotConstants {
+    //     public static double retractDistance = -3.5;
+    //     public static double tiltAngle = 13.5;
+    //     public static double turretAngle = -14;
+    //     public static double shootSpeed = 38;
+    //     public static double tiltOffset = 5;
+    //     public static double turretOffset = 2;
+    //     public static double shootTime = 5;
+    // }
+
+    public static double[] trench6Ball = { -4.5, 12, -16, 40, 6, 0, 6 };
+
+    // public final static class trench6BallShotConstants {
+    //     public static double retractDistance = -4.5;
+    //     public static double tiltAngle = 12;
+    //     public static double turretAngle = -16;
+    //     public static double shootSpeed = 40;
+    //     public static double tiltOffset = 6;
+    //     public static double turretOffset = 0;
+    //     public static double shootTime = 6;
+
+    // }
 
     public final static class shieldGen3MxBallShotConstants {
         // public static double retractDistance = -4;
@@ -134,26 +147,30 @@ public class ShootData {
         public static double shootTime = 2;
     }
 
-    public final static class shieldGen4BallShotConstants {
-        public static double retractDistance = -2.4;
-        public static double tiltAngle = 13.5;
-        public static double turretAngle = 29;
-        public static double shootSpeed = 37;
-        public static double tiltOffset = 3;
-        public static double turretOffset = 0;
-        public static double shootTime = 4;
-    }
+    // public final static class shieldGen4BallShotConstants {
+    //     public static double retractDistance = -2.4;
+    //     public static double tiltAngle = 13.5;
+    //     public static double turretAngle = 29;
+    //     public static double shootSpeed = 37;
+    //     public static double tiltOffset = 3;
+    //     public static double turretOffset = 0;
+    //     public static double shootTime = 4;
+    // }
 
-    public final static class shieldGen5BallShotConstants {
-        public static double retractDistance = -3.5;
-        public static double returnPosition = -2.5;
-        public static double tiltAngle = 13.5;
-        public static double turretAngle = 14;
-        public static double shootSpeed = 38;
-        public static double tiltOffset = 5;
-        public static double turretOffset = 0;
-        public static double shootTime = 5;
-    }
+    public static double[] shieldGen4Ball = { -2.4, 13.5, 29, 37, 3, 0, 4 };
+
+    public static double[] shieldGen5Ball = { -3.5, 13.5, 14, 38, 5, 0, 5 };
+
+    // public final static class shieldGen5BallShotConstants {
+    //     public static double retractDistance = -3.5;
+    //     public static double returnPosition = -2.5;
+    //     public static double tiltAngle = 13.5;
+    //     public static double turretAngle = 14;
+    //     public static double shootSpeed = 38;
+    //     public static double tiltOffset = 5;
+    //     public static double turretOffset = 0;
+    //     public static double shootTime = 5;
+    // }
 
     public final static class behindControlPanelShotConstants {
 
@@ -172,12 +189,6 @@ public class ShootData {
         public static double tiltAngle = 29;
         public static double turretAngle = 0;
         public static double shootSpeed = 23;
-
-    }
-
-    public static void showValues() {
-        SmartDashboard.putNumber("TAI", activeTeleopTiltAngle);
-        SmartDashboard.putNumber("TAU", activeTeleopTurretAngle);
 
     }
 

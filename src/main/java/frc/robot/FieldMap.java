@@ -63,7 +63,7 @@ public class FieldMap {
                 // start positions are in terms of the robot front x and robot mid Y
 
                 // centered in front of other team station (cross line)
-                startPosition[0] = new Pose2d(startPositionX, fieldWidth - Units.inchesToMeters(94.66),
+                startPosition[0] = new Pose2d(startPositionX, Units.inchesToMeters(94.66),
                                 new Rotation2d(0.0));
 
                 // lined up with target center
