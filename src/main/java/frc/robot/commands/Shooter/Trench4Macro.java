@@ -25,7 +25,7 @@ public class Trench4Macro extends SequentialCommandGroup {
       RevTiltSubsystem tilt, CellTransportSubsystem transport, RearIntakeSubsystem intake, LimeLight limelight) {
     // Add your commands in the a drive,ddCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new ResetGyro(drive), new ResetEncoders(drive), new PickupMoveVelocity(drive, 3., 1.5),
+    addCommands(new ResetGyro(drive), new ResetEncoders(drive), new PickupMoveVelocity(drive, 5., 1.5),
         new SetShotPositionTrenchSecondBall(shooter, turret, tilt, transport, intake, limelight));
   }
 }

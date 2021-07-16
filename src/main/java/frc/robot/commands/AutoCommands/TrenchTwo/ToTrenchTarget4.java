@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.AutoCommands.TrenchOne;
+package frc.robot.commands.AutoCommands.TrenchTwo;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -14,8 +14,10 @@ import frc.robot.ShootData;
 import frc.robot.commands.AutoCommands.StartAllShooter;
 import frc.robot.commands.Shooter.SetShootSpeed;
 import frc.robot.commands.Shooter.WaitTiltTurretLocked;
+import frc.robot.commands.Tilt.PositionHoldTilt;
 import frc.robot.commands.Tilt.PositionTilt;
 import frc.robot.commands.Tilt.SetTiltOffset;
+import frc.robot.commands.Turret.PositionHoldTurret;
 import frc.robot.commands.Turret.PositionTurret;
 import frc.robot.commands.Turret.SetTurretOffset;
 import frc.robot.commands.Vision.SetUpLimelightForTarget;
@@ -34,13 +36,13 @@ public class ToTrenchTarget4 extends SequentialCommandGroup {
          * 
          * Start in front of power port and shoot
          */
-        static double retractDistance1 = ShootData.trench4Ball[0];
-        static double tiltAngle1 = ShootData.trench4Ball[1];
-        static double turretAngle1 = ShootData.trench4Ball[2];
-        static double shootSpeed1 = ShootData.trench4Ball[3];
-        static double tiltOffset1 = ShootData.trench4Ball[4];
-        static double turretOffset1 = ShootData.trench4Ball[5];
-        static double shootTime1 = ShootData.trench4Ball[6];
+        static double retractDistance1 = ShootData.trench4BallShotConstants.retractDistance;
+        static double tiltAngle1 = ShootData.trench4BallShotConstants.tiltAngle;
+        static double turretAngle1 = ShootData.trench4BallShotConstants.turretAngle;
+        static double shootSpeed1 = ShootData.trench4BallShotConstants.shootSpeed;
+        static double tiltOffset1 = ShootData.trench4BallShotConstants.tiltOffset;
+        static double turretOffset1 = ShootData.trench4BallShotConstants.turretOffset;
+        static double shootTime1 = ShootData.trench4BallShotConstants.shootTime;
 
         public ToTrenchTarget4(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevShooterSubsystem shooter,
                         CellTransportSubsystem transport, LimeLight limelight) {
@@ -59,9 +61,15 @@ public class ToTrenchTarget4 extends SequentialCommandGroup {
                                                 new SetTurretOffset(turret, turretOffset1),
                                                 new PositionTilt(tilt, tiltAngle1 + tiltOffset1),
                                                 new PositionTurret(turret, turretAngle1 + turretOffset1)),
-                                new UseVision(limelight, true), new WaitTiltTurretLocked(tilt, turret),
+                                new UseVision(limelight, true),
 
-                                new StartAllShooter(shooter, transport, 0));
+                                new WaitTiltTurretLocked(tilt, turret, limelight).deadlineWith(
+                                                new PositionHoldTilt(tilt, shooter, limelight),
+                                                new PositionHoldTurret(turret, shooter, limelight)),
+
+                                new StartAllShooter(shooter, transport, 0).deadlineWith(
+                                                new PositionHoldTilt(tilt, shooter, limelight),
+                                                new PositionHoldTurret(turret, shooter, limelight)));
 
         }
 }

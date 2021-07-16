@@ -67,6 +67,7 @@ import frc.robot.commands.Vision.LimelightSetPipeline;
 import frc.robot.commands.Vision.LimelightStreamMode;
 import frc.robot.commands.Vision.UseVision;
 import frc.robot.subsystems.CellTransportSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
 import frc.robot.subsystems.RevShooterSubsystem;
@@ -84,6 +85,7 @@ public class SetupShuffleboard {
         private final Compressor m_compressor;
         private final LimeLight m_limelight;
         private final RearIntakeSubsystem m_intake;
+        private final ClimberSubsystem m_climber;
         private boolean m_showTurret = true;
         private boolean m_showTilt = true;
         private boolean m_showShooter = true;
@@ -104,7 +106,7 @@ public class SetupShuffleboard {
 
         public SetupShuffleboard(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevDrivetrain drive,
                         RevShooterSubsystem shooter, CellTransportSubsystem transport, Compressor compressor,
-                        LimeLight limelight, RearIntakeSubsystem intake, FondyFireTrajectory traj, boolean liveMatch) {
+                        LimeLight limelight, RearIntakeSubsystem intake, ClimberSubsystem climber,FondyFireTrajectory traj, boolean liveMatch) {
                 m_turret = turret;
                 m_tilt = tilt;
                 m_robotDrive = drive;
@@ -113,7 +115,7 @@ public class SetupShuffleboard {
                 m_shooter = shooter;
                 m_limelight = limelight;
                 m_intake = intake;
-
+m_climber=climber;
                 /**
                  * 
                  * Pre round
@@ -132,15 +134,9 @@ public class SetupShuffleboard {
 
                         autoChooser.addOption("Center Start Retract Shoot", 1);
 
-                        autoChooser.addOption("Trench 3 M 1", 2);
+                        autoChooser.addOption("Trench 3 M 2", 2);
 
-                        autoChooser.addOption("Trench 3 M 2", 3);
-
-                        autoChooser.addOption("Trench 3 M 3", 4);
-
-                        autoChooser.addOption("ShieldGen 3 M 1", 5);
-
-                        autoChooser.addOption("Shield Gen 3 M 2", 6);
+                        autoChooser.addOption("ShieldGen 3 M 1", 3);
 
                         Shuffleboard.getTab("Pre-Round").add("Auto Delay", startDelayChooser).withSize(2, 1)
                                         .withPosition(2, 0); //
@@ -671,7 +667,19 @@ public class SetupShuffleboard {
                                                 () -> m_transport.rearRollerMotorConnected);
                                 transportValues1.addBoolean("FrontRollerConnected (14)",
                                                 () -> m_transport.frontRollerMotorConnected);
-                        }
+
+                                ShuffleboardLayout climberInfo = Shuffleboard.getTab("SetupTransport")
+                                                .getLayout("Climber", BuiltInLayouts.kList).withPosition(7, 0)
+                                                .withSize(2, 4).withProperties(Map.of("Label position", "LEFT")); // labels
+
+                                                climberInfo.addBoolean("ClimbArmUp", ()-> m_climber.getArmRaised());
+                                                climberInfo.addBoolean("ClimbArmUDown", ()-> m_climber.getArmLowered());
+                                                climberInfo.addBoolean("Locked", ()-> m_climber.getRatchetLocked());
+                                                climberInfo.addBoolean("Unlocked", ()-> m_climber.getRatchetUnlocked());
+
+
+  
+                                        }
 
                         /**
                          * 

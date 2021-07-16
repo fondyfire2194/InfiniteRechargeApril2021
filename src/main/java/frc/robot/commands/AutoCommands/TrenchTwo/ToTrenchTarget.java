@@ -61,7 +61,7 @@ public class ToTrenchTarget extends SequentialCommandGroup {
                                                 
                                 new UseVision(limelight, true),
 
-                                new WaitTiltTurretLocked(tilt, turret).deadlineWith(
+                                new WaitTiltTurretLocked(tilt, turret,limelight).deadlineWith(
                                                 new PositionHoldTilt(tilt, shooter, limelight),
                                                 new PositionHoldTurret(turret, shooter, limelight)));
 

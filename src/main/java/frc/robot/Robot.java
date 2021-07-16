@@ -187,47 +187,22 @@ public class Robot extends TimedRobot {
 
         break;
 
-      case 2:// Trench Pickup 1 ball
-        // new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport,
-        // m_robotContainer.m_robotDrive)
-        // .schedule();
+      case 2:// Trench Pickup 2 ball
+       
         setStartingPose(FieldMap.startPosition[3]);
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand2();
+ 
         break;
 
-      case 3:// Trench pickup 2 balls
-
+      case 3:// ShieldGen Pickup 1 ball
+       
         setStartingPose(FieldMap.startPosition[3]);
 
         m_autonomousCommand = m_autoFactory.getAutonomousCommand3();
-
         break;
 
-      case 4:// Trench pickup 3 balls
-
-        setStartingPose(FieldMap.startPosition[3]);
-
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand4();
-
-        break;
-
-      case 5:// ShieldGen Pickup 1 ball
-        // new LogShootData(m_robotContainer.m_shooter, m_robotContainer.m_transport,
-        // m_robotContainer.m_robotDrive)
-        // .schedule();
-        setStartingPose(FieldMap.startPosition[3]);
-
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand5();
-        break;
-
-      case 6:// pickuShieldp 2 balls
-
-        setStartingPose(FieldMap.startPosition[3]);
-
-        m_autonomousCommand = m_autoFactory.getAutonomousCommand6();
-
-        break;
+    
 
       default:
 

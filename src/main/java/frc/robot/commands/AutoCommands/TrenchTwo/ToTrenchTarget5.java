@@ -34,13 +34,13 @@ public class ToTrenchTarget5 extends SequentialCommandGroup {
          * 
          * Start in front of power port and shoot
          */
-        static double retractDistance1 = ShootData.trench5Ball[0];
-        static double tiltAngle1 = ShootData.trench5Ball[1];
-        static double turretAngle1 = ShootData.trench5Ball[2];
-        static double shootSpeed1 = ShootData.trench5Ball[3];
-        static double tiltOffset1 = ShootData.trench5Ball[4];
-        static double turretOffset1 = ShootData.trench5Ball[5];
-        static double shootTime1 = ShootData.trench5Ball[6];
+        static double retractDistance1 = ShootData.trench5BallShotConstants.retractDistance;
+        static double tiltAngle1 = ShootData.trench5BallShotConstants.tiltAngle;
+        static double turretAngle1 = ShootData.trench5BallShotConstants.turretAngle;
+        static double shootSpeed1 = ShootData.trench5BallShotConstants.shootSpeed;
+        static double tiltOffset1 = ShootData.trench5BallShotConstants.tiltOffset;
+        static double turretOffset1 = ShootData.trench5BallShotConstants.turretOffset;
+        static double shootTime1 = ShootData.trench5BallShotConstants.shootTime;
 
         public ToTrenchTarget5(RevTurretSubsystem turret, RevTiltSubsystem tilt, RevShooterSubsystem shooter,
                         CellTransportSubsystem transport, LimeLight limelight) {
@@ -59,7 +59,7 @@ public class ToTrenchTarget5 extends SequentialCommandGroup {
                                                 new SetTurretOffset(turret, turretOffset1),
                                                 new PositionTilt(tilt, tiltAngle1 + tiltOffset1),
                                                 new PositionTurret(turret, turretAngle1 + turretOffset1)),
-                                new UseVision(limelight, true), new WaitTiltTurretLocked(tilt, turret),
+                                new UseVision(limelight, true), new WaitTiltTurretLocked(tilt, turret,limelight),
 
                                 new StartAllShooter(shooter, transport, 0));
 

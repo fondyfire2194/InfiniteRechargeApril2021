@@ -28,14 +28,19 @@ public class ClimberSubsystem extends SubsystemBase {
     m_climberMotor.configFactoryDefault();
 
     m_climberMotor.setNeutralMode(NeutralMode.Brake);
-    // raiseArm();
-    lowerArm();
+    
+    
     lockRatchet();
 
   }
 
   public void runMotor(double speed) {
     m_climberMotor.set(ControlMode.PercentOutput, speed);
+  }
+
+  public void stopMotor() {
+
+    m_climberMotor.stopMotor();
   }
 
   public double getMotorAmps() {

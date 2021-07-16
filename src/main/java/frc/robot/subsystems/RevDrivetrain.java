@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Arrays;
 
 //import com.kauailabs.navx.frc.AHRS;
@@ -20,7 +18,6 @@ import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -29,8 +26,6 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
@@ -108,8 +103,6 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public boolean robotStoppedForOneSecond;
 
-    // String trajectoryJSON = "paths/PickupAfterCenterShoot.wpilib.json";
-    // Trajectory trajectory = new Trajectory();
 
     public RevDrivetrain() {
         mLeadLeft = new SimableCANSparkMax(CANConstants.DRIVETRAIN_LEFT_MASTER,
@@ -193,12 +186,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         maxAcc = 8;
         maxVel = 3;
 
-        // try {
-        //     Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-        //     trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-        //  } catch (IOException ex) {
-        //     DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-        //  }
+    
     }
 
     /////////////////////////////////////

@@ -34,7 +34,7 @@ public class SetShotPositionTrenchSecondBall extends SequentialCommandGroup {
          */
 
       
-         static double shootSpeed1 = ShootData.trench5Ball[3];
+         static double shootSpeed1 = ShootData.trench5BallShotConstants.shootSpeed;
 
         public SetShotPositionTrenchSecondBall(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RearIntakeSubsystem intake, LimeLight limelight) {

@@ -7,8 +7,6 @@ package frc.robot.commands.AutoCommands.ShieldGenOne;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.LimeLight;
-import frc.robot.ShootData;
-import frc.robot.commands.AutoCommands.SetActive2ndShootData;
 import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.subsystems.CellTransportSubsystem;
@@ -33,7 +31,6 @@ public class ShieldGenAuto1 extends ParallelRaceGroup {
 
         new RunRollers(transport), new RunShooter(shooter),
 
-        new SetActive2ndShootData(ShootData.shieldGen4Ball),
 
         new AutoMode3MnBallShield(shooter, turret, tilt, transport, drive, limelight, compressor, intake));
   }

@@ -40,6 +40,7 @@ import frc.robot.commands.CellTransport.StopBelts;
 import frc.robot.commands.CellTransport.StopRollers;
 import frc.robot.commands.Climber.ClimberArm;
 import frc.robot.commands.Climber.JogClimber;
+import frc.robot.commands.Climber.RunClimber;
 import frc.robot.commands.RobotDrive.ArcadeDrive;
 import frc.robot.commands.RobotDrive.ArcadeDriveVelocity;
 import frc.robot.commands.RobotDrive.DriveStraightJoystick;
@@ -133,8 +134,8 @@ public class RobotContainer {
       JoystickButton codriverLeftTrigger = new JoystickButton(codriverGamepad, 5);
       JoystickButton codriverRightTrigger = new JoystickButton(codriverGamepad, 6);
 
-      JoystickButton codriverBack = new JoystickButton(codriverGamepad, 7);
-      JoystickButton codriverStart = new JoystickButton(codriverGamepad, 8);
+      JoystickButton codriverBack = new JoystickButton(codriverGamepad, 9);
+      JoystickButton codriverStart = new JoystickButton(codriverGamepad, 10);
 
       JoystickButton codriverLeftStick = new JoystickButton(codriverGamepad, 11);
       JoystickButton codriverRightStick = new JoystickButton(codriverGamepad, 12);
@@ -206,9 +207,10 @@ public class RobotContainer {
             // m_turret.setDefaultCommand(new PositionHoldTurretTest(m_turret));
 
             m_shooter.setDefaultCommand(getJogShooterCommand());
+
             boolean isMatch = Pref.getPref("IsMatch") == 1.;
             m_setup = new SetupShuffleboard(m_turret, m_tilt, m_robotDrive, m_shooter, m_transport, m_compressor,
-                        m_limelight, m_intake, m_trajectory, isMatch);
+                        m_limelight, m_intake, m_climber, m_trajectory, isMatch);
 
             m_robotDrive.setDefaultCommand(getArcadeDriveCommand());
 
@@ -260,7 +262,7 @@ public class RobotContainer {
                         .whenPressed(new RunRollers(m_transport));
 
             new JoystickButton(m_driverController, 3).whenPressed(new StopShoot(m_shooter, m_transport))
-                        .whenPressed(new StopRollers(m_transport)).whenPressed(new StopBelts(m_transport))
+                        .whenPressed(new StopRollers(m_transport))
                         .whenPressed(new SetUpLimelightForNoVision(m_limelight))
                         .whenPressed(new PositionTurret(m_turret, 0))
                         .whenReleased(new PositionTilt(m_tilt, m_tilt.tiltMaxAngle));
@@ -328,13 +330,29 @@ public class RobotContainer {
 
             // climber
 
-            codriverBack.whileHeld(getRunClimberMotorCommand());
+            codriverLeftTrigger
 
-            //codriverStart
+                        .whenPressed(() -> m_climber.unlockRatchet())
 
-            codriverRightTrigger.whenPressed(new ClimberArm(m_climber, true));
+                        .whileHeld(new RunClimber(m_climber, .2))
 
-            codriverLeftTrigger.whenPressed(new ClimberArm(m_climber, false));
+                        .whenReleased(() -> m_climber.stopMotor())
+
+                        .whenReleased(() -> m_climber.lockRatchet());
+
+            codriverRightTrigger
+
+                        .whenPressed(() -> m_climber.unlockRatchet())
+
+                        .whileHeld(new RunClimber(m_climber, -.2))
+
+                        .whenReleased(() -> m_climber.stopMotor())
+
+                        .whenReleased(() -> m_climber.lockRatchet());
+
+            codriverBack.whenPressed(new ClimberArm(m_climber, true));
+
+            codriverStart.whenPressed(new ClimberArm(m_climber, false));
 
             codriverUpButton.whenPressed(() -> m_tilt.aimHigher());
 
@@ -361,10 +379,6 @@ public class RobotContainer {
                         .whenReleased(() -> m_transport.stopRearRollerMotor());
 
             setupLeftButton.whenPressed(new ReleaseOneCell(m_transport));
-
-            // setupLeftTrigger.
-
-            // setupRightTrigger.
 
             // setupBack.
 
@@ -461,8 +475,9 @@ public class RobotContainer {
             return new JogRightBelt(m_transport, () -> setupGamepad.getRawAxis(3));
       }
 
-      public Command getRunClimberMotorCommand() {
-            return new JogClimber(m_climber, () -> codriverGamepad.getRawAxis(3));
+      public Command getRunClimberMotorCommand(XboxController gamepad) {
+
+            return new JogClimber(m_climber, () -> gamepad.getRawAxis(3), gamepad);
       }
 
       public double getThrottle() {

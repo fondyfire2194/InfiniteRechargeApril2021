@@ -64,10 +64,11 @@ public class ShootCells extends CommandBase {
   @Override
   public void initialize() {
     m_shooter.shootCellsRunning = 1.;
+    m_shooter.logShooterItems=true;
     m_shooter.shootTime = m_time;
     m_compressor.stop();
     m_shooter.isShooting = false;
-    m_transport.cellAvailable = true;
+    m_transport.cellAvailable = false;
     m_transport.holdCell();
     m_transport.holdLeftChannel();
     m_transport.cellsShot = 0;
@@ -121,7 +122,7 @@ public class ShootCells extends CommandBase {
 
    
 
-    if (m_transport.cellsShot > m_transport.cellsToBeShot)
+    if (m_transport.cellsShot >= m_transport.cellsToBeShot)
       m_transport.releaseLeftChannel();
 
   }
@@ -140,13 +141,14 @@ public class ShootCells extends CommandBase {
     m_shooter.isShooting = false;
     m_shooter.setNotOKShootDriver();
     m_shooter.shootCellsRunning = 0;
+
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
 
-    return m_transport.cellsShot > 5 || inAuto && m_transport.cellsShot >= 4;
+    return m_transport.cellsShot >= 5 || inAuto && m_transport.cellsShot >= 3;
   }
 
   public void releaseOneCell() {

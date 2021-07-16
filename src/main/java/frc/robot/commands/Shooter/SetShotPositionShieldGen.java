@@ -33,13 +33,9 @@ public class SetShotPositionShieldGen extends SequentialCommandGroup {
          * Start in front of power port, retract and shoot
          */
 
-        // static double retractDistance = ShootData.shieldGen4Ball[0];
-        // static double tiltAngle = ShootData.shieldGen4Ball[1];
-        // static double turretAngle = ShootData.shieldGen4Ball[2];
-        static double shootSpeed = ShootData.shieldGen4Ball[3];
-        // static double tiltOffset = ShootData.shieldGen4Ball[4];
-        // static double turretOffset = ShootData.shieldGen4Ball[5];
-        // static double shootTime = ShootData.shieldGen4Ball[6];
+       
+        static double shootSpeed = ShootData.shieldGen4BallShotConstants.shootSpeed;
+        
 
         public SetShotPositionShieldGen(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RearIntakeSubsystem intake, LimeLight limelight) {
@@ -50,11 +46,11 @@ public class SetShotPositionShieldGen extends SequentialCommandGroup {
 
                                 new ParallelCommandGroup(new SetLeftReleaseShots(transport, 3),
                                                 new IntakeArmLower(intake), new SetShootSpeed(shooter, shootSpeed),
-                                                new ChooseShooterSpeedSource(shooter, tilt, turret, 0),
+                                                new ChooseShooterSpeedSource(shooter, tilt, turret, 0)),
 
-                                                new RunShooter(shooter)).deadlineWith(new RunRollers(transport),
-                                                                new PositionHoldTilt(tilt, shooter, limelight),
-                                                                new PositionHoldTurret(turret, shooter, limelight)));
+                                new RunShooter(shooter).deadlineWith(new RunRollers(transport),
+                                                new PositionHoldTilt(tilt, shooter, limelight),
+                                                new PositionHoldTurret(turret, shooter, limelight)));
 
         }
 }

@@ -58,13 +58,13 @@ public class AutoMode3MnBallShield extends SequentialCommandGroup {
         static double turretOffset = ShootData.trench3M3BallShotConstants.turretOffset;
         static double shootTime = ShootData.trench3M3BallShotConstants.shootTime;
 
-        static double retractDistance1 = ShootData.activeValues[0];
-        static double tiltAngle1 = ShootData.activeValues[1];
-        static double turretAngle1 = ShootData.activeValues[2];
-        static double shootSpeed1 = ShootData.activeValues[3];
-        static double tiltOffset1 = ShootData.activeValues[4];
-        static double turretOffset1 = ShootData.activeValues[5];
-        static double shootTime1 = ShootData.activeValues[6];
+        static double retractDistance1 = ShootData.shieldGen4BallShotConstants.retractDistance;
+        static double tiltAngle1 = ShootData.shieldGen4BallShotConstants.tiltAngle;
+        static double turretAngle1 = ShootData.shieldGen4BallShotConstants.turretAngle;
+        static double shootSpeed1 = ShootData.shieldGen4BallShotConstants.shootSpeed;
+        static double tiltOffset1 = ShootData.shieldGen4BallShotConstants.tiltOffset;
+        static double turretOffset1 = ShootData.shieldGen4BallShotConstants.turretOffset;
+        static double shootTime1 = ShootData.shieldGen4BallShotConstants.shootTime;
 
         public AutoMode3MnBallShield(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
@@ -106,7 +106,7 @@ public class AutoMode3MnBallShield extends SequentialCommandGroup {
                                                                 
                                 new UseVision(limelight, true),
 
-                                new WaitTiltTurretLocked(tilt, turret).deadlineWith(
+                                new WaitTiltTurretLocked(tilt, turret,limelight).deadlineWith(
                                                 new ParallelCommandGroup(new PositionHoldTilt(tilt, shooter, limelight),
                                                                 new PositionHoldTurret(turret, shooter, limelight))),
 

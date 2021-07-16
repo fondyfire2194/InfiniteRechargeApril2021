@@ -44,7 +44,7 @@ import frc.robot.subsystems.RevTurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class AutoMode3MnBallTrench extends SequentialCommandGroup {
+public class AutoMode3M2BallTrench extends SequentialCommandGroup {
         /**
          * Creates a new Auto0.
          * 
@@ -58,15 +58,15 @@ public class AutoMode3MnBallTrench extends SequentialCommandGroup {
         static double turretOffset = ShootData.trench3M3BallShotConstants.turretOffset;
         static double shootTime = ShootData.trench3M3BallShotConstants.shootTime;
 
-        static double retractDistance1 = ShootData.activeValues[0];
-        static double tiltAngle1 = ShootData.activeValues[1];
-        static double turretAngle1 = ShootData.activeValues[2];
-        static double shootSpeed1 = ShootData.activeValues[3];
-        static double tiltOffset1 = ShootData.activeValues[4];
-        static double turretOffset1 = ShootData.activeValues[5];
-        static double shootTime1 = ShootData.activeValues[6];
+        static double retractDistance1 = ShootData.trench5BallShotConstants.retractDistance;
+        static double tiltAngle1 = ShootData.trench5BallShotConstants.tiltAngle;
+        static double turretAngle1 = ShootData.trench5BallShotConstants.turretAngle;
+        static double shootSpeed1 = ShootData.trench5BallShotConstants.shootSpeed;
+        static double tiltOffset1 = ShootData.trench5BallShotConstants.tiltOffset;
+        static double turretOffset1 = ShootData.trench5BallShotConstants.turretOffset;
+        static double shootTime1 = ShootData.trench5BallShotConstants.shootTime;
 
-        public AutoMode3MnBallTrench(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
+        public AutoMode3M2BallTrench(RevShooterSubsystem shooter, RevTurretSubsystem turret, RevTiltSubsystem tilt,
                         CellTransportSubsystem transport, RevDrivetrain drive, LimeLight limelight,
                         Compressor compressor, RearIntakeSubsystem intake) {
                 // Add your commands in the super() call, e.g.
@@ -93,7 +93,7 @@ public class AutoMode3MnBallTrench extends SequentialCommandGroup {
                                 new PickupMoveVelocity(drive, retractDistance1, 1.5)
 
                                                 .deadlineWith(new SetLeftReleaseShots(transport, 1),
-
+                                                                
                                                                 new UseVision(limelight, false),
 
                                                                 new SetTiltOffset(tilt, tiltOffset1),
@@ -112,7 +112,7 @@ public class AutoMode3MnBallTrench extends SequentialCommandGroup {
 
                                 new UseVision(limelight, true),
 
-                                new WaitTiltTurretLocked(tilt, turret).deadlineWith(
+                                new WaitTiltTurretLocked(tilt, turret,limelight).deadlineWith(
                                                 new PositionHoldTilt(tilt, shooter, limelight),
                                                 new PositionHoldTurret(turret, shooter, limelight)),
 
@@ -126,15 +126,14 @@ public class AutoMode3MnBallTrench extends SequentialCommandGroup {
                                                                                                 limelight),
 
                                                                                 new PositionHoldTurret(turret, shooter,
-                                                                                                limelight)),
+                                                                                                limelight))),
 
-                                                new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
-                                                                new SetLogShooterItems(shooter, false),
-                                                                new IntakeArmRaise(intake), new StopIntakeMotor(intake),
-                                                                new PositionTilt(tilt,
-                                                                                HoodedShooterConstants.TILT_MAX_ANGLE),
-                                                                new SetUpLimelightForNoVision(limelight),
-                                                                new PositionTurret(turret, 0))));
+                                new ParallelCommandGroup(new MessageCommand("EndResetStarted"),
+                                                new SetLogShooterItems(shooter, false), new IntakeArmRaise(intake),
+                                                new StopIntakeMotor(intake),
+                                                new PositionTilt(tilt, HoodedShooterConstants.TILT_MAX_ANGLE),
+                                                new SetUpLimelightForNoVision(limelight),
+                                                new PositionTurret(turret, 0)));
 
         }
 }
