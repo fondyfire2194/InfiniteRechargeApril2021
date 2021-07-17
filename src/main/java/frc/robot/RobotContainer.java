@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -334,7 +335,7 @@ public class RobotContainer {
 
                         .whenPressed(() -> m_climber.unlockRatchet())
 
-                        .whileHeld(new RunClimber(m_climber, .2))
+                        .whileHeld(getRunClimberMotorCommand(codriverGamepad, true))
 
                         .whenReleased(() -> m_climber.stopMotor())
 
@@ -344,7 +345,7 @@ public class RobotContainer {
 
                         .whenPressed(() -> m_climber.unlockRatchet())
 
-                        .whileHeld(new RunClimber(m_climber, -.2))
+                        .whileHeld(getRunClimberMotorCommand(codriverGamepad, false))
 
                         .whenReleased(() -> m_climber.stopMotor())
 
@@ -467,17 +468,9 @@ public class RobotContainer {
             return new JogShooter(m_shooter, () -> setupGamepad.getRawAxis(4));
       }
 
-      public Command getJogLeftBeltCommand() {
-            return new JogLeftBelt(m_transport, () -> setupGamepad.getRawAxis(1));
-      }
+      public Command getRunClimberMotorCommand(XboxController gamepad, boolean direction) {
 
-      public Command getJogRightBeltCommand() {
-            return new JogRightBelt(m_transport, () -> setupGamepad.getRawAxis(3));
-      }
-
-      public Command getRunClimberMotorCommand(XboxController gamepad) {
-
-            return new JogClimber(m_climber, () -> gamepad.getRawAxis(3), gamepad);
+            return new RunClimber(m_climber, gamepad, direction);
       }
 
       public double getThrottle() {
