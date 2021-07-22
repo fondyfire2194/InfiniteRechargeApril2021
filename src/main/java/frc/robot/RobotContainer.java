@@ -287,8 +287,7 @@ public class RobotContainer {
 
             new JoystickButton(m_driverController, 9).whenPressed(new ReleaseLeftArm(m_transport));
 
-            new JoystickButton(m_driverController, 11).whileHeld(() -> m_shooter.shootAll())
-                        .whenReleased(() -> m_shooter.shootOne());
+            // new JoystickButton(m_driverController, 11).
 
             // Hold to shoot all
             new JoystickButton(m_driverController, 12).whileHeld(() -> m_shooter.shootAll())
@@ -335,21 +334,13 @@ public class RobotContainer {
 
                         .whenPressed(() -> m_climber.unlockRatchet())
 
-                        .whileHeld(getRunClimberMotorCommand(codriverGamepad, true))
+                        .whileHeld(getRunClimberMotorCommand(codriverGamepad))
 
                         .whenReleased(() -> m_climber.stopMotor())
 
                         .whenReleased(() -> m_climber.lockRatchet());
 
-            codriverRightTrigger
-
-                        .whenPressed(() -> m_climber.unlockRatchet())
-
-                        .whileHeld(getRunClimberMotorCommand(codriverGamepad, false))
-
-                        .whenReleased(() -> m_climber.stopMotor())
-
-                        .whenReleased(() -> m_climber.lockRatchet());
+            // codriverRightTrigger
 
             codriverBack.whenPressed(new ClimberArm(m_climber, true));
 
@@ -468,9 +459,9 @@ public class RobotContainer {
             return new JogShooter(m_shooter, () -> setupGamepad.getRawAxis(4));
       }
 
-      public Command getRunClimberMotorCommand(XboxController gamepad, boolean direction) {
+      public Command getRunClimberMotorCommand(XboxController gamepad) {
 
-            return new RunClimber(m_climber, gamepad, direction);
+            return new RunClimber(m_climber, () -> codriverGamepad.getRawAxis(1));
       }
 
       public double getThrottle() {

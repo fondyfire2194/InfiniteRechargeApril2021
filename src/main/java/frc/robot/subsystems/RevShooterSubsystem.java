@@ -199,7 +199,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
         tuneGains();
         getGains();
         requiredMps = 23;
-        shootOne = true;
+        shootOne = false;
         simpleCSVLogger = new SimpleCSVLogger();
         shootLogger = new SimpleCSVLogger();
         programSpeed = minMPS;
@@ -514,7 +514,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     }
 
     public void shootOne() {
-        shootOne = true;
+        shootOne = false;
     }
 
     public void shootAll() {

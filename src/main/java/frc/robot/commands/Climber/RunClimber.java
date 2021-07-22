@@ -4,9 +4,8 @@
 
 package frc.robot.commands.Climber;
 
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClimberSubsystem;
 
@@ -14,15 +13,14 @@ public class RunClimber extends CommandBase {
   /** Creates a new TurnClimberMotor. */
 
   private final ClimberSubsystem m_climber;
-  private double m_speed;
-  private boolean m_direction;
-  private XboxController m_gamepad;
 
-  public RunClimber(ClimberSubsystem climber, XboxController gamepad, boolean direction) {
+  private Supplier<Double> m_xaxisSpeedSupplier;
+
+  public RunClimber(ClimberSubsystem climber, Supplier<Double> xaxisSpeedSupplier) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_climber = climber;
-    m_direction = direction;
-    m_gamepad = gamepad;
+    m_xaxisSpeedSupplier = xaxisSpeedSupplier;
+
     addRequirements(m_climber);
   }
 
@@ -35,15 +33,10 @@ public class RunClimber extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_speed = m_gamepad.getTriggerAxis(Hand.kRight) * .75;
-
-    if (!m_direction)
-    
-      m_speed = -m_speed;
 
     if (m_climber.getArmRaised() && m_climber.getRatchetUnlocked()) {
 
-      m_climber.runMotor(m_speed);
+      m_climber.runMotor(-m_xaxisSpeedSupplier.get());
     }
 
   }

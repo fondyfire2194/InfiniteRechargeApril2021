@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import frc.robot.LimeLight;
 import frc.robot.commands.AutoCommands.StartAllShooter;
+import frc.robot.commands.CellTransport.RunRollers;
 import frc.robot.commands.Shooter.LogShootData;
+import frc.robot.commands.Shooter.RunShooter;
 import frc.robot.subsystems.CellTransportSubsystem;
 import frc.robot.subsystems.RearIntakeSubsystem;
 import frc.robot.subsystems.RevDrivetrain;
@@ -29,7 +31,7 @@ public class TrenchAuto2 extends ParallelRaceGroup {
 
     addCommands(
 
-        new StartAllShooter(shooter, transport, .1), new LogShootData(shooter, transport, drive),
+        new RunShooter(shooter),new RunRollers(transport),
 
       
 
