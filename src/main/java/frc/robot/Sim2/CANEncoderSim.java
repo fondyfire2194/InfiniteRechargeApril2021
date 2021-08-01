@@ -1,4 +1,4 @@
-package io.excaliburfrc.lib;
+package frc.robot.Sim2;
 
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;

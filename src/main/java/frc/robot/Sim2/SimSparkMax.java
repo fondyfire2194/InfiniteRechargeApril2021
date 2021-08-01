@@ -1,4 +1,4 @@
-package io.excaliburfrc.lib;
+package frc.robot.Sim2;
 
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;

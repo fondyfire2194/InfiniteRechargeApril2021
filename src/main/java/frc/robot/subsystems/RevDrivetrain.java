@@ -7,6 +7,7 @@ import java.util.Arrays;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
@@ -17,34 +18,42 @@ import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
 import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
+import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PDPConstants;
+import frc.robot.Sim2.CANEncoderSim;
+import frc.robot.Sim2.SimSparkMax;
 import frc.robot.Pref;
 import frc.robot.SimpleCSVLogger;
 import frc.robot.sim.BaseDrivetrainSubsystem;
 
 public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private static final DrivetrainConstants DRIVETRAIN_CONSTANTS = new NeoDrivetrainConstants();
-
-    private final SimableCANSparkMax mLeadLeft; // NOPMD
-    private final SimableCANSparkMax mFollowerLeft; // NOPMD
-
-    private final SimableCANSparkMax mLeadRight; // NOPMD
-    private final SimableCANSparkMax mFollowerRight; // NOPMD
-
-    public final CANEncoder mRightEncoder;
-    public final CANEncoder mLeftEncoder;
+    private final CANSparkMax rightLeader;
+    private final CANSparkMax rightFollower;
+    private final CANSparkMax leftLeader;
+    private final CANSparkMax leftFollower;
+    private final CANEncoder leftEncoder;
+    private final CANEncoder rightEncoder;
+ 
 
     private final CANPIDController mLeftPidController;
     private final CANPIDController mRightPidController;
@@ -56,7 +65,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     private final DifferentialDrive mDrive;
     // private final DifferentialDriveOdometry mOdometry;
     private DifferentialDrivetrainSimWrapper mSimulator;
-
+    private SimDouble simGyro;
+    private CANEncoderSim simLeftEncoder;
+    private CANEncoderSim simRightEncoder;
+    private DifferentialDrivetrainSim simDrive;
     public double leftTargetPosition;
     public double rightTargetPosition;
 
@@ -105,51 +117,52 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
 
     public RevDrivetrain() {
-        mLeadLeft = new SimableCANSparkMax(CANConstants.DRIVETRAIN_LEFT_MASTER,
-                CANSparkMaxLowLevel.MotorType.kBrushless);
-        mFollowerLeft = new SimableCANSparkMax(CANConstants.DRIVETRAIN_LEFT_FOLLOWER,
-                CANSparkMaxLowLevel.MotorType.kBrushless);
-        mLeadRight = new SimableCANSparkMax(CANConstants.DRIVETRAIN_RIGHT_MASTER,
-                CANSparkMaxLowLevel.MotorType.kBrushless);
-        mFollowerRight = new SimableCANSparkMax(CANConstants.DRIVETRAIN_RIGHT_FOLLOWER,
-                CANSparkMaxLowLevel.MotorType.kBrushless);
+        rightLeader = new SimSparkMax(CANConstants.DRIVETRAIN_RIGHT_MASTER, CANSparkMaxLowLevel.MotorType.kBrushless);
+        leftLeader = new SimSparkMax(CANConstants.DRIVETRAIN_LEFT_MASTER, CANSparkMaxLowLevel.MotorType.kBrushless);
+        leftFollower = new SimSparkMax(CANConstants.DRIVETRAIN_LEFT_FOLLOWER, CANSparkMaxLowLevel.MotorType.kBrushless);
+        rightFollower = new SimSparkMax(CANConstants.DRIVETRAIN_RIGHT_FOLLOWER, CANSparkMaxLowLevel.MotorType.kBrushless);
+    
+        leftLeader.restoreFactoryDefaults();
+        rightLeader.restoreFactoryDefaults();
+        leftFollower.restoreFactoryDefaults();
+        rightFollower.restoreFactoryDefaults();
+        rightLeader.setInverted(true);
+        leftFollower.follow(leftLeader);
+        rightFollower.follow(rightLeader);
+        setIdleMode(true);
+        leftLeader.enableVoltageCompensation(12);
+        leftFollower.enableVoltageCompensation(12);
+        rightLeader.enableVoltageCompensation(12);
+        rightFollower.enableVoltageCompensation(12);
+    
+        leftEncoder = leftLeader.getEncoder();
+        rightEncoder = rightLeader.getEncoder();
+    
+        leftEncoder.setVelocityConversionFactor(DriveConstants.METERS_PER_MOTOR_REV / 60.0);
+        rightEncoder.setVelocityConversionFactor(DriveConstants.METERS_PER_MOTOR_REV / 60.0);
 
-        mLeadLeft.restoreFactoryDefaults();
-        mFollowerLeft.restoreFactoryDefaults();
-        mLeadRight.restoreFactoryDefaults();
-        mFollowerRight.restoreFactoryDefaults();
+        mLeftPidController = leftLeader.getPIDController();
+        mRightPidController = rightLeader.getPIDController();
 
-        mRightEncoder = mLeadRight.getEncoder();
-        mLeftEncoder = mLeadLeft.getEncoder();
-
-        mLeftEncoder.setPositionConversionFactor(DriveConstants.METERS_PER_MOTOR_REV);
-        mRightEncoder.setPositionConversionFactor(DriveConstants.METERS_PER_MOTOR_REV);
-
-        mLeftEncoder.setVelocityConversionFactor(DriveConstants.METERS_PER_MOTOR_REV / 60.0);
-        mRightEncoder.setVelocityConversionFactor(DriveConstants.METERS_PER_MOTOR_REV / 60.0);
-
-        mLeftPidController = mLeadLeft.getPIDController();
-        mRightPidController = mLeadRight.getPIDController();
-
-        mLeftEncoder.setPosition(0);
-        mRightEncoder.setPosition(0);
+        leftEncoder.setPosition(0);
+        rightEncoder.setPosition(0);
         leftTargetPosition = 0;
         rightTargetPosition = 0;
 
-        mLeadLeft.setInverted(false);
-        mLeadRight.setInverted(true);
+        leftLeader.setInverted(false);
+        rightLeader.setInverted(true);
 
-        mFollowerLeft.follow(mLeadLeft, false);
-        mFollowerRight.follow(mLeadRight, false);
-        mLeadLeft.setOpenLoopRampRate(.5);
-        mLeadRight.setOpenLoopRampRate(.5);
+        leftFollower.follow(leftLeader, false);
+        rightFollower.follow(rightLeader, false);
+        leftLeader.setOpenLoopRampRate(.5);
+        rightLeader.setOpenLoopRampRate(.5);
 
-        mLeadLeft.setClosedLoopRampRate(1);
-        mLeadRight.setClosedLoopRampRate(1);
+        leftLeader.setClosedLoopRampRate(1);
+        rightLeader.setClosedLoopRampRate(1);
 
         mGyro = new AHRS();
 
-        mDrive = new DifferentialDrive(mLeadLeft, mLeadRight);
+        mDrive = new DifferentialDrive(leftLeader, rightLeader);
         mDrive.setRightSideInverted(false);
 
         mDrive.setSafetyEnabled(false);
@@ -161,24 +174,30 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         setIdleMode(false);
 
         if (RobotBase.isSimulation()) {
-            mSimulator = new DifferentialDrivetrainSimWrapper(DRIVETRAIN_CONSTANTS.createSim(),
-                    new RevMotorControllerSimWrapper(mLeadLeft), new RevMotorControllerSimWrapper(mLeadRight),
-                    RevEncoderSimWrapper.create(mLeadLeft), RevEncoderSimWrapper.create(mLeadRight),
-                    new NavxWrapper().getYawGyro());
-            mSimulator.setRightInverted(false);
-            mSimulator.setLeftPdpChannels(PDPConstants.DRIVETRAIN_LEFT_MOTOR_A_PDP,
-                    PDPConstants.DRIVETRAIN_LEFT_MOTOR_B_PDP);
-            mSimulator.setRightPdpChannels(PDPConstants.DRIVETRAIN_RIGHT_MOTOR_A_PDP,
-                    PDPConstants.DRIVETRAIN_RIGHT_MOTOR_B_PDP);
-            // the Field2d class lets us visualize our robot in the simulation GUI.
+            simLeftEncoder = new CANEncoderSim(false,CANConstants.DRIVETRAIN_LEFT_MASTER);
+            simRightEncoder = new CANEncoderSim(false, CANConstants.DRIVETRAIN_RIGHT_MASTER);
+            simGyro =
+                new SimDouble(
+                    SimDeviceDataJNI.getSimValueHandle(
+                        SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]"), "Yaw"));
+            simDrive =
+                new DifferentialDrivetrainSim(
+                    LinearSystemId.identifyDrivetrainSystem(kV_lin, kA_lin, kV_ang, kA_ang),
+                    DCMotor.getNEO(2),
+                    GEARING,
+                    TRACK_WIDTH,
+                    WHEEL_RADIUS,
+                    null);
+          }
+                 // the Field2d class lets us visualize our robot in the simulation GUI.
             fieldSim = new Field2d();
             // mOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
             SmartDashboard.putData("Field", fieldSim);
-        }
+        
 
         // Set current limiting on drive train to prevent brown outs
-        Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
-                .forEach((SimableCANSparkMax spark) -> spark.setSmartCurrentLimit(35));
+        // Arrays.asList(leftLeader, rightLeader, leftFollower, rightFollower)
+        //         .forEach((SimableCANSparkMax spark) -> spark.setSmartCurrentLimit(35));
 
         kP = .4;
         kI = .1;
@@ -194,12 +213,12 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     /////////////////////////////////////
     @Override
     public double getLeftDistance() {
-        return mLeftEncoder.getPosition();
+        return leftEncoder.getPosition();
     }
 
     @Override
     public double getRightDistance() {
-        return mRightEncoder.getPosition();
+        return rightEncoder.getPosition();
     }
 
     public double getAverageDistance() {
@@ -208,44 +227,44 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     @Override
     public double getLeftRate() {
-        return mLeftEncoder.getVelocity();
+        return leftEncoder.getVelocity();
     }
 
     @Override
     public double getRightRate() {
-        return mRightEncoder.getVelocity();
+        return rightEncoder.getVelocity();
     }
 
     public double getRightOut() {
-        return mLeadRight.getAppliedOutput();
+        return rightLeader.getAppliedOutput();
     }
 
     public double getRightAmps() {
-        return mLeadRight.getOutputCurrent();
+        return rightLeader.getOutputCurrent();
     }
 
     public double getLeftOut() {
-        return mLeadLeft.getAppliedOutput();
+        return leftLeader.getAppliedOutput();
     }
 
     public double getLeftAmps() {
-        return mLeadLeft.getOutputCurrent();
+        return leftLeader.getOutputCurrent();
     }
 
     public double getRightFollowerOut() {
-        return mFollowerRight.getAppliedOutput();
+        return rightFollower.getAppliedOutput();
     }
 
     public double getLeftFollowerOut() {
-        return mFollowerLeft.getAppliedOutput();
+        return leftFollower.getAppliedOutput();
     }
 
     public boolean getLeftFollower() {
-        return mFollowerLeft.isFollower();
+        return leftFollower.isFollower();
     }
 
     public boolean getRightFollower() {
-        return mFollowerRight.isFollower();
+        return rightFollower.isFollower();
     }
 
     @Override
@@ -265,8 +284,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     @Override
     public void tankDriveVolts(double left, double right) {
-        mLeadLeft.setVoltage(left);
-        mLeadRight.setVoltage(right);
+        leftLeader.setVoltage(left);
+        rightLeader.setVoltage(right);
         mDrive.feed();
     }
 
@@ -298,8 +317,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     @Override
     public void resetEncoders() {
-        mLeftEncoder.setPosition(0);
-        mRightEncoder.setPosition(0);
+        leftEncoder.setPosition(0);
+        rightEncoder.setPosition(0);
         // resetSimOdometry(getPose());
     }
 
@@ -331,10 +350,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     public boolean checkCAN() {
-        leftLeadConnected = mLeadLeft.getFirmwareVersion() != 0;
-        rightLeadConnected = mLeadRight.getFirmwareVersion() != 0;
-        leftFollowerConnected = mFollowerLeft.getFirmwareVersion() != 0;
-        rightFollowerConnected = mFollowerRight.getFirmwareVersion() != 0;
+        leftLeadConnected = leftLeader.getFirmwareVersion() != 0;
+        rightLeadConnected = rightLeader.getFirmwareVersion() != 0;
+        leftFollowerConnected = leftFollower.getFirmwareVersion() != 0;
+        rightFollowerConnected = rightFollower.getFirmwareVersion() != 0;
         allConnected = leftLeadConnected && leftFollowerConnected && rightLeadConnected && rightFollowerConnected;
 
         return allConnected;
@@ -347,8 +366,18 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     @Override
     public void simulationPeriodic() {
-        mSimulator.update();
-        fieldSim.setRobotPose(getPose());
+      var volts = RobotController.getInputVoltage();
+      simDrive.setInputs(volts * leftLeader.get(), volts * rightLeader.get());
+  
+      simDrive.update(0.02);
+  
+      simLeftEncoder.setPosition(simDrive.getLeftPositionMeters());
+      simLeftEncoder.setVelocity(simDrive.getLeftVelocityMetersPerSecond());
+      simRightEncoder.setPosition(simDrive.getRightPositionMeters());
+      simRightEncoder.setVelocity(simDrive.getRightPositionMeters());
+      simGyro.set(-simDrive.getHeading().getDegrees());
+      RoboRioSim.setVInVoltage(
+          BatterySim.calculateDefaultBatteryLoadedVoltage(simDrive.getCurrentDrawAmps()));
     }
 
     @Override
@@ -383,7 +412,7 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     }
 
     public boolean isStopped() {
-        return Math.abs(mLeftEncoder.getVelocity()) < .2;
+        return Math.abs(leftEncoder.getVelocity()) < .2;
     }
 
     public boolean gyroStopped() {
@@ -400,21 +429,21 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     public void resetPose(Pose2d pose) {
         // The left and right encoders MUST be reset when odometry is reset
-        mLeftEncoder.setPosition(0);
-        mRightEncoder.setPosition(0);
+        leftEncoder.setPosition(0);
+        rightEncoder.setPosition(0);
         mOdometry.resetPosition(pose, Rotation2d.fromDegrees(getHeadingDegrees()));
         if (RobotBase.isSimulation())
             resetSimOdometry(pose);
     }
 
     public void clearFaults() {
-        Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
-                .forEach((SimableCANSparkMax spark) -> spark.clearFaults());
+        Arrays.asList(leftLeader, leftFollower, rightLeader, rightFollower)
+                .forEach((CANSparkMax spark) -> spark.clearFaults());
 
     }
 
     public int getFaults() {
-        return mLeadLeft.getFaults() + mLeadRight.getFaults() + mFollowerLeft.getFaults() + mFollowerRight.getFaults();
+        return leftLeader.getFaults() + leftFollower.getFaults() + rightLeader.getFaults() + rightFollower.getFaults();
     }
 
     public boolean getInPositionLeft() {
@@ -455,14 +484,14 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         if (brake) {
 
             // Set motors to brake when idle. We don't want the drive train to coast.
-            Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
-                    .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kBrake));
+            Arrays.asList(leftLeader, rightLeader, leftFollower, rightFollower)
+                    .forEach((CANSparkMax spark) -> spark.setIdleMode(IdleMode.kBrake));
         }
 
         else {
             // Set motors to brake when idle. We don't want the drive train to coast.
-            Arrays.asList(mLeadLeft, mLeadRight, mFollowerLeft, mFollowerRight)
-                    .forEach((SimableCANSparkMax spark) -> spark.setIdleMode(IdleMode.kCoast));
+            Arrays.asList(leftLeader, rightLeader, leftFollower, rightFollower)
+                    .forEach((CANSparkMax spark) -> spark.setIdleMode(IdleMode.kCoast));
 
         }
     }
@@ -494,10 +523,10 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
 
     @Override
     public void close() {
-        mLeadLeft.close();
-        mFollowerLeft.close();
-        mLeadRight.close();
-        mFollowerRight.close();
+        leftLeader.close();
+        leftFollower.close();
+        rightLeader.close();
+        rightFollower.close();
     }
 
     private void tuneGains() {
