@@ -6,28 +6,27 @@ import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
-import com.revrobotics.SimableCANSparkMax;
-
-import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
-import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
-import org.snobotv2.sim_wrappers.ElevatorSimWrapper;
-import org.snobotv2.sim_wrappers.ISimWrapper;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.HoodedShooterConstants;
+import frc.robot.Sim2.CANEncoderSim;
 import frc.robot.Constants;
 import frc.robot.Pref;
 import frc.robot.SimpleCSVLogger;
@@ -42,17 +41,20 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
     public double lastkP, lastkI, lastkD, lastkIz, lastkFF, lastkMaxOutput, lastkMinOutput, lastmaxRPM, lastmaxVel,
             lastminVel, lastmaxAcc, lastallowedErr;
-
+    public static final double TICKS_TO_WHEEL_ROTATIONS = 1024 / 10; // 485.05263157894734);
     public double kPv, kIv, kDv, kIzv, kFFv, kMaxOutputv, kMinOutputv, maxRPMv, maxVelv, minVelv, maxAccv, allowedErrv;
     public double lastkPv, lastkIv, lastkDv, lastkIzv, lastkFFv, lastkMaxOutputv, lastkMinOutputv, lastmaxRPMv,
             lastmaxVelv, lastmv, lastmaxAccv, lastallowedErrv;
-
-    public final SimableCANSparkMax m_motor; // NOPMD
+    public static final double kS = 0.290, kV = 0.059347, kA = 0.00028977;
+    // public static final double kP = 0.0027705;
+    public static final double kF = 1.0 / 175.0;
+    public final CANSparkMax m_motor; // NOPMD
     private final CANEncoder mEncoder;
+    private final CANEncoderSim simEncoder = new CANEncoderSim(false, CANConstants.TILT_MOTOR);
+    private FlywheelSim flywheel;
     public final CANPIDController mPidController;
     public final PIDController tiltLockController = new PIDController(.032, 0.001, 0);
     public CANDigitalInput m_reverseLimit;
-    private ISimWrapper mElevatorSim;
     public boolean positionResetDone;
     public double targetAngle;
     private double inPositionBandwidth = 1;
@@ -72,7 +74,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public final double degreesPerRev = HoodedShooterConstants.tiltDegreesPerRev;// degrees per motor turn
     public final double tiltMinAngle = HoodedShooterConstants.TILT_MIN_ANGLE;
 
-    public double pset, iset, dset, ffset, izset,maxAccset,maxVelset;
+    public double pset, iset, dset, ffset, izset, maxAccset, maxVelset;
     public double psetv, isetv, dsetv, ffsetv, izsetv;
     public double lpset, liset, ldset, lizset;
 
@@ -119,14 +121,14 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public boolean tiltUseVision;;
     public double tiltOffsetAdder;
     public double tiltOffsetChange;
-	public double cameraCalculatedTiltOffset;
+    public double cameraCalculatedTiltOffset;
 
     /** 
      * 
      */
 
     public RevTiltSubsystem() {
-        m_motor = new SimableCANSparkMax(CANConstants.TILT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
+        m_motor = new CANSparkMax(CANConstants.TILT_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
         mEncoder = m_motor.getEncoder();
         mPidController = m_motor.getPIDController();
         m_motor.restoreFactoryDefaults();
@@ -136,18 +138,9 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         mEncoder.setPosition(0);
         targetAngle = tiltMaxAngle;
 
-        if (RobotBase.isReal()) {
+        mEncoder.setPositionConversionFactor(degreesPerRev);
+        mEncoder.setVelocityConversionFactor(degreesPerRev / 60);
 
-            mEncoder.setPositionConversionFactor(degreesPerRev);
-            mEncoder.setVelocityConversionFactor(degreesPerRev / 60);
-
-        }
-
-        else {
-            mEncoder.setPositionConversionFactor(degreesPerRev * 3);
-            mEncoder.setVelocityConversionFactor(degreesPerRev * 3 / 60);
-
-        }
         setFF_MaxOuts();
         tuneMMGains();
         tuneVelGains();
@@ -172,16 +165,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         setSoftwareLimits();
 
         if (RobotBase.isSimulation()) {
-            ElevatorSimConstants.kCarriageMass = .001;
-            ElevatorSimConstants.kElevatorGearing = 1;
-            ElevatorSimConstants.kMaxElevatorHeight = 100;// HoodedShooterConstants.TILT_MAX_ANGLE;
-            ElevatorSimConstants.kMinElevatorHeight = -100;// HoodedShooterConstants.TILT_MIN_ANGLE;
-            ElevatorSimConstants.kElevatorGearbox = DCMotor.getNeo550(1);
-
-            mElevatorSim = new ElevatorSimWrapper(ElevatorSimConstants.createSim(),
-                    new RevMotorControllerSimWrapper(m_motor), RevEncoderSimWrapper.create(m_motor));
-
-            mPidController.setP(.12);
+            flywheel = new FlywheelSim(LinearSystemId.identifyVelocitySystem(kV, kA), DCMotor.getNEO(1),
+                    TICKS_TO_WHEEL_ROTATIONS);
 
         }
 
@@ -199,7 +184,6 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
         if (RobotBase.isReal() && DriverStation.getInstance().isDisabled())
             targetAngle = getAngle();
-
 
         if (faultSeen != 0)
             faultSeen = getFaults();
@@ -262,9 +246,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     public void lockTiltToVision(double cameraError) {
         lockPIDOut = tiltLockController.calculate(cameraError, 0);
 
-
         runAtVelocity(lockPIDOut);
-        
+
         targetAngle = getAngle();
     }
 
@@ -351,8 +334,11 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
 
     @Override
     public void simulationPeriodic() {
-        mElevatorSim.update();
-        // m_motor.updateSim();
+        var vin = m_motor.getAppliedOutput() * RobotController.getInputVoltage();
+
+        flywheel.setInputVoltage(vin);
+        flywheel.update(0.02);
+        simEncoder.setVelocity(flywheel.getAngularVelocityRPM());
     }
 
     @Override
@@ -361,8 +347,8 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
     }
 
     public void setSoftwareLimits() {
-        m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kReverse, (float) 0.);
-        m_motor.setSoftLimit(SimableCANSparkMax.SoftLimitDirection.kForward, (float) (29));
+        m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float) 0.);
+        m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float) (29));
         m_motor.setIdleMode(IdleMode.kBrake);
     }
 
@@ -614,7 +600,7 @@ public class RevTiltSubsystem extends SubsystemBase implements ElevatorSubsystem
         dset = mPidController.getD(SMART_MOTION_SLOT);
         izset = mPidController.getIZone(SMART_MOTION_SLOT);
         maxAccset = mPidController.getSmartMotionMaxAccel(SMART_MOTION_SLOT);
-        maxVelset= mPidController.getSmartMotionMaxVelocity(SMART_MOTION_SLOT);
+        maxVelset = mPidController.getSmartMotionMaxVelocity(SMART_MOTION_SLOT);
 
     }
 

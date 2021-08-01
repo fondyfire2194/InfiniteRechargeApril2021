@@ -11,11 +11,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
-import com.revrobotics.SimableCANSparkMax;
 
-import org.snobotv2.module_wrappers.navx.NavxWrapper;
-import org.snobotv2.module_wrappers.rev.RevEncoderSimWrapper;
-import org.snobotv2.module_wrappers.rev.RevMotorControllerSimWrapper;
 import org.snobotv2.sim_wrappers.DifferentialDrivetrainSimWrapper;
 
 import edu.wpi.first.hal.SimDouble;
@@ -36,13 +32,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.util.Units;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.PDPConstants;
-import frc.robot.Sim2.CANEncoderSim;
-import frc.robot.Sim2.SimSparkMax;
 import frc.robot.Pref;
 import frc.robot.SimpleCSVLogger;
+import frc.robot.Sim2.CANEncoderSim;
+import frc.robot.Sim2.SimSparkMax;
 import frc.robot.sim.BaseDrivetrainSubsystem;
 
 public class RevDrivetrain extends BaseDrivetrainSubsystem {
@@ -107,6 +103,11 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
     public boolean logDriveItems;
 
     public boolean endDriveFile;
+
+    public static final double kV_lin = 2.66, kA_lin = 0.433, kV_ang = 2.76, kA_ang = -0.236;
+    public static final double TRACK_WIDTH = 0.7047364141920852;
+    public static final double WHEEL_RADIUS = Units.inchesToMeters(6);
+    public static final double GEARING = 0.09425070688030161; // 1.0 / 10.71
 
     private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts,
             DriveConstants.kvVoltSecondsPerMeter, DriveConstants.kaVoltSecondsSquaredPerMeter);
@@ -196,8 +197,8 @@ public class RevDrivetrain extends BaseDrivetrainSubsystem {
         
 
         // Set current limiting on drive train to prevent brown outs
-        // Arrays.asList(leftLeader, rightLeader, leftFollower, rightFollower)
-        //         .forEach((SimableCANSparkMax spark) -> spark.setSmartCurrentLimit(35));
+        Arrays.asList(leftLeader, rightLeader, leftFollower, rightFollower)
+                .forEach((CANSparkMax spark) -> spark.setSmartCurrentLimit(35));
 
         kP = .4;
         kI = .1;
