@@ -158,7 +158,7 @@ public class RevShooterSubsystem extends SubsystemBase implements ShooterSubsyst
     public String[] speedSource = { "Program", "Camera", "Driver", "Setup" };
     public String activeSpeedSource = "Program";
     public double shooterFPSAdder;
-    public Object shooterFPSChange;
+    public double shooterFPSChange;
     public double cameraCalculatedTiltOffset;
     public double maxMPS = 40;
     public double minMPS = 23;
