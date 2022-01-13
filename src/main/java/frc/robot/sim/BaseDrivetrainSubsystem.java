@@ -73,6 +73,8 @@ public abstract class BaseDrivetrainSubsystem extends SubsystemBase implements D
     public void resetOdometry(Pose2d pose)
     {
         resetEncoders();
+
+        resetEncoders();
         mOdometry.resetPosition(pose, getRotation2d());
         resetSimOdometry(pose);
     }
